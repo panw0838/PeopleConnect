@@ -1,4 +1,4 @@
-package com.peopleconnect.peoconandroid;
+package com.panwang.peopleconnect;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -28,10 +28,20 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import org.apache.http.params.HttpConnectionParams;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import android.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.READ_CONTACTS;
+import static java.util.Base64.getUrlEncoder;
 
 /**
  * A login screen that offers login via email/password.
@@ -188,6 +198,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask.execute((Void) null);
         }
     }
+
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
         return email.contains("@");
@@ -244,7 +255,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 // Select only email addresses.
                 ContactsContract.Contacts.Data.MIMETYPE +
                         " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                                                                     .CONTENT_ITEM_TYPE},
+                .CONTENT_ITEM_TYPE},
 
                 // Show primary email addresses first. Note that there won't be
                 // a primary email address if the user hasn't specified one.
@@ -268,6 +279,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     }
 
+    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
+        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(LoginActivity.this,
+                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
+
+        mEmailView.setAdapter(adapter);
+    }
+
+
     private interface ProfileQuery {
         String[] PROJECTION = {
                 ContactsContract.CommonDataKinds.Email.ADDRESS,
@@ -276,16 +297,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
-    }
-
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEmailView.setAdapter(adapter);
     }
 
     /**
@@ -308,8 +319,35 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             try {
                 // Simulate network access.
+                URL url = new URL("http://192.168.0.103:8080/login");
+                String userName = mEmail;
+                String userPass = mPassword;
+
+                String authString = userName + ":" + userPass;
+                byte[] authEncBytes = Base64.encode(authString.getBytes("utf-8"), Base64.DEFAULT);
+                URLConnection connection = url.openConnection();
+                connection.setRequestProperty ("Authorization", "Basic " + authEncBytes);
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+                connection.setRequestProperty("accept", "*/*");
+                connection.setRequestProperty("connection", "Keep-Alive");
+                connection.setRequestProperty("user-agent",
+                        "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+                connection.connect();
+                Map<String, List<String>> map = connection.getHeaderFields();
+                for (String key : map.keySet()) {
+                    System.out.println(key + "--->" + map.get(key));
+                }
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String result = "";
+                String line;
+                while ((line = in.readLine()) != null) {
+                    result += line;
+                }
+                System.out.println("$$$$$ "+result);
                 Thread.sleep(2000);
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
 

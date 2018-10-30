@@ -1,4 +1,4 @@
-package com.peopleconnect.peoconandroid;
+package com.panwang.peopleconnect;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

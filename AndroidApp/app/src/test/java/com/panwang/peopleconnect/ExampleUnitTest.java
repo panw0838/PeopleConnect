@@ -1,4 +1,4 @@
-package com.peopleconnect.peoconandroid;
+package com.panwang.peopleconnect;
 
 import org.junit.Test;
 
