@@ -319,32 +319,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             try {
                 // Simulate network access.
-                URL url = new URL("http://192.168.0.103:8080/login");
-                String userName = mEmail;
-                String userPass = mPassword;
-
-                String authString = userName + ":" + userPass;
-                byte[] authEncBytes = Base64.encode(authString.getBytes("utf-8"), Base64.DEFAULT);
-                URLConnection connection = url.openConnection();
-                connection.setRequestProperty ("Authorization", "Basic " + authEncBytes);
-                connection.setDoOutput(true);
-                connection.setDoInput(true);
-                connection.setRequestProperty("accept", "*/*");
-                connection.setRequestProperty("connection", "Keep-Alive");
-                connection.setRequestProperty("user-agent",
-                        "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-                connection.connect();
-                Map<String, List<String>> map = connection.getHeaderFields();
-                for (String key : map.keySet()) {
-                    System.out.println(key + "--->" + map.get(key));
-                }
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String result = "";
-                String line;
-                while ((line = in.readLine()) != null) {
-                    result += line;
-                }
-                System.out.println("$$$$$ "+result);
+                ArrayList<String> keys   = new ArrayList<String>();
+                ArrayList<String> values = new ArrayList<String>();
+                keys.add("user"); values.add(mEmail);
+                keys.add("pass"); values.add(mPassword);
+                String result = HttpRequests.HttpPost("http://192.168.0.103:8080/login", keys, values);
+                System.out.println(result);
                 Thread.sleep(2000);
             } catch (Exception e) {
                 e.printStackTrace();
