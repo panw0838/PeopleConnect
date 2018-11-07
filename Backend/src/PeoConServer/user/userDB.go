@@ -34,7 +34,7 @@ func CreateUserTable(tableID int) {
 		"cellNumber varchar(16), " +
 		"password varchar(16), " +
 		"deviceID varchar(16), " +
-		"tagNames varchar(200))")
+		"tagNames varchar(440))") // 20 * (1+1+20)
 	if err != nil {
 		panic(err)
 	}
@@ -65,8 +65,7 @@ func AddUserInfo(userInfo UserInfo) {
 		userInfo.UserName,
 		userInfo.CellNumber,
 		userInfo.Password,
-		userInfo.DeviceID,
-		userInfo.TagNames)
+		userInfo.DeviceID)
 }
 
 func GetUserInfo(userID uint32) UserInfo {
@@ -91,8 +90,7 @@ func GetUserInfo(userID uint32) UserInfo {
 		&userInfo.UserName,
 		&userInfo.CellNumber,
 		&userInfo.Password,
-		&userInfo.DeviceID,
-		&userInfo.TagNames)
+		&userInfo.DeviceID)
 	if err != nil {
 		fmt.Println("Query Database Error:", err)
 	}

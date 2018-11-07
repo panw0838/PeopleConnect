@@ -8,20 +8,20 @@ import (
 )
 
 const ContactDB = "127.0.0.1:6379"
+const FlagField = "flag"
+const NameField = "name"
+const ContactsKey = ":contacts"
 
-func GetFlagKey(user1 uint32, user2 uint32) string {
-	return string(user1) + ":" + string(user2) + ":flag"
+func GetRelationKey(user1 uint32, user2 uint32) string {
+	return strconv.FormatUint(uint64(user1), 16) + ":" +
+		strconv.FormatUint(uint64(user2), 16)
 }
 
-func GetNameKey(user1 uint32, user2 uint32) string {
-	return string(user1) + ":" + string(user2) + ":name"
+func GetContactsKey(user uint32) string {
+	return strconv.FormatUint(uint64(user), 16) + ContactsKey
 }
 
-func GetContactsKey(user1 uint32) string {
-	return string(user1) + ":contacts"
-}
-
-func AddContactIntoTable(user1 uint32, user2 uint32, flag uint32, name []byte) {
+func DBAddContact(user1 uint32, user2 uint32, flag uint32, name string) {
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
 		fmt.Println("Connect to redis error", err)
@@ -29,100 +29,32 @@ func AddContactIntoTable(user1 uint32, user2 uint32, flag uint32, name []byte) {
 	}
 	defer c.Close()
 
-	flagKey := GetFlagKey(user1, user2)
-	_, err = c.Do("SET ", flagKey, flag)
+	_, err = c.Do("MULTI")
 	if err != nil {
-		fmt.Println("redis set failed:", err)
-	}
-
-	nameKey := GetNameKey(user1, user2)
-	_, err = c.Do("SET ", nameKey, name)
-	if err != nil {
-		fmt.Println("redis set failed:", err)
-	}
-
-	contactsKey := string(user1) + ":contacts"
-	_, err = c.Do("SADD ", contactsKey, user2)
-	if err != nil {
-		fmt.Println("redis set failed:", err)
-	}
-}
-
-func RemoveContactFromTable(user1 uint32, user2 uint32) {
-	c, err := redis.Dial("tcp", ContactDB)
-	if err != nil {
-		fmt.Println("Connect to redis error", err)
-		return
-	}
-	defer c.Close()
-
-	flagKey := GetFlagKey(user1, user2)
-	_, err = c.Do("DEL ", flagKey)
-	if err != nil {
-		fmt.Println("redis set failed:", err)
-	}
-
-	nameKey := GetNameKey(user1, user2)
-	_, err = c.Do("DEL ", nameKey)
-	if err != nil {
-		fmt.Println("redis set failed:", err)
-	}
-
-	contactsKey := string(user1) + ":contacts"
-	_, err = c.Do("SREM ", contactsKey, user2)
-	if err != nil {
-		fmt.Println("redis set failed:", err)
-	}
-}
-
-func UpdateContactInTable(user1 uint32, user2 uint32, flag uint32, name []byte) {
-	c, err := redis.Dial("tcp", ContactDB)
-	if err != nil {
-		fmt.Println("Connect to redis error", err)
-		return
-	}
-	defer c.Close()
-
-	flagKey := GetFlagKey(user1, user2)
-	_, err = c.Do("SET ", flagKey, flag)
-	if err != nil {
-		fmt.Println("redis set failed:", err)
-	}
-
-	nameKey := GetNameKey(user1, user2)
-	_, err = c.Do("SET ", nameKey, name)
-	if err != nil {
-		fmt.Println("redis set failed:", err)
-	}
-}
-
-func getStringValue(key string, c redis.Conn) string {
-	result, err := redis.String(c.Do("GET", key))
-	if err != nil {
-		fmt.Println("redis set failed:", err)
-	}
-	return result
-}
-
-func getUint32Value(key string, c redis.Conn) uint32 {
-	var result int = 0
-	value, err := redis.String(c.Do("GET", key))
-	if err != nil {
-		fmt.Println("redis set failed:", err)
+		fmt.Println("add contact fail:", err)
 	} else {
-		result, err = strconv.Atoi(value)
+		relateKey := GetRelationKey(user1, user2)
+		_, err = c.Do("HMSET", relateKey,
+			FlagField, flag,
+			NameField, name)
 		if err != nil {
-			fmt.Println("convert key %s %s to uint fail", key, value)
+			fmt.Println("set relation fields fail:", err)
+		}
+
+		contactsKey := string(user1) + ContactsKey
+		_, err = c.Do("SADD", contactsKey, user2)
+		if err != nil {
+			fmt.Println("add contact fail:", err)
+		}
+
+		_, err = c.Do("EXEC")
+		if err != nil {
+			fmt.Println("add contact fail:", err)
 		}
 	}
-	return uint32(result)
 }
 
-func LoadContact(idString string) *ContactInfo {
-
-}
-
-func GetContacts(userID uint32) {
+func DBRemoveContact(user1 uint32, user2 uint32) {
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
 		fmt.Println("Connect to redis error", err)
@@ -130,17 +62,135 @@ func GetContacts(userID uint32) {
 	}
 	defer c.Close()
 
-	contactsKey := string(userID) + ":contacts"
-	values, err := redis.Values(c.Do("SMEMBERS ", contactsKey))
+	_, err = c.Do("MULTI")
 	if err != nil {
-		fmt.Println("redis set failed:", err)
+		fmt.Println("add contact fail:", err)
 	} else {
-		for _, v := range values {
-			user2 := string(v.([]byte))
-			flagKey := string(userID) + ":" + user2 + ":flag"
-			nameKey := string(userID) + ":" + user2 + ":name"
-			contactInfo.flag := getUint32Value(flagKey, c)
-			contactInfo.name := getStringValue(nameKey, c)
+		relateKey := GetRelationKey(user1, user2)
+		_, err = c.Do("DEL", relateKey)
+		if err != nil {
+			fmt.Println("del relation fields fail:", err)
+		}
+
+		contactsKey := string(user1) + ContactsKey
+		_, err = c.Do("SREM", contactsKey, user2)
+		if err != nil {
+			fmt.Println("remove contact fail:", err)
+		}
+
+		_, err = c.Do("EXEC")
+		if err != nil {
+			fmt.Println("remove contact fail:", err)
 		}
 	}
+}
+
+func dbEnableBits(user1 uint32, user2 uint32, bits uint32, c redis.Conn) error {
+	flag, err := getFlagDB(user1, user2, c)
+	if err != nil {
+		return err
+	}
+
+	flag = (flag | bits)
+
+	relateKey := GetRelationKey(user1, user2)
+	_, err = c.Do("HMSET", relateKey, FlagField, flag)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func dbDisableBits(user1 uint32, user2 uint32, bits uint32, c redis.Conn) error {
+	flag, err := getFlagDB(user1, user2, c)
+	if err != nil {
+		return err
+	}
+
+	flag = (flag & (^bits))
+
+	relateKey := GetRelationKey(user1, user2)
+	_, err = c.Do("HMSET", relateKey, FlagField, flag)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DBSetName(user1 uint32, user2 uint32, name []byte) {
+	c, err := redis.Dial("tcp", ContactDB)
+	if err != nil {
+		fmt.Println("Connect to redis error", err)
+		return
+	}
+	defer c.Close()
+
+	relateKey := GetRelationKey(user1, user2)
+	_, err = c.Do("HMSET", relateKey, NameField, name)
+	if err != nil {
+		fmt.Println("update name fail:", err)
+	}
+}
+
+func getFlagDB(user1 uint32, user2 uint32, c redis.Conn) (uint32, error) {
+	relateKey := GetRelationKey(user1, user2)
+	result, err := redis.Int(c.Do("HMGET", relateKey, FlagField))
+	if err != nil {
+		return 0, err
+	}
+	return uint32(result), nil
+}
+
+func getNameDB(user1 uint32, user2 uint32, c redis.Conn) (string, error) {
+	relateKey := GetRelationKey(user1, user2)
+	result, err := redis.String(c.Do("HMGET", relateKey, NameField))
+	if err != nil {
+		return "", err
+	}
+	return result, nil
+}
+
+func GetContacts(userID uint32) (string, error) {
+	var result string = ""
+	c, err := redis.Dial("tcp", ContactDB)
+	if err != nil {
+		return "", err
+	}
+	defer c.Close()
+
+	contactsKey := GetContactsKey(userID)
+	numContacts, err := redis.Int(c.Do("SCARD", contactsKey))
+	if err != nil {
+		fmt.Println("redis get contacts size failed:", err)
+	} else {
+		result = result + "numOfContacts:" + strconv.Itoa(numContacts) + "\n"
+		members, err := redis.Values(c.Do("SMEMBERS", contactsKey))
+		if err != nil {
+			fmt.Println("get contacts fail:", err)
+		} else {
+			for index, member := range members {
+				contact, err := redis.Int(member, err)
+				if err != nil {
+					fmt.Println("redis get member fail:", err)
+				}
+				cont := uint32(contact)
+				flag, err := getFlagDB(userID, cont, c)
+				if err != nil {
+					return "", err
+				}
+				name, err := getNameDB(userID, cont, c)
+				if err != nil {
+					return "", err
+				}
+				result = result +
+					"idx:" + strconv.Itoa(index) + "," +
+					"uid:" + strconv.FormatUint(uint64(cont), 16) + "," +
+					"flg:" + strconv.FormatUint(uint64(flag), 16) + "," +
+					"nam:" + name + "\n"
+			}
+		}
+	}
+
+	return result, nil
 }

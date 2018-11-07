@@ -1,13 +1,6 @@
 package user
 
-const BLACKLIST_BIT uint16 = 1
-const FAMILY_BIT uint16 = 2
-const CLASSMATE_BIT uint16 = 4
-const COWORKER_BIT uint16 = 8
-const FRIEND_BIT uint16 = 16
-const NORMAL_BIT uint16 = 32
-
-const NAME_SIZE uint32 = 40
+const NAME_SIZE uint32 = 20
 
 type ContactInfo struct {
 	userID uint32
