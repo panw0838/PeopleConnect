@@ -1,24 +1,31 @@
 package user
 
-const BLACKLIST_BIT uint32 = 1
-const FAMILY_BIT uint32 = 2
-const CLASSMATE_BIT uint32 = 4
-const COWORKER_BIT uint32 = 8
-const FRIEND_BIT uint32 = 16
+const BLK_BIT uint64 = 0x1
+const CTC_BIT uint64 = 0x2
+const FRD_BIT uint64 = 0x4
+const CWK_BIT uint64 = 0x8
+const CLM_BIT uint64 = 0x10
+const FML_BIT uint64 = 0x20
 
-const MAX_USER_TAGS uint32 = 20
+const ONE_64 uint64 = 0x1
+const ZERO_64 uint64 = 0x0
+
+const MAX_USER_TAGS uint32 = 22
 const SYSTEM_TAG_END uint32 = 5
 const USER_TAG_START uint32 = 11
 
-// system tags:
-// 0 blacklist, 1 family, 2 classmate, 3 coworker, 4 friend
-// 5 - 10 reserved, normal contact doesn't take bit
-// self define start from 11 - 31, 20 tags in total
+// system tags id
+// blacklist, contact, friend, coworker, classmate, family
+// 1          2        3       4         5          6
+// 7 - 10 reserved
+
+// user define tag id
+// from 11 - 32, 22 tags in total
 
 // father tag:
 // 0, no father
-// 1 - 11, system father
-// 12 - 31 user define tag
+// 1 - 6, system father
+// 11 - 31 user define tag
 
 type TagInfo struct {
 	TagID    byte // self define tag
@@ -34,8 +41,8 @@ func isUserTag(tagID uint32) bool {
 	return tagID >= USER_TAG_START && tagID < USER_TAG_START+MAX_USER_TAGS
 }
 
-func getTagBits(tagID uint32, fatherID uint32) uint32 {
-	var bits uint32 = (1 << tagID)
+func getTagBits(tagID byte, fatherID byte) uint64 {
+	var bits uint64 = (1 << tagID)
 	if fatherID != 0 {
 		bits |= (1 << fatherID)
 	}

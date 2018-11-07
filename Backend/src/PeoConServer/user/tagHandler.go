@@ -28,11 +28,12 @@ func createTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fatherID, err := strconv.ParseInt(r.FormValue("tagfatherid"), 16, 32)
+	father, err := strconv.ParseUint(r.FormValue("tagfatherid"), 16, 32)
 	if err != nil {
 		fmt.Fprintf(w, "Error: Invalid father id")
 		return
 	}
+	fatherID := byte(father)
 
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
@@ -41,19 +42,19 @@ func createTagHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	err = dbAddTagPrecheck(uint32(userID), uint32(fatherID), c)
+	err = dbAddTagPrecheck(userID, fatherID, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
-	tagIdx, err := dbAddTag(uint32(userID), byte(fatherID), tagname, c)
+	tagIdx, err := dbAddTag(userID, byte(fatherID), tagname, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
-	tagID := uint32(tagIdx) + USER_TAG_START
+	tagID := byte(uint32(tagIdx) + USER_TAG_START)
 
 	numMembers, err := strconv.ParseUint(r.FormValue("nummembers"), 16, 32)
 	if err != nil {
@@ -62,7 +63,7 @@ func createTagHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if numMembers != 0 {
-		tagBits := getTagBits(tagID, uint32(fatherID))
+		tagBits := getTagBits(tagID, fatherID)
 		members := make([]uint64, numMembers, 0)
 		for i := 0; i < int(numMembers); i++ {
 			membername := "member" + string(i)
@@ -71,7 +72,7 @@ func createTagHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintf(w, "Error: Invalid member")
 				return
 			} else {
-				dbEnableBits(uint32(userID), uint32(members[i]), tagBits, c)
+				dbEnableBits(userID, members[i], tagBits, c)
 			}
 		}
 	}
@@ -92,11 +93,12 @@ func removeTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tagID, err := strconv.ParseUint(r.FormValue("tag"), 16, 32)
-	if err != nil || tagID < uint64(USER_TAG_START) {
+	tag, err := strconv.ParseUint(r.FormValue("tag"), 16, 32)
+	if err != nil || tag < uint64(USER_TAG_START) {
 		fmt.Fprintf(w, "Error: Invalid tag")
 		return
 	}
+	tagID := byte(tag)
 
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
@@ -105,7 +107,7 @@ func removeTagHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	hasSon, err := dbCheckSubTag(uint32(userID), uint32(tagID), c)
+	hasSon, err := dbCheckSubTag(userID, tagID, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -114,7 +116,7 @@ func removeTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hasMember, err := dbCheckMember(uint32(userID), uint32(tagID), c)
+	hasMember, err := dbCheckMember(userID, tagID, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -123,7 +125,7 @@ func removeTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = dbRemTag(uint32(userID), uint32(tagID), c)
+	err = dbRemTag(userID, tagID, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -145,12 +147,13 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tagID, err := strconv.ParseUint(r.FormValue("tag"), 16, 32)
+	tag, err := strconv.ParseUint(r.FormValue("tag"), 16, 32)
 	if err != nil {
 		fmt.Fprintf(w, "Error: Invalid tag")
 		return
 	}
-	if !isSystemTag(uint32(tagID)) && !isUserTag(uint32(tagID)) {
+	tagID := uint32(tag)
+	if !isSystemTag(tagID) && !isUserTag(tagID) {
 		fmt.Fprintf(w, "Error: Invalid tag")
 		return
 	}
@@ -163,8 +166,8 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	// check tag
-	if isUserTag(uint32(tagID)) {
-		exists, err := dbUserTagExists(uint32(userID), uint32(tagID), c)
+	if isUserTag(tagID) {
+		exists, err := dbUserTagExists(userID, byte(tagID), c)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
@@ -175,7 +178,7 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tagBits := uint32(1 << tagID)
+	tagBits := uint64(1 << tagID)
 
 	numNewMembers, err := strconv.ParseUint(r.FormValue("numAddMember"), 16, 32)
 	if err == nil {
@@ -186,7 +189,7 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintf(w, "Error: Invalid member")
 				return
 			} else {
-				dbEnableBits(uint32(userID), uint32(contact), tagBits, c)
+				dbEnableBits(userID, contact, tagBits, c)
 			}
 		}
 	}
@@ -200,7 +203,7 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintf(w, "Error: Invalid member")
 				return
 			} else {
-				dbDisableBits(uint32(userID), uint32(contact), tagBits, c)
+				dbDisableBits(userID, contact, tagBits, c)
 			}
 		}
 	}

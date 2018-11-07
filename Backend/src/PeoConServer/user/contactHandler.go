@@ -22,7 +22,7 @@ func getContactsHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Fprintf(w, "Conver uid %s fail", username)
 		}
-		response, err = GetContacts(uint32(userID))
+		response, err = GetContacts(userID)
 		if err != nil {
 			fmt.Fprintf(w, "Get Contacts fail %v", err)
 			return
@@ -70,7 +70,7 @@ func addContactHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		DBAddContact(uint32(userID), uint32(contactID), uint32(flag), name)
+		DBAddContact(userID, contactID, flag, name)
 	}
 	fmt.Fprintf(w, "Success")
 }
@@ -97,7 +97,7 @@ func removeContactHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		DBRemoveContact(uint32(userID), uint32(contactID))
+		DBRemoveContact(userID, contactID)
 	}
 	fmt.Fprintf(w, "Success")
 }

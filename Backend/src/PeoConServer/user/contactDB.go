@@ -12,16 +12,16 @@ const FlagField = "flag"
 const NameField = "name"
 const ContactsKey = ":contacts"
 
-func GetRelationKey(user1 uint32, user2 uint32) string {
-	return strconv.FormatUint(uint64(user1), 16) + ":" +
-		strconv.FormatUint(uint64(user2), 16)
+func GetRelationKey(user1 uint64, user2 uint64) string {
+	return strconv.FormatUint(user1, 16) + ":" +
+		strconv.FormatUint(user2, 16)
 }
 
-func GetContactsKey(user uint32) string {
-	return strconv.FormatUint(uint64(user), 16) + ContactsKey
+func GetContactsKey(user uint64) string {
+	return strconv.FormatUint(user, 16) + ContactsKey
 }
 
-func DBAddContact(user1 uint32, user2 uint32, flag uint32, name string) {
+func DBAddContact(user1 uint64, user2 uint64, flag uint64, name string) {
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
 		fmt.Println("Connect to redis error", err)
@@ -54,7 +54,7 @@ func DBAddContact(user1 uint32, user2 uint32, flag uint32, name string) {
 	}
 }
 
-func DBRemoveContact(user1 uint32, user2 uint32) {
+func DBRemoveContact(user1 uint64, user2 uint64) {
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
 		fmt.Println("Connect to redis error", err)
@@ -85,7 +85,7 @@ func DBRemoveContact(user1 uint32, user2 uint32) {
 	}
 }
 
-func dbEnableBits(user1 uint32, user2 uint32, bits uint32, c redis.Conn) error {
+func dbEnableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error {
 	flag, err := getFlagDB(user1, user2, c)
 	if err != nil {
 		return err
@@ -101,7 +101,7 @@ func dbEnableBits(user1 uint32, user2 uint32, bits uint32, c redis.Conn) error {
 	return nil
 }
 
-func dbDisableBits(user1 uint32, user2 uint32, bits uint32, c redis.Conn) error {
+func dbDisableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error {
 	flag, err := getFlagDB(user1, user2, c)
 	if err != nil {
 		return err
@@ -118,7 +118,7 @@ func dbDisableBits(user1 uint32, user2 uint32, bits uint32, c redis.Conn) error 
 	return nil
 }
 
-func DBSetName(user1 uint32, user2 uint32, name []byte) {
+func DBSetName(user1 uint64, user2 uint64, name []byte) {
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
 		fmt.Println("Connect to redis error", err)
@@ -133,16 +133,16 @@ func DBSetName(user1 uint32, user2 uint32, name []byte) {
 	}
 }
 
-func getFlagDB(user1 uint32, user2 uint32, c redis.Conn) (uint32, error) {
+func getFlagDB(user1 uint64, user2 uint64, c redis.Conn) (uint64, error) {
 	relateKey := GetRelationKey(user1, user2)
-	result, err := redis.Int(c.Do("HMGET", relateKey, FlagField))
+	result, err := redis.Uint64(c.Do("HMGET", relateKey, FlagField))
 	if err != nil {
 		return 0, err
 	}
-	return uint32(result), nil
+	return result, nil
 }
 
-func getNameDB(user1 uint32, user2 uint32, c redis.Conn) (string, error) {
+func getNameDB(user1 uint64, user2 uint64, c redis.Conn) (string, error) {
 	relateKey := GetRelationKey(user1, user2)
 	result, err := redis.String(c.Do("HMGET", relateKey, NameField))
 	if err != nil {
@@ -151,7 +151,7 @@ func getNameDB(user1 uint32, user2 uint32, c redis.Conn) (string, error) {
 	return result, nil
 }
 
-func GetContacts(userID uint32) (string, error) {
+func GetContacts(userID uint64) (string, error) {
 	var result string = ""
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
@@ -170,11 +170,11 @@ func GetContacts(userID uint32) (string, error) {
 			fmt.Println("get contacts fail:", err)
 		} else {
 			for index, member := range members {
-				contact, err := redis.Int(member, err)
+				contact, err := redis.Uint64(member, err)
 				if err != nil {
 					fmt.Println("redis get member fail:", err)
 				}
-				cont := uint32(contact)
+				cont := contact
 				flag, err := getFlagDB(userID, cont, c)
 				if err != nil {
 					return "", err
@@ -185,8 +185,8 @@ func GetContacts(userID uint32) (string, error) {
 				}
 				result = result +
 					"idx:" + strconv.Itoa(index) + "," +
-					"uid:" + strconv.FormatUint(uint64(cont), 16) + "," +
-					"flg:" + strconv.FormatUint(uint64(flag), 16) + "," +
+					"uid:" + strconv.FormatUint(cont, 16) + "," +
+					"flg:" + strconv.FormatUint(flag, 16) + "," +
 					"nam:" + name + "\n"
 			}
 		}
