@@ -26,7 +26,7 @@ func getTagData(fatherID byte, name string) string {
 	return string(append(fatherData, nameData...))
 }
 
-func dbAddTagPrecheck(userID uint64, fatherID byte, c redis.Conn) error {
+func dbAddTagPrecheck(userID uint64, fatherID uint64, c redis.Conn) error {
 	tagKey := GetTagKey(userID)
 	numTags, err := redis.Int(c.Do("LLEN", tagKey))
 	if err != nil {
@@ -38,8 +38,8 @@ func dbAddTagPrecheck(userID uint64, fatherID byte, c redis.Conn) error {
 		return fmt.Errorf("Invalid father tag")
 	}
 
-	if uint32(fatherID) >= USER_TAG_START {
-		fatherIndex := uint32(fatherID) - USER_TAG_START
+	if fatherID >= USER_TAG_START {
+		fatherIndex := fatherID - USER_TAG_START
 		fatherTag, err := redis.String(c.Do("LINDEX", tagKey, fatherIndex))
 		if err != nil {
 			return err
@@ -60,48 +60,48 @@ func dbAddTagPrecheck(userID uint64, fatherID byte, c redis.Conn) error {
 	return nil
 }
 
-func dbAddTag(userID uint64, fatherID byte, name string, c redis.Conn) (int, error) {
+func dbAddTag(userID uint64, fatherID byte, name string, c redis.Conn) (uint64, error) {
 	tagKey := GetTagKey(userID)
 	data := getTagData(fatherID, name)
 
 	// find empty tag
 	tags, err := redis.Strings(c.Do("LRANGE", tagKey, 0, MAX_USER_TAGS))
 	if err != nil {
-		return -1, err
+		return 0, err
 	} else {
 		for index, tag := range tags {
 			if len(tag) == 0 {
 				_, err = c.Do("LSET", tagKey, index, data)
 				if err != nil {
-					return -1, err
+					return 0, err
 				} else {
-					return index, nil
+					return uint64(index), nil
 				}
 			}
 		}
 	}
 
-	numTags, err := redis.Int(c.Do("LLEN", tagKey))
+	numTags, err := redis.Uint64(c.Do("LLEN", tagKey))
 	if err != nil {
-		return -1, err
+		return 0, err
 	}
 
-	if uint32(numTags) >= MAX_USER_TAGS {
-		return -1, fmt.Errorf("Reach max tags")
+	if numTags >= MAX_USER_TAGS {
+		return 0, fmt.Errorf("Reach max tags")
 	} else {
 		// add brand new tag
 		_, err = c.Do("RPUSH", tagKey, data)
 		if err != nil {
-			return -1, err
+			return 0, err
 		} else {
 			return numTags, nil
 		}
 	}
 }
 
-func dbUserTagExists(userID uint64, tagID byte, c redis.Conn) (bool, error) {
+func dbUserTagExists(userID uint64, tagID uint64, c redis.Conn) (bool, error) {
 	tagKey := GetTagKey(userID)
-	tagIndex := uint32(tagID) - USER_TAG_START
+	tagIndex := tagID - USER_TAG_START
 	tag, err := redis.String(c.Do("LINDEX", tagKey, tagIndex))
 	if err != nil {
 		return false, err

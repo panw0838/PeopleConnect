@@ -28,12 +28,11 @@ func createTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	father, err := strconv.ParseUint(r.FormValue("tagfatherid"), 16, 32)
+	fatherID, err := strconv.ParseUint(r.FormValue("tagfatherid"), 16, 32)
 	if err != nil {
 		fmt.Fprintf(w, "Error: Invalid father id")
 		return
 	}
-	fatherID := byte(father)
 
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
@@ -54,7 +53,7 @@ func createTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tagID := byte(uint32(tagIdx) + USER_TAG_START)
+	tagID := tagIdx + USER_TAG_START
 
 	numMembers, err := strconv.ParseUint(r.FormValue("nummembers"), 16, 32)
 	if err != nil {
@@ -147,12 +146,12 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tag, err := strconv.ParseUint(r.FormValue("tag"), 16, 32)
+	tagID, err := strconv.ParseUint(r.FormValue("tag"), 16, 32)
 	if err != nil {
 		fmt.Fprintf(w, "Error: Invalid tag")
 		return
 	}
-	tagID := uint32(tag)
+
 	if !isSystemTag(tagID) && !isUserTag(tagID) {
 		fmt.Fprintf(w, "Error: Invalid tag")
 		return
@@ -167,7 +166,7 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 
 	// check tag
 	if isUserTag(tagID) {
-		exists, err := dbUserTagExists(userID, byte(tagID), c)
+		exists, err := dbUserTagExists(userID, tagID, c)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
