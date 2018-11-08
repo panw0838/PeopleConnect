@@ -47,7 +47,7 @@ func createTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tagIdx, err := dbAddTag(userID, byte(fatherID), tagname, c)
+	tagIdx, err := dbAddTag(userID, fatherID, tagname, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -62,7 +62,7 @@ func createTagHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if numMembers != 0 {
-		tagBits := getTagBits(tagID, fatherID)
+		tagBits := (ONE_64<<tagID | ONE_64<<fatherID)
 		members := make([]uint64, numMembers, 0)
 		for i := 0; i < int(numMembers); i++ {
 			membername := "member" + string(i)
@@ -92,12 +92,11 @@ func removeTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tag, err := strconv.ParseUint(r.FormValue("tag"), 16, 32)
-	if err != nil || tag < uint64(USER_TAG_START) {
+	tagID, err := strconv.ParseUint(r.FormValue("tag"), 16, 32)
+	if err != nil || isSystemTag(tagID) {
 		fmt.Fprintf(w, "Error: Invalid tag")
 		return
 	}
-	tagID := byte(tag)
 
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
@@ -115,7 +114,7 @@ func removeTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hasMember, err := dbCheckMember(userID, tagID, c)
+	hasMember, err := dbHasMember(userID, tagID, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -177,10 +176,14 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tagBits := uint64(1 << tagID)
-
 	numNewMembers, err := strconv.ParseUint(r.FormValue("numAddMember"), 16, 32)
 	if err == nil {
+		tagBits, err := getTagBits(userID, tagID, c)
+		if err != nil {
+			fmt.Fprintf(w, "Error: %v", err)
+			return
+		}
+
 		for i := 0; i < int(numNewMembers); i++ {
 			membername := "newMember" + string(i)
 			contact, err := strconv.ParseUint(r.FormValue(membername), 16, 32)
@@ -195,6 +198,7 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 
 	numDelMembers, err := strconv.ParseUint(r.FormValue("numDelMember"), 16, 32)
 	if err == nil {
+		tagBits := (ONE_64 << tagID)
 		for i := 0; i < int(numDelMembers); i++ {
 			membername := "delMember" + string(i)
 			contact, err := strconv.ParseUint(r.FormValue(membername), 16, 32)
