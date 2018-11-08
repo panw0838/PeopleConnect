@@ -15,6 +15,7 @@
 		18E8CB8C219331A400E29383 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18E8CB8A219331A400E29383 /* LaunchScreen.storyboard */; };
 		18E8CB97219331A400E29383 /* PeopleConnectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CB96219331A400E29383 /* PeopleConnectTests.swift */; };
 		18E8CBA2219331A400E29383 /* PeopleConnectUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CBA1219331A400E29383 /* PeopleConnectUITests.swift */; };
+		18E8CBB02193441500E29383 /* Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CBAF2193441500E29383 /* Requests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		18E8CB9D219331A400E29383 /* PeopleConnectUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PeopleConnectUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E8CBA1219331A400E29383 /* PeopleConnectUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleConnectUITests.swift; sourceTree = "<group>"; };
 		18E8CBA3219331A400E29383 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		18E8CBAF2193441500E29383 /* Requests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Requests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +108,7 @@
 				18E8CB88219331A400E29383 /* Assets.xcassets */,
 				18E8CB8A219331A400E29383 /* LaunchScreen.storyboard */,
 				18E8CB8D219331A400E29383 /* Info.plist */,
+				18E8CBAF2193441500E29383 /* Requests.swift */,
 			);
 			path = PeopleConnect;
 			sourceTree = "<group>";
@@ -260,6 +263,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				18E8CB84219331A400E29383 /* SecondViewController.swift in Sources */,
+				18E8CBB02193441500E29383 /* Requests.swift in Sources */,
 				18E8CB80219331A400E29383 /* AppDelegate.swift in Sources */,
 				18E8CB82219331A400E29383 /* FirstViewController.swift in Sources */,
 			);
