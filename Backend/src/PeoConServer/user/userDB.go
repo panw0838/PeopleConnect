@@ -1,99 +1,184 @@
 package user
 
 import (
-	"database/sql"
 	"fmt"
+	"strconv"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/garyburd/redigo/redis"
 )
 
-const SqlServer = "mysql:123456@tcp(localhost:3306)/"
-const UserDataBase = "userdatabase"
+const AccountDB = "127.0.0.1:6379"
 
-func GetUserTable(userID uint32) string {
-	return "usertable" + string(userID%10)
+const NewUIDKey = "newuserid"
+
+const UserField = "uid"
+const CellFiled = "cell"
+const MailField = "mail"
+const QQField = "qq"
+const DeviceField = "device"
+const ConfigField = "config"
+const PassField = "pass"
+
+func getAccountKey(userID uint64) string {
+	return strconv.FormatUint(userID, 16)
 }
 
-func CreateUserTable(tableID int) {
-	tableName := "usertable" + string(tableID)
-	db, err := sql.Open("mysql", SqlServer)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	_, err = db.Exec("CREATE DATABASE " + UserDataBase)
-	_, err = db.Exec("USE " + UserDataBase)
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = db.Exec("CREATE TABLE " + tableName + " ( " +
-		"userID int unsigned, " +
-		"userName varchar(36), " +
-		"cellNumber varchar(16), " +
-		"password varchar(16), " +
-		"deviceID varchar(16), " +
-		"tagNames varchar(440))") // 20 * (1+1+20)
-	if err != nil {
-		panic(err)
-	}
+func getCellKey(cellNumber string) string {
+	return "cell:" + cellNumber
 }
 
-func CreateUserTables() {
-	for i := 0; i < 10; i++ {
-		CreateUserTable(i)
+func dbRegiste(cellNumber string, device string, c redis.Conn) (uint64, error) {
+	cellKey := getCellKey(cellNumber)
+	exists, err := redis.Bool(c.Do("EXISTS", cellKey))
+	if err != nil {
+		return 0, err
 	}
+	if exists {
+		return 0, fmt.Errorf("Account exists")
+	}
+
+	_, err = c.Do("MULTI")
+	if err != nil {
+		return 0, err
+	}
+
+	// double check
+	exists, err = redis.Bool(c.Do("EXISTS", cellKey))
+	if err != nil {
+		return 0, err
+	}
+	if exists {
+		return 0, fmt.Errorf("Account exists")
+	}
+
+	newID, err := redis.Uint64(c.Do("GET", NewUIDKey))
+	if err != nil {
+		return 0, err
+	}
+
+	accountKey := getAccountKey(newID)
+	_, err = c.Do("HMSET", accountKey,
+		UserField, accountKey,
+		CellFiled, cellNumber,
+		MailField, "",
+		QQField, "",
+		NameField, cellNumber,
+		DeviceField, device,
+		ConfigField, 0,
+		PassField, "")
+	if err != nil {
+		return 0, err
+	}
+
+	// add cell number to search table
+	_, err = c.Do("SET", cellKey, accountKey)
+	if err != nil {
+		return 0, err
+	}
+
+	// update new user id
+	_, err = c.Do("SET", NewUIDKey, newID+1)
+	if err != nil {
+		return 0, err
+	}
+
+	_, err = c.Do("EXEC")
+	if err != nil {
+		return 0, err
+	}
+
+	return newID, nil
 }
 
-func AddUserInfo(userInfo UserInfo) {
-	tableName := GetUserTable(userInfo.UserID)
-	db, err := sql.Open("mysql", SqlServer+UserDataBase)
+func dbUpdateUserInfo(userInfo UserInfo, c redis.Conn) error {
+	_, err := c.Do("MULTI")
 	if err != nil {
-		fmt.Println("Open Database Error:", err)
-	}
-	defer db.Close()
+		return err
+	} else {
+		accountKey := getAccountKey(userInfo.UserID)
+		_, err = c.Do("HMSET", accountKey,
+			UserField, accountKey,
+			CellFiled, userInfo.CellNumber,
+			MailField, userInfo.MailAddress,
+			QQField, userInfo.QQNumber,
+			NameField, userInfo.UserName,
+			DeviceField, userInfo.DeviceID,
+			ConfigField, userInfo.Config,
+			PassField, userInfo.Password)
+		if err != nil {
+			return err
+		}
 
-	writer, err := db.Prepare("INSERT INTO " + tableName + " values(?,?,?,?,?,?,?);")
-	if err != nil {
-		fmt.Println("Prepare Error:", err)
-	}
-	defer writer.Close()
+		if len(userInfo.CellNumber) != 0 {
+			cellKey := getCellKey(userInfo.CellNumber)
+			exists, err := redis.Bool(c.Do("EXISTS", cellKey))
+			if err != nil {
+				return err
+			}
+			if exists {
+				return fmt.Errorf("cell number exists")
+			} else {
+				c.Do("SET", cellKey, accountKey)
+			}
+		}
 
-	writer.Exec(
-		userInfo.UserID,
-		userInfo.UserName,
-		userInfo.CellNumber,
-		userInfo.Password,
-		userInfo.DeviceID)
+		_, err = c.Do("EXEC")
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func GetUserInfo(userID uint32) UserInfo {
-	tableName := GetUserTable(userID)
-	db, err := sql.Open("mysql", SqlServer+UserDataBase)
-	if err != nil {
-		fmt.Println("Open Database Error:", err)
-	}
-	defer db.Close()
-
-	// Prepare statement for reading data
-	reader, err := db.Prepare("SELECT * FROM " + tableName +
-		" WHERE userID = ?")
-	if err != nil {
-		fmt.Println("Prepare Database Error:", err)
-	}
-	defer reader.Close()
-
+func GetUserInfo(userID uint64, c redis.Conn) (UserInfo, error) {
 	var userInfo UserInfo
-	err = reader.QueryRow(userID).Scan(
-		&userInfo.UserID,
-		&userInfo.UserName,
-		&userInfo.CellNumber,
-		&userInfo.Password,
-		&userInfo.DeviceID)
+	accountKey := getAccountKey(userID)
+
+	values, err := redis.Values(c.Do("HMGET", accountKey,
+		UserField,
+		CellFiled,
+		MailField,
+		QQField,
+		NameField,
+		PassField,
+		ConfigField,
+		DeviceField))
 	if err != nil {
-		fmt.Println("Query Database Error:", err)
+		return userInfo, err
 	}
 
-	return userInfo
+	userInfo.UserID, err = redis.Uint64(values[0], err)
+	if err != nil {
+		return userInfo, err
+	}
+	userInfo.CellNumber, err = redis.String(values[1], err)
+	if err != nil {
+		return userInfo, err
+	}
+	userInfo.MailAddress, err = redis.String(values[2], err)
+	if err != nil {
+		return userInfo, err
+	}
+	userInfo.QQNumber, err = redis.String(values[3], err)
+	if err != nil {
+		return userInfo, err
+	}
+	userInfo.UserName, err = redis.String(values[4], err)
+	if err != nil {
+		return userInfo, err
+	}
+	userInfo.Password, err = redis.String(values[5], err)
+	if err != nil {
+		return userInfo, err
+	}
+	userInfo.Config, err = redis.Uint64(values[6], err)
+	if err != nil {
+		return userInfo, err
+	}
+	userInfo.DeviceID, err = redis.String(values[7], err)
+	if err != nil {
+		return userInfo, err
+	}
+
+	return userInfo, nil
 }

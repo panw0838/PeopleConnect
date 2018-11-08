@@ -13,17 +13,37 @@ func GetTagKey(userID uint64) string {
 	return strconv.FormatUint(uint64(userID), 16) + ":" + TagKey
 }
 
-func getTagInfo(tagString string) (byte, string) {
+func getTagInfo(tagString string) (uint64, string) {
 	var data []byte = []byte(tagString)
-	var fatherID = data[0]
+	var fatherID = uint64(data[0])
 	var tagName string = string(data[1:])
 	return fatherID, tagName
 }
 
-func getTagData(fatherID byte, name string) string {
-	var fatherData []byte = []byte{fatherID}
+func getTagData(fatherID uint64, name string) string {
+	var fatherData []byte = []byte{byte(fatherID)}
 	var nameData []byte = []byte(name)
 	return string(append(fatherData, nameData...))
+}
+
+func getTagBits(userID uint64, tagID uint64, c redis.Conn) (uint64, error) {
+	var bits uint64 = (1 << tagID)
+
+	if isSystemTag(tagID) {
+		return bits, nil
+	} else {
+		tagKey := GetTagKey(userID)
+		tagIdx := getUserTagIdx(tagID)
+		tagData, err := redis.String(c.Do("LINDEX", tagKey, tagIdx))
+		if err != nil {
+			return ZERO_64, err
+		}
+		fatherID, _ := getTagInfo(tagData)
+		if fatherID != ZERO_64 {
+			bits |= (1 << fatherID)
+		}
+		return bits, nil
+	}
 }
 
 func dbAddTagPrecheck(userID uint64, fatherID uint64, c redis.Conn) error {
@@ -60,7 +80,7 @@ func dbAddTagPrecheck(userID uint64, fatherID uint64, c redis.Conn) error {
 	return nil
 }
 
-func dbAddTag(userID uint64, fatherID byte, name string, c redis.Conn) (uint64, error) {
+func dbAddTag(userID uint64, fatherID uint64, name string, c redis.Conn) (uint64, error) {
 	tagKey := GetTagKey(userID)
 	data := getTagData(fatherID, name)
 
@@ -112,7 +132,7 @@ func dbUserTagExists(userID uint64, tagID uint64, c redis.Conn) (bool, error) {
 	return false, nil
 }
 
-func dbCheckSubTag(userID uint64, tagID byte, c redis.Conn) (bool, error) {
+func dbCheckSubTag(userID uint64, tagID uint64, c redis.Conn) (bool, error) {
 	tagKey := GetTagKey(userID)
 
 	// find empty tag
@@ -133,7 +153,7 @@ func dbCheckSubTag(userID uint64, tagID byte, c redis.Conn) (bool, error) {
 	return false, nil
 }
 
-func dbCheckMember(userID uint64, tagID byte, c redis.Conn) (bool, error) {
+func dbHasMember(userID uint64, tagID uint64, c redis.Conn) (bool, error) {
 	contactsKey := GetContactsKey(userID)
 	bit := uint64(^(1 << tagID))
 	members, err := redis.Values(c.Do("SMEMBERS", contactsKey))
@@ -149,7 +169,7 @@ func dbCheckMember(userID uint64, tagID byte, c redis.Conn) (bool, error) {
 			if err != nil {
 				return false, err
 			}
-			if (flag | bit) != uint64(0) {
+			if (flag | bit) != ZERO_64 {
 				return true, nil
 			}
 		}
@@ -157,21 +177,20 @@ func dbCheckMember(userID uint64, tagID byte, c redis.Conn) (bool, error) {
 	return false, nil
 }
 
-func dbRemTag(userID uint64, tagID byte, c redis.Conn) error {
-	c, err := redis.Dial("tcp", ContactDB)
-	if err != nil {
-		return err
+func dbRemTag(userID uint64, tagID uint64, c redis.Conn) error {
+	if isSystemTag(tagID) {
+		return fmt.Errorf("Invalid tag")
 	}
-	defer c.Close()
 
+	tagIdx := getUserTagIdx(tagID)
 	tagKey := GetTagKey(userID)
 	numTags, err := redis.Int(c.Do("LLEN", tagKey))
 	if err != nil {
 		return err
 	}
 
-	if int(tagID) < numTags {
-		_, err = c.Do("LSET", tagKey, tagID, "")
+	if int(tagIdx) < numTags {
+		_, err = c.Do("LSET", tagKey, tagIdx, "")
 		if err != nil {
 			return err
 		}
