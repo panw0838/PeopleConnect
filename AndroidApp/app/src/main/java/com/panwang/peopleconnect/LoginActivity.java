@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -323,7 +324,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 ArrayList<String> values = new ArrayList<String>();
                 keys.add("user"); values.add(mEmail);
                 keys.add("pass"); values.add(mPassword);
-                String result = HttpRequests.HttpPost("http://192.168.0.103:8080/login", keys, values);
+                HttpRequests.InitSSL(getAssets().open("server.crt"));
+                String result = HttpRequests.HttpsPost("https://192.168.0.103:8080/sync", keys, values);
                 System.out.println(result);
                 Thread.sleep(2000);
             } catch (Exception e) {

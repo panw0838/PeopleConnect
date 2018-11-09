@@ -13,20 +13,19 @@ const ZERO_64 uint64 = 0x0
 // system tags id
 // blacklist, contact, friend, coworker, classmate, family
 // 0          1        2       3         4          5
-// 6 - 9 reserved
 const SYSTEM_TAG_START uint64 = 0
 const SYSTEM_TAG_END uint64 = 5
 
 // user define tag id
-// from 10 - 31, 22 tags in total
-const USER_TAG_START uint64 = 10
-const USER_TAG_END uint64 = 31
-const MAX_USER_TAGS uint64 = 22
+// from 32 - 63, 32 tags in total
+const USER_TAG_START uint64 = 32
+const USER_TAG_END uint64 = 63
+const MAX_USER_TAGS uint64 = 32
 
 // father tag
 // 0, no father, blacklist has no sub tag
 // 1 - 5, system father
-// 11 - 31 user define tag
+// 32 - 63 user define tag
 
 type TagInfo struct {
 	TagID    byte // self define tag
