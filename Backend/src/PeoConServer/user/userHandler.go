@@ -16,6 +16,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	cellNumber := r.FormValue("cell")
 	deviceID := r.FormValue("device")
 
+	if len(cellNumber) == 0 {
+		fmt.Fprintf(w, "Error: null cell number")
+		return
+	}
+
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
@@ -33,7 +38,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		userID, cellNumber, deviceID)
 }
 
-func loginHandler(w http.ResponseWriter, r *http.Request) {
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var username = ""
 	var password = ""
 	// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.

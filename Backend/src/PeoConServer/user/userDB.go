@@ -29,29 +29,20 @@ func getCellKey(cellNumber string) string {
 
 func dbRegiste(cellNumber string, device string, c redis.Conn) (uint64, error) {
 	cellKey := getCellKey(cellNumber)
-	exists, err := redis.Bool(c.Do("EXISTS", cellKey))
+	exists, err := redis.Int64(c.Do("EXISTS", cellKey))
 	if err != nil {
 		return 0, err
 	}
-	if exists {
+	if exists == 1 {
 		return 0, fmt.Errorf("Account exists")
+	}
+
+	newID, err := redis.Uint64(c.Do("INCR", NewUIDKey))
+	if err != nil {
+		return 0, err
 	}
 
 	_, err = c.Do("MULTI")
-	if err != nil {
-		return 0, err
-	}
-
-	// double check
-	exists, err = redis.Bool(c.Do("EXISTS", cellKey))
-	if err != nil {
-		return 0, err
-	}
-	if exists {
-		return 0, fmt.Errorf("Account exists")
-	}
-
-	newID, err := redis.Uint64(c.Do("GET", NewUIDKey))
 	if err != nil {
 		return 0, err
 	}
@@ -72,12 +63,6 @@ func dbRegiste(cellNumber string, device string, c redis.Conn) (uint64, error) {
 
 	// add cell number to search table
 	_, err = c.Do("SET", cellKey, accountKey)
-	if err != nil {
-		return 0, err
-	}
-
-	// update new user id
-	_, err = c.Do("SET", NewUIDKey, newID+1)
 	if err != nil {
 		return 0, err
 	}

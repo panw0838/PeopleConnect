@@ -157,7 +157,7 @@ public class HttpRequests {
 
         DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
         for (int i=0; i<params.size(); i++) {
-            String data = params.get(i) + "=" + values.get(i) + " ";
+            String data = params.get(i) + "=" + values.get(i) + ";";
             writer.writeBytes(data);
         }
         writer.flush();
