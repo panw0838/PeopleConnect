@@ -6,13 +6,8 @@
 //  Copyright © 2018年 Pan's studio. All rights reserved.
 //
 
-import Foundation
 import UIKit
-
-struct Contact {
-    var name: String
-    
-}
+import PagingMenuController
 
 class ContactsView: UITableViewController {
     // main tags
