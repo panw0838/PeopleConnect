@@ -7,19 +7,50 @@
 //
 
 import UIKit
-import PagingMenuController
 
-class ContactsView: UITableViewController {
-    // main tags
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return userData.numMainTags()
+class ContactCell: UICollectionViewCell {
+    @IBOutlet weak var m_image: UIImageView!
+    @IBOutlet weak var m_name: UILabel!
+    
+}
+
+class SubTagHeader: UICollectionReusableView {
+    @IBOutlet weak var m_tagName: UILabel!
+    
+}
+   
+class ContactsView: UICollectionViewController {
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+    override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        return userData.numSubTags(0) + 1
     }
     
-    //override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    //    let cell = tab
-    //}
+    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if (section == userData.numSubTags(0)) {
+            return userData.membersOfMainTag(0).count
+        }
+        else {
+            return userData.membersOfSubTag(0, subIdx: section-1).count
+        }
+    }
+    
+    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ContactCell", forIndexPath: indexPath) as! ContactCell
+        let members = (indexPath.section == userData.numSubTags(0)) ? userData.membersOfMainTag(0) : userData.membersOfSubTag(0, subIdx: indexPath.section)
+        cell.backgroundColor = UIColor.blueColor()
+        cell.m_image = UIImageView(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
+        cell.m_name.text = members[indexPath.row].name
+        return cell
+    }
+    
+    override func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
+        let header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "SubTagHeader", forIndexPath: indexPath) as! SubTagHeader
+        let tagName = indexPath.section == userData.numSubTags(0) ? "fff" : userData.nameOfSubTag(0, subIdx: indexPath.section)
+        header.m_tagName.text = tagName
+        return header
+    }
 }

@@ -38,6 +38,12 @@ struct ContactInfo {
     var uID: UInt64
     var flag: UInt64
     var name: String
+    
+    init(id:UInt64, f:UInt64, n:String) {
+        uID = id
+        flag = f
+        name = n
+    }
 }
 
 let BitOne: UInt64 = 0x1
@@ -72,7 +78,7 @@ class Tag {
     }
     
     func addMember(contact: ContactInfo) {
-        if (subBits | contact.flag == 0) {
+        if (subBits == 0 || (subBits | contact.flag) == 0) {
             members.append(contact)
         }
     }
@@ -95,7 +101,7 @@ class Tag {
     }
 }
 
-let userData:UserData = UserData()
+var userData:UserData = UserData()
 
 class UserData {
     var m_blacklist: Tag = Tag(id: 0, father: 0, name: "黑名单")
