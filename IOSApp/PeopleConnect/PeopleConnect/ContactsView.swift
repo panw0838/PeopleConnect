@@ -41,8 +41,8 @@ class ContactsView: UICollectionViewController {
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ContactCell", forIndexPath: indexPath) as! ContactCell
         let members = (indexPath.section == userData.numSubTags(0)) ? userData.membersOfMainTag(0) : userData.membersOfSubTag(0, subIdx: indexPath.section)
-        cell.backgroundColor = UIColor.blueColor()
-        cell.m_image = UIImageView(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
+        //cell.backgroundColor = UIColor.blueColor()
+        cell.m_image.image = UIImage(named: "default_profile")
         cell.m_name.text = members[indexPath.row].name
         return cell
     }
