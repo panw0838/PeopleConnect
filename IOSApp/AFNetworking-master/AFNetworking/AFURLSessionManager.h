@@ -106,6 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
  @warning `responseSerializer` must not be `nil`.
  */
 @property (nonatomic, strong) id <AFURLResponseSerialization> responseSerializer;
+@property (nonatomic, strong) id <AFURLRequestSerialization> requestSerializer;
 
 ///-------------------------------
 /// @name Managing Security Policy

@@ -24,6 +24,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         contacts.append(ContactInfo(id: 3, f: 2, n: "test3"))
         contacts.append(ContactInfo(id: 4, f: 2, n: "test4"))
         userData.loadContacts(contacts, userTags: userTags)
+        
+        httpsGet("")
         return true
     }
 

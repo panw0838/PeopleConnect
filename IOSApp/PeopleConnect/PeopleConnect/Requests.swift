@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import AFNetworking
 
 struct IdentityAndTrust {
     var identityRef:SecIdentityRef
@@ -27,4 +28,25 @@ func registeRequest(var userInfo : UserInfo) {
 }
 
 func httpsGet(urlStr:String) {
+    let url:String = "https://192.168.0.103:8080/sync"
+    let afManager: AFHTTPSessionManager = AFHTTPSessionManager()
+    let cerSet: Set<NSData> = AFSecurityPolicy.certificatesInBundle(NSBundle.mainBundle())//NSSet(object: cerData)
+    let policy: AFSecurityPolicy = AFSecurityPolicy(pinningMode: AFSSLPinningMode.PublicKey, withPinnedCertificates: cerSet)
+
+    policy.allowInvalidCertificates = true
+    policy.validatesDomainName = true
+
+    afManager.securityPolicy = policy
+    
+    afManager.responseSerializer = AFHTTPResponseSerializer()
+    //manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    
+    afManager.GET(url, parameters: nil, progress: nil,
+        success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
+            let html: NSString = NSString.init(data: responseObject as! NSData, encoding: NSUTF8StringEncoding)!
+            print("OK = %s", html)
+        },
+        failure: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+        })
 }

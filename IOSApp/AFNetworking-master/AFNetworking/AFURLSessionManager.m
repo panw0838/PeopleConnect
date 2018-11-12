@@ -736,11 +736,16 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
         [self.session finishTasksAndInvalidate];
     }
     if (resetSession) {
-        self.session = nil;
+        //self.session = nil;
     }
 }
 
 #pragma mark -
+- (void)setRequestSerializer:(id <AFURLRequestSerialization>)requestSerializer {
+    NSParameterAssert(requestSerializer);
+    
+    _requestSerializer = requestSerializer;
+}
 
 - (void)setResponseSerializer:(id <AFURLResponseSerialization>)responseSerializer {
     NSParameterAssert(responseSerializer);
