@@ -16,6 +16,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        var contacts: Array<ContactInfo> = Array<ContactInfo>()
+        let userTags: Array<TagInfo> = Array<TagInfo>()
+        contacts.append(ContactInfo(id: 0, f: 2, n: "test"))
+        contacts.append(ContactInfo(id: 1, f: 2, n: "test1"))
+        contacts.append(ContactInfo(id: 2, f: 2, n: "test2"))
+        contacts.append(ContactInfo(id: 3, f: 2, n: "test3"))
+        contacts.append(ContactInfo(id: 4, f: 2, n: "test4"))
+        userData.loadContacts(contacts, userTags: userTags)
+        
+        httpsGet("")
         return true
     }
 
