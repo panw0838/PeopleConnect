@@ -14,6 +14,20 @@ type UserInfo struct {
 	DeviceID string
 }
 
+type RegistryInfo struct {
+	CellNumber string `json:"cell"`
+	CellCode   string `json:"code,omitempty"`
+	Password   string `json:"pass,omitempty"`
+	Device     string `json:"device"`
+}
+
+type LoginInfo struct {
+	CellNumber string `json:"cell"`
+	CellCode   string `json:"code,omitempty"`
+	Password   string `json:"pass,omitempty"`
+	Device     string `json:"device"`
+}
+
 func GetUserPicPath(userID uint32) string {
 	return string(userID) + ".png"
 }

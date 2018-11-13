@@ -23,7 +23,7 @@ func getContactsHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/sync", syncHandler)
 	http.HandleFunc("/login", user.LoginHandler)
-	http.HandleFunc("/register", user.RegisterHandler)
+	http.HandleFunc("/registry", user.RegisterHandler)
 	e := http.ListenAndServeTLS(":8080", crtPath, keyPath, nil)
 	if e != nil {
 		log.Fatal("ListenAndServe: ", e)

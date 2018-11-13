@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -27,8 +28,8 @@ func getCellKey(cellNumber string) string {
 	return "cell:" + cellNumber
 }
 
-func dbRegiste(cellNumber string, device string, c redis.Conn) (uint64, error) {
-	cellKey := getCellKey(cellNumber)
+func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
+	cellKey := getCellKey(info.CellNumber)
 	exists, err := redis.Int64(c.Do("EXISTS", cellKey))
 	if err != nil {
 		return 0, err
@@ -50,13 +51,13 @@ func dbRegiste(cellNumber string, device string, c redis.Conn) (uint64, error) {
 	accountKey := getAccountKey(newID)
 	_, err = c.Do("HMSET", accountKey,
 		UserField, accountKey,
-		CellFiled, cellNumber,
+		CellFiled, info.CellNumber,
 		MailField, "",
 		QQField, "",
-		NameField, cellNumber,
-		DeviceField, device,
+		NameField, info.CellNumber,
+		DeviceField, info.Device,
 		ConfigField, 0,
-		PassField, "")
+		PassField, info.Password)
 	if err != nil {
 		return 0, err
 	}
@@ -73,6 +74,43 @@ func dbRegiste(cellNumber string, device string, c redis.Conn) (uint64, error) {
 	}
 
 	return newID, nil
+}
+
+func dbVerifyUser(loginInfo LoginInfo, c redis.Conn) (bool, error) {
+	cellKey := getCellKey(loginInfo.CellNumber)
+	exists, err := redis.Int64(c.Do("EXISTS", cellKey))
+	if err != nil {
+		return false, err
+	}
+	if exists == 0 {
+		return false, fmt.Errorf("account not exists")
+	}
+
+	accountKey, err := redis.String(c.Do("GET", cellKey))
+	if err != nil {
+		return false, err
+	}
+
+	password, err := dbGetUserInfoField(accountKey, PassField, c)
+	if err != nil {
+		return false, err
+	}
+
+	if strings.Compare(password, loginInfo.Password) == 0 {
+		return true, nil
+	} else {
+		return false, fmt.Errorf("password not correct")
+	}
+}
+
+func dbGetUserInfoField(accountKey string, filed string, c redis.Conn) (string, error) {
+	values, err := redis.Values(c.Do("HMGET", accountKey, filed))
+	value, err := redis.String(values[0], err)
+	if err != nil {
+		return "", err
+	}
+
+	return value, nil
 }
 
 func dbUpdateUserInfo(userInfo UserInfo, c redis.Conn) error {
