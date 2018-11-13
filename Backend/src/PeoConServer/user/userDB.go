@@ -76,30 +76,35 @@ func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 	return newID, nil
 }
 
-func dbVerifyUser(loginInfo LoginInfo, c redis.Conn) (bool, error) {
+func dbVerifyUser(loginInfo LoginInfo, c redis.Conn) (uint64, error) {
 	cellKey := getCellKey(loginInfo.CellNumber)
 	exists, err := redis.Int64(c.Do("EXISTS", cellKey))
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 	if exists == 0 {
-		return false, fmt.Errorf("account not exists")
+		return 0, fmt.Errorf("account not exists")
 	}
 
 	accountKey, err := redis.String(c.Do("GET", cellKey))
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
 	password, err := dbGetUserInfoField(accountKey, PassField, c)
 	if err != nil {
-		return false, err
+		return 0, err
+	}
+
+	userID, err := strconv.Atoi(accountKey)
+	if err != nil {
+		return 0, err
 	}
 
 	if strings.Compare(password, loginInfo.Password) == 0 {
-		return true, nil
+		return uint64(userID), nil
 	} else {
-		return false, fmt.Errorf("password not correct")
+		return 0, fmt.Errorf("password not correct")
 	}
 }
 

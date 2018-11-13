@@ -40,7 +40,17 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
-	fmt.Fprintf(w, "Success: %x", userID)
+
+	var feedback LogonFeedbackInfo
+	feedback.UserID = userID
+
+	data, err := json.Marshal(&feedback)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", data)
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,15 +74,20 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	success, err := dbVerifyUser(loginInfo, c)
+	userID, err := dbVerifyUser(loginInfo, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
-	if success {
-		fmt.Fprintf(w, "Success")
-	} else {
-		fmt.Fprintf(w, "Fail")
+	var feedback LogonFeedbackInfo
+	feedback.UserID = userID
+
+	data, err := json.Marshal(&feedback)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
 	}
+
+	fmt.Fprintf(w, "%s", data)
 }

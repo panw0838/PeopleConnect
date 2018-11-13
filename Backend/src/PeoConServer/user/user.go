@@ -28,6 +28,10 @@ type LoginInfo struct {
 	Device     string `json:"device"`
 }
 
+type LogonFeedbackInfo struct {
+	UserID uint64 `json:"user"`
+}
+
 func GetUserPicPath(userID uint32) string {
 	return string(userID) + ".png"
 }
