@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		18AE41F62199E2680008B792 /* server.cer in Resources */ = {isa = PBXBuildFile; fileRef = 18AE41F52199E2680008B792 /* server.cer */; };
+		18AE420A219AC4170008B792 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE4209219AC4170008B792 /* LoginView.swift */; };
 		18D3A8DF2197F3CD00EB3289 /* MessegeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D3A8DE2197F3CD00EB3289 /* MessegeView.swift */; };
 		18D3A8E12198015C00EB3289 /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D3A8E02198015C00EB3289 /* ContactsView.swift */; };
 		18D3A8E32198017000EB3289 /* PostsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D3A8E22198017000EB3289 /* PostsView.swift */; };
@@ -112,6 +113,7 @@
 
 /* Begin PBXFileReference section */
 		18AE41F52199E2680008B792 /* server.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = server.cer; sourceTree = "<group>"; };
+		18AE4209219AC4170008B792 /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		18D3A8DE2197F3CD00EB3289 /* MessegeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessegeView.swift; sourceTree = "<group>"; };
 		18D3A8E02198015C00EB3289 /* ContactsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
 		18D3A8E22198017000EB3289 /* PostsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostsView.swift; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 				18E8CB7F219331A400E29383 /* AppDelegate.swift */,
 				18E8CBAF2193441500E29383 /* Requests.swift */,
 				18D3A8E42198061100EB3289 /* Contact.swift */,
+				18AE4209219AC4170008B792 /* LoginView.swift */,
 				18D3A8DE2197F3CD00EB3289 /* MessegeView.swift */,
 				18D3A8E02198015C00EB3289 /* ContactsView.swift */,
 				18D3A8E22198017000EB3289 /* PostsView.swift */,
@@ -422,6 +425,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				18D3A8E52198061100EB3289 /* Contact.swift in Sources */,
+				18AE420A219AC4170008B792 /* LoginView.swift in Sources */,
 				18D3A8DF2197F3CD00EB3289 /* MessegeView.swift in Sources */,
 				18E8CBB02193441500E29383 /* Requests.swift in Sources */,
 				18E8CB80219331A400E29383 /* AppDelegate.swift in Sources */,
