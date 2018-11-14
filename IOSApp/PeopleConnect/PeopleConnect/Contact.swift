@@ -8,41 +8,30 @@
 
 import Foundation
 
-struct UserInfo {
-    var userID : UInt64
-    var cellNumber : String
-    var mailAddr : String
-    var qqNumber : String
-    var account : String
-    
-    var userName : String
-    var password : String
-    var config : UInt64
-    var deviceID : String
-    
-    init () {
-        userID = 0
-        cellNumber = ""
-        mailAddr = ""
-        qqNumber = ""
-        account = ""
-        
-        userName = ""
-        password = ""
-        config = 0
-        deviceID = ""
-    }
-}
-
 struct ContactInfo {
-    var uID: UInt64
+    var user: UInt64
     var flag: UInt64
     var name: String
     
     init(id:UInt64, f:UInt64, n:String) {
-        uID = id
+        user = id
         flag = f
         name = n
+    }
+}
+
+extension ContactInfo {
+    init?(json: [String: AnyObject]) {
+        guard
+            let user = json["user"] as? UInt64,
+            let flag = json["flag"] as? UInt64,
+            let name = json["name"] as? String
+        else {
+            return nil
+        }
+        self.user = user
+        self.flag = flag
+        self.name = name
     }
 }
 
@@ -58,6 +47,21 @@ struct TagInfo {
     var tagID: UInt8
     var fatherID: UInt8
     var tagName: String
+}
+
+extension TagInfo {
+    init?(json: [String: AnyObject]) {
+        guard
+            let tagID = json["id"] as? UInt8,
+            let fatherID = json["father"] as? UInt8,
+            let tagName = json["name"] as? String
+        else {
+            return nil
+        }
+        self.tagID = tagID
+        self.fatherID = fatherID
+        self.tagName = tagName
+    }
 }
 
 class Tag {
@@ -101,9 +105,11 @@ class Tag {
     }
 }
 
-var userData:UserData = UserData()
+var contacts:Array<ContactInfo> = Array<ContactInfo>()
+var userTags:Array<TagInfo> = Array<TagInfo>()
+var contactsData:ContactsData = ContactsData()
 
-class UserData {
+class ContactsData {
     var m_blacklist: Tag = Tag(id: 0, father: 0, name: "黑名单")
     var m_tags: Array<Tag> = Array<Tag>()
     var m_tagsDic: Dictionary<UInt8,Tag> = [:]
@@ -178,7 +184,7 @@ class UserData {
         return tags
     }
     
-    func loadContacts(contacts: Array<ContactInfo>, userTags: Array<TagInfo>) {
+    func loadContacts() {
         m_tags.removeAll()
         m_tagsDic.removeAll()
         // system tags

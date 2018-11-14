@@ -19,12 +19,16 @@ class LoginView: UIViewController {
         http.postRequest("registry", params: params,
             success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
                 let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-                if (html.hasPrefix("Success")) {
-                    self.performSegueWithIdentifier("ShowMainMenu", sender: nil)
+                if (html.hasPrefix("Error")) {
                     print("%s", html)
                 }
                 else {
-                    print("%s", html)
+                    let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
+                    if (jsonObj != nil) {
+                        let dict: NSDictionary = jsonObj as! NSDictionary
+                        userInfo.userID = (UInt64)((dict["user"]?.integerValue)!)
+                    }
+                    self.performSegueWithIdentifier("ShowMainMenu", sender: nil)
                 }
             },
             fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -39,31 +43,20 @@ class LoginView: UIViewController {
         http.postRequest("login", params: params,
             success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
                 let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-                if (html.hasPrefix("Success")) {
-                    self.performSegueWithIdentifier("ShowMainMenu", sender: nil)
+                if (html.hasPrefix("Error")) {
                     print("%s", html)
                 }
                 else {
-                    print("%s", html)
+                    let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
+                    if (jsonObj != nil) {
+                        let dict: NSDictionary = jsonObj as! NSDictionary
+                        userInfo.userID = (UInt64)((dict.valueForKey("user")?.integerValue)!)
+                    }
+                    self.performSegueWithIdentifier("ShowMainMenu", sender: nil)
                 }
             },
             fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
                 print("请求失败")
             })
-    }
-    
-    func logSuccess(task: NSURLSessionDataTask, response: AnyObject) {
-        let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-        if (html.hasPrefix("Success")) {
-            self.performSegueWithIdentifier("ShowMainMenu", sender: nil)
-            print("%s", html)
-        }
-        else {
-            print("%s", html)
-        }
-    }
-    
-    func logFail(task: NSURLSessionDataTask?, error : NSError) {
-        print("%s", error.debugDescription)
     }
 }

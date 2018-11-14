@@ -78,28 +78,4 @@ class HttpService {
                 print("请求失败")
             })
     }
-    
-    func loginRequest() {
-        let loginURL: String = baseURL + "login"
-        let params: Dictionary = ["cell":"8615821112604", "code":"0838", "pass":"123456"]
-
-        afManager.requestSerializer = AFJSONRequestSerializer()
-        afManager.responseSerializer = AFHTTPResponseSerializer()
-        
-        afManager.POST(loginURL,
-            parameters: params,
-            progress: nil,
-            success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
-                let html: String = String.init(data: responseObject as! NSData, encoding: NSUTF8StringEncoding)!
-                if (html.hasPrefix("Success")) {
-                    print("%s", html)
-                }
-                else {
-                    print("%s", html)
-                }
-            },
-            failure: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-                print("请求失败")
-            })
-    }
 }

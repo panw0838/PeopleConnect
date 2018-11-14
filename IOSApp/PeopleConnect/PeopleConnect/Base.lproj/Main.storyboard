@@ -57,23 +57,23 @@
             </objects>
             <point key="canvasLocation" x="748" y="-941"/>
         </scene>
-        <!--Item-->
+        <!--联系人-->
         <scene sceneID="YGf-J1-6w9">
             <objects>
                 <collectionViewController id="tl1-hc-Wwp" customClass="ContactsView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="r6D-cg-6yu">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="438"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="x8g-oX-kyu">
                             <size key="itemSize" width="74" height="76"/>
-                            <size key="headerReferenceSize" width="50" height="50"/>
+                            <size key="headerReferenceSize" width="40" height="50"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ContactCell" id="cXf-Fk-E4y" customClass="ContactCell" customModule="PeopleConnect" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="114" width="74" height="76"/>
+                                <rect key="frame" x="0.0" y="50" width="74" height="76"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="74" height="76"/>
@@ -102,7 +102,7 @@
                             </collectionViewCell>
                         </cells>
                         <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="SubTagHeader" id="Zx7-TD-WF6" customClass="SubTagHeader" customModule="PeopleConnect" customModuleProvider="target">
-                            <rect key="frame" x="0.0" y="64" width="600" height="50"/>
+                            <rect key="frame" x="0.0" y="0.0" width="600" height="50"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kdJ-PP-PEC">
@@ -124,12 +124,14 @@
                             <outlet property="delegate" destination="tl1-hc-Wwp" id="cik-aY-d6d"/>
                         </connections>
                     </collectionView>
-                    <tabBarItem key="tabBarItem" title="Item" id="T2y-nf-uZh"/>
-                    <navigationItem key="navigationItem" id="rKI-wz-NlI"/>
+                    <tabBarItem key="tabBarItem" title="联系人" id="T2y-nf-uZh"/>
+                    <navigationItem key="navigationItem" id="rKI-wz-NlI">
+                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="cPb-l2-15U"/>
+                    </navigationItem>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uJx-2c-LGs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1568" y="-176"/>
+            <point key="canvasLocation" x="2376" y="-176"/>
         </scene>
         <!--联系人-->
         <scene sceneID="bwo-Jo-e9d">
@@ -141,12 +143,65 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="tl1-hc-Wwp" kind="relationship" relationship="rootViewController" id="URo-le-4fM"/>
+                        <segue destination="aTw-ZE-vUS" kind="relationship" relationship="rootViewController" id="We4-VX-qL3"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vqw-fl-iie" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="748" y="-176"/>
+        </scene>
+        <!--Contact Tab View-->
+        <scene sceneID="DFM-uy-UqD">
+            <objects>
+                <viewController id="aTw-ZE-vUS" customClass="ContactTabView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="E7d-Y3-UYG"/>
+                        <viewControllerLayoutGuide type="bottom" id="ypo-6B-lHr"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Bcy-8X-g4K">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lZ2-uz-k2Z">
+                                <rect key="frame" x="0.0" y="113" width="600" height="438"/>
+                                <connections>
+                                    <segue destination="tl1-hc-Wwp" kind="embed" id="WYt-h3-cnL"/>
+                                </connections>
+                            </containerView>
+                            <tabBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VFe-Bx-uL6">
+                                <rect key="frame" x="0.0" y="64" width="600" height="49"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <items>
+                                    <tabBarItem systemItem="contacts" id="6w7-ta-fUg"/>
+                                    <tabBarItem systemItem="more" id="SKL-g2-3xE"/>
+                                </items>
+                                <connections>
+                                    <outlet property="delegate" destination="aTw-ZE-vUS" id="8wO-SM-nIl"/>
+                                </connections>
+                            </tabBar>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="VFe-Bx-uL6" firstAttribute="top" secondItem="E7d-Y3-UYG" secondAttribute="bottom" id="6Zv-ze-NcZ"/>
+                            <constraint firstItem="lZ2-uz-k2Z" firstAttribute="top" secondItem="VFe-Bx-uL6" secondAttribute="bottom" id="JLA-BG-bRZ"/>
+                            <constraint firstItem="VFe-Bx-uL6" firstAttribute="trailing" secondItem="lZ2-uz-k2Z" secondAttribute="trailing" id="PYt-K3-kJN"/>
+                            <constraint firstItem="lZ2-uz-k2Z" firstAttribute="bottom" secondItem="ypo-6B-lHr" secondAttribute="top" id="Wmi-nP-Ike"/>
+                            <constraint firstAttribute="trailing" secondItem="lZ2-uz-k2Z" secondAttribute="trailing" id="Yxq-6T-UNY"/>
+                            <constraint firstItem="lZ2-uz-k2Z" firstAttribute="leading" secondItem="VFe-Bx-uL6" secondAttribute="leading" id="blo-RD-Nos"/>
+                            <constraint firstItem="VFe-Bx-uL6" firstAttribute="leading" secondItem="Bcy-8X-g4K" secondAttribute="leading" id="iWv-wO-C9V"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="Hlv-5d-ZUY">
+                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="XYB-gP-NFf"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="m_contents" destination="lZ2-uz-k2Z" id="45T-Mf-tzD"/>
+                        <outlet property="m_tabsBar" destination="VFe-Bx-uL6" id="Hzu-Nf-L2P"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="E2x-J4-tQp" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1568" y="-176"/>
         </scene>
         <!--Table View Controller-->
         <scene sceneID="hOQ-Ur-38R">

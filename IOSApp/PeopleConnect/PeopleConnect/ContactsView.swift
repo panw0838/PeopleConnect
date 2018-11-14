@@ -21,26 +21,28 @@ class SubTagHeader: UICollectionReusableView {
    
 class ContactsView: UICollectionViewController {
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    var m_index: Int = 0
+    
+    func setTabIndex(idx:Int) {
+        m_index = idx
     }
     
     override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return userData.numSubTags(0) + 1
+        return contactsData.numSubTags(m_index) + 1
     }
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if (section == userData.numSubTags(0)) {
-            return userData.membersOfMainTag(0).count
+        if (section == contactsData.numSubTags(m_index)) {
+            return contactsData.membersOfMainTag(m_index).count
         }
         else {
-            return userData.membersOfSubTag(0, subIdx: section-1).count
+            return contactsData.membersOfSubTag(m_index, subIdx: section-1).count
         }
     }
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ContactCell", forIndexPath: indexPath) as! ContactCell
-        let members = (indexPath.section == userData.numSubTags(0)) ? userData.membersOfMainTag(0) : userData.membersOfSubTag(0, subIdx: indexPath.section)
+        let members = (indexPath.section == contactsData.numSubTags(m_index)) ? contactsData.membersOfMainTag(m_index) : contactsData.membersOfSubTag(m_index, subIdx: indexPath.section)
         //cell.backgroundColor = UIColor.blueColor()
         cell.m_image.image = UIImage(named: "default_profile")
         cell.m_name.text = members[indexPath.row].name
@@ -49,7 +51,7 @@ class ContactsView: UICollectionViewController {
     
     override func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "SubTagHeader", forIndexPath: indexPath) as! SubTagHeader
-        let tagName = indexPath.section == userData.numSubTags(0) ? "fff" : userData.nameOfSubTag(0, subIdx: indexPath.section)
+        let tagName = indexPath.section == contactsData.numSubTags(m_index) ? "fff" : contactsData.nameOfSubTag(m_index, subIdx: indexPath.section)
         header.m_tagName.text = tagName
         return header
     }
