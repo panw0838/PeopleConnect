@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		18117074219C484F005FA8C0 /* ContactRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18117073219C484F005FA8C0 /* ContactRequests.swift */; };
 		18AE41F62199E2680008B792 /* server.cer in Resources */ = {isa = PBXBuildFile; fileRef = 18AE41F52199E2680008B792 /* server.cer */; };
 		18AE420A219AC4170008B792 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE4209219AC4170008B792 /* LoginView.swift */; };
 		18AE420C219AE3AD0008B792 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE420B219AE3AD0008B792 /* User.swift */; };
@@ -113,6 +114,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		18117073219C484F005FA8C0 /* ContactRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactRequests.swift; sourceTree = "<group>"; };
 		18AE41F52199E2680008B792 /* server.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = server.cer; sourceTree = "<group>"; };
 		18AE4209219AC4170008B792 /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		18AE420B219AE3AD0008B792 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -208,6 +210,7 @@
 				18AE4209219AC4170008B792 /* LoginView.swift */,
 				18D3A8DE2197F3CD00EB3289 /* MessegeView.swift */,
 				18D3A8E02198015C00EB3289 /* ContactsView.swift */,
+				18117073219C484F005FA8C0 /* ContactRequests.swift */,
 				18D3A8E22198017000EB3289 /* PostsView.swift */,
 				18E8CB85219331A400E29383 /* Main.storyboard */,
 				18E8CB88219331A400E29383 /* Assets.xcassets */,
@@ -434,6 +437,7 @@
 				18AE420C219AE3AD0008B792 /* User.swift in Sources */,
 				18E8CB80219331A400E29383 /* AppDelegate.swift in Sources */,
 				18D3A8E32198017000EB3289 /* PostsView.swift in Sources */,
+				18117074219C484F005FA8C0 /* ContactRequests.swift in Sources */,
 				18D3A8E12198015C00EB3289 /* ContactsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

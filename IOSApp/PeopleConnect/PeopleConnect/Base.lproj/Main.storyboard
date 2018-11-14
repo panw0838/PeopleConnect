@@ -205,7 +205,13 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Hlv-5d-ZUY">
-                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="XYB-gP-NFf"/>
+                        <nil key="title"/>
+                        <textField key="titleView" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" id="65s-TP-V5X">
+                            <rect key="frame" x="180" y="7" width="240" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits"/>
+                        </textField>
                     </navigationItem>
                     <connections>
                         <outlet property="m_contacts" destination="9lJ-mp-RGE" id="KjT-2B-7dh"/>
