@@ -1,34 +1,59 @@
 package user
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/garyburd/redigo/redis"
 )
 
-func getContactsHandler(w http.ResponseWriter, r *http.Request) {
-	var username = ""
-	var password = ""
-	var response = ""
-	if r.Method == "POST" {
-		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-		if err := r.ParseForm(); err != nil {
-			fmt.Fprintf(w, "ParseForm() err: %v", err)
-			return
-		}
-		username = r.FormValue("user")
-		password = r.FormValue("pass")
-		userID, err := strconv.ParseUint(username, 16, 32)
-		if err != nil {
-			fmt.Fprintf(w, "Conver uid %s fail", username)
-		}
-		response, err = GetContacts(userID)
-		if err != nil {
-			fmt.Fprintf(w, "Get Contacts fail %v", err)
-			return
-		}
+func GetContactsHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Error: read request")
+		return
 	}
-	fmt.Fprintf(w, "%s:%s->%s", username, password, response)
+
+	var account AccountInfo
+	err = json.Unmarshal(body, &account)
+	if err != nil {
+		fmt.Fprintf(w, "Error: json read error %s", body)
+		return
+	}
+
+	c, err := redis.Dial("tcp", ContactDB)
+	if err != nil {
+		fmt.Fprintf(w, "Error: connect db error")
+		return
+	}
+	defer c.Close()
+
+	var fullInfo FullContactInfo
+
+	contacts, err := dbGetContacts(account.UserID, c)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+	fullInfo.Contacts = contacts
+
+	tags, err := dbGetTags(account.UserID, c)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+	fullInfo.Tags = tags
+
+	data, err := json.Marshal(&contacts)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", data)
 }
 
 func addContactHandler(w http.ResponseWriter, r *http.Request) {

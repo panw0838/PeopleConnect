@@ -1,36 +1,44 @@
 package user
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 
 	"github.com/garyburd/redigo/redis"
 )
 
-func createTagHandler(w http.ResponseWriter, r *http.Request) {
-	// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-	if err := r.ParseForm(); err != nil {
-		fmt.Fprintf(w, "Error: ParseForm err: %v", err)
+type AddTagParams struct {
+	User       uint64   `json:"user"`
+	Father     uint8    `json:"father"`
+	Name       string   `json:"name"`
+	NumMembers uint     `json:"nummembers"`
+	Members    []uint64 `json:"members"`
+}
+
+type AddTagReturn struct {
+	Tag uint8 `json:"tag"`
+}
+
+func AddTagHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Error: read request")
 		return
 	}
 
-	tagname := r.FormValue("tagname")
+	var params AddTagParams
+	err = json.Unmarshal(body, &params)
+	if err != nil {
+		fmt.Fprintf(w, "Error: json read error %s", body)
+		return
+	}
 
-	if len(tagname) > int(NAME_SIZE) {
+	var nameLen = len(params.Name)
+	if nameLen > int(NAME_SIZE) || nameLen <= 0 {
 		fmt.Println(w, "Error: Invalid tag name")
-		return
-	}
-
-	userID, err := strconv.ParseUint(r.FormValue("user"), 16, 32)
-	if err != nil {
-		fmt.Fprintf(w, "Error: Invalid user")
-		return
-	}
-
-	fatherID, err := strconv.ParseUint(r.FormValue("tagfatherid"), 16, 32)
-	if err != nil {
-		fmt.Fprintf(w, "Error: Invalid father id")
 		return
 	}
 
@@ -41,42 +49,38 @@ func createTagHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	err = dbAddTagPrecheck(userID, fatherID, c)
+	err = dbAddTagPrecheck(params.User, uint64(params.Father), c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
-	tagIdx, err := dbAddTag(userID, fatherID, tagname, c)
+	tagIdx, err := dbAddTag(params.User, uint64(params.Father), params.Name, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
 	tagID := tagIdx + USER_TAG_START
+	tagBits := (ONE_64<<tagID | ONE_64<<params.Father)
 
-	numMembers, err := strconv.ParseUint(r.FormValue("nummembers"), 16, 32)
-	if err != nil {
-		fmt.Fprintf(w, "Error: Invalid num members")
-		return
-	}
-
-	if numMembers != 0 {
-		tagBits := (ONE_64<<tagID | ONE_64<<fatherID)
-		members := make([]uint64, numMembers, 0)
-		for i := 0; i < int(numMembers); i++ {
-			membername := "member" + string(i)
-			members[i], err = strconv.ParseUint(r.FormValue(membername), 16, 32)
-			if err != nil {
-				fmt.Fprintf(w, "Error: Invalid member")
-				return
-			} else {
-				dbEnableBits(userID, members[i], tagBits, c)
-			}
+	for _, member := range params.Members {
+		err = dbEnableBits(params.User, member, tagBits, c)
+		if err != nil {
+			fmt.Fprintf(w, "Error: %v", err)
+			return
 		}
 	}
 
-	fmt.Fprintf(w, "Success: new tag %d", tagID)
+	var returnData AddTagReturn
+	returnData.Tag = uint8(tagID)
+	data, err := json.Marshal(&returnData)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", data)
 }
 
 func removeTagHandler(w http.ResponseWriter, r *http.Request) {

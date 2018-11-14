@@ -32,6 +32,10 @@ type LogonFeedbackInfo struct {
 	UserID uint64 `json:"user"`
 }
 
+type AccountInfo struct {
+	UserID uint64 `json:"user"`
+}
+
 func GetUserPicPath(userID uint32) string {
 	return string(userID) + ".png"
 }

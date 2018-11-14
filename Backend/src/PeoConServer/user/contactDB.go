@@ -151,46 +151,48 @@ func getNameDB(user1 uint64, user2 uint64, c redis.Conn) (string, error) {
 	return result, nil
 }
 
-func GetContacts(userID uint64) (string, error) {
-	var result string = ""
-	c, err := redis.Dial("tcp", ContactDB)
-	if err != nil {
-		return "", err
-	}
-	defer c.Close()
-
+func dbGetContacts(userID uint64, c redis.Conn) ([]ContactInfo, error) {
+	var contacts []ContactInfo
 	contactsKey := GetContactsKey(userID)
 	numContacts, err := redis.Int(c.Do("SCARD", contactsKey))
 	if err != nil {
-		fmt.Println("redis get contacts size failed:", err)
-	} else {
-		result = result + "numOfContacts:" + strconv.Itoa(numContacts) + "\n"
+		return nil, err
+	}
+
+	if numContacts > 0 {
 		members, err := redis.Values(c.Do("SMEMBERS", contactsKey))
 		if err != nil {
-			fmt.Println("get contacts fail:", err)
-		} else {
-			for index, member := range members {
-				contact, err := redis.Uint64(member, err)
-				if err != nil {
-					fmt.Println("redis get member fail:", err)
-				}
-				cont := contact
-				flag, err := getFlagDB(userID, cont, c)
-				if err != nil {
-					return "", err
-				}
-				name, err := getNameDB(userID, cont, c)
-				if err != nil {
-					return "", err
-				}
-				result = result +
-					"idx:" + strconv.Itoa(index) + "," +
-					"uid:" + strconv.FormatUint(cont, 16) + "," +
-					"flg:" + strconv.FormatUint(flag, 16) + "," +
-					"nam:" + name + "\n"
+			return nil, err
+		}
+
+		for _, member := range members {
+			contactStr, err := redis.String(member, err)
+			if err != nil {
+				return nil, err
 			}
+			contact, err := strconv.Atoi(contactStr)
+			if err != nil {
+				return nil, err
+			}
+			contactID := uint64(contact)
+			relateKey := GetRelationKey(userID, contactID)
+			values, err := redis.Values(c.Do("HMGET", relateKey, FlagField, NameField))
+			flagStr, err := redis.String(values[0], err)
+			name, err := redis.String(values[1], err)
+			if err != nil {
+				return nil, err
+			}
+			flag, err := strconv.Atoi(flagStr)
+			if err != nil {
+				return nil, err
+			}
+			var newContact ContactInfo
+			newContact.User = contactID
+			newContact.Flag = uint64(flag)
+			newContact.Name = name
+			contacts = append(contacts, newContact)
 		}
 	}
 
-	return result, nil
+	return contacts, nil
 }

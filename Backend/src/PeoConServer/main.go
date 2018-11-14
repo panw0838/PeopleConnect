@@ -24,6 +24,8 @@ func main() {
 	http.HandleFunc("/sync", syncHandler)
 	http.HandleFunc("/login", user.LoginHandler)
 	http.HandleFunc("/registry", user.RegisterHandler)
+	http.HandleFunc("/contacts", user.GetContactsHandler)
+	http.HandleFunc("/addtag", user.AddTagHandler)
 	e := http.ListenAndServeTLS(":8080", crtPath, keyPath, nil)
 	if e != nil {
 		log.Fatal("ListenAndServe: ", e)

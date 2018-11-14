@@ -200,3 +200,32 @@ func dbRemTag(userID uint64, tagID uint64, c redis.Conn) error {
 
 	return nil
 }
+
+func dbGetTags(userID uint64, c redis.Conn) ([]TagInfo, error) {
+	var tagsInfo []TagInfo
+	tagsKey := GetTagKey(userID)
+	numTags, err := redis.Int(c.Do("LLEN", tagsKey))
+	if err != nil {
+		return nil, err
+	}
+
+	if numTags > 0 {
+		tags, err := redis.Strings(c.Do("LRANGE", tagsKey, 0, numTags))
+		if err != nil {
+			return nil, err
+		}
+
+		for idx, tag := range tags {
+			if len(tag) != 0 {
+				var newTag TagInfo
+				fatherID, name := getTagInfo(tag)
+				newTag.TagID = uint8(uint64(idx) + USER_TAG_START)
+				newTag.FatherID = uint8(fatherID)
+				newTag.TagName = name
+				tagsInfo = append(tagsInfo, newTag)
+			}
+		}
+	}
+
+	return tagsInfo, nil
+}

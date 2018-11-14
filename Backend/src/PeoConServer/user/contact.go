@@ -3,9 +3,14 @@ package user
 const NAME_SIZE uint32 = 20
 
 type ContactInfo struct {
-	userID uint64
-	flag   uint64
-	name   [NAME_SIZE]byte
+	User uint64 `json:"user"`
+	Flag uint64 `json:"flag"`
+	Name string `json:"name"`
+}
+
+type FullContactInfo struct {
+	Contacts []ContactInfo `json:"contacts"`
+	Tags     []TagInfo     `json:"tags"`
 }
 
 type ContactCache struct {
