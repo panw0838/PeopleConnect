@@ -26,30 +26,20 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
     
     var m_curTag: Int = 0
     
+    var deltag:UInt8 = 0
     @IBAction func AddNewTag(sender: AnyObject) {
-        let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "father":NSNumber(int: 0), "name":"newtag"]
-        http.postRequest("addtag", params: params,
-            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-                let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-                if (html.hasPrefix("Error")) {
-                    print("%s", html)
-                }
-                else {
-                    let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
-                    if (jsonObj != nil) {
-                        let dict: NSDictionary = jsonObj as! NSDictionary
-                        let tagID: UInt8 = (UInt8)((dict["tag"]?.integerValue)!)
-                        let newTag: TagInfo = TagInfo(id: tagID, father: 0, name: "newTag")
-                        let newTab: UITabBarItem = UITabBarItem.init(title: "newtag", image: nil, tag: userTags.count)
-                        userTags.append(newTag)
-                        contactsData.addTag(Tag(id: tagID, father: 0, name: "newtag"))
-                        self.m_tabsBar.items?.append(newTab)
-                    }
-                }
-            },
-            fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-                print("请求失败")
-            })
+        //httpAddTag(0, name: "newtag")
+        httpRemTag(deltag)
+        deltag++
+    }
+    
+    @IBAction func RemTag(sender: AnyObject) {
+        httpRemTag(0)
+    }
+    
+    @IBAction func AddContact(sender: AnyObject) {
+        let editor = sender as! UITextField
+        httpSearchContact(editor.text!)
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -95,7 +85,7 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        requestContacts()
+        httpGetContacts()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -110,44 +100,5 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
             m_tabsBar.items?.append(newTab)
             tagIdx++
         }
-    }
-    
-    func requestContacts() {
-        let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
-        http.postRequest("contacts", params: params,
-            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-                let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-                if (html.hasPrefix("Error")) {
-                    print("%s", html)
-                }
-                else {
-                    if let json = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers) as! [String:AnyObject] {
-                        contacts.removeAll()
-                        userTags.removeAll()
-                        
-                        if let tagObjs = json["tags"] as? [AnyObject] {
-                            for case let tagObj in (tagObjs as? [[String:AnyObject]])! {
-                                if let tag = TagInfo(json: tagObj) {
-                                    userTags.append(tag)
-                                }
-                            }
-                        }
-                        
-                        if let contactObjs = json["contacts"] as? [AnyObject] {
-                            for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
-                                if let contact = ContactInfo(json: contactObj) {
-                                    contacts.append(contact)
-                                }
-                            }
-                        }
-                        contactsData.loadContacts()
-                        self.updateTags()
-                        self.m_contacts.reloadData()
-                    }
-                }
-            },
-            fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-                print("请求失败")
-        })
     }
 }
