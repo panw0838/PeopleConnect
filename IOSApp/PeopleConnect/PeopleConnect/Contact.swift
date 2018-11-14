@@ -23,14 +23,14 @@ struct ContactInfo {
 extension ContactInfo {
     init?(json: [String: AnyObject]) {
         guard
-            let user = json["user"] as? UInt64,
-            let flag = json["flag"] as? UInt64,
+            let user = json["user"] as? NSNumber,
+            let flag = json["flag"] as? NSNumber,
             let name = json["name"] as? String
         else {
             return nil
         }
-        self.user = user
-        self.flag = flag
+        self.user = UInt64(user.intValue)
+        self.flag = UInt64(flag.intValue)
         self.name = name
     }
 }

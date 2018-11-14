@@ -63,7 +63,7 @@ extension ContactsView {
     
     func httpSearchContact(key:String) {
         let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "key":key]
-        http.postRequest("search", params: params,
+        http.postRequest("searchcontact", params: params,
             success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
                 let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
                 if (html.hasPrefix("Error")) {
@@ -73,8 +73,8 @@ extension ContactsView {
                     let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
                     if (jsonObj != nil) {
                         let dict: NSDictionary = jsonObj as! NSDictionary
-                        let uid: UInt64 = (UInt64)((dict["uid"]?.integerValue)!)
-                        let name: String = (dict["name"]?.string)!
+                        let uid: UInt64 = (UInt64)((dict["user"]?.integerValue)!)
+                        let name: String = dict["name"] as! String
                         print("%x %s", uid, name)
                     }
                 }

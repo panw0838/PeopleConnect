@@ -26,11 +26,11 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
     
     var m_curTag: Int = 0
     
-    var deltag:UInt8 = 0
     @IBAction func AddNewTag(sender: AnyObject) {
         //httpAddTag(0, name: "newtag")
-        httpRemTag(deltag)
-        deltag++
+        //httpRemTag(deltag)
+        //httpSearchContact("8615821112604")
+        httpAddContact(2, flag: 2, name: "test")
     }
     
     @IBAction func RemTag(sender: AnyObject) {
