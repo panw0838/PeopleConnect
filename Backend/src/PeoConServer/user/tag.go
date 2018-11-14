@@ -1,11 +1,16 @@
 package user
 
-const BLK_BIT uint64 = 0x1
-const CTC_BIT uint64 = 0x2
-const FRD_BIT uint64 = 0x4
-const CWK_BIT uint64 = 0x8
-const CLM_BIT uint64 = 0x10
-const FML_BIT uint64 = 0x20
+// system tab bits
+const BLK_BIT uint64 = ONE_64
+const CTC_BIT uint64 = ONE_64 << 1
+const FRD_BIT uint64 = ONE_64 << 2
+const CWK_BIT uint64 = ONE_64 << 3
+const CLM_BIT uint64 = ONE_64 << 4
+const FML_BIT uint64 = ONE_64 << 5
+
+// user control bits
+const ADD_CONFIRM uint64 = ONE_64 << 30
+const NO_SEARCH uint64 = ONE_64 << 31
 
 const ONE_64 uint64 = 0x1
 const ZERO_64 uint64 = 0x0

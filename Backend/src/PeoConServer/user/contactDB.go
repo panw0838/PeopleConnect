@@ -21,13 +21,18 @@ func GetContactsKey(user uint64) string {
 	return strconv.FormatUint(user, 16) + ContactsKey
 }
 
-func dbSearchContact(userID uint64, key string) (uint64, error) {
-	c, err := redis.Dial("tcp", ContactDB)
+func dbHitBits(userID uint64, contact uint64, bits uint64, c redis.Conn) (bool, error) {
+	flag, err := dbGetFlag(userID, contact, c)
 	if err != nil {
-		return 0, err
+		return false, err
 	}
-	defer c.Close()
+	if flag&bits == 0 {
+		return false, nil
+	}
+	return true, nil
+}
 
+func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
 	cellKey := getCellKey(key)
 	exists, err := redis.Int64(c.Do("EXISTS", cellKey))
 	if err != nil {
@@ -57,14 +62,8 @@ func dbSearchContact(userID uint64, key string) (uint64, error) {
 	return contactID, nil
 }
 
-func dbAddContact(user1 uint64, user2 uint64, flag uint64, name string) error {
-	c, err := redis.Dial("tcp", ContactDB)
-	if err != nil {
-		return err
-	}
-	defer c.Close()
-
-	_, err = c.Do("MULTI")
+func dbAddContact(user1 uint64, user2 uint64, flag uint64, name string, c redis.Conn) error {
+	_, err := c.Do("MULTI")
 	if err != nil {
 		return err
 	}
