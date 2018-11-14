@@ -47,6 +47,12 @@ struct TagInfo {
     var tagID: UInt8
     var fatherID: UInt8
     var tagName: String
+    
+    init(id:UInt8, father:UInt8, name:String) {
+        tagID = id
+        fatherID = father
+        tagName = name
+    }
 }
 
 extension TagInfo {

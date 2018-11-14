@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--消息-->
@@ -58,82 +59,6 @@
             <point key="canvasLocation" x="748" y="-941"/>
         </scene>
         <!--联系人-->
-        <scene sceneID="YGf-J1-6w9">
-            <objects>
-                <collectionViewController id="tl1-hc-Wwp" customClass="ContactsView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="r6D-cg-6yu">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="438"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="x8g-oX-kyu">
-                            <size key="itemSize" width="74" height="76"/>
-                            <size key="headerReferenceSize" width="40" height="50"/>
-                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                        </collectionViewFlowLayout>
-                        <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ContactCell" id="cXf-Fk-E4y" customClass="ContactCell" customModule="PeopleConnect" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="50" width="74" height="76"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="74" height="76"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jsA-bV-qmA">
-                                            <rect key="frame" x="1" y="55" width="72" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="detailDisclosure" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Dt-Fq-V3v">
-                                            <rect key="frame" x="52" y="0.0" width="22" height="22"/>
-                                        </button>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RHs-0c-OV5">
-                                            <rect key="frame" x="15" y="8" width="45" height="45"/>
-                                        </imageView>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <size key="customSize" width="74" height="76"/>
-                                <connections>
-                                    <outlet property="m_image" destination="RHs-0c-OV5" id="0bs-dQ-0nr"/>
-                                    <outlet property="m_name" destination="jsA-bV-qmA" id="I0k-rX-zpw"/>
-                                </connections>
-                            </collectionViewCell>
-                        </cells>
-                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="SubTagHeader" id="Zx7-TD-WF6" customClass="SubTagHeader" customModule="PeopleConnect" customModuleProvider="target">
-                            <rect key="frame" x="0.0" y="0.0" width="600" height="50"/>
-                            <autoresizingMask key="autoresizingMask"/>
-                            <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kdJ-PP-PEC">
-                                    <rect key="frame" x="570" y="14" width="22" height="22"/>
-                                </button>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QQq-HM-s7V">
-                                    <rect key="frame" x="8" y="15" width="186" height="21"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                            </subviews>
-                            <connections>
-                                <outlet property="m_tagName" destination="QQq-HM-s7V" id="4bS-9I-P64"/>
-                            </connections>
-                        </collectionReusableView>
-                        <connections>
-                            <outlet property="dataSource" destination="tl1-hc-Wwp" id="osf-a1-KrW"/>
-                            <outlet property="delegate" destination="tl1-hc-Wwp" id="cik-aY-d6d"/>
-                        </connections>
-                    </collectionView>
-                    <tabBarItem key="tabBarItem" title="联系人" id="T2y-nf-uZh"/>
-                    <navigationItem key="navigationItem" id="rKI-wz-NlI">
-                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="cPb-l2-15U"/>
-                    </navigationItem>
-                </collectionViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="uJx-2c-LGs" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2376" y="-176"/>
-        </scene>
-        <!--联系人-->
         <scene sceneID="bwo-Jo-e9d">
             <objects>
                 <navigationController id="hqL-Lj-Kar" sceneMemberID="viewController">
@@ -150,10 +75,10 @@
             </objects>
             <point key="canvasLocation" x="748" y="-176"/>
         </scene>
-        <!--Contact Tab View-->
+        <!--Contacts View-->
         <scene sceneID="DFM-uy-UqD">
             <objects>
-                <viewController id="aTw-ZE-vUS" customClass="ContactTabView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="aTw-ZE-vUS" customClass="ContactsView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="E7d-Y3-UYG"/>
                         <viewControllerLayoutGuide type="bottom" id="ypo-6B-lHr"/>
@@ -162,14 +87,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lZ2-uz-k2Z">
-                                <rect key="frame" x="0.0" y="113" width="600" height="438"/>
-                                <connections>
-                                    <segue destination="tl1-hc-Wwp" kind="embed" id="WYt-h3-cnL"/>
-                                </connections>
-                            </containerView>
                             <tabBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VFe-Bx-uL6">
-                                <rect key="frame" x="0.0" y="64" width="600" height="49"/>
+                                <rect key="frame" x="0.0" y="64" width="557" height="49"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <items>
                                     <tabBarItem systemItem="contacts" id="6w7-ta-fUg"/>
@@ -179,23 +98,117 @@
                                     <outlet property="delegate" destination="aTw-ZE-vUS" id="8wO-SM-nIl"/>
                                 </connections>
                             </tabBar>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="9lJ-mp-RGE">
+                                <rect key="frame" x="20" y="113" width="560" height="438"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="0vY-v4-Y0G">
+                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="50" height="28"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ContactCell" id="cXf-Fk-E4y" customClass="ContactCell" customModule="PeopleConnect" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="74" height="76"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="74" height="76"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jsA-bV-qmA">
+                                                    <rect key="frame" x="1" y="55" width="72" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="21" id="7i2-HH-Yji"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="detailDisclosure" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Dt-Fq-V3v">
+                                                    <rect key="frame" x="52" y="0.0" width="22" height="22"/>
+                                                </button>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="RHs-0c-OV5">
+                                                    <rect key="frame" x="15" y="8" width="45" height="45"/>
+                                                </imageView>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <constraints>
+                                            <constraint firstItem="jsA-bV-qmA" firstAttribute="top" secondItem="RHs-0c-OV5" secondAttribute="bottom" constant="2" id="2md-ir-7V7"/>
+                                            <constraint firstItem="3Dt-Fq-V3v" firstAttribute="top" secondItem="cXf-Fk-E4y" secondAttribute="top" id="BLR-cH-ZFo"/>
+                                            <constraint firstAttribute="trailing" secondItem="3Dt-Fq-V3v" secondAttribute="trailing" id="OLT-cY-a1o"/>
+                                            <constraint firstItem="RHs-0c-OV5" firstAttribute="top" secondItem="cXf-Fk-E4y" secondAttribute="topMargin" id="OPe-UM-VGm"/>
+                                            <constraint firstAttribute="bottom" secondItem="jsA-bV-qmA" secondAttribute="bottom" id="QD7-fD-ChE"/>
+                                            <constraint firstItem="RHs-0c-OV5" firstAttribute="centerX" secondItem="cXf-Fk-E4y" secondAttribute="centerX" id="UQs-tX-BOH"/>
+                                            <constraint firstItem="jsA-bV-qmA" firstAttribute="leading" secondItem="cXf-Fk-E4y" secondAttribute="leadingMargin" constant="-7" id="dTj-Ly-V7d"/>
+                                            <constraint firstItem="RHs-0c-OV5" firstAttribute="leading" secondItem="cXf-Fk-E4y" secondAttribute="leadingMargin" constant="7" id="fxV-Z6-xKd"/>
+                                            <constraint firstItem="RHs-0c-OV5" firstAttribute="centerX" secondItem="jsA-bV-qmA" secondAttribute="centerX" id="vtb-qM-CMF"/>
+                                        </constraints>
+                                        <size key="customSize" width="74" height="76"/>
+                                        <connections>
+                                            <outlet property="m_image" destination="RHs-0c-OV5" id="0bs-dQ-0nr"/>
+                                            <outlet property="m_name" destination="jsA-bV-qmA" id="I0k-rX-zpw"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="SubTagHeader" id="Zx7-TD-WF6" customClass="SubTagHeader" customModule="PeopleConnect" customModuleProvider="target">
+                                    <rect key="frame" x="0.0" y="0.0" width="560" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kdJ-PP-PEC">
+                                            <rect key="frame" x="570" y="14" width="22" height="22"/>
+                                        </button>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QQq-HM-s7V">
+                                            <rect key="frame" x="8" y="6" width="186" height="14"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="186" id="FUW-hr-mK7"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="topMargin" constant="-2" id="2xn-pa-jaG"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="kdJ-PP-PEC" secondAttribute="trailing" constant="-40" id="4gF-SL-ucI"/>
+                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="leading" secondItem="Zx7-TD-WF6" secondAttribute="leadingMargin" id="Om1-q2-JfA"/>
+                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="bottom" secondItem="Zx7-TD-WF6" secondAttribute="bottomMargin" id="bJv-dh-JgE"/>
+                                        <constraint firstItem="kdJ-PP-PEC" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="topMargin" constant="6" id="jgA-c7-wKn"/>
+                                    </constraints>
+                                    <connections>
+                                        <outlet property="m_tagName" destination="QQq-HM-s7V" id="4bS-9I-P64"/>
+                                    </connections>
+                                </collectionReusableView>
+                                <connections>
+                                    <outlet property="dataSource" destination="aTw-ZE-vUS" id="iFN-R8-GRe"/>
+                                    <outlet property="delegate" destination="aTw-ZE-vUS" id="2CA-cO-NGW"/>
+                                </connections>
+                            </collectionView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ek4-49-8a2">
+                                <rect key="frame" x="569" y="78" width="22" height="22"/>
+                                <connections>
+                                    <action selector="AddNewTag:" destination="aTw-ZE-vUS" eventType="touchDown" id="PEG-wQ-K9x"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="VFe-Bx-uL6" firstAttribute="top" secondItem="E7d-Y3-UYG" secondAttribute="bottom" id="6Zv-ze-NcZ"/>
-                            <constraint firstItem="lZ2-uz-k2Z" firstAttribute="top" secondItem="VFe-Bx-uL6" secondAttribute="bottom" id="JLA-BG-bRZ"/>
-                            <constraint firstItem="VFe-Bx-uL6" firstAttribute="trailing" secondItem="lZ2-uz-k2Z" secondAttribute="trailing" id="PYt-K3-kJN"/>
-                            <constraint firstItem="lZ2-uz-k2Z" firstAttribute="bottom" secondItem="ypo-6B-lHr" secondAttribute="top" id="Wmi-nP-Ike"/>
-                            <constraint firstAttribute="trailing" secondItem="lZ2-uz-k2Z" secondAttribute="trailing" id="Yxq-6T-UNY"/>
-                            <constraint firstItem="lZ2-uz-k2Z" firstAttribute="leading" secondItem="VFe-Bx-uL6" secondAttribute="leading" id="blo-RD-Nos"/>
-                            <constraint firstItem="VFe-Bx-uL6" firstAttribute="leading" secondItem="Bcy-8X-g4K" secondAttribute="leading" id="iWv-wO-C9V"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="ek4-49-8a2" secondAttribute="trailing" constant="-11" id="7IA-jV-COk"/>
+                            <constraint firstItem="ek4-49-8a2" firstAttribute="leading" secondItem="VFe-Bx-uL6" secondAttribute="trailing" constant="12" id="IbV-F4-DC2"/>
+                            <constraint firstItem="9lJ-mp-RGE" firstAttribute="trailing" secondItem="Bcy-8X-g4K" secondAttribute="trailingMargin" id="auw-Yl-a4C"/>
+                            <constraint firstItem="9lJ-mp-RGE" firstAttribute="leading" secondItem="Bcy-8X-g4K" secondAttribute="leadingMargin" id="ava-Ud-bqb"/>
+                            <constraint firstItem="9lJ-mp-RGE" firstAttribute="top" secondItem="VFe-Bx-uL6" secondAttribute="bottom" id="byS-nO-GIN"/>
+                            <constraint firstItem="VFe-Bx-uL6" firstAttribute="leading" secondItem="Bcy-8X-g4K" secondAttribute="leading" id="jic-OM-JnH"/>
+                            <constraint firstItem="ek4-49-8a2" firstAttribute="centerY" secondItem="VFe-Bx-uL6" secondAttribute="centerY" id="tY6-jk-VCA"/>
+                            <constraint firstItem="9lJ-mp-RGE" firstAttribute="bottom" secondItem="ypo-6B-lHr" secondAttribute="top" id="vuf-Ft-fbm"/>
+                            <constraint firstItem="VFe-Bx-uL6" firstAttribute="top" secondItem="E7d-Y3-UYG" secondAttribute="bottom" id="we5-YF-4D6"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Hlv-5d-ZUY">
                         <barButtonItem key="rightBarButtonItem" systemItem="search" id="XYB-gP-NFf"/>
                     </navigationItem>
                     <connections>
-                        <outlet property="m_contents" destination="lZ2-uz-k2Z" id="45T-Mf-tzD"/>
+                        <outlet property="m_contacts" destination="9lJ-mp-RGE" id="KjT-2B-7dh"/>
                         <outlet property="m_tabsBar" destination="VFe-Bx-uL6" id="Hzu-Nf-L2P"/>
                     </connections>
                 </viewController>
