@@ -58,14 +58,14 @@ struct TagInfo {
 extension TagInfo {
     init?(json: [String: AnyObject]) {
         guard
-            let tagID = json["id"] as? UInt8,
-            let fatherID = json["father"] as? UInt8,
+            let tagID = json["id"] as? NSNumber,
+            let fatherID = json["father"] as? NSNumber,
             let tagName = json["name"] as? String
         else {
             return nil
         }
-        self.tagID = tagID
-        self.fatherID = fatherID
+        self.tagID = UInt8(tagID.intValue)
+        self.fatherID = UInt8(fatherID.intValue)
         self.tagName = tagName
     }
 }

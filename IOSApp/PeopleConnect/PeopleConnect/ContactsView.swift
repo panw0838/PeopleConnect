@@ -95,8 +95,14 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        contactsData.loadContacts()
+        requestContacts()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    func updateTags() {
         m_tabsBar.items?.removeAll()
         var tagIdx = 0
         for tag in contactsData.m_tags {
@@ -104,10 +110,6 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
             m_tabsBar.items?.append(newTab)
             tagIdx++
         }
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
     }
     
     func requestContacts() {
@@ -119,20 +121,27 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
                     print("%s", html)
                 }
                 else {
-                    if let json = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers) as? [String:[[String:AnyObject]]] {
+                    if let json = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers) as! [String:AnyObject] {
                         contacts.removeAll()
                         userTags.removeAll()
-                        for case let contactObj in json!["contacts"]! {
-                            if let contact = ContactInfo(json: contactObj) {
-                                contacts.append(contact)
+                        
+                        if let tagObjs = json["tags"] as? [AnyObject] {
+                            for case let tagObj in (tagObjs as? [[String:AnyObject]])! {
+                                if let tag = TagInfo(json: tagObj) {
+                                    userTags.append(tag)
+                                }
                             }
                         }
-                        for case let tagObj in json!["tags"]! {
-                            if let tag = TagInfo(json: tagObj) {
-                                userTags.append(tag)
+                        
+                        if let contactObjs = json["contacts"] as? [AnyObject] {
+                            for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
+                                if let contact = ContactInfo(json: contactObj) {
+                                    contacts.append(contact)
+                                }
                             }
                         }
                         contactsData.loadContacts()
+                        self.updateTags()
                         self.m_contacts.reloadData()
                     }
                 }
