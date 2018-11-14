@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -38,7 +37,12 @@ func AddTagHandler(w http.ResponseWriter, r *http.Request) {
 
 	var nameLen = len(params.Name)
 	if nameLen > int(NAME_SIZE) || nameLen <= 0 {
-		fmt.Println(w, "Error: Invalid tag name")
+		fmt.Fprintf(w, "Error: Invalid tag name")
+		return
+	}
+
+	if !isSystemTag(params.Father) && !isUserTag(params.Father) {
+		fmt.Fprintf(w, "Error: Invalud father tag")
 		return
 	}
 
@@ -49,13 +53,13 @@ func AddTagHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	err = dbAddTagPrecheck(params.User, uint64(params.Father), c)
+	err = dbAddTagPrecheck(params.User, params.Father, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
-	tagIdx, err := dbAddTag(params.User, uint64(params.Father), params.Name, c)
+	tagIdx, err := dbAddTag(params.User, params.Father, params.Name, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -83,33 +87,53 @@ func AddTagHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", data)
 }
 
-func removeTagHandler(w http.ResponseWriter, r *http.Request) {
-	// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-	if err := r.ParseForm(); err != nil {
-		fmt.Fprintf(w, "Error: ParseForm err: %v", err)
-		return
-	}
+type RemTagInput struct {
+	User uint64 `json:"user"`
+	Tag  uint8  `json:"tag"`
+}
 
-	userID, err := strconv.ParseUint(r.FormValue("user"), 16, 32)
+func RemTagHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "Error: Invalid user")
+		fmt.Fprintf(w, "Error: read request")
 		return
 	}
 
-	tagID, err := strconv.ParseUint(r.FormValue("tag"), 16, 32)
-	if err != nil || isSystemTag(tagID) {
+	var input RemTagInput
+	err = json.Unmarshal(body, &input)
+	if err != nil {
+		fmt.Fprintf(w, "Error: json read error")
+		return
+	}
+
+	if isSystemTag(input.Tag) {
+		fmt.Fprintf(w, "Error: can't delete system tag")
+		return
+	}
+
+	if !isUserTag(input.Tag) {
 		fmt.Fprintf(w, "Error: Invalid tag")
 		return
 	}
 
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
-		fmt.Println("Connect to redis error", err)
+		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 	defer c.Close()
 
-	hasSon, err := dbCheckSubTag(userID, tagID, c)
+	exists, err := dbUserTagExists(input.User, input.Tag, c)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+	if !exists {
+		fmt.Fprintf(w, "Error: tag not exists")
+		return
+	}
+
+	hasSon, err := dbTagHasSubTag(input.User, input.Tag, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -118,7 +142,7 @@ func removeTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hasMember, err := dbHasMember(userID, tagID, c)
+	hasMember, err := dbTagHasMember(input.User, input.Tag, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -127,7 +151,7 @@ func removeTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = dbRemTag(userID, tagID, c)
+	err = dbRemTag(input.User, input.Tag, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -136,26 +160,28 @@ func removeTagHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Success")
 }
 
+type UpdateTagMemberInput struct {
+	User uint64   `json:"user"`
+	Tag  uint8    `json:"tag"`
+	Add  []uint64 `json:"add"`
+	Rem  []uint64 `json:"rem"`
+}
+
 func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
-	// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-	if err := r.ParseForm(); err != nil {
-		fmt.Fprintf(w, "Error: ParseForm err: %v", err)
-		return
-	}
-
-	userID, err := strconv.ParseUint(r.FormValue("user"), 16, 32)
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "Error: Invalid user")
+		fmt.Fprintf(w, "Error: read request")
 		return
 	}
 
-	tagID, err := strconv.ParseUint(r.FormValue("tag"), 16, 32)
+	var input UpdateTagMemberInput
+	err = json.Unmarshal(body, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: Invalid tag")
+		fmt.Fprintf(w, "Error: json read error")
 		return
 	}
 
-	if !isSystemTag(tagID) && !isUserTag(tagID) {
+	if !isSystemTag(input.Tag) && !isUserTag(input.Tag) {
 		fmt.Fprintf(w, "Error: Invalid tag")
 		return
 	}
@@ -168,8 +194,8 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	// check tag
-	if isUserTag(tagID) {
-		exists, err := dbUserTagExists(userID, tagID, c)
+	if isUserTag(input.Tag) {
+		exists, err := dbUserTagExists(input.User, input.Tag, c)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
@@ -180,38 +206,26 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	numNewMembers, err := strconv.ParseUint(r.FormValue("numAddMember"), 16, 32)
-	if err == nil {
-		tagBits, err := getTagBits(userID, tagID, c)
+	tagBits, err := getTagBits(input.User, input.Tag, c)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+
+	for _, member := range input.Add {
+		err := dbEnableBits(input.User, member, tagBits, c)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
 		}
-
-		for i := 0; i < int(numNewMembers); i++ {
-			membername := "newMember" + string(i)
-			contact, err := strconv.ParseUint(r.FormValue(membername), 16, 32)
-			if err != nil {
-				fmt.Fprintf(w, "Error: Invalid member")
-				return
-			} else {
-				dbEnableBits(userID, contact, tagBits, c)
-			}
-		}
 	}
 
-	numDelMembers, err := strconv.ParseUint(r.FormValue("numDelMember"), 16, 32)
-	if err == nil {
-		tagBits := (ONE_64 << tagID)
-		for i := 0; i < int(numDelMembers); i++ {
-			membername := "delMember" + string(i)
-			contact, err := strconv.ParseUint(r.FormValue(membername), 16, 32)
-			if err != nil {
-				fmt.Fprintf(w, "Error: Invalid member")
-				return
-			} else {
-				dbDisableBits(userID, contact, tagBits, c)
-			}
+	tagBit := getTagBit(input.Tag)
+	for _, member := range input.Rem {
+		err := dbDisableBits(input.User, member, tagBit, c)
+		if err != nil {
+			fmt.Fprintf(w, "Error: %v", err)
+			return
 		}
 	}
 

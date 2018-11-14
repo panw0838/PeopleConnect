@@ -8,11 +8,6 @@ type ContactInfo struct {
 	Name string `json:"name"`
 }
 
-type FullContactInfo struct {
-	Contacts []ContactInfo `json:"contacts"`
-	Tags     []TagInfo     `json:"tags"`
-}
-
 type ContactCache struct {
 	user1 uint64
 	user2 uint64
