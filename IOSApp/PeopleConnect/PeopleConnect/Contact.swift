@@ -71,146 +71,234 @@ extension TagInfo {
 }
 
 class Tag {
-    var tagID: UInt8
-    var fatherID: UInt8
-    var subBits: UInt64
-    var tagName: String
-    var members: Array<ContactInfo>
-    var subTags: Array<Tag>
+    var m_tagID: UInt8
+    var m_fatherID: UInt8
+    var m_bit: UInt64
+    var m_fatherBit:UInt64
+    var m_subBits: UInt64   // sons' bits
+    var m_tagName: String
+    var m_members: Array<ContactInfo>
+    var m_subTags: Array<Tag>
     
     init(id: UInt8, father: UInt8, name: String) {
-        tagID = id
-        fatherID = father
-        subBits = 0
-        tagName = name
-        members = Array<ContactInfo>()
-        subTags = Array<Tag>()
+        m_tagID = id
+        m_fatherID = father
+        m_bit = (BitOne << UInt64(id))
+        m_fatherBit = (father == 0 ? 0 : (BitOne << UInt64(father)))
+        m_subBits = 0
+        m_tagName = name
+        m_members = Array<ContactInfo>()
+        m_subTags = Array<Tag>()
+    }
+    
+    func canBeDelete()->Bool {
+        return ((m_bit & DefineTagMask) != 0)
+            && (m_members.count == 0)
+            && (m_subTags.count == 0)
     }
     
     func addMember(contact: ContactInfo) {
-        if (subBits == 0 || (subBits | contact.flag) == 0) {
-            members.append(contact)
+        if m_subBits | contact.flag != 0 {
+            for subTag in m_subTags {
+                subTag.addMember(contact)
+            }
+        }
+        else if m_bit | contact.flag != 0 {
+            m_members.append(contact)
+        }
+    }
+    
+    func remMember(contactID: UInt64) {
+        for subTag in m_subTags {
+            subTag.remMember(contactID)
+        }
+
+        var i = 0
+        for member in m_members {
+            if contactID == member.user {
+                m_members.removeAtIndex(i)
+                return
+            }
+            i++
         }
     }
     
     func addSubTag(tag: Tag) {
-        subTags.append(tag)
-        subBits |= (BitOne << UInt64(tag.tagID))
+        m_subTags.append(tag)
+        m_subBits |= (BitOne << UInt64(tag.m_tagID))
+    }
+    
+    func remSubTag(tagID: UInt8) {
+        var idx = 0
+        for subTag in m_subTags {
+            if subTag.m_tagID == tagID {
+                m_subTags.removeAtIndex(idx)
+                m_subBits &= ~(BitOne << UInt64(tagID))
+                break
+            }
+            idx++
+        }
     }
     
     func getNumSubTags()->Int {
-        return subTags.count
+        return m_subTags.count
     }
     
     func getSubTagName(subIdx: Int)->String {
-        return subTags[subIdx].tagName
+        return m_subTags[subIdx].m_tagName
     }
     
     func getMembers()->Array<ContactInfo> {
-        return members
+        return m_members
     }
 }
 
-var contacts:Array<ContactInfo> = Array<ContactInfo>()
-var userTags:Array<TagInfo> = Array<TagInfo>()
 var contactsData:ContactsData = ContactsData()
 
 class ContactsData {
     var m_blacklist: Tag = Tag(id: 0, father: 0, name: "黑名单")
     var m_tags: Array<Tag> = Array<Tag>()
-    var m_tagsDic: Dictionary<UInt8,Tag> = [:]
-    
+    var m_contacts:Array<ContactInfo> = Array<ContactInfo>()
+
     init() {
+        m_tags.removeAll()
+        addSystemTags()
+    }
+    
+    func addSystemTags() {
+        // system tags
+        addTag(Tag(id: 0, father: 0, name: "黑名单"))
+        addTag(Tag(id: 1, father: 0, name: "未分类"))
+        addTag(Tag(id: 2, father: 0, name: "家人"))
+        addTag(Tag(id: 3, father: 0, name: "同学"))
+        addTag(Tag(id: 4, father: 0, name: "同事"))
+        addTag(Tag(id: 5, father: 0, name: "朋友"))
     }
     
     func numMainTags()->Int {
         return m_tags.count
     }
-    
-    func nameOfMainTag(tagIdx: Int)->String {
-        return m_tags[tagIdx].tagName
-    }
-    
-    func numSubTags(tagIdx: Int)->Int {
-        let tag:Tag = m_tags[tagIdx]
-        return tag.getNumSubTags()
-    }
-    
-    func nameOfSubTag(tagIdx: Int, subIdx: Int)->String {
-        let tag:Tag = m_tags[tagIdx]
-        return tag.getSubTagName(subIdx)
-    }
-    
-    func membersOfMainTag(tagIdx: Int)->Array<ContactInfo> {
-        return m_tags[tagIdx].getMembers()
-    }
-    
-    func membersOfSubTag(tagIdx: Int, subIdx: Int)->Array<ContactInfo> {
-        let tag:Tag = m_tags[tagIdx]
-        let subTag:Tag = tag.subTags[subIdx]
-        return subTag.getMembers()
+
+    func getSubTag(mainIdx:Int, subIdx:Int)->Tag {
+        let tag = m_tags[mainIdx]
+        if subIdx == tag.m_subTags.count {
+            return tag
+        }
+        else {
+            return tag.m_subTags[subIdx]
+        }
     }
     
     func addTag(tag: Tag) {
-        if (tag.tagID == 0) {
+        if (tag.m_tagID == 0) {
             m_blacklist = tag
         }
-        else if (tag.fatherID == 0) {
+        else if (tag.m_fatherID == 0) {
             m_tags.append(tag)
         }
         else {
-            let tag: Tag = getTag(tag.fatherID)
+            let tag: Tag = getTag(tag.m_fatherID)!
             tag.addSubTag(tag)
         }
-        m_tagsDic[tag.tagID] = tag
     }
     
-    func getTag(tagID: UInt8)->Tag {
-        return m_tagsDic[tagID]!
-    }
-    
-    func getContactTags(flag: UInt64)->Array<UInt8> {
-        var tags: Array<UInt8> = Array<UInt8>()
-        // check system tags
-        for var id:UInt8 = 0; id <= 5; id++ {
-            let bit: UInt64 = BitOne << UInt64(id)
-            if (flag & bit != 0) {
-                tags.append(id)
-            }
+    func getTag(tagID: UInt8)->Tag? {
+        if tagID == 0 {
+            return m_blacklist
         }
-        // check define tags
-        if (flag & DefineTagMask != 0) {
-            for var id:UInt8 = 32; id <= 63; id++ {
-                let bit: UInt64 = BitOne << UInt64(id)
-                if (flag & bit != 0) {
-                    tags.append(id)
+        else {
+            for tag in m_tags {
+                if tag.m_tagID == tagID {
+                    return tag
+                }
+                for sub in tag.m_subTags {
+                    if sub.m_tagID == tagID {
+                        return sub
+                    }
                 }
             }
         }
-        return tags
+        return nil
     }
     
-    func loadContacts() {
+    func remTag(tagID: UInt8) {
+        for (i, tag) in m_tags.enumerate() {
+            if tag.m_tagID == tagID {
+                m_tags.removeAtIndex(i)
+                return
+            }
+            for (j, subTag) in tag.m_subTags.enumerate() {
+                if subTag.m_tagID == tagID {
+                    tag.m_subTags.removeAtIndex(j)
+                    return
+                }
+            }
+        }
+    }
+    
+    func addContact(contact:ContactInfo) {
+        if contact.flag & BlacklistBit != 0 {
+            m_blacklist.addMember(contact)
+        }
+        else {
+            for tag in m_tags {
+                tag.addMember(contact)
+            }
+            m_contacts.append(contact)
+        }
+    }
+    
+    func remContact(contactID:UInt64) {
+        for tag in m_tags {
+            tag.remMember(contactID)
+        }
+        for (idx, contact) in m_contacts.enumerate() {
+            if contact.user == contactID {
+                m_contacts.removeAtIndex(idx)
+                break
+            }
+        }
+    }
+    
+    func popContact(contactID:UInt64)->ContactInfo? {
+        for (idx, contact) in m_contacts.enumerate() {
+            if contact.user == contactID {
+                m_contacts.removeAtIndex(idx)
+                return contact
+            }
+        }
+        return nil
+    }
+    
+    func moveContactInTag(contactID:UInt64, tagID:UInt8) {
+        var contact = popContact(contactID)!
+        let tag = getTag(tagID)!
+        contact.flag |= (tag.m_bit | tag.m_fatherBit)
+        tag.addMember(contact)
+        m_contacts.append(contact)
+    }
+    
+    func moveContactOutTag(contactID:UInt64, tagID:UInt8) {
+        var contact = popContact(contactID)!
+        let tag = getTag(tagID)!
+        contact.flag &= ~(tag.m_bit | tag.m_subBits)
+        tag.remMember(contactID)
+        m_contacts.append(contact)
+    }
+    
+    func loadContacts(contacts:Array<ContactInfo>, userTags:Array<TagInfo>) {
         m_tags.removeAll()
-        m_tagsDic.removeAll()
+        
         // system tags
-        addTag(Tag(id: 0, father: 0, name: "黑名单"))
-        addTag(Tag(id: 1, father: 0, name: "家人"))
-        addTag(Tag(id: 2, father: 0, name: "同学"))
-        addTag(Tag(id: 3, father: 0, name: "同事"))
-        addTag(Tag(id: 4, father: 0, name: "朋友"))
-        addTag(Tag(id: 5, father: 0, name: "联系人"))
+        addSystemTags()
+        
         // load user tags
         for tagInfo in userTags {
             addTag(Tag(id: tagInfo.tagID, father: tagInfo.fatherID, name: tagInfo.tagName))
         }
         
         for contact in contacts {
-            let tagsID: Array<UInt8> = getContactTags(contact.flag)
-            for tagID in tagsID {
-                let tag: Tag = getTag(tagID)
-                tag.addMember(contact)
-            }
+            addContact(contact)
         }
     }
 }

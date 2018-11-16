@@ -16,7 +16,9 @@ class ContactCell: UICollectionViewCell {
 
 class SubTagHeader: UICollectionReusableView {
     @IBOutlet weak var m_tagName: UILabel!
-    
+    @IBOutlet weak var m_delBtn: UIButton!
+    @IBOutlet weak var m_editBtn: UIButton!
+    var m_tagID:UInt8 = 0
 }
 
 class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
@@ -30,11 +32,15 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
         //httpAddTag(0, name: "newtag")
         //httpRemTag(deltag)
         //httpSearchContact("8615821112604")
-        httpAddContact(2, flag: 2, name: "test")
+        //httpAddContact(2, flag: 2, name: "test")
+        httpRemContact(2)
     }
     
-    @IBAction func RemTag(sender: AnyObject) {
-        httpRemTag(0)
+    @IBAction func DelSubTag(sender: AnyObject) {
+        let header = sender as! SubTagHeader
+        httpRemTag(header.m_tagID)
+        updateTags()
+        m_contacts.reloadData()
     }
     
     @IBAction func AddContact(sender: AnyObject) {
@@ -42,39 +48,38 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
         httpSearchContact(editor.text!)
     }
     
+    @IBAction func RemContact(sender: AnyObject) {
+    }
+    
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return contactsData.numSubTags(m_curTag) + 1
+        return contactsData.m_tags[m_curTag].m_subTags.count + 1
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if (section == contactsData.numSubTags(m_curTag)) {
-            return contactsData.membersOfMainTag(m_curTag).count
-        }
-        else {
-            return contactsData.membersOfSubTag(m_curTag, subIdx: section-1).count
-        }
+        let subTag = contactsData.getSubTag(m_curTag, subIdx: section)
+        return subTag.m_members.count
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ContactCell", forIndexPath: indexPath) as! ContactCell
-        let members = (indexPath.section == contactsData.numSubTags(m_curTag)) ? contactsData.membersOfMainTag(m_curTag) : contactsData.membersOfSubTag(m_curTag, subIdx: indexPath.section)
+        let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
         //cell.backgroundColor = UIColor.blueColor()
         cell.m_image.image = UIImage(named: "default_profile")
-        cell.m_name.text = members[indexPath.row].name
+        cell.m_name.text = subTag.m_members[indexPath.row].name
         return cell
     }
     
     func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "SubTagHeader", forIndexPath: indexPath) as! SubTagHeader
-        var tagName = ""
-        if indexPath.section == contactsData.numSubTags(m_curTag) {
-            tagName = indexPath.section == 0 ? "全部" : "其他"
-            tagName += contactsData.nameOfMainTag(m_curTag)
-        }
-        else {
-            tagName = contactsData.nameOfSubTag(m_curTag, subIdx: indexPath.section)
+        let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
+        var tagName = subTag.m_tagName
+        if indexPath.section == contactsData.m_tags[m_curTag].m_subTags.count {
+            tagName = (indexPath.section == 0 ? "全部" : "其他") + tagName
         }
         header.m_tagName.text = tagName
+        header.m_editBtn.hidden = (m_curTag == 0 && indexPath.section == 0)
+        header.m_delBtn.hidden = (subTag.canBeDelete() ? false : true)
+        header.m_tagID = subTag.m_tagID
         return header
     }
     
@@ -96,7 +101,7 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
         m_tabsBar.items?.removeAll()
         var tagIdx = 0
         for tag in contactsData.m_tags {
-            let newTab:UITabBarItem = UITabBarItem.init(title: tag.tagName, image: nil, tag: tagIdx)
+            let newTab:UITabBarItem = UITabBarItem.init(title: tag.m_tagName, image: nil, tag: tagIdx)
             m_tabsBar.items?.append(newTab)
             tagIdx++
         }

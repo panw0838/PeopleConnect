@@ -44,38 +44,14 @@ class HttpService {
             let url:String = baseURL + path
             afManager.requestSerializer = AFJSONRequestSerializer()
             afManager.responseSerializer = AFHTTPResponseSerializer()
-            afManager.POST(url, parameters: params, progress: nil, success: success, failure: fail)
+            afManager.POST(url, parameters: params, headers: nil, progress: nil, success: success, failure: fail)
     }
     
-    func registryRequest() {
-        let registryURL: String = baseURL + "registry"
-        let cellNumber:String = "8615821112604"
-        let password: String = "123456"
-        let deviceID:String = (UIDevice.currentDevice().identifierForVendor?.UUIDString)!
-        let params: Dictionary = ["cell":cellNumber, "code":"0838", "pass":password, "device":deviceID]
-
-        afManager.requestSerializer = AFJSONRequestSerializer()
-        afManager.responseSerializer = AFHTTPResponseSerializer()
-        
-        afManager.POST(registryURL,
-            parameters: params,
-            progress: nil,
-            success: { (task: NSURLSessionDataTask, responseObject: AnyObject?) -> Void in
-                let html: String = String.init(data: responseObject as! NSData, encoding: NSUTF8StringEncoding)!
-                if (html.hasPrefix("Success")) {
-                    print("%s", html)
-                }
-                else {
-                    print("%s", html)
-                }
-                //let jsonObj = try? NSJSONSerialization.JSONObjectWithData(responseObject as! NSData, options: .MutableContainers)
-                //if (jsonObj != nil) {
-                //    let dict: NSDictionary = jsonObj as! NSDictionary
-                //    print("%s, %s, %s", dict["cell"], dict["code"], dict["pass"])
-                //}
-            },
-            failure: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-                print("请求失败")
-            })
+    func getIDArrayParam(array:Array<UInt64>)->NSMutableArray {
+        let param:NSMutableArray = NSMutableArray()
+        for member in array {
+            param.addObject(NSNumber(unsignedLongLong: member))
+        }
+        return param
     }
 }

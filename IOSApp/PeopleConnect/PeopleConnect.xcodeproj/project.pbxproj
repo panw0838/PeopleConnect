@@ -17,6 +17,7 @@
 		18D3A8E52198061100EB3289 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D3A8E42198061100EB3289 /* Contact.swift */; };
 		18D3A93F2199796100EB3289 /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18D3A92A2199792F00EB3289 /* AFNetworking.framework */; };
 		18D3A9402199796100EB3289 /* AFNetworking.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 18D3A92A2199792F00EB3289 /* AFNetworking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		18DB287A219D85BF0024092C /* MoveMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB2879219D85BF0024092C /* MoveMemberView.swift */; };
 		18E8CB80219331A400E29383 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CB7F219331A400E29383 /* AppDelegate.swift */; };
 		18E8CB87219331A400E29383 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18E8CB85219331A400E29383 /* Main.storyboard */; };
 		18E8CB89219331A400E29383 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18E8CB88219331A400E29383 /* Assets.xcassets */; };
@@ -123,6 +124,7 @@
 		18D3A8E22198017000EB3289 /* PostsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostsView.swift; sourceTree = "<group>"; };
 		18D3A8E42198061100EB3289 /* Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		18D3A91F2199792F00EB3289 /* AFNetworking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AFNetworking.xcodeproj; path = "../AFNetworking-master/AFNetworking.xcodeproj"; sourceTree = "<group>"; };
+		18DB2879219D85BF0024092C /* MoveMemberView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoveMemberView.swift; sourceTree = "<group>"; };
 		18E8CB7C219331A400E29383 /* PeopleConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeopleConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E8CB7F219331A400E29383 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		18E8CB86219331A400E29383 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -210,6 +212,7 @@
 				18AE4209219AC4170008B792 /* LoginView.swift */,
 				18D3A8DE2197F3CD00EB3289 /* MessegeView.swift */,
 				18D3A8E02198015C00EB3289 /* ContactsView.swift */,
+				18DB2879219D85BF0024092C /* MoveMemberView.swift */,
 				18117073219C484F005FA8C0 /* ContactRequests.swift */,
 				18D3A8E22198017000EB3289 /* PostsView.swift */,
 				18E8CB85219331A400E29383 /* Main.storyboard */,
@@ -434,6 +437,7 @@
 				18AE420A219AC4170008B792 /* LoginView.swift in Sources */,
 				18D3A8DF2197F3CD00EB3289 /* MessegeView.swift in Sources */,
 				18E8CBB02193441500E29383 /* Requests.swift in Sources */,
+				18DB287A219D85BF0024092C /* MoveMemberView.swift in Sources */,
 				18AE420C219AE3AD0008B792 /* User.swift in Sources */,
 				18E8CB80219331A400E29383 /* AppDelegate.swift in Sources */,
 				18D3A8E32198017000EB3289 /* PostsView.swift in Sources */,

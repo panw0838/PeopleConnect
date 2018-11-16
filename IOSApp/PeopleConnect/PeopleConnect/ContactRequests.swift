@@ -22,11 +22,8 @@ extension ContactsView {
                     if (jsonObj != nil) {
                         let dict: NSDictionary = jsonObj as! NSDictionary
                         let tagID: UInt8 = (UInt8)((dict["tag"]?.integerValue)!)
-                        let newTag: TagInfo = TagInfo(id: tagID, father: 0, name: name)
-                        let newTab: UITabBarItem = UITabBarItem.init(title: name, image: nil, tag: userTags.count)
-                        userTags.append(newTag)
                         contactsData.addTag(Tag(id: tagID, father: 0, name: name))
-                        self.m_tabsBar.items?.append(newTab)
+                        self.updateTags()
                     }
                 }
             },
@@ -44,15 +41,7 @@ extension ContactsView {
                     print("%s", html)
                 }
                 else {
-                    var idx = 0
-                    for t in userTags {
-                        if t.tagID == tag {
-                            userTags.removeAtIndex(idx)
-                            break
-                        }
-                        idx++
-                    }
-                    contactsData.loadContacts()
+                    contactsData.remTag(tag)
                     self.updateTags()
                 }
             },
@@ -93,8 +82,7 @@ extension ContactsView {
                     print("%s", html)
                 }
                 else {
-                    contacts.append(ContactInfo(id: contact, f: flag, n: name))
-                    contactsData.loadContacts()
+                    contactsData.addContact(ContactInfo(id: contact, f: flag, n: name))
                     self.m_contacts.reloadData()
                 }
             },
@@ -105,22 +93,14 @@ extension ContactsView {
     
     func httpRemContact(contact:UInt64) {
         let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "contact":NSNumber(unsignedLongLong: contact)]
-        http.postRequest("addcontact", params: params,
+        http.postRequest("remcontact", params: params,
             success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
                 let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
                 if (html.hasPrefix("Error")) {
                     print("%s", html)
                 }
                 else {
-                    var idx = 0
-                    for con in contacts {
-                        if con.user == contact {
-                            contacts.removeAtIndex(idx)
-                            break
-                        }
-                        idx++
-                    }
-                    contactsData.loadContacts()
+                    contactsData.remContact(contact)
                     self.m_contacts.reloadData()
                 }
             },
@@ -139,8 +119,8 @@ extension ContactsView {
                 }
                 else {
                     if let json = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers) as! [String:AnyObject] {
-                        contacts.removeAll()
-                        userTags.removeAll()
+                        var contacts:Array<ContactInfo> = Array<ContactInfo>()
+                        var userTags:Array<TagInfo> = Array<TagInfo>()
                         
                         if let tagObjs = json["tags"] as? [AnyObject] {
                             for case let tagObj in (tagObjs as? [[String:AnyObject]])! {
@@ -157,9 +137,36 @@ extension ContactsView {
                                 }
                             }
                         }
-                        contactsData.loadContacts()
+                        contactsData.loadContacts(contacts, userTags: userTags)
                         self.updateTags()
                         self.m_contacts.reloadData()
+                    }
+                }
+            },
+            fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+                print("请求失败")
+        })
+    }
+}
+
+extension MoveMemberView {
+    func httpMoveMembers(tagID:UInt8, addMembers:Array<UInt64>, remMembers:Array<UInt64>) {
+        let adds:NSMutableArray = http.getIDArrayParam(addMembers)
+        let rems:NSMutableArray = http.getIDArrayParam(remMembers)
+        let params:Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "tag":NSNumber(unsignedChar: tagID), "add":adds, "rem":rems]
+        http.postRequest("updatetagmember", params: params,
+            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+                let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
+                if (html.hasPrefix("Error")) {
+                    print("%s", html)
+                }
+                else {
+                    // TODO update flag
+                    for member in addMembers {
+                        contactsData.moveContactInTag(member, tagID: tagID)
+                    }
+                    for member in remMembers {
+                        contactsData.moveContactOutTag(member, tagID: tagID)
                     }
                 }
             },
