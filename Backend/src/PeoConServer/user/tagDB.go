@@ -26,7 +26,7 @@ func getTagData(fatherID uint8, name string) string {
 	return string(append(fatherData, nameData...))
 }
 
-func getTagBits(userID uint64, tagID uint8, c redis.Conn) (uint64, error) {
+func getTagAndFatherBits(userID uint64, tagID uint8, c redis.Conn) (uint64, error) {
 	var bits uint64 = (1 << tagID)
 
 	if isSystemTag(tagID) {
@@ -44,6 +44,30 @@ func getTagBits(userID uint64, tagID uint8, c redis.Conn) (uint64, error) {
 		}
 		return bits, nil
 	}
+}
+
+func getTagAndSonsBits(userID uint64, tagID uint8, c redis.Conn) (uint64, error) {
+	var bits uint64 = (1 << tagID)
+
+	tagKey := GetTagKey(userID)
+	tags, err := redis.Strings(c.Do("LRANGE", tagKey, 0, MAX_USER_TAGS))
+	if err != nil {
+		return 0, err
+	}
+
+	for index, tag := range tags {
+		if len(tag) > 0 {
+			fatherID, _ := getTagInfo(tag)
+			if err != nil {
+				return 0, err
+			} else if fatherID == tagID {
+				sonID := uint8(index) + USER_TAG_START
+				bits |= (1 << sonID)
+			}
+		}
+	}
+
+	return bits, nil
 }
 
 func dbAddTagPrecheck(userID uint64, fatherID uint8, c redis.Conn) error {

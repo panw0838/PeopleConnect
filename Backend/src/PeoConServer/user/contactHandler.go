@@ -149,7 +149,7 @@ func AddContactHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if input.Flag == 0 {
+	if input.Flag == 0 || input.Flag&BLK_BIT != 0 {
 		fmt.Fprintf(w, "Error, invalid group")
 		return
 	}

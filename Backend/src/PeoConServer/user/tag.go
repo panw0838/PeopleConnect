@@ -2,11 +2,11 @@ package user
 
 // system tab bits
 const BLK_BIT uint64 = ONE_64
-const CTC_BIT uint64 = ONE_64 << 1
-const FRD_BIT uint64 = ONE_64 << 2
-const CWK_BIT uint64 = ONE_64 << 3
-const CLM_BIT uint64 = ONE_64 << 4
-const FML_BIT uint64 = ONE_64 << 5
+const UND_BIT uint64 = ONE_64 << 1
+const FML_BIT uint64 = ONE_64 << 2
+const CLM_BIT uint64 = ONE_64 << 3
+const CWK_BIT uint64 = ONE_64 << 4
+const FRD_BIT uint64 = ONE_64 << 5
 
 // user control bits
 const ADD_CONFIRM uint64 = ONE_64 << 30
