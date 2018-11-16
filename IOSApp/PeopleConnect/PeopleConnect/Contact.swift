@@ -189,16 +189,16 @@ class ContactsData {
         }
     }
     
-    func addTag(tag: Tag) {
-        if (tag.m_tagID == 0) {
-            m_blacklist = tag
+    func addTag(newTag: Tag) {
+        if (newTag.m_tagID == 0) {
+            m_blacklist = newTag
         }
-        else if (tag.m_fatherID == 0) {
-            m_tags.append(tag)
+        else if (newTag.m_fatherID == 0) {
+            m_tags.append(newTag)
         }
         else {
-            let tag: Tag = getTag(tag.m_fatherID)!
-            tag.addSubTag(tag)
+            let fatherTag: Tag = getTag(newTag.m_fatherID)!
+            fatherTag.addSubTag(newTag)
         }
     }
     

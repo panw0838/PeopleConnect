@@ -84,6 +84,13 @@
 			remoteGlobalIDString = 299522381BBF104D00859F49;
 			remoteInfo = "AFNetworking iOS";
 		};
+		18DB2885219EE6520024092C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 18DB2881219EE6520024092C /* XXPageTabDemo.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2622C7CD1E5F0A5300ED237C;
+			remoteInfo = XXPageTabDemo;
+		};
 		18E8CB93219331A400E29383 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 18E8CB74219331A400E29383 /* Project object */;
@@ -125,6 +132,7 @@
 		18D3A8E42198061100EB3289 /* Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		18D3A91F2199792F00EB3289 /* AFNetworking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AFNetworking.xcodeproj; path = "../AFNetworking-master/AFNetworking.xcodeproj"; sourceTree = "<group>"; };
 		18DB2879219D85BF0024092C /* MoveMemberView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoveMemberView.swift; sourceTree = "<group>"; };
+		18DB2881219EE6520024092C /* XXPageTabDemo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = XXPageTabDemo.xcodeproj; path = "../XXPageTabView-master/XXPageTabDemo.xcodeproj"; sourceTree = "<group>"; };
 		18E8CB7C219331A400E29383 /* PeopleConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeopleConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E8CB7F219331A400E29383 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		18E8CB86219331A400E29383 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -180,9 +188,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		18DB2882219EE6520024092C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				18DB2886219EE6520024092C /* XXPageTabDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		18E8CB73219331A400E29383 = {
 			isa = PBXGroup;
 			children = (
+				18DB2881219EE6520024092C /* XXPageTabDemo.xcodeproj */,
 				18D3A91F2199792F00EB3289 /* AFNetworking.xcodeproj */,
 				18E8CB7E219331A400E29383 /* PeopleConnect */,
 				18E8CB95219331A400E29383 /* PeopleConnectTests */,
@@ -338,6 +355,10 @@
 					ProductGroup = 18D3A9202199792F00EB3289 /* Products */;
 					ProjectRef = 18D3A91F2199792F00EB3289 /* AFNetworking.xcodeproj */;
 				},
+				{
+					ProductGroup = 18DB2882219EE6520024092C /* Products */;
+					ProjectRef = 18DB2881219EE6520024092C /* XXPageTabDemo.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -396,6 +417,13 @@
 			fileType = wrapper.cfbundle;
 			path = "AFNetworking tvOS Tests.xctest";
 			remoteRef = 18D3A9352199792F00EB3289 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		18DB2886219EE6520024092C /* XXPageTabDemo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = XXPageTabDemo.app;
+			remoteRef = 18DB2885219EE6520024092C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

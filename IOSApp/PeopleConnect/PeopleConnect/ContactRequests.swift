@@ -22,8 +22,10 @@ extension ContactsView {
                     if (jsonObj != nil) {
                         let dict: NSDictionary = jsonObj as! NSDictionary
                         let tagID: UInt8 = (UInt8)((dict["tag"]?.integerValue)!)
-                        contactsData.addTag(Tag(id: tagID, father: 0, name: name))
+                        contactsData.addTag(Tag(id: tagID, father: father, name: name))
                         self.updateTags()
+                        self.m_curTag = contactsData.numMainTags() - 1
+                        self.m_contacts.reloadData()
                     }
                 }
             },
@@ -42,7 +44,9 @@ extension ContactsView {
                 }
                 else {
                     contactsData.remTag(tag)
+                    self.m_curTag = 0
                     self.updateTags()
+                    self.m_contacts.reloadData()
                 }
             },
             fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in

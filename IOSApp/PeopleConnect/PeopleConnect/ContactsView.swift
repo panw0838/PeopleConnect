@@ -28,17 +28,54 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
     
     var m_curTag: Int = 0
     
+    func tagNameChanged(sender:UITextField) {
+        let alert:UIAlertController = self.presentedViewController as! UIAlertController
+        let tagName:String = (alert.textFields?.first?.text)!
+        let okAction:UIAlertAction = alert.actions.last!
+        let nameSize = tagName.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
+        okAction.enabled = (nameSize > 0 && nameSize < 18)
+    }
+    
     @IBAction func AddNewTag(sender: AnyObject) {
-        //httpAddTag(0, name: "newtag")
-        //httpRemTag(deltag)
-        //httpSearchContact("8615821112604")
-        //httpAddContact(2, flag: 2, name: "test")
-        httpRemContact(2)
+        let curTag = contactsData.m_tags[m_curTag]
+        let alert = UIAlertController(title: "添加标签", message: "", preferredStyle: .Alert)
+        let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        let subAction = UIAlertAction(title: "添加子标签到 "+curTag.m_tagName, style: .Default,
+            handler: {
+                action in
+                self.httpAddTag(curTag.m_tagID, name: (alert.textFields?.first?.text)!)})
+        let okAction = UIAlertAction(title: "添加新标签", style: .Default,
+            handler: {
+                action in
+                self.httpAddTag(0, name: (alert.textFields?.first?.text)!)})
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+                textField.placeholder = "分组名"
+                textField.addTarget(self, action: Selector("tagNameChanged:"), forControlEvents: .EditingChanged)
+        }
+        okAction.enabled = false
+        alert.addAction(cancelAction)
+        alert.addAction(okAction)
+        if m_curTag != 0 {
+            alert.addAction(subAction)
+        }
+        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     @IBAction func DelSubTag(sender: AnyObject) {
-        let header = sender as! SubTagHeader
-        httpRemTag(header.m_tagID)
+        let header = sender.superview as! SubTagHeader
+        let alertController = UIAlertController(title: "删除标签",
+            message: header.m_tagName.text, preferredStyle: UIAlertControllerStyle.Alert)
+        let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
+            handler: {
+                action in
+                self.httpRemTag(header.m_tagID)
+        })
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        self.presentViewController(alertController, animated: true, completion: nil)
+
         updateTags()
         m_contacts.reloadData()
     }
@@ -104,6 +141,14 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
             let newTab:UITabBarItem = UITabBarItem.init(title: tag.m_tagName, image: nil, tag: tagIdx)
             m_tabsBar.items?.append(newTab)
             tagIdx++
+        }
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "ShowMoveMember" {
+            let from = sender?.superview as! SubTagHeader
+            let to = segue.destinationViewController as! MoveMemberView
+            to.m_tagID = from.m_tagID
         }
     }
 }
