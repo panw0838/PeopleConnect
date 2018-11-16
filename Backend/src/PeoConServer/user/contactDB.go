@@ -126,6 +126,10 @@ func dbEnableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error {
 	if err != nil {
 		return err
 	}
+	// if flag is 0, user has no relation with contact
+	if flag == 0 {
+		return fmt.Errorf("invalid contact")
+	}
 
 	flag = (flag | bits)
 
@@ -142,6 +146,10 @@ func dbDisableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error 
 	if err != nil {
 		return err
 	}
+	// if flag is 0, user has no relation with contact
+	if flag == 0 {
+		return fmt.Errorf("invalid contact")
+	}
 
 	flag = (flag & (^bits))
 
@@ -154,19 +162,20 @@ func dbDisableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error 
 	return nil
 }
 
-func dbSetName(user1 uint64, user2 uint64, name []byte) {
+func dbSetName(user1 uint64, user2 uint64, name []byte) error {
 	c, err := redis.Dial("tcp", ContactDB)
 	if err != nil {
-		fmt.Println("Connect to redis error", err)
-		return
+		return err
 	}
 	defer c.Close()
 
 	relateKey := GetRelationKey(user1, user2)
 	_, err = c.Do("HMSET", relateKey, NameField, name)
 	if err != nil {
-		fmt.Println("update name fail:", err)
+		return err
 	}
+
+	return nil
 }
 
 func dbGetFlag(user1 uint64, user2 uint64, c redis.Conn) (uint64, error) {

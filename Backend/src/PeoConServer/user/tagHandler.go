@@ -167,7 +167,7 @@ type UpdateTagMemberInput struct {
 	Rem  []uint64 `json:"rem"`
 }
 
-func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
+func UpdateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Fprintf(w, "Error: read request")
@@ -177,7 +177,7 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 	var input UpdateTagMemberInput
 	err = json.Unmarshal(body, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error")
+		fmt.Fprintf(w, "Error: json read error %s", body)
 		return
 	}
 
@@ -206,23 +206,28 @@ func updateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tagBits, err := getTagBits(input.User, input.Tag, c)
+	addBits, err := getTagAndFatherBits(input.User, input.Tag, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
 	for _, member := range input.Add {
-		err := dbEnableBits(input.User, member, tagBits, c)
+		err := dbEnableBits(input.User, member, addBits, c)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
 		}
 	}
 
-	tagBit := getTagBit(input.Tag)
+	remBits, err := getTagAndSonsBits(input.User, input.Tag, c)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+
 	for _, member := range input.Rem {
-		err := dbDisableBits(input.User, member, tagBit, c)
+		err := dbDisableBits(input.User, member, remBits, c)
 		if err != nil {
 			fmt.Fprintf(w, "Error: %v", err)
 			return
