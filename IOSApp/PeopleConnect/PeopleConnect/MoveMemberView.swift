@@ -33,12 +33,12 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
         var addMembers:Array<UInt64> = Array<UInt64>()
         var remMembers:Array<UInt64> = Array<UInt64>()
         for member in m_inTagMembers {
-            if member.flag & bit == 0 {
+            if (member.flag & bit) == 0 {
                 addMembers.append(member.user)
             }
         }
         for member in m_outTagMembers {
-            if member.flag | bit != 0 {
+            if (member.flag & bit) != 0 {
                 remMembers.append(member.user)
             }
         }
