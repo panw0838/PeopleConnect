@@ -188,16 +188,12 @@ func dbGetFlag(user1 uint64, user2 uint64, c redis.Conn) (uint64, error) {
 	}
 
 	values, err := redis.Values(c.Do("HMGET", relationKey, FlagField))
-	relationStr, err := redis.String(values[0], err)
-	if err != nil {
-		return 0, err
-	}
-	relation, err := strconv.Atoi(relationStr)
+	relation, err := GetUint64(values[0], err)
 	if err != nil {
 		return 0, err
 	}
 
-	return uint64(relation), nil
+	return relation, nil
 }
 
 func dbGetContacts(userID uint64, c redis.Conn) ([]ContactInfo, error) {
@@ -215,29 +211,21 @@ func dbGetContacts(userID uint64, c redis.Conn) ([]ContactInfo, error) {
 		}
 
 		for _, member := range members {
-			contactStr, err := redis.String(member, err)
+			contactID, err := GetUint64(member, err)
 			if err != nil {
 				return nil, err
 			}
-			contact, err := strconv.Atoi(contactStr)
-			if err != nil {
-				return nil, err
-			}
-			contactID := uint64(contact)
 			relateKey := GetRelationKey(userID, contactID)
 			values, err := redis.Values(c.Do("HMGET", relateKey, FlagField, NameField))
-			flagStr, err := redis.String(values[0], err)
+			flag, err := GetUint64(values[0], err)
 			name, err := redis.String(values[1], err)
 			if err != nil {
 				return nil, err
 			}
-			flag, err := strconv.Atoi(flagStr)
-			if err != nil {
-				return nil, err
-			}
+
 			var newContact ContactInfo
 			newContact.User = contactID
-			newContact.Flag = uint64(flag)
+			newContact.Flag = flag
 			newContact.Name = name
 			contacts = append(contacts, newContact)
 		}

@@ -25,7 +25,7 @@ func getAccountKey(userID uint64) string {
 }
 
 func getAccountID(account string) (uint64, error) {
-	userID, err := strconv.Atoi(account[5:])
+	userID, err := strconv.ParseUint(account[5:], 10, 64)
 	if err != nil {
 		return 0, err
 	}
