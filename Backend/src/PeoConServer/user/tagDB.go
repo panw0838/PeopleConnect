@@ -7,10 +7,8 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-const TagKey = ":tag"
-
 func GetTagKey(userID uint64) string {
-	return strconv.FormatUint(uint64(userID), 16) + ":" + TagKey
+	return "tag:" + strconv.FormatUint(userID, 10)
 }
 
 func getTagInfo(tagString string) (uint8, string) {
@@ -171,7 +169,7 @@ func dbTagHasSubTag(userID uint64, tagID uint8, c redis.Conn) (bool, error) {
 
 func dbTagHasMember(userID uint64, tagID uint8, c redis.Conn) (bool, error) {
 	contactsKey := GetContactsKey(userID)
-	bit := uint64(^(ONE_64 << tagID))
+	bit := (ONE_64 << tagID)
 	members, err := redis.Values(c.Do("SMEMBERS", contactsKey))
 	if err != nil {
 		return false, err
@@ -185,7 +183,7 @@ func dbTagHasMember(userID uint64, tagID uint8, c redis.Conn) (bool, error) {
 			if err != nil {
 				return false, err
 			}
-			if (flag | bit) != ZERO_64 {
+			if (flag & bit) != ZERO_64 {
 				return true, nil
 			}
 		}

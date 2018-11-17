@@ -10,15 +10,15 @@ import (
 const ContactDB = "127.0.0.1:6379"
 const FlagField = "flag"
 const NameField = "name"
-const ContactsKey = ":contacts"
 
 func GetRelationKey(user1 uint64, user2 uint64) string {
-	return strconv.FormatUint(user1, 16) + ":" +
-		strconv.FormatUint(user2, 16)
+	return "relate:" +
+		strconv.FormatUint(user1, 10) + ":" +
+		strconv.FormatUint(user2, 10)
 }
 
 func GetContactsKey(user uint64) string {
-	return strconv.FormatUint(user, 16) + ContactsKey
+	return "contacts:" + strconv.FormatUint(user, 10)
 }
 
 func dbHitBits(userID uint64, contact uint64, bits uint64, c redis.Conn) (bool, error) {
@@ -42,15 +42,14 @@ func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
 		return 0, fmt.Errorf("account not exists")
 	}
 
-	contact, err := redis.String(c.Do("GET", cellKey))
+	account, err := redis.String(c.Do("GET", cellKey))
 	if err != nil {
 		return 0, err
 	}
-	_contact, err := strconv.Atoi(contact)
+	contactID, err := getAccountID(account)
 	if err != nil {
 		return 0, err
 	}
-	contactID := uint64(_contact)
 
 	flag, err := dbGetFlag(contactID, userID, c)
 	if err != nil {
