@@ -21,7 +21,15 @@ const ConfigField = "config"
 const PassField = "pass"
 
 func getAccountKey(userID uint64) string {
-	return strconv.FormatUint(userID, 16)
+	return "user:" + strconv.FormatUint(userID, 10)
+}
+
+func getAccountID(account string) (uint64, error) {
+	userID, err := strconv.Atoi(account[5:])
+	if err != nil {
+		return 0, err
+	}
+	return uint64(userID), nil
 }
 
 func getCellKey(cellNumber string) string {
@@ -96,13 +104,13 @@ func dbVerifyUser(loginInfo LoginInfo, c redis.Conn) (uint64, error) {
 		return 0, err
 	}
 
-	userID, err := strconv.Atoi(accountKey)
+	userID, err := getAccountID(accountKey)
 	if err != nil {
 		return 0, err
 	}
 
 	if strings.Compare(password, loginInfo.Password) == 0 {
-		return uint64(userID), nil
+		return userID, nil
 	} else {
 		return 0, fmt.Errorf("password not correct")
 	}
