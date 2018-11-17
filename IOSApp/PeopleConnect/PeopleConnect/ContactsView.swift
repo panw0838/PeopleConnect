@@ -27,6 +27,7 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
     @IBOutlet weak var m_contacts: UICollectionView!
     
     var m_curTag: Int = 0
+    var m_searchContact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
     
     func tagNameChanged(sender:UITextField) {
         let alert:UIAlertController = self.presentedViewController as! UIAlertController
@@ -37,16 +38,14 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
     }
     
     @IBAction func AddNewTag(sender: AnyObject) {
-        let curTag = contactsData.m_tags[m_curTag]
+        let curTag = contactsData.getSubTag(m_curTag, subIdx: 0)
         let alert = UIAlertController(title: "添加标签", message: "", preferredStyle: .Alert)
         let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let subAction = UIAlertAction(title: "添加子标签到 "+curTag.m_tagName, style: .Default,
-            handler: {
-                action in
+            handler: { action in
                 self.httpAddTag(curTag.m_tagID, name: (alert.textFields?.first?.text)!)})
         let okAction = UIAlertAction(title: "添加新标签", style: .Default,
-            handler: {
-                action in
+            handler: { action in
                 self.httpAddTag(0, name: (alert.textFields?.first?.text)!)})
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
@@ -56,7 +55,7 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
         okAction.enabled = false
         alert.addAction(cancelAction)
         alert.addAction(okAction)
-        if m_curTag != 0 {
+        if curTag.m_tagID != 2 {
             alert.addAction(subAction)
         }
         self.presentViewController(alert, animated: true, completion: nil)
@@ -64,32 +63,37 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
     
     @IBAction func DelSubTag(sender: AnyObject) {
         let header = sender.superview as! SubTagHeader
-        let alertController = UIAlertController(title: "删除标签",
-            message: header.m_tagName.text, preferredStyle: UIAlertControllerStyle.Alert)
+        let alert = UIAlertController(title: "删除标签", message: header.m_tagName.text, preferredStyle: UIAlertControllerStyle.Alert)
+        let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
+            handler: { action in
+                self.httpRemTag(header.m_tagID)
+        })
+        alert.addAction(cancelAction)
+        alert.addAction(okAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    @IBAction func SearchContact(sender: AnyObject) {
+        let alert = UIAlertController(title: "搜索联系人", message: "", preferredStyle: UIAlertControllerStyle.Alert)
         let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
             handler: {
                 action in
-                self.httpRemTag(header.m_tagID)
+                self.httpSearchContact((alert.textFields?.first?.text)!)
+                //self.presentViewController(holding, animated: false, completion: nil)
         })
-        alertController.addAction(cancelAction)
-        alertController.addAction(okAction)
-        self.presentViewController(alertController, animated: true, completion: nil)
-
-        updateTags()
-        m_contacts.reloadData()
-    }
-    
-    @IBAction func AddContact(sender: AnyObject) {
-        let editor = sender as! UITextField
-        httpSearchContact(editor.text!)
-    }
-    
-    @IBAction func RemContact(sender: AnyObject) {
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "请输入手机号"
+        }
+        alert.addAction(cancelAction)
+        alert.addAction(okAction)
+        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return contactsData.m_tags[m_curTag].m_subTags.count + 1
+        return contactsData.numSubTags(m_curTag)
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -109,13 +113,10 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
     func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "SubTagHeader", forIndexPath: indexPath) as! SubTagHeader
         let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
-        var tagName = subTag.m_tagName
-        if indexPath.section == contactsData.m_tags[m_curTag].m_subTags.count {
-            tagName = (indexPath.section == 0 ? "全部" : "其他") + tagName
-        }
-        header.m_tagName.text = tagName
-        header.m_editBtn.hidden = (m_curTag == 0 && indexPath.section == 0)
-        header.m_delBtn.hidden = (subTag.canBeDelete() ? false : true)
+        
+        header.m_tagName.text = subTag.m_tagName
+        header.m_editBtn.hidden = !subTag.canBeEdit()
+        header.m_delBtn.hidden = !subTag.canBeDelete()
         header.m_tagID = subTag.m_tagID
         return header
     }
@@ -142,6 +143,8 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
             m_tabsBar.items?.append(newTab)
             tagIdx++
         }
+        let newTab:UITabBarItem = UITabBarItem.init(title: "未分类", image: nil, tag: tagIdx)
+        m_tabsBar.items?.append(newTab)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -149,6 +152,10 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
             let from = sender?.superview as! SubTagHeader
             let to = segue.destinationViewController as! MoveMemberView
             to.m_tagID = from.m_tagID
+        }
+        if segue.identifier == "ShowContact" {
+            let to = segue.destinationViewController as! ContactView
+            to.m_contact = self.m_searchContact
         }
     }
 }

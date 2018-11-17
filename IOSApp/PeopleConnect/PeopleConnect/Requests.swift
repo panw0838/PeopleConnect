@@ -26,7 +26,7 @@ let http: HttpService = HttpService()
 
 class HttpService {
     var afManager: AFHTTPSessionManager = AFHTTPSessionManager()
-    var baseURL: String = "https://192.168.0.103:8080/"
+    var baseURL: String = "https://192.168.0.104:8080/"
     
     init() {
         let cerSet: Set<NSData> = AFSecurityPolicy.certificatesInBundle(NSBundle.mainBundle())

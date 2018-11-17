@@ -60,57 +60,29 @@ extension ContactsView {
             success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
                 let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
                 if (html.hasPrefix("Error")) {
-                    print("%s", html)
+                    let error = UIAlertController(title: "错误", message: html, preferredStyle: .Alert)
+                    let okAction = UIAlertAction(title: "确定", style: .Default, handler: nil)
+                    error.addAction(okAction)
+                    //holding.presentingViewController!.dismissViewControllerAnimated(false, completion: nil)
+                    self.presentViewController(error, animated: false, completion: nil)
                 }
                 else {
                     let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
                     if (jsonObj != nil) {
                         let dict: NSDictionary = jsonObj as! NSDictionary
-                        let uid: UInt64 = (UInt64)((dict["user"]?.integerValue)!)
-                        let name: String = dict["name"] as! String
-                        print("%x %s", uid, name)
+                        self.m_searchContact.user = (UInt64)((dict["user"]?.integerValue)!)
+                        self.m_searchContact.name = dict["name"] as! String
+                        //self.dismissViewControllerAnimated(false, completion: nil)
+                        self.performSegueWithIdentifier("ShowContact", sender: nil)
                     }
                 }
             },
             fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-                print("请求失败")
-        })
-    }
-    
-    func httpAddContact(contact:UInt64, flag:UInt64, name:String) {
-        let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "contact":NSNumber(unsignedLongLong: contact), "name":name, "flag":NSNumber(unsignedLongLong: flag)]
-        http.postRequest("addcontact", params: params,
-            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-                let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-                if (html.hasPrefix("Error")) {
-                    print("%s", html)
-                }
-                else {
-                    contactsData.addContact(ContactInfo(id: contact, f: flag, n: name))
-                    self.m_contacts.reloadData()
-                }
-            },
-            fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-                print("请求失败")
-        })
-    }
-    
-    func httpRemContact(contact:UInt64) {
-        let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "contact":NSNumber(unsignedLongLong: contact)]
-        http.postRequest("remcontact", params: params,
-            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-                let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-                if (html.hasPrefix("Error")) {
-                    print("%s", html)
-                }
-                else {
-                    contactsData.remContact(contact)
-                    self.m_contacts.reloadData()
-                }
-            },
-            fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-                print("请求失败")
-        })
+                let error = UIAlertController(title: "错误", message: "请求失败", preferredStyle: .Alert)
+                let okAction = UIAlertAction(title: "确定", style: .Default, handler: nil)
+                error.addAction(okAction)
+                self.presentViewController(error, animated: false, completion: nil)
+            })
     }
     
     func httpGetContacts() {
@@ -145,6 +117,42 @@ extension ContactsView {
                         self.updateTags()
                         self.m_contacts.reloadData()
                     }
+                }
+            },
+            fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+                print("请求失败")
+        })
+    }
+}
+
+extension ContactView {
+    func httpAddContact(contact:UInt64, flag:UInt64, name:String) {
+        let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "contact":NSNumber(unsignedLongLong: contact), "name":name, "flag":NSNumber(unsignedLongLong: flag)]
+        http.postRequest("addcontact", params: params,
+            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+                let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
+                if (html.hasPrefix("Error")) {
+                    print("%s", html)
+                }
+                else {
+                    contactsData.addContact(ContactInfo(id: contact, f: flag, n: name))
+                }
+            },
+            fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+                print("请求失败")
+        })
+    }
+    
+    func httpRemContact(contact:UInt64) {
+        let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "contact":NSNumber(unsignedLongLong: contact)]
+        http.postRequest("remcontact", params: params,
+            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+                let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
+                if (html.hasPrefix("Error")) {
+                    print("%s", html)
+                }
+                else {
+                    contactsData.remContact(contact)
                 }
             },
             fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
