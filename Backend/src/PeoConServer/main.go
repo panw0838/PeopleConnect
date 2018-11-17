@@ -28,6 +28,8 @@ func main() {
 	http.HandleFunc("/addtag", user.AddTagHandler)
 	http.HandleFunc("/remtag", user.RemTagHandler)
 	http.HandleFunc("/searchcontact", user.SearchContactHandler)
+	http.HandleFunc("/addcontact", user.AddContactHandler)
+	http.HandleFunc("/remcontact", user.RemContactHandler)
 	http.HandleFunc("/updatetagmember", user.UpdateTagMemberHandler)
 	e := http.ListenAndServeTLS(":8080", crtPath, keyPath, nil)
 	if e != nil {

@@ -41,9 +41,11 @@ func AddTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !isSystemTag(params.Father) && !isUserTag(params.Father) {
-		fmt.Fprintf(w, "Error: Invalud father tag")
-		return
+	if params.Father != 0 {
+		if !isSystemFatherTag(params.Father) && !isUserTag(params.Father) {
+			fmt.Fprintf(w, "Error: Invalud father tag")
+			return
+		}
 	}
 
 	c, err := redis.Dial("tcp", ContactDB)
@@ -181,7 +183,7 @@ func UpdateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !isSystemTag(input.Tag) && !isUserTag(input.Tag) {
+	if !isSystemFatherTag(input.Tag) && !isUserTag(input.Tag) {
 		fmt.Fprintf(w, "Error: Invalid tag")
 		return
 	}

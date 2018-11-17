@@ -16,10 +16,11 @@ const ONE_64 uint64 = 0x1
 const ZERO_64 uint64 = 0x0
 
 // system tags id
-// blacklist, contact, friend, coworker, classmate, family
-// 0          1        2       3         4          5
+// blacklist, undefine, friend, coworker, classmate, family
+// 0          1         2       3         4          5
 const SYSTEM_TAG_START uint8 = 0
 const SYSTEM_TAG_END uint8 = 5
+const SYSTEM_TAG_VALID_START uint8 = 2
 
 // user define tag id
 // from 32 - 63, 32 tags in total
@@ -40,6 +41,11 @@ type TagInfo struct {
 
 func isSystemTag(tagID uint8) bool {
 	return tagID >= SYSTEM_TAG_START &&
+		tagID <= SYSTEM_TAG_END
+}
+
+func isSystemFatherTag(tagID uint8) bool {
+	return tagID >= SYSTEM_TAG_VALID_START &&
 		tagID <= SYSTEM_TAG_END
 }
 
