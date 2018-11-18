@@ -37,8 +37,8 @@ extension ContactInfo {
         else {
             return nil
         }
-        self.user = UInt64(user.intValue)
-        self.flag = UInt64(flag.intValue)
+        self.user = UInt64(user.unsignedLongLongValue)
+        self.flag = UInt64(flag.unsignedLongLongValue)
         self.name = name
     }
 }
@@ -74,8 +74,8 @@ extension TagInfo {
         else {
             return nil
         }
-        self.tagID = UInt8(tagID.intValue)
-        self.fatherID = UInt8(fatherID.intValue)
+        self.tagID = UInt8(tagID.unsignedCharValue)
+        self.fatherID = UInt8(fatherID.unsignedCharValue)
         self.tagName = tagName
     }
 }
