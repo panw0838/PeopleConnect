@@ -161,7 +161,7 @@ func AddContactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	flag, err := dbGetFlag(input.User, input.Contact, c)
+	flag, err := DbGetFlag(input.User, input.Contact, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -171,7 +171,7 @@ func AddContactHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	otherFlag, err := dbGetFlag(input.Contact, input.User, c)
+	otherFlag, err := DbGetFlag(input.Contact, input.User, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return

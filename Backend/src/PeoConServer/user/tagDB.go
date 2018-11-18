@@ -179,7 +179,7 @@ func dbTagHasMember(userID uint64, tagID uint8, c redis.Conn) (bool, error) {
 			if err != nil {
 				return false, err
 			}
-			flag, err := dbGetFlag(userID, contact, c)
+			flag, err := DbGetFlag(userID, contact, c)
 			if err != nil {
 				return false, err
 			}
