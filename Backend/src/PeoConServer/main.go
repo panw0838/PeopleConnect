@@ -35,10 +35,14 @@ func getContactsHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/login", user.LoginHandler)
 	http.HandleFunc("/registry", user.RegisterHandler)
-	http.HandleFunc("/contacts", user.GetContactsHandler)
+
 	http.HandleFunc("/addtag", user.AddTagHandler)
 	http.HandleFunc("/remtag", user.RemTagHandler)
+
+	http.HandleFunc("/contacts", user.GetContactsHandler)
 	http.HandleFunc("/searchcontact", user.SearchContactHandler)
+	http.HandleFunc("/requestcontact", user.RequestContactHandler)
+	http.HandleFunc("/syncrequests", user.SyncRequestsHandler)
 	http.HandleFunc("/addcontact", user.AddContactHandler)
 	http.HandleFunc("/remcontact", user.RemContactHandler)
 	http.HandleFunc("/updatetagmember", user.UpdateTagMemberHandler)

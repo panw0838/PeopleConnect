@@ -10,6 +10,7 @@ import (
 const ContactDB = "127.0.0.1:6379"
 const FlagField = "flag"
 const NameField = "name"
+const MessField = "mess"
 
 func GetRelationKey(user1 uint64, user2 uint64) string {
 	return "relate:" +
@@ -21,15 +22,31 @@ func GetContactsKey(user uint64) string {
 	return "contacts:" + strconv.FormatUint(user, 10)
 }
 
-func dbHitBits(userID uint64, contact uint64, bits uint64, c redis.Conn) (bool, error) {
-	flag, err := DbGetFlag(userID, contact, c)
-	if err != nil {
-		return false, err
+func GetRequestsKey(user uint64) string {
+	return "requests:" + strconv.FormatUint(user, 10)
+}
+
+func GetRequestKey(user1 uint64, user2 uint64) string {
+	return "request:" +
+		strconv.FormatUint(user1, 10) + ":" +
+		strconv.FormatUint(user2, 10)
+}
+
+func addContactPreCheck(from uint64, to uint64, flag uint64, name string) error {
+	if from == to {
+		return fmt.Errorf("can't request self")
 	}
-	if flag&bits == 0 {
-		return false, nil
+
+	nameLen := len(name)
+	if nameLen == 0 || nameLen > int(NAME_SIZE) {
+		return fmt.Errorf("invalid contact name")
 	}
-	return true, nil
+
+	if flag == 0 || flag&BLK_BIT != 0 {
+		return fmt.Errorf("invalid group")
+	}
+
+	return nil
 }
 
 func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
@@ -61,8 +78,86 @@ func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
 	return contactID, nil
 }
 
-func dbAddContact(user1 uint64, user2 uint64, flag uint64, name string, c redis.Conn) error {
+func dbAddRequest(input RequestContactInput, c redis.Conn) error {
 	_, err := c.Do("MULTI")
+	if err != nil {
+		return err
+	}
+
+	requestKey := GetRequestKey(input.From, input.To)
+	_, err = c.Do("HMSET", requestKey,
+		FlagField, input.Flag,
+		NameField, input.Name,
+		MessField, input.Message)
+	if err != nil {
+		return err
+	}
+
+	requestsKey := GetRequestsKey(input.To)
+	_, err = c.Do("RPUSH", requestsKey, input.From)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.Do("EXEC")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func dbSyncRequests(user uint64, c redis.Conn) ([]Request, error) {
+	requestsKey := GetRequestsKey(user)
+	numRequests, err := redis.Uint64(c.Do("LLEN", requestsKey))
+	if err != nil {
+		return nil, err
+	}
+
+	var requests []Request
+	rawDatas, err := redis.Values(c.Do("LRANGE", requestsKey, 0, numRequests))
+	for _, rawData := range rawDatas {
+		var request Request
+		from, err := GetUint64(rawData, err)
+		if err != nil {
+			return nil, err
+		}
+		request.From = from
+
+		fromAccountKey := getAccountKey(from)
+		name, err := dbGetUserInfoField(fromAccountKey, NameField, c)
+		if err != nil {
+			return nil, err
+		}
+		request.Name = name
+
+		requestKey := GetRequestKey(from, user)
+		values, err := redis.Values(c.Do("HMGET", requestKey, MessField))
+		messege, err := redis.String(values[0], err)
+		if err != nil {
+			return nil, err
+		}
+		request.Mess = messege
+
+		requests = append(requests, request)
+	}
+
+	return requests, nil
+}
+
+func dbAddContact(user1 uint64, user2 uint64, flag uint64, name string, c redis.Conn) error {
+	requestKey := GetRequestKey(user2, user1)
+	requestsKey := GetRequestsKey(user2)
+	values, err := redis.Values(c.Do("HMGET", requestKey, FlagField, NameField))
+	if err != nil {
+		return err
+	}
+	otherFlag, err := GetUint64(values[0], err)
+	otherName, err := redis.String(values[1], err)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.Do("MULTI")
 	if err != nil {
 		return err
 	}
@@ -74,9 +169,31 @@ func dbAddContact(user1 uint64, user2 uint64, flag uint64, name string, c redis.
 	if err != nil {
 		return err
 	}
+	otherRelateKey := GetRelationKey(user2, user1)
+	_, err = c.Do("HMSET", otherRelateKey,
+		FlagField, otherFlag,
+		NameField, otherName)
+	if err != nil {
+		return err
+	}
 
 	contactsKey := GetContactsKey(user1)
 	_, err = c.Do("SADD", contactsKey, user2)
+	if err != nil {
+		return err
+	}
+	otherContactsKey := GetContactsKey(user2)
+	_, err = c.Do("SADD", otherContactsKey, user1)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.Do("DEL", requestKey)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.Do("SREM", requestsKey, user1)
 	if err != nil {
 		return err
 	}

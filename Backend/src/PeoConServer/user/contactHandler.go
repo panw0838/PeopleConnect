@@ -117,6 +117,101 @@ func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", data)
 }
 
+type RequestContactInput struct {
+	From    uint64 `json:"from"`
+	To      uint64 `json:"to"`
+	Flag    uint64 `json:"flag"`
+	Name    string `json:"name"`
+	Message string `json:"mess"`
+}
+
+func RequestContactHandler(w http.ResponseWriter, r *http.Request) {
+	var input RequestContactInput
+	err := ReadInput(r, &input)
+	if err != nil {
+		fmt.Fprintf(w, "Error: read input")
+		return
+	}
+
+	err = addContactPreCheck(input.From, input.To, input.Flag, input.Name)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+
+	c, err := redis.Dial("tcp", ContactDB)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+	defer c.Close()
+
+	requestKey := GetRequestKey(input.From, input.To)
+	exists, err := redis.Int64(c.Do("EXISTS", requestKey))
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+	if exists == 1 {
+		fmt.Fprintf(w, "Error: request exist")
+		return
+	}
+
+	err = dbAddRequest(input, c)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+
+	fmt.Fprintf(w, "Success")
+}
+
+type SyncRequestsInput struct {
+	User uint64 `json:"user"`
+}
+
+type Request struct {
+	From uint64 `json:"from"`
+	Name string `json:"name"`
+	Mess string `json:"mess"`
+}
+
+type SyncRequestsReturn struct {
+	Requests []Request `json:"requests"`
+}
+
+func SyncRequestsHandler(w http.ResponseWriter, r *http.Request) {
+	var input SyncRequestsInput
+	err := ReadInput(r, &input)
+	if err != nil {
+		fmt.Fprintf(w, "Error: read input")
+		return
+	}
+
+	c, err := redis.Dial("tcp", ContactDB)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+	defer c.Close()
+
+	requests, err := dbSyncRequests(input.User, c)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+
+	var response SyncRequestsReturn
+	response.Requests = requests
+	data, err := json.Marshal(&response)
+	if err != nil {
+		fmt.Fprintf(w, "Error: json read error %s", data)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", data)
+}
+
 type AddContactInput struct {
 	User    uint64 `json:"user"`
 	Contact uint64 `json:"contact"`
@@ -125,32 +220,16 @@ type AddContactInput struct {
 }
 
 func AddContactHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Error: read request")
-		return
-	}
-
 	var input AddContactInput
-	err = json.Unmarshal(body, &input)
+	err := ReadInput(r, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error %s", body)
+		fmt.Fprintf(w, "Error: json read error")
 		return
 	}
 
-	if input.User == input.Contact {
-		fmt.Fprintf(w, "Error, invalid contact")
-		return
-	}
-
-	nameLen := len(input.Name)
-	if nameLen == 0 || nameLen > int(NAME_SIZE) {
-		fmt.Fprintf(w, "Error, invalid contact name")
-		return
-	}
-
-	if input.Flag == 0 || input.Flag&BLK_BIT != 0 {
-		fmt.Fprintf(w, "Error, invalid group")
+	err = addContactPreCheck(input.User, input.Contact, input.Flag, input.Name)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
@@ -161,23 +240,14 @@ func AddContactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	flag, err := DbGetFlag(input.User, input.Contact, c)
+	requestKey := GetRequestKey(input.Contact, input.User)
+	exists, err := redis.Int64(c.Do("EXISTS", requestKey))
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
-	if flag != 0 {
-		fmt.Fprintf(w, "Error: account already add")
-		return
-	}
-
-	otherFlag, err := DbGetFlag(input.Contact, input.User, c)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
-	if otherFlag&BLK_BIT != 0 {
-		fmt.Fprintf(w, "Error: account not exists")
+	if exists == 0 {
+		fmt.Fprintf(w, "Error: request not exist")
 		return
 	}
 
@@ -195,16 +265,10 @@ type RemContactInput struct {
 }
 
 func RemContactHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Error: read request")
-		return
-	}
-
 	var input RemContactInput
-	err = json.Unmarshal(body, &input)
+	err := ReadInput(r, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error %s", body)
+		fmt.Fprintf(w, "Error: json read error")
 		return
 	}
 

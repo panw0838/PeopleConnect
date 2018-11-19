@@ -43,7 +43,7 @@ func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !IsFriend(relation) {
-		fmt.Fprintf(w, "Error: not friend")
+		fmt.Fprintf(w, "Error: not friend %v", relation)
 		return
 	}
 
@@ -57,8 +57,7 @@ func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type MessegeSyncInput struct {
-	User      uint64 `json:"user"`
-	MessegeID uint64 `json:"mess"`
+	User uint64 `json:"user"`
 }
 
 type MessegeSyncReturn struct {
