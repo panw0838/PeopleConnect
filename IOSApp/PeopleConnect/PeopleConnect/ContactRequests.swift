@@ -127,16 +127,16 @@ extension ContactsView {
 }
 
 extension ContactView {
-    func httpAddContact(contact:UInt64, flag:UInt64, name:String) {
-        let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "contact":NSNumber(unsignedLongLong: contact), "name":name, "flag":NSNumber(unsignedLongLong: flag)]
-        http.postRequest("addcontact", params: params,
+    func httpRequestContact(contact:UInt64, flag:UInt64, name:String, messege:String) {
+        let params: Dictionary = ["from":NSNumber(unsignedLongLong: userInfo.userID), "to":NSNumber(unsignedLongLong: contact), "name":name, "flag":NSNumber(unsignedLongLong: flag), "mess":messege]
+        http.postRequest("requestcontact", params: params,
             success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
                 let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
                 if (html.hasPrefix("Error")) {
                     print("%s", html)
                 }
                 else {
-                    contactsData.addContact(ContactInfo(id: contact, f: flag, n: name))
+                    //contactsData.addContact(ContactInfo(id: contact, f: flag, n: name))
                 }
             },
             fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -187,3 +187,5 @@ extension MoveMemberView {
         })
     }
 }
+
+

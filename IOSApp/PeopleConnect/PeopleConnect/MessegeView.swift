@@ -25,7 +25,7 @@ class SendCell: UITableViewCell {
 class MessegeView: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var m_id:UInt64 = 0
-    var m_data:Messege? = nil
+    var m_data:MessegeSender? = nil
     
     @IBOutlet weak var m_text: UITextField!
     
@@ -38,7 +38,7 @@ class MessegeView: UIViewController, UITableViewDataSource, UITableViewDelegate 
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        m_data = messegeData.GetMessege(m_id)
+        m_data = messegeData.GetMessegeSender(m_id)
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {

@@ -124,6 +124,7 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
         m_selectContact = subTag.m_members[indexPath.row]
+        self.performSegueWithIdentifier("ShowContact", sender: nil)
     }
     
     func tabBar(tabBar: UITabBar, didSelectItem item: UITabBarItem) {

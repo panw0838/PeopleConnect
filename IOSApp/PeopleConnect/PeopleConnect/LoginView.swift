@@ -39,7 +39,7 @@ class LoginView: UIViewController {
         cell++
     }
     
-    @IBAction func login(sender: AnyObject) {
+    @IBAction func login1(sender: AnyObject) {
         let deviceID:String = (UIDevice.currentDevice().identifierForVendor?.UUIDString)!
         let params: Dictionary = ["cell":String(123456), "code":"0838", "pass":"123456", "device":deviceID]
         
@@ -61,5 +61,53 @@ class LoginView: UIViewController {
             fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
                 print("请求失败")
             })
+    }
+    
+    @IBAction func login2(sender: AnyObject) {
+        let deviceID:String = (UIDevice.currentDevice().identifierForVendor?.UUIDString)!
+        let params: Dictionary = ["cell":String(123457), "code":"0838", "pass":"123456", "device":deviceID]
+        
+        http.postRequest("login", params: params,
+            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+                let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
+                if (html.hasPrefix("Error")) {
+                    print("%s", html)
+                }
+                else {
+                    let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
+                    if (jsonObj != nil) {
+                        let dict: NSDictionary = jsonObj as! NSDictionary
+                        userInfo.userID = (UInt64)((dict.valueForKey("user")?.integerValue)!)
+                    }
+                    self.performSegueWithIdentifier("ShowMainMenu", sender: nil)
+                }
+            },
+            fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+                print("请求失败")
+        })
+    }
+    
+    @IBAction func login3(sender: AnyObject) {
+        let deviceID:String = (UIDevice.currentDevice().identifierForVendor?.UUIDString)!
+        let params: Dictionary = ["cell":String(123458), "code":"0838", "pass":"123456", "device":deviceID]
+        
+        http.postRequest("login", params: params,
+            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+                let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
+                if (html.hasPrefix("Error")) {
+                    print("%s", html)
+                }
+                else {
+                    let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
+                    if (jsonObj != nil) {
+                        let dict: NSDictionary = jsonObj as! NSDictionary
+                        userInfo.userID = (UInt64)((dict.valueForKey("user")?.integerValue)!)
+                    }
+                    self.performSegueWithIdentifier("ShowMainMenu", sender: nil)
+                }
+            },
+            fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+                print("请求失败")
+        })
     }
 }

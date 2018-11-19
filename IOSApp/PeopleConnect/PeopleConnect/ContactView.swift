@@ -17,6 +17,9 @@ class ContactView: UIViewController {
     @IBOutlet weak var m_background: UIImageView!
     
     var m_contact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
+    var m_messege:String = ""
+    var m_nameGood:Bool = false
+    var m_messegeGood:Bool = false
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -24,15 +27,42 @@ class ContactView: UIViewController {
         m_profile.image = UIImage(named: "default_profile")
     }
     
-    @IBAction func AddContact() {
+    func requestNameChanged(sender:UITextField) {
+        let alert:UIAlertController = self.presentedViewController as! UIAlertController
+        let okAction:UIAlertAction = alert.actions.last!
+        m_contact.name = (alert.textFields?.first?.text)!
+        let nameSize = m_contact.name.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
+        m_nameGood = (nameSize > 0 && nameSize < 18)
+        okAction.enabled = (m_nameGood && m_messegeGood)
+    }
+    
+    func requestMessegeChanged(sender:UITextField) {
+        let alert:UIAlertController = self.presentedViewController as! UIAlertController
+        let okAction:UIAlertAction = alert.actions.last!
+        m_messege = (alert.textFields?.last?.text)!
+        let nameSize = m_messege.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
+        m_messegeGood = (nameSize > 0 && nameSize < 18)
+        okAction.enabled = (m_nameGood && m_messegeGood)
+    }
+    
+    @IBAction func RequestContact() {
         let alert = UIAlertController(title: "添加联系人", message: "", preferredStyle: UIAlertControllerStyle.Alert)
         let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
             handler: {
                 action in
-                self.m_contact.flag = 2
-                self.httpAddContact(self.m_contact.user, flag: self.m_contact.flag, name: self.m_contact.name)
+                self.httpRequestContact(self.m_contact.user, flag: 2, name: self.m_contact.name, messege: self.m_messege)
         })
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = self.m_contact.name
+            textField.addTarget(self, action: Selector("requestNameChanged:"), forControlEvents: .EditingChanged)
+        }
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "好友请求信息"
+            textField.addTarget(self, action: Selector("requestMessegeChanged:"), forControlEvents: .EditingChanged)
+        }
         alert.addAction(cancelAction)
         alert.addAction(okAction)
         self.presentViewController(alert, animated: true, completion: nil)

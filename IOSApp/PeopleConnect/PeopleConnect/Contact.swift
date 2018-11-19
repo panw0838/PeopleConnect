@@ -314,6 +314,15 @@ class ContactsData {
         }
     }
     
+    func getContact(contactID:UInt64)->ContactInfo? {
+        for contact in m_contacts {
+            if contact.user == contactID {
+                return contact
+            }
+        }
+        return nil
+    }
+    
     func popContact(contactID:UInt64)->ContactInfo? {
         for (idx, contact) in m_contacts.enumerate() {
             if contact.user == contactID {
