@@ -40,4 +40,11 @@ class ContactView: UIViewController {
     
     @IBAction func RemContact(sender: AnyObject) {
     }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "StartConversation" {
+            let to = segue.destinationViewController as! MessegeView
+            to.m_id = m_contact.user
+        }
+    }
 }

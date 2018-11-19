@@ -11,7 +11,7 @@ import UIKit
 class ContactCell: UICollectionViewCell {
     @IBOutlet weak var m_image: UIImageView!
     @IBOutlet weak var m_name: UILabel!
-    
+    var m_contact:UInt64 = 0
 }
 
 class SubTagHeader: UICollectionReusableView {
@@ -27,8 +27,8 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
     @IBOutlet weak var m_contacts: UICollectionView!
     
     var m_curTag: Int = 0
-    var m_searchContact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
-    
+    var m_selectContact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
+
     func tagNameChanged(sender:UITextField) {
         let alert:UIAlertController = self.presentedViewController as! UIAlertController
         let tagName:String = (alert.textFields?.first?.text)!
@@ -121,6 +121,11 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
         return header
     }
     
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
+        m_selectContact = subTag.m_members[indexPath.row]
+    }
+    
     func tabBar(tabBar: UITabBar, didSelectItem item: UITabBarItem) {
         m_curTag = item.tag
         m_contacts.reloadData()
@@ -155,7 +160,7 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
         }
         if segue.identifier == "ShowContact" {
             let to = segue.destinationViewController as! ContactView
-            to.m_contact = self.m_searchContact
+            to.m_contact = self.m_selectContact
         }
     }
 }

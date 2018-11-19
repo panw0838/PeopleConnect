@@ -70,8 +70,9 @@ extension ContactsView {
                     let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
                     if (jsonObj != nil) {
                         let dict: NSDictionary = jsonObj as! NSDictionary
-                        self.m_searchContact.user = (UInt64)((dict["user"]?.integerValue)!)
-                        self.m_searchContact.name = dict["name"] as! String
+                        self.m_selectContact.user = (UInt64)((dict["user"]?.integerValue)!)
+                        self.m_selectContact.name = dict["name"] as! String
+                        self.m_selectContact.flag = 0
                         //self.dismissViewControllerAnimated(false, completion: nil)
                         self.performSegueWithIdentifier("ShowContact", sender: nil)
                     }
@@ -173,7 +174,6 @@ extension MoveMemberView {
                     print("%s", html)
                 }
                 else {
-                    // TODO update flag
                     for member in addMembers {
                         contactsData.moveContactInTag(member, tagID: tagID)
                     }
