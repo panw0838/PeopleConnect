@@ -184,10 +184,10 @@ class ContactsData {
         m_blacklist.m_members.removeAll()
         m_undefine.m_members.removeAll()
         // system tags
-        addTag(Tag(id: 2, father: 0, name: "家人"))
-        addTag(Tag(id: 3, father: 0, name: "同学"))
-        addTag(Tag(id: 4, father: 0, name: "同事"))
-        addTag(Tag(id: 5, father: 0, name: "朋友"))
+        m_tags.append(Tag(id: 2, father: 0, name: "家人"))
+        m_tags.append(Tag(id: 3, father: 0, name: "同学"))
+        m_tags.append(Tag(id: 4, father: 0, name: "同事"))
+        m_tags.append(Tag(id: 5, father: 0, name: "朋友"))
     }
     
     func numMainTags()->Int {
@@ -203,32 +203,19 @@ class ContactsData {
         return tag.m_subTags.count + 1
     }
 
-    func getSubTag(mainIdx:Int, subIdx:Int)->Tag {
-        if mainIdx == m_tags.count {
-            return m_undefine
+    func getSubTag(idx:Int, subIdx:Int)->Tag {
+        let tag = getMainTag(idx)
+        if subIdx == tag.m_subTags.count {
+            return tag
         }
         else {
-            let tag = m_tags[mainIdx]
-            if subIdx == tag.m_subTags.count {
-                return tag
-            }
-            else {
-                return tag.m_subTags[subIdx]
-            }
+            return tag.m_subTags[subIdx]
         }
     }
     
-    func addTag(newTag: Tag) {
-        if (newTag.m_tagID == 0) {
-            m_blacklist = newTag
-        }
-        else if (newTag.m_fatherID == 0) {
-            m_tags.append(newTag)
-        }
-        else {
-            let fatherTag: Tag = getTag(newTag.m_fatherID)!
-            fatherTag.addSubTag(newTag)
-        }
+    func addSubTag(newTag: Tag) {
+        let fatherTag: Tag = m_tags[Int(newTag.m_fatherID) - 2]
+        fatherTag.addSubTag(newTag)
     }
     
     func getTag(tagID: UInt8)->Tag? {
@@ -271,14 +258,10 @@ class ContactsData {
     }
     
     func remTag(tagID: UInt8) {
-        for (i, tag) in m_tags.enumerate() {
-            if tag.m_tagID == tagID {
-                m_tags.removeAtIndex(i)
-                return
-            }
-            for (j, subTag) in tag.m_subTags.enumerate() {
+        for mainTag in m_tags {
+            for (j, subTag) in mainTag.m_subTags.enumerate() {
                 if subTag.m_tagID == tagID {
-                    tag.m_subTags.removeAtIndex(j)
+                    mainTag.m_subTags.removeAtIndex(j)
                     return
                 }
             }
@@ -367,7 +350,7 @@ class ContactsData {
         
         // load user tags
         for tagInfo in userTags {
-            addTag(Tag(id: tagInfo.tagID, father: tagInfo.fatherID, name: tagInfo.tagName))
+            addSubTag(Tag(id: tagInfo.tagID, father: tagInfo.fatherID, name: tagInfo.tagName))
         }
         
         for contact in contacts {

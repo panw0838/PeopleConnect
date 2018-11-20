@@ -55,6 +55,7 @@ class LoginView: UIViewController {
                         let dict: NSDictionary = jsonObj as! NSDictionary
                         userInfo.userID = (UInt64)((dict.valueForKey("user")?.integerValue)!)
                     }
+                    httpGetContacts()
                     self.performSegueWithIdentifier("ShowMainMenu", sender: nil)
                 }
             },
@@ -79,6 +80,7 @@ class LoginView: UIViewController {
                         let dict: NSDictionary = jsonObj as! NSDictionary
                         userInfo.userID = (UInt64)((dict.valueForKey("user")?.integerValue)!)
                     }
+                    httpGetContacts()
                     self.performSegueWithIdentifier("ShowMainMenu", sender: nil)
                 }
             },
@@ -103,6 +105,7 @@ class LoginView: UIViewController {
                         let dict: NSDictionary = jsonObj as! NSDictionary
                         userInfo.userID = (UInt64)((dict.valueForKey("user")?.integerValue)!)
                     }
+                    httpGetContacts()
                     self.performSegueWithIdentifier("ShowMainMenu", sender: nil)
                 }
             },

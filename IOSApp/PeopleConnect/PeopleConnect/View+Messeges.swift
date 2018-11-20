@@ -21,17 +21,17 @@ class MessegeCell: UITableViewCell {
     }
 }
 
-class MessegesView: UITableViewController {
+class MessegesView: UITableViewController, MessegeRequestCallback {
+    
+    func MessegeUpdateUI() {
+        self.tableView.reloadData()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        messegeCallbacks.append(self)
         httpSyncMessege()
         httpSyncRequests()
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        self.tableView.reloadData()
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -39,15 +39,15 @@ class MessegesView: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return messegeData.m_senders.count
+        return messegeData.m_conversations.count
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("MessegeCell") as! MessegeCell
-        let sender = messegeData.m_senders[indexPath.row]
-        cell.m_messege.text = (sender.lastMessege() == nil ? "" : sender.lastMessege())
-        cell.m_name.text = sender.m_contact.name
-        cell.m_uid = sender.m_contact.user
+        let conversation = messegeData.m_conversations[indexPath.row]
+        cell.m_messege.text = (conversation.lastMessege() == nil ? "" : conversation.lastMessege())
+        cell.m_name.text = conversation.m_contact.name
+        cell.m_uid = conversation.m_contact.user
         return cell
     }
 }

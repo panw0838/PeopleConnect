@@ -59,15 +59,18 @@ extension MessegeInfo {
     }
 }
 
-class MessegeSender {
+class Conversation {
+    var m_id:UInt64 = 0
     var m_contact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
     var m_messeges:Array<MessegeInfo> = Array<MessegeInfo>()
     
-    init(from:UInt64) {
-        m_contact = contactsData.getContact(from)!
+    init(id:UInt64) {
+        m_id = id
+        m_contact = contactsData.getContact(id)!
     }
     
     init(contact:ContactInfo) {
+        m_id = contact.user
         m_contact = contact
     }
     
@@ -81,44 +84,42 @@ class MessegeSender {
 }
 
 class MessegeData {
-    var m_senders:Array<MessegeSender> = Array<MessegeSender>()
+    var m_conversations:Array<Conversation> = Array<Conversation>()
     
-    func GetMessegeSender(from:UInt64)->MessegeSender {
-        for sender in m_senders {
-            if sender.m_contact.user == from {
-                return sender
+    func GetConversation(id:UInt64)->Conversation {
+        for conversation in m_conversations {
+            if conversation.m_id == id {
+                return conversation
             }
         }
-        let sender = MessegeSender(from: from)
-        m_senders.append(sender)
-        return sender
+        let conversation = Conversation(id: id)
+        m_conversations.append(conversation)
+        return conversation
     }
     
-    func PopMessegeSender(from:UInt64)->MessegeSender? {
-        for (i, sender) in m_senders.enumerate() {
-            if sender.m_contact.user == from {
-                m_senders.removeAtIndex(i)
-                return sender
+    func PopConversation(id:UInt64)->Conversation? {
+        for (i, conversation) in m_conversations.enumerate() {
+            if conversation.m_id == id {
+                m_conversations.removeAtIndex(i)
+                return conversation
             }
         }
         return nil
     }
     
-    func AddNewMessege(newMessege:MessegeInfo) {
-        var sender = PopMessegeSender(newMessege.from)
-        if sender == nil {
-            sender = MessegeSender(from: newMessege.from)
+    func AddNewMessege(id:UInt64, newMessege:MessegeInfo) {
+        var conversation = PopConversation(id)
+        if conversation == nil {
+            conversation = Conversation(id: id)
         }
-        sender!.addMessege(newMessege)
-        m_senders.append(sender!)
+        conversation!.addMessege(newMessege)
+        m_conversations.append(conversation!)
     }
     
     func AddNewRequest(newRequest:RequestInfo) {
-        let contact = ContactInfo(id: newRequest.from, f: 0, n: newRequest.name)
-        let sender = MessegeSender(contact: contact)
+        let conversation = GetConversation(newRequest.from)
         let messege = MessegeInfo(from: newRequest.from, time: "", data: newRequest.messege, type: .Request)
-        sender.addMessege(messege)
-        m_senders.append(sender)
+        conversation.addMessege(messege)
     }
 }
 

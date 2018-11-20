@@ -3,27 +3,7 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "ContactsView.AddNewTag(AnyObject) -&gt; ():ContactsView.swift">
-      </ContextState>
-      <ContextState
-         contextName = "ContactsView.updateTags() -&gt; ():ContactsView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "contactsData">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "HttpService.(loginRequest(HttpService) -&gt; () -&gt; ()).(closure #1):Requests.swift">
-      </ContextState>
-      <ContextState
-         contextName = "LoginView.(registry(LoginView) -&gt; (AnyObject) -&gt; ()).(closure #2):LoginView.swift">
-      </ContextState>
-      <ContextState
-         contextName = "HttpService.(loginRequest(HttpService) -&gt; () -&gt; ()).(closure #2):Requests.swift">
-      </ContextState>
-      <ContextState
-         contextName = "LoginView.login(AnyObject) -&gt; ():LoginView.swift">
+         contextName = "ContactsView.(httpGetContacts(ContactsView) -&gt; () -&gt; ()).(closure #1):ContactRequests.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsView.numberOfSectionsInCollectionView(UICollectionView) -&gt; Int:ContactsView.swift">
@@ -37,29 +17,6 @@
          contextName = "Tag.canBeEdit() -&gt; Bool:Contact.swift">
       </ContextState>
       <ContextState
-         contextName = "MoveMemberView.reloadData() -&gt; ():MoveMemberView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "contactsData">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "ContactsData.moveContactOutTag(UInt64, tagID : UInt8) -&gt; ():Contact.swift">
-      </ContextState>
-      <ContextState
-         contextName = "ContactsData.numSubTags(Int) -&gt; Int:Contact.swift">
-      </ContextState>
-      <ContextState
-         contextName = "HttpService.loginRequest() -&gt; ():Requests.swift">
-      </ContextState>
-      <ContextState
-         contextName = "Tag.addMember(ContactInfo) -&gt; ():Contact.swift">
-      </ContextState>
-      <ContextState
-         contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():ContactsView.swift">
-      </ContextState>
-      <ContextState
          contextName = "LoginView.(login(LoginView) -&gt; (AnyObject) -&gt; ()).(closure #1):LoginView.swift">
          <PersistentStrings>
             <PersistentString
@@ -68,7 +25,33 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ContactsView.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:ContactsView.swift">
+         contextName = "MoveMemberView.reloadData() -&gt; ():MoveMemberView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "contactsData">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ContactsData.loadContacts([ContactInfo], userTags : [TagInfo]) -&gt; ():Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "LoginView.(registry(LoginView) -&gt; (AnyObject) -&gt; ()).(closure #2):LoginView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsView.AddNewTag(AnyObject) -&gt; ():ContactsView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "HttpService.(loginRequest(HttpService) -&gt; () -&gt; ()).(closure #1):Requests.swift">
+      </ContextState>
+      <ContextState
+         contextName = "HttpService.(loginRequest(HttpService) -&gt; () -&gt; ()).(closure #2):Requests.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():ContactsView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "LoginView.login(AnyObject) -&gt; ():LoginView.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsView.collectionView(UICollectionView, cellForItemAtIndexPath : NSIndexPath) -&gt; UICollectionViewCell:ContactsView.swift">
@@ -77,6 +60,46 @@
                value = "contactsData">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ContactView.viewWillAppear(Bool) -&gt; ():ContactView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsView.httpRemTag(UInt8) -&gt; ():ContactRequests.swift">
+      </ContextState>
+      <ContextState
+         contextName = "Conversation.init(id : UInt64) -&gt; Conversation:Messege.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "contactsData">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "HttpService.loginRequest() -&gt; ():Requests.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsData.moveContactOutTag(UInt64, tagID : UInt8) -&gt; ():Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "MoveMemberView.(httpMoveMembers(MoveMemberView) -&gt; (UInt8, addMembers : [UInt64], remMembers : [UInt64]) -&gt; ()).(closure #1):ContactRequests.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsData.numSubTags(Int) -&gt; Int:Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "Tag.addMember(ContactInfo) -&gt; ():Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsView.updateTags() -&gt; ():ContactsView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "contactsData">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ContactsView.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:ContactsView.swift">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

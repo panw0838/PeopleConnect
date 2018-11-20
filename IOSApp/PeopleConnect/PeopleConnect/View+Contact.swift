@@ -51,7 +51,7 @@ class ContactView: UIViewController {
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
             handler: {
                 action in
-                self.httpRequestContact(self.m_contact.user, flag: 2, name: self.m_contact.name, messege: self.m_messege)
+                httpRequestContact(self.m_contact.user, flag: 2, name: self.m_contact.name, messege: self.m_messege)
         })
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in

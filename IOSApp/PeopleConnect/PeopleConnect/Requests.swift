@@ -22,7 +22,22 @@ struct LoginInfo {
     var pass:String
 }
 
+protocol TagRequestCallback {
+    func TagUpdateUI()->Void
+}
+
+protocol ContactRequestCallback {
+    func ContactUpdateUI()->Void
+}
+
+protocol MessegeRequestCallback {
+    func MessegeUpdateUI()->Void
+}
+
 let http: HttpService = HttpService()
+var tagCallbacks:Array<TagRequestCallback> = Array<TagRequestCallback>()
+var contactCallbacks:Array<ContactRequestCallback> = Array<ContactRequestCallback>()
+var messegeCallbacks:Array<MessegeRequestCallback> = Array<MessegeRequestCallback>()
 
 class HttpService {
     var afManager: AFHTTPSessionManager = AFHTTPSessionManager()

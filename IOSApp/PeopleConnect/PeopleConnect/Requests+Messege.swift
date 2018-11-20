@@ -25,24 +25,10 @@ func httpSyncRequests() {
                             }
                         }
                     }
+                    for callback in messegeCallbacks {
+                        callback.MessegeUpdateUI()
+                    }
                 }
-            }
-        },
-        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-            print("请求失败")
-    })
-}
-
-func httpAddContact(contact:UInt64, flag:UInt64, name:String) {
-    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "contact":NSNumber(unsignedLongLong: contact), "name":name, "flag":NSNumber(unsignedLongLong: flag)]
-    http.postRequest("addcontact", params: params,
-        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-            if (html.hasPrefix("Error")) {
-                print("%s", html)
-            }
-            else {
-                contactsData.addContact(ContactInfo(id: contact, f: flag, n: name))
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -57,6 +43,17 @@ func httpSendMessege(to:UInt64, messege:String) {
             let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
             if (html.hasPrefix("Error")) {
                 print("%s", html)
+            }
+            else {
+                var selfMessege = MessegeInfo()
+                selfMessege.from = userInfo.userID
+                selfMessege.time = ""
+                selfMessege.data = messege
+                selfMessege.type = .String
+                messegeData.AddNewMessege(to, newMessege: selfMessege)
+                for callback in messegeCallbacks {
+                    callback.MessegeUpdateUI()
+                }
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -77,8 +74,11 @@ func httpSyncMessege() {
                     if let tagObjs = json["mess"] as? [AnyObject] {
                         for case let tagObj in (tagObjs as? [[String:AnyObject]])! {
                             if let messege = MessegeInfo(json: tagObj) {
-                                messegeData.AddNewMessege(messege)
+                                messegeData.AddNewMessege(messege.from, newMessege: messege)
                             }
+                        }
+                        for callback in messegeCallbacks {
+                            callback.MessegeUpdateUI()
                         }
                     }
                 }

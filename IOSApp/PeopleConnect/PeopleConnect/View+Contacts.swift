@@ -21,13 +21,32 @@ class SubTagHeader: UICollectionReusableView {
     var m_tagID:UInt8 = 0
 }
 
-class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
+class ContactsView: UIViewController,
+    UITabBarDelegate,
+    UICollectionViewDataSource, UICollectionViewDelegate,
+    ContactRequestCallback, TagRequestCallback {
     
     @IBOutlet weak var m_tabsBar: UITabBar!
     @IBOutlet weak var m_contacts: UICollectionView!
     
     var m_curTag: Int = 0
     var m_selectContact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
+    
+    func TagUpdateUI() {
+        m_tabsBar.items?.removeAll()
+        var tagIdx = 0
+        for tag in contactsData.m_tags {
+            let newTab:UITabBarItem = UITabBarItem.init(title: tag.m_tagName, image: nil, tag: tagIdx)
+            m_tabsBar.items?.append(newTab)
+            tagIdx++
+        }
+        let newTab:UITabBarItem = UITabBarItem.init(title: "未分类", image: nil, tag: tagIdx)
+        m_tabsBar.items?.append(newTab)
+    }
+    
+    func ContactUpdateUI() {
+        self.m_contacts.reloadData()
+    }
 
     func tagNameChanged(sender:UITextField) {
         let alert:UIAlertController = self.presentedViewController as! UIAlertController
@@ -43,10 +62,10 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
         let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let subAction = UIAlertAction(title: "添加子标签到 "+curTag.m_tagName, style: .Default,
             handler: { action in
-                self.httpAddTag(curTag.m_tagID, name: (alert.textFields?.first?.text)!)})
+                httpAddTag(curTag.m_tagID, name: (alert.textFields?.first?.text)!)})
         let okAction = UIAlertAction(title: "添加新标签", style: .Default,
             handler: { action in
-                self.httpAddTag(0, name: (alert.textFields?.first?.text)!)})
+                httpAddTag(0, name: (alert.textFields?.first?.text)!)})
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
                 textField.placeholder = "分组名"
@@ -67,11 +86,43 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
         let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
             handler: { action in
-                self.httpRemTag(header.m_tagID)
+                httpRemTag(header.m_tagID)
         })
         alert.addAction(cancelAction)
         alert.addAction(okAction)
         self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func httpSearchContact(key:String) {
+        let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "key":key]
+        http.postRequest("searchcontact", params: params,
+            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+                let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
+                if (html.hasPrefix("Error")) {
+                    let error = UIAlertController(title: "错误", message: html, preferredStyle: .Alert)
+                    let okAction = UIAlertAction(title: "确定", style: .Default, handler: nil)
+                    error.addAction(okAction)
+                    //holding.presentingViewController!.dismissViewControllerAnimated(false, completion: nil)
+                    self.presentViewController(error, animated: false, completion: nil)
+                }
+                else {
+                    let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
+                    if (jsonObj != nil) {
+                        let dict: NSDictionary = jsonObj as! NSDictionary
+                        self.m_selectContact.user = (UInt64)((dict["user"]?.integerValue)!)
+                        self.m_selectContact.name = dict["name"] as! String
+                        self.m_selectContact.flag = 0
+                        //self.dismissViewControllerAnimated(false, completion: nil)
+                        self.performSegueWithIdentifier("ShowContact", sender: nil)
+                    }
+                }
+            },
+            fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+                let error = UIAlertController(title: "错误", message: "请求失败", preferredStyle: .Alert)
+                let okAction = UIAlertAction(title: "确定", style: .Default, handler: nil)
+                error.addAction(okAction)
+                self.presentViewController(error, animated: false, completion: nil)
+        })
     }
     
     @IBAction func SearchContact(sender: AnyObject) {
@@ -134,23 +185,13 @@ class ContactsView: UIViewController, UITabBarDelegate, UICollectionViewDataSour
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        httpGetContacts()
+        tagCallbacks.append(self)
+        contactCallbacks.append(self)
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-    }
-    
-    func updateTags() {
-        m_tabsBar.items?.removeAll()
-        var tagIdx = 0
-        for tag in contactsData.m_tags {
-            let newTab:UITabBarItem = UITabBarItem.init(title: tag.m_tagName, image: nil, tag: tagIdx)
-            m_tabsBar.items?.append(newTab)
-            tagIdx++
-        }
-        let newTab:UITabBarItem = UITabBarItem.init(title: "未分类", image: nil, tag: tagIdx)
-        m_tabsBar.items?.append(newTab)
+        TagUpdateUI()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

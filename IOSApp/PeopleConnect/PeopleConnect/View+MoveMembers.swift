@@ -43,7 +43,7 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
             }
         }
         if addMembers.count != 0 || remMembers.count != 0 {
-            httpMoveMembers(m_tagID, addMembers: addMembers, remMembers: remMembers)
+            httpMoveContacts(m_tagID, addMembers: addMembers, remMembers: remMembers)
         }
     }
     
