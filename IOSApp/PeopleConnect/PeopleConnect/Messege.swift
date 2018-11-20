@@ -61,12 +61,18 @@ extension MessegeInfo {
 
 class Conversation {
     var m_id:UInt64 = 0
-    var m_contact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
+    var m_contact:ContactInfo? = nil
     var m_messeges:Array<MessegeInfo> = Array<MessegeInfo>()
     
-    init(id:UInt64) {
+    init?(id:UInt64) {
         m_id = id
-        m_contact = contactsData.getContact(id)!
+        let contact = contactsData.getContact(id)
+        if contact == nil {
+            return nil
+        }
+        else {
+            m_contact = contact
+        }
     }
     
     init(contact:ContactInfo) {
@@ -86,14 +92,16 @@ class Conversation {
 class MessegeData {
     var m_conversations:Array<Conversation> = Array<Conversation>()
     
-    func GetConversation(id:UInt64)->Conversation {
+    func GetConversation(id:UInt64)->Conversation? {
         for conversation in m_conversations {
             if conversation.m_id == id {
                 return conversation
             }
         }
         let conversation = Conversation(id: id)
-        m_conversations.append(conversation)
+        if conversation != nil {
+            m_conversations.append(conversation!)
+        }
         return conversation
     }
     
@@ -112,14 +120,16 @@ class MessegeData {
         if conversation == nil {
             conversation = Conversation(id: id)
         }
-        conversation!.addMessege(newMessege)
-        m_conversations.append(conversation!)
+        if conversation != nil {
+            conversation?.addMessege(newMessege)
+            m_conversations.append(conversation!)
+        }
     }
     
     func AddNewRequest(newRequest:RequestInfo) {
         let conversation = GetConversation(newRequest.from)
         let messege = MessegeInfo(from: newRequest.from, time: "", data: newRequest.messege, type: .Request)
-        conversation.addMessege(messege)
+        conversation?.addMessege(messege)
     }
 }
 

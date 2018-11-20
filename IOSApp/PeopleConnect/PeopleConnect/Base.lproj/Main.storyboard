@@ -100,7 +100,8 @@
                                     <outlet property="m_accept" destination="qQJ-Wg-L3s" id="kFM-HW-JjF"/>
                                     <outlet property="m_messege" destination="OEj-g4-5jl" id="79j-1h-qMY"/>
                                     <outlet property="m_name" destination="OS1-y7-7Gf" id="GHi-Bs-Zee"/>
-                                    <outlet property="m_profile" destination="fxo-tC-UFT" id="O5q-gE-VTT"/>
+                                    <outlet property="m_profile" destination="dDK-93-vGg" id="7ew-A7-2mR"/>
+                                    <segue destination="ZcU-UV-izl" kind="show" identifier="ShowConversation" id="QHO-f2-RCa"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -382,7 +383,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zPJ-Gx-Pxk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2280" y="-871"/>
+            <point key="canvasLocation" x="2293" y="-175"/>
         </scene>
         <!--Messege View-->
         <scene sceneID="enG-ND-1uO">
@@ -493,6 +494,10 @@
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="ZcU-UV-izl" id="46V-fE-UbA"/>
+                                    <outlet property="delegate" destination="ZcU-UV-izl" id="ikb-KG-ioV"/>
+                                </connections>
                             </tableView>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="iy3-vu-T8y">
                                 <rect key="frame" x="20" y="513" width="492" height="30"/>
@@ -524,12 +529,13 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="m_messegesTable" destination="lXg-71-86q" id="qLy-Wh-ke4"/>
                         <outlet property="m_text" destination="iy3-vu-T8y" id="xPP-9W-RwA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PFo-Pj-iMQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2951" y="-871"/>
+            <point key="canvasLocation" x="2293" y="-904"/>
         </scene>
         <!--Title-->
         <scene sceneID="Y73-qc-dZx">
@@ -647,7 +653,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9ll-gG-QJq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2280" y="-176"/>
+            <point key="canvasLocation" x="2293" y="530"/>
         </scene>
         <!--Table View Controller-->
         <scene sceneID="hOQ-Ur-38R">
@@ -711,9 +717,6 @@
                                         <constraint firstItem="Em0-fn-jan" firstAttribute="leading" secondItem="JbW-TI-ZDM" secondAttribute="leading" id="yM4-l6-i1m"/>
                                     </constraints>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <segue destination="ZcU-UV-izl" kind="show" identifier="ShowMessege" id="Pa9-oh-e8T"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -725,7 +728,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Xzj-rm-kRS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1568" y="581"/>
+            <point key="canvasLocation" x="1568" y="1195"/>
         </scene>
         <!--动态-->
         <scene sceneID="7mK-am-h84">
@@ -742,7 +745,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mqW-Pr-we6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="748" y="581"/>
+            <point key="canvasLocation" x="775" y="1195"/>
         </scene>
         <!--Login View-->
         <scene sceneID="fVc-De-uEb">
@@ -834,6 +837,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="BLz-7v-FTZ"/>
+        <segue reference="QHO-f2-RCa"/>
     </inferredMetricsTieBreakers>
 </document>

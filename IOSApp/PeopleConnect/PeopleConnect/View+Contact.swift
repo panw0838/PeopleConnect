@@ -74,7 +74,8 @@ class ContactView: UIViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "StartConversation" {
             let to = segue.destinationViewController as! MessegeView
-            to.m_id = m_contact.user
+            to.m_conversastion = messegeData.GetConversation(m_contact.user)
         }
     }
 }
+

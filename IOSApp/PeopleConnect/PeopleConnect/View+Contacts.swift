@@ -58,26 +58,28 @@ class ContactsView: UIViewController,
     
     @IBAction func AddNewTag(sender: AnyObject) {
         let curTag = contactsData.getSubTag(m_curTag, subIdx: 0)
-        let alert = UIAlertController(title: "添加标签", message: "", preferredStyle: .Alert)
-        let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
-        let subAction = UIAlertAction(title: "添加子标签到 "+curTag.m_tagName, style: .Default,
-            handler: { action in
-                httpAddTag(curTag.m_tagID, name: (alert.textFields?.first?.text)!)})
-        let okAction = UIAlertAction(title: "添加新标签", style: .Default,
-            handler: { action in
-                httpAddTag(0, name: (alert.textFields?.first?.text)!)})
-        alert.addTextFieldWithConfigurationHandler {
-            (textField: UITextField!) -> Void in
-                textField.placeholder = "分组名"
+        if curTag.m_tagID == 1 {
+            let alert = UIAlertController(title: "添加标签", message: "不能向未分类组添加标签", preferredStyle: .Alert)
+            let okAction = UIAlertAction(title: "确定", style: .Default, handler: nil)
+            alert.addAction(okAction)
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
+        else {
+            let alert = UIAlertController(title: "添加标签", message: "添加子标签到 "+curTag.m_tagName, preferredStyle: .Alert)
+            let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+            let okAction = UIAlertAction(title: "确定", style: .Default,
+                handler: { action in
+                    httpAddTag(0, name: (alert.textFields?.first?.text)!)})
+            alert.addTextFieldWithConfigurationHandler {
+                (textField: UITextField!) -> Void in
+                textField.placeholder = "标签名称"
                 textField.addTarget(self, action: Selector("tagNameChanged:"), forControlEvents: .EditingChanged)
+            }
+            okAction.enabled = false
+            alert.addAction(cancelAction)
+            alert.addAction(okAction)
+            self.presentViewController(alert, animated: true, completion: nil)
         }
-        okAction.enabled = false
-        alert.addAction(cancelAction)
-        alert.addAction(okAction)
-        if curTag.m_tagID != 2 {
-            alert.addAction(subAction)
-        }
-        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     @IBAction func DelSubTag(sender: AnyObject) {

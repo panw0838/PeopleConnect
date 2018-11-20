@@ -22,23 +22,27 @@ class SendCell: UITableViewCell {
     
 }
 
-class MessegeView: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MessegeView: UIViewController, UITableViewDataSource, UITableViewDelegate, MessegeRequestCallback {
     
-    var m_id:UInt64 = 0
     var m_conversastion:Conversation? = nil
     
     @IBOutlet weak var m_text: UITextField!
+    @IBOutlet weak var m_messegesTable: UITableView!
     
     @IBAction func SendMessege(sender: AnyObject) {
         let messege = m_text.text
         if messege?.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) > 0 {
-            httpSendMessege(m_id, messege: messege!)
+            httpSendMessege(m_conversastion!.m_id, messege: messege!)
         }
     }
     
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        m_conversastion = messegeData.GetConversation(m_id)
+    func MessegeUpdateUI() {
+        self.m_messegesTable.reloadData()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        messegeCallbacks.append(self)
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
