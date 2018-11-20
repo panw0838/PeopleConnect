@@ -1,6 +1,7 @@
 package user
 
 import (
+	"PeoConServer/share"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -28,7 +29,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := redis.Dial("tcp", ContactDB)
+	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -67,7 +68,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := redis.Dial("tcp", ContactDB)
+	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return

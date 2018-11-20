@@ -41,14 +41,14 @@ func main() {
 
 	http.HandleFunc("/contacts", user.GetContactsHandler)
 	http.HandleFunc("/searchcontact", user.SearchContactHandler)
-	http.HandleFunc("/requestcontact", user.RequestContactHandler)
-	http.HandleFunc("/syncrequests", user.SyncRequestsHandler)
 	http.HandleFunc("/addcontact", user.AddContactHandler)
 	http.HandleFunc("/remcontact", user.RemContactHandler)
 	http.HandleFunc("/updatetagmember", user.UpdateTagMemberHandler)
 
 	http.HandleFunc("/syncmessege", messege.SyncMessegeHandler)
 	http.HandleFunc("/sendmessege", messege.SendMessegeHandler)
+	http.HandleFunc("/requestcontact", messege.RequestContactHandler)
+	http.HandleFunc("/syncrequests", messege.SyncRequestsHandler)
 
 	e := http.ListenAndServeTLS(":8080", crtPath, keyPath, nil)
 	if e != nil {

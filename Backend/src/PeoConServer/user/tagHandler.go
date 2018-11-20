@@ -1,6 +1,7 @@
 package user
 
 import (
+	"PeoConServer/share"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,11 +11,10 @@ import (
 )
 
 type AddTagParams struct {
-	User       uint64   `json:"user"`
-	Father     uint8    `json:"father"`
-	Name       string   `json:"name"`
-	NumMembers uint     `json:"nummembers"`
-	Members    []uint64 `json:"members"`
+	User    uint64   `json:"user"`
+	Father  uint8    `json:"father"`
+	Name    string   `json:"name"`
+	Members []uint64 `json:"members"`
 }
 
 type AddTagReturn struct {
@@ -41,25 +41,17 @@ func AddTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if params.Father != 0 {
-		if !isSystemFatherTag(params.Father) && !isUserTag(params.Father) {
-			fmt.Fprintf(w, "Error: Invalud father tag")
-			return
-		}
-	}
-
-	c, err := redis.Dial("tcp", ContactDB)
-	if err != nil {
-		fmt.Println("Connect to redis error", err)
+	if !isValidMainTag(params.Father) {
+		fmt.Fprintf(w, "Error: Invalud father tag")
 		return
 	}
-	defer c.Close()
 
-	err = dbAddTagPrecheck(params.User, params.Father, c)
+	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
+	defer c.Close()
 
 	tagIdx, err := dbAddTag(params.User, params.Father, params.Name, c)
 	if err != nil {
@@ -79,7 +71,7 @@ func AddTagHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var returnData AddTagReturn
-	returnData.Tag = uint8(tagID)
+	returnData.Tag = tagID
 	data, err := json.Marshal(&returnData)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
@@ -108,17 +100,12 @@ func RemTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if isSystemTag(input.Tag) {
-		fmt.Fprintf(w, "Error: can't delete system tag")
-		return
-	}
-
 	if !isUserTag(input.Tag) {
 		fmt.Fprintf(w, "Error: Invalid tag")
 		return
 	}
 
-	c, err := redis.Dial("tcp", ContactDB)
+	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -132,15 +119,6 @@ func RemTagHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if !exists {
 		fmt.Fprintf(w, "Error: tag not exists")
-		return
-	}
-
-	hasSon, err := dbTagHasSubTag(input.User, input.Tag, c)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	} else if hasSon {
-		fmt.Fprintf(w, "Error: Tag has sub group")
 		return
 	}
 
@@ -183,12 +161,12 @@ func UpdateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !isSystemFatherTag(input.Tag) && !isUserTag(input.Tag) {
+	if !isValidMainTag(input.Tag) && !isUserTag(input.Tag) {
 		fmt.Fprintf(w, "Error: Invalid tag")
 		return
 	}
 
-	c, err := redis.Dial("tcp", ContactDB)
+	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return

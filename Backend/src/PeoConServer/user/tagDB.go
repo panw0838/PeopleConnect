@@ -27,9 +27,7 @@ func getTagData(fatherID uint8, name string) string {
 func getTagAndFatherBits(userID uint64, tagID uint8, c redis.Conn) (uint64, error) {
 	var bits uint64 = (1 << tagID)
 
-	if isSystemTag(tagID) {
-		return bits, nil
-	} else {
+	if isUserTag(tagID) {
 		tagKey := GetTagKey(userID)
 		tagIdx := getUserTagIdx(tagID)
 		tagData, err := redis.String(c.Do("LINDEX", tagKey, tagIdx))
@@ -37,11 +35,12 @@ func getTagAndFatherBits(userID uint64, tagID uint8, c redis.Conn) (uint64, erro
 			return ZERO_64, err
 		}
 		fatherID, _ := getTagInfo(tagData)
-		if fatherID != 0 {
-			bits |= (1 << fatherID)
+		if !isValidMainTag(fatherID) {
+			return ZERO_64, fmt.Errorf("Invalid father tag")
 		}
-		return bits, nil
+		bits |= (1 << fatherID)
 	}
+	return bits, nil
 }
 
 func getTagAndSonsBits(userID uint64, tagID uint8, c redis.Conn) (uint64, error) {
@@ -58,7 +57,11 @@ func getTagAndSonsBits(userID uint64, tagID uint8, c redis.Conn) (uint64, error)
 			fatherID, _ := getTagInfo(tag)
 			if err != nil {
 				return 0, err
-			} else if fatherID == tagID {
+			}
+			if !isValidMainTag(fatherID) {
+				return 0, fmt.Errorf("Invalid father tag")
+			}
+			if fatherID == tagID {
 				sonID := uint8(index) + USER_TAG_START
 				bits |= (1 << sonID)
 			}
@@ -66,32 +69,6 @@ func getTagAndSonsBits(userID uint64, tagID uint8, c redis.Conn) (uint64, error)
 	}
 
 	return bits, nil
-}
-
-func dbAddTagPrecheck(userID uint64, fatherID uint8, c redis.Conn) error {
-	tagKey := GetTagKey(userID)
-
-	// if father tag is user tag
-	if fatherID >= USER_TAG_START {
-		fatherIndex := fatherID - USER_TAG_START
-		fatherTag, err := redis.String(c.Do("LINDEX", tagKey, fatherIndex))
-		if err != nil {
-			return err
-		}
-
-		// father not exists
-		if len(fatherTag) == 0 {
-			return fmt.Errorf("Invalid father tag")
-		}
-
-		// father has gradpa
-		gradpa, _ := getTagInfo(fatherTag)
-		if gradpa != 0 {
-			return fmt.Errorf("Invalid father tag")
-		}
-	}
-
-	return nil
 }
 
 func dbAddTag(userID uint64, fatherID uint8, name string, c redis.Conn) (uint8, error) {
@@ -143,27 +120,6 @@ func dbUserTagExists(userID uint64, tagID uint8, c redis.Conn) (bool, error) {
 	if len(tag) > 0 {
 		return true, nil
 	}
-	return false, nil
-}
-
-func dbTagHasSubTag(userID uint64, tagID uint8, c redis.Conn) (bool, error) {
-	tagKey := GetTagKey(userID)
-
-	// find empty tag
-	tags, err := redis.Strings(c.Do("LRANGE", tagKey, 0, MAX_USER_TAGS))
-	if err != nil {
-		return false, err
-	}
-
-	for _, tag := range tags {
-		if len(tag) != 0 {
-			fatherID, _ := getTagInfo(tag)
-			if fatherID == tagID {
-				return true, nil
-			}
-		}
-	}
-
 	return false, nil
 }
 

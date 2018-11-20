@@ -13,15 +13,15 @@ type Relation struct {
 	flag2 uint64
 }
 
-var RelationHashSize = 0x10000
+var RelationHashSize uint64 = 0x40000000
 var RelationHash []Relation = make([]Relation, RelationHashSize)
 
 func IsFriend(relation Relation) bool {
-	return (relation.flag1 != 0) && (relation.flag2 != 0) && ((relation.flag1 & user.BLK_BIT) != 0) && ((relation.flag2 & user.BLK_BIT) != 0)
+	return (relation.flag1 != 0) && (relation.flag2 != 0) && ((relation.flag1 & user.BLK_BIT) == 0) && ((relation.flag2 & user.BLK_BIT) == 0)
 }
 
 func GetRelation(user1 uint64, user2 uint64, c redis.Conn) (Relation, error) {
-	hashIdx := (user1 ^ user2) & 0x0000FFFF
+	hashIdx := (user1 ^ user2) & (RelationHashSize - user.ONE_64)
 	relation := RelationHash[hashIdx]
 	less, more := user1, user2
 	if user1 > user2 {

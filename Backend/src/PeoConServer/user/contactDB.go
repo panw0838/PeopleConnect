@@ -1,13 +1,13 @@
 package user
 
 import (
+	"PeoConServer/share"
 	"fmt"
 	"strconv"
 
 	"github.com/garyburd/redigo/redis"
 )
 
-const ContactDB = "127.0.0.1:6379"
 const FlagField = "flag"
 const NameField = "name"
 const MessField = "mess"
@@ -22,17 +22,7 @@ func GetContactsKey(user uint64) string {
 	return "contacts:" + strconv.FormatUint(user, 10)
 }
 
-func GetRequestsKey(user uint64) string {
-	return "requests:" + strconv.FormatUint(user, 10)
-}
-
-func GetRequestKey(user1 uint64, user2 uint64) string {
-	return "request:" +
-		strconv.FormatUint(user1, 10) + ":" +
-		strconv.FormatUint(user2, 10)
-}
-
-func addContactPreCheck(from uint64, to uint64, flag uint64, name string) error {
+func AddContactPreCheck(from uint64, to uint64, flag uint64, name string) error {
 	if from == to {
 		return fmt.Errorf("can't request self")
 	}
@@ -78,80 +68,13 @@ func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
 	return contactID, nil
 }
 
-func dbAddRequest(input RequestContactInput, c redis.Conn) error {
-	_, err := c.Do("MULTI")
-	if err != nil {
-		return err
-	}
-
-	requestKey := GetRequestKey(input.From, input.To)
-	_, err = c.Do("HMSET", requestKey,
-		FlagField, input.Flag,
-		NameField, input.Name,
-		MessField, input.Message)
-	if err != nil {
-		return err
-	}
-
-	requestsKey := GetRequestsKey(input.To)
-	_, err = c.Do("RPUSH", requestsKey, input.From)
-	if err != nil {
-		return err
-	}
-
-	_, err = c.Do("EXEC")
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func dbSyncRequests(user uint64, c redis.Conn) ([]Request, error) {
-	requestsKey := GetRequestsKey(user)
-	numRequests, err := redis.Uint64(c.Do("LLEN", requestsKey))
-	if err != nil {
-		return nil, err
-	}
-
-	var requests []Request
-	rawDatas, err := redis.Values(c.Do("LRANGE", requestsKey, 0, numRequests))
-	for _, rawData := range rawDatas {
-		var request Request
-		from, err := GetUint64(rawData, err)
-		if err != nil {
-			return nil, err
-		}
-		request.From = from
-
-		fromAccountKey := getAccountKey(from)
-		name, err := dbGetUserInfoField(fromAccountKey, NameField, c)
-		if err != nil {
-			return nil, err
-		}
-		request.Name = name
-
-		requestKey := GetRequestKey(from, user)
-		values, err := redis.Values(c.Do("HMGET", requestKey, MessField))
-		messege, err := redis.String(values[0], err)
-		if err != nil {
-			return nil, err
-		}
-		request.Mess = messege
-
-		requests = append(requests, request)
-	}
-
-	return requests, nil
-}
-
 func dbAddContact(user1 uint64, user2 uint64, flag uint64, name string, c redis.Conn) error {
-	requestKey := GetRequestKey(user2, user1)
-	requestsKey := GetRequestsKey(user2)
+	requestKey := share.GetRequestKey(user2, user1)
 	values, err := redis.Values(c.Do("HMGET", requestKey, FlagField, NameField))
 	if err != nil {
 		return err
 	}
-	otherFlag, err := GetUint64(values[0], err)
+	otherFlag, err := share.GetUint64(values[0], err)
 	otherName, err := redis.String(values[1], err)
 	if err != nil {
 		return err
@@ -193,6 +116,7 @@ func dbAddContact(user1 uint64, user2 uint64, flag uint64, name string, c redis.
 		return err
 	}
 
+	requestsKey := share.GetRequestsKey(user2)
 	_, err = c.Do("SREM", requestsKey, user1)
 	if err != nil {
 		return err
@@ -206,7 +130,7 @@ func dbAddContact(user1 uint64, user2 uint64, flag uint64, name string, c redis.
 }
 
 func dbRemoveContact(user1 uint64, user2 uint64) error {
-	c, err := redis.Dial("tcp", ContactDB)
+	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
 		return err
 	}
@@ -279,7 +203,7 @@ func dbDisableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error 
 }
 
 func dbSetName(user1 uint64, user2 uint64, name []byte) error {
-	c, err := redis.Dial("tcp", ContactDB)
+	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
 		return err
 	}
@@ -305,7 +229,7 @@ func DbGetFlag(user1 uint64, user2 uint64, c redis.Conn) (uint64, error) {
 	}
 
 	values, err := redis.Values(c.Do("HMGET", relationKey, FlagField))
-	relation, err := GetUint64(values[0], err)
+	relation, err := share.GetUint64(values[0], err)
 	if err != nil {
 		return 0, err
 	}
@@ -328,13 +252,13 @@ func dbGetContacts(userID uint64, c redis.Conn) ([]ContactInfo, error) {
 		}
 
 		for _, member := range members {
-			contactID, err := GetUint64(member, err)
+			contactID, err := share.GetUint64(member, err)
 			if err != nil {
 				return nil, err
 			}
 			relateKey := GetRelationKey(userID, contactID)
 			values, err := redis.Values(c.Do("HMGET", relateKey, FlagField, NameField))
-			flag, err := GetUint64(values[0], err)
+			flag, err := share.GetUint64(values[0], err)
 			name, err := redis.String(values[1], err)
 			if err != nil {
 				return nil, err

@@ -1,6 +1,8 @@
 package messege
 
 import (
+	"PeoConServer/share"
+	"PeoConServer/user"
 	"fmt"
 	"strconv"
 	"time"
@@ -27,19 +29,17 @@ func GetMessegeKey(userID uint64) string {
 }
 
 func getMessegeInfo(messegeData string) (uint64, string, string) {
-	var to uint64 = 0
-	var time string
+	var id uint64 = 0
+	var from uint64 = 0
 	var messege string
-	fmt.Sscanf(messegeData, "%d:%s:%s", &to, &time, &messege)
-	return to, time, messege
+	time := messegeData[:25]
+	fmt.Sscanf(messegeData[26:], "%d,%d,%s", &id, &from, &messege)
+	return from, time, messege
 }
 
 func getMessegeData(from uint64, messege string) string {
-	now := time.Now()
-	year, month, day := now.Date()
-	hour, minute, _ := now.Clock()
-	messegeData := fmt.Sprintf("%d:%d-%d-%d-%d-%d:%s",
-		from, year, month, day, hour, minute, messege)
+	messegeData := fmt.Sprintf("%s,%d,%d,%s",
+		time.Now().Format(time.RFC3339), from, from, messege)
 	return messegeData
 }
 
@@ -76,4 +76,73 @@ func dbGetMesseges(user uint64, c redis.Conn) ([]Messege, error) {
 	}
 
 	return messeges, nil
+}
+
+func dbAddRequest(input RequestContactInput, c redis.Conn) error {
+	_, err := c.Do("MULTI")
+	if err != nil {
+		return err
+	}
+
+	requestKey := share.GetRequestKey(input.From, input.To)
+	_, err = c.Do("HMSET", requestKey,
+		user.FlagField, input.Flag,
+		user.NameField, input.Name,
+		user.MessField, input.Message)
+	if err != nil {
+		return err
+	}
+
+	requestsKey := share.GetRequestsKey(input.To)
+	_, err = c.Do("SADD", requestsKey, input.From)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.Do("EXEC")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func dbSyncRequests(uID uint64, c redis.Conn) ([]Request, error) {
+	requestsKey := share.GetRequestsKey(uID)
+	numRequests, err := redis.Uint64(c.Do("SCARD", requestsKey))
+	if err != nil {
+		return nil, err
+	}
+	if numRequests == 0 {
+		return nil, nil
+	}
+
+	var requests []Request
+	rawDatas, err := redis.Values(c.Do("SMEMBERS", requestsKey))
+	for _, rawData := range rawDatas {
+		var request Request
+		from, err := share.GetUint64(rawData, err)
+		if err != nil {
+			return nil, err
+		}
+		request.From = from
+
+		fromAccountKey := user.GetAccountKey(from)
+		name, err := user.DbGetUserInfoField(fromAccountKey, user.NameField, c)
+		if err != nil {
+			return nil, err
+		}
+		request.Name = name
+
+		requestKey := share.GetRequestKey(from, uID)
+		values, err := redis.Values(c.Do("HMGET", requestKey, user.MessField))
+		messege, err := redis.String(values[0], err)
+		if err != nil {
+			return nil, err
+		}
+		request.Mess = messege
+
+		requests = append(requests, request)
+	}
+
+	return requests, nil
 }

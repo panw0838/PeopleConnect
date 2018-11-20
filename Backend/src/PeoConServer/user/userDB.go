@@ -20,7 +20,7 @@ const DeviceField = "device"
 const ConfigField = "config"
 const PassField = "pass"
 
-func getAccountKey(userID uint64) string {
+func GetAccountKey(userID uint64) string {
 	return "user:" + strconv.FormatUint(userID, 10)
 }
 
@@ -56,7 +56,7 @@ func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 		return 0, err
 	}
 
-	accountKey := getAccountKey(newID)
+	accountKey := GetAccountKey(newID)
 	_, err = c.Do("HMSET", accountKey,
 		UserField, accountKey,
 		CellFiled, info.CellNumber,
@@ -99,7 +99,7 @@ func dbVerifyUser(loginInfo LoginInfo, c redis.Conn) (uint64, error) {
 		return 0, err
 	}
 
-	password, err := dbGetUserInfoField(accountKey, PassField, c)
+	password, err := DbGetUserInfoField(accountKey, PassField, c)
 	if err != nil {
 		return 0, err
 	}
@@ -116,7 +116,7 @@ func dbVerifyUser(loginInfo LoginInfo, c redis.Conn) (uint64, error) {
 	}
 }
 
-func dbGetUserInfoField(accountKey string, filed string, c redis.Conn) (string, error) {
+func DbGetUserInfoField(accountKey string, filed string, c redis.Conn) (string, error) {
 	values, err := redis.Values(c.Do("HMGET", accountKey, filed))
 	value, err := redis.String(values[0], err)
 	if err != nil {
@@ -131,7 +131,7 @@ func dbUpdateUserInfo(userInfo UserInfo, c redis.Conn) error {
 	if err != nil {
 		return err
 	} else {
-		accountKey := getAccountKey(userInfo.UserID)
+		accountKey := GetAccountKey(userInfo.UserID)
 		_, err = c.Do("HMSET", accountKey,
 			UserField, accountKey,
 			CellFiled, userInfo.CellNumber,
@@ -168,7 +168,7 @@ func dbUpdateUserInfo(userInfo UserInfo, c redis.Conn) error {
 
 func GetUserInfo(userID uint64, c redis.Conn) (UserInfo, error) {
 	var userInfo UserInfo
-	accountKey := getAccountKey(userID)
+	accountKey := GetAccountKey(userID)
 
 	values, err := redis.Values(c.Do("HMGET", accountKey,
 		UserField,

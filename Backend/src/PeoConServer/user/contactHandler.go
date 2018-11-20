@@ -1,6 +1,7 @@
 package user
 
 import (
+	"PeoConServer/share"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -28,7 +29,7 @@ func GetContactsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := redis.Dial("tcp", ContactDB)
+	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
 		fmt.Fprintf(w, "Error: connect db error")
 		return
@@ -84,7 +85,7 @@ func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := redis.Dial("tcp", ContactDB)
+	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
 		fmt.Fprintf(w, "Error: connect db error")
 		return
@@ -97,8 +98,8 @@ func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accountKey := getAccountKey(contactID)
-	name, err := dbGetUserInfoField(accountKey, NameField, c)
+	accountKey := GetAccountKey(contactID)
+	name, err := DbGetUserInfoField(accountKey, NameField, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -117,101 +118,6 @@ func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", data)
 }
 
-type RequestContactInput struct {
-	From    uint64 `json:"from"`
-	To      uint64 `json:"to"`
-	Flag    uint64 `json:"flag"`
-	Name    string `json:"name"`
-	Message string `json:"mess"`
-}
-
-func RequestContactHandler(w http.ResponseWriter, r *http.Request) {
-	var input RequestContactInput
-	err := ReadInput(r, &input)
-	if err != nil {
-		fmt.Fprintf(w, "Error: read input")
-		return
-	}
-
-	err = addContactPreCheck(input.From, input.To, input.Flag, input.Name)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
-
-	c, err := redis.Dial("tcp", ContactDB)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
-	defer c.Close()
-
-	requestKey := GetRequestKey(input.From, input.To)
-	exists, err := redis.Int64(c.Do("EXISTS", requestKey))
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
-	if exists == 1 {
-		fmt.Fprintf(w, "Error: request exist")
-		return
-	}
-
-	err = dbAddRequest(input, c)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
-
-	fmt.Fprintf(w, "Success")
-}
-
-type SyncRequestsInput struct {
-	User uint64 `json:"user"`
-}
-
-type Request struct {
-	From uint64 `json:"from"`
-	Name string `json:"name"`
-	Mess string `json:"mess"`
-}
-
-type SyncRequestsReturn struct {
-	Requests []Request `json:"requests"`
-}
-
-func SyncRequestsHandler(w http.ResponseWriter, r *http.Request) {
-	var input SyncRequestsInput
-	err := ReadInput(r, &input)
-	if err != nil {
-		fmt.Fprintf(w, "Error: read input")
-		return
-	}
-
-	c, err := redis.Dial("tcp", ContactDB)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
-	defer c.Close()
-
-	requests, err := dbSyncRequests(input.User, c)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
-
-	var response SyncRequestsReturn
-	response.Requests = requests
-	data, err := json.Marshal(&response)
-	if err != nil {
-		fmt.Fprintf(w, "Error: json read error %s", data)
-		return
-	}
-
-	fmt.Fprintf(w, "%s", data)
-}
-
 type AddContactInput struct {
 	User    uint64 `json:"user"`
 	Contact uint64 `json:"contact"`
@@ -221,26 +127,26 @@ type AddContactInput struct {
 
 func AddContactHandler(w http.ResponseWriter, r *http.Request) {
 	var input AddContactInput
-	err := ReadInput(r, &input)
+	err := share.ReadInput(r, &input)
 	if err != nil {
 		fmt.Fprintf(w, "Error: json read error")
 		return
 	}
 
-	err = addContactPreCheck(input.User, input.Contact, input.Flag, input.Name)
+	err = AddContactPreCheck(input.User, input.Contact, input.Flag, input.Name)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
-	c, err := redis.Dial("tcp", ContactDB)
+	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
 		fmt.Fprintf(w, "Error: connect db error")
 		return
 	}
 	defer c.Close()
 
-	requestKey := GetRequestKey(input.Contact, input.User)
+	requestKey := share.GetRequestKey(input.Contact, input.User)
 	exists, err := redis.Int64(c.Do("EXISTS", requestKey))
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
@@ -266,7 +172,7 @@ type RemContactInput struct {
 
 func RemContactHandler(w http.ResponseWriter, r *http.Request) {
 	var input RemContactInput
-	err := ReadInput(r, &input)
+	err := share.ReadInput(r, &input)
 	if err != nil {
 		fmt.Fprintf(w, "Error: json read error")
 		return

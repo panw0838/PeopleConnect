@@ -1,4 +1,4 @@
-package user
+package share
 
 import (
 	"encoding/json"
@@ -8,6 +8,8 @@ import (
 
 	"github.com/garyburd/redigo/redis"
 )
+
+const ContactDB = "127.0.0.1:6379"
 
 func GetUint64(reply interface{}, err error) (uint64, error) {
 	str, err := redis.String(reply, err)
@@ -33,4 +35,14 @@ func ReadInput(r *http.Request, v interface{}) error {
 	}
 
 	return nil
+}
+
+func GetRequestsKey(user uint64) string {
+	return "requests:" + strconv.FormatUint(user, 10)
+}
+
+func GetRequestKey(user1 uint64, user2 uint64) string {
+	return "request:" +
+		strconv.FormatUint(user1, 10) + ":" +
+		strconv.FormatUint(user2, 10)
 }
