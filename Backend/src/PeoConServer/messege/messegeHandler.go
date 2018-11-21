@@ -48,13 +48,20 @@ func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO, notify user2 to receive messege
+	cashed, userCash := share.GetAccountCash(input.To)
+	if cashed {
+		ipStr := share.GetIPString(userCash.Ip)
+		sendSyncRequest(ipStr + ":8181/sync")
+	}
+
 	err = dbAppendMessege(input, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
-	// TODO, notify user2 to receive messege
+	fmt.Fprintf(w, "Success")
 }
 
 type MessegeSyncInput struct {

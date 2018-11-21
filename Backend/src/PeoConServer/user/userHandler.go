@@ -4,25 +4,32 @@ import (
 	"PeoConServer/share"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/garyburd/redigo/redis"
 )
 
-func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Error: read request")
-		return
-	}
+type AccountInfo struct {
+	UserID uint64 `json:"user"`
+}
 
+type RegistryInfo struct {
+	CellNumber string `json:"cell"`
+	CellCode   string `json:"code,omitempty"`
+	Password   string `json:"pass,omitempty"`
+	Device     string `json:"device"`
+	IPAddress  string
+}
+
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var registryInfo RegistryInfo
-	err = json.Unmarshal(body, &registryInfo)
+	err := share.ReadInput(r, &registryInfo)
 	if err != nil {
 		fmt.Fprintf(w, "Error: json read error")
 		return
 	}
+
+	registryInfo.IPAddress = trimIPString(r.RemoteAddr)
 
 	if len(registryInfo.CellNumber) == 0 {
 		fmt.Fprintf(w, "Error: null cell number")
@@ -42,10 +49,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var feedback LogonFeedbackInfo
-	feedback.UserID = userID
+	var response AccountInfo
+	response.UserID = userID
+	share.UpdateAccountCash(userID, registryInfo.IPAddress, 0)
 
-	data, err := json.Marshal(&feedback)
+	data, err := json.Marshal(&response)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -54,19 +62,26 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", data)
 }
 
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Error: read request")
-		return
-	}
+type LoginInfo struct {
+	CellNumber string `json:"cell"`
+	CellCode   string `json:"code,omitempty"`
+	Password   string `json:"pass,omitempty"`
+	Device     string `json:"device"`
+	IPAddress  string
+}
 
+type LoginResponse struct {
+	UserID uint64 `json:"user"`
+}
+
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var loginInfo LoginInfo
-	err = json.Unmarshal(body, &loginInfo)
+	err := share.ReadInput(r, &loginInfo)
 	if err != nil {
 		fmt.Fprintf(w, "Error: json read error")
 		return
 	}
+	loginInfo.IPAddress = trimIPString(r.RemoteAddr)
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
@@ -75,14 +90,15 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	userID, err := dbVerifyUser(loginInfo, c)
+	userID, err := dbLogon(loginInfo, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
-	var feedback LogonFeedbackInfo
+	var feedback LoginResponse
 	feedback.UserID = userID
+	share.UpdateAccountCash(userID, loginInfo.IPAddress, 0)
 
 	data, err := json.Marshal(&feedback)
 	if err != nil {

@@ -19,6 +19,12 @@ const QQField = "qq"
 const DeviceField = "device"
 const ConfigField = "config"
 const PassField = "pass"
+const IPField = "ip"
+
+func trimIPString(rawStr string) string {
+	idx := strings.Index(rawStr, ":")
+	return rawStr[0:idx]
+}
 
 func GetAccountKey(userID uint64) string {
 	return "user:" + strconv.FormatUint(userID, 10)
@@ -65,7 +71,8 @@ func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 		NameField, info.CellNumber,
 		DeviceField, info.Device,
 		ConfigField, 0,
-		PassField, info.Password)
+		PassField, info.Password,
+		IPField, "")
 	if err != nil {
 		return 0, err
 	}
@@ -84,7 +91,7 @@ func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 	return newID, nil
 }
 
-func dbVerifyUser(loginInfo LoginInfo, c redis.Conn) (uint64, error) {
+func dbLogon(loginInfo LoginInfo, c redis.Conn) (uint64, error) {
 	cellKey := getCellKey(loginInfo.CellNumber)
 	exists, err := redis.Int64(c.Do("EXISTS", cellKey))
 	if err != nil {
@@ -110,6 +117,7 @@ func dbVerifyUser(loginInfo LoginInfo, c redis.Conn) (uint64, error) {
 	}
 
 	if strings.Compare(password, loginInfo.Password) == 0 {
+		_ = DbSetUserInfoField(accountKey, IPField, loginInfo.IPAddress, c)
 		return userID, nil
 	} else {
 		return 0, fmt.Errorf("password not correct")
@@ -126,95 +134,10 @@ func DbGetUserInfoField(accountKey string, filed string, c redis.Conn) (string, 
 	return value, nil
 }
 
-func dbUpdateUserInfo(userInfo UserInfo, c redis.Conn) error {
-	_, err := c.Do("MULTI")
+func DbSetUserInfoField(accountKey string, filed string, value string, c redis.Conn) error {
+	_, err := c.Do("HMSET", accountKey, filed, value)
 	if err != nil {
 		return err
-	} else {
-		accountKey := GetAccountKey(userInfo.UserID)
-		_, err = c.Do("HMSET", accountKey,
-			UserField, accountKey,
-			CellFiled, userInfo.CellNumber,
-			MailField, userInfo.MailAddress,
-			QQField, userInfo.QQNumber,
-			NameField, userInfo.UserName,
-			DeviceField, userInfo.DeviceID,
-			ConfigField, userInfo.Config,
-			PassField, userInfo.Password)
-		if err != nil {
-			return err
-		}
-
-		if len(userInfo.CellNumber) != 0 {
-			cellKey := getCellKey(userInfo.CellNumber)
-			exists, err := redis.Bool(c.Do("EXISTS", cellKey))
-			if err != nil {
-				return err
-			}
-			if exists {
-				return fmt.Errorf("cell number exists")
-			} else {
-				c.Do("SET", cellKey, accountKey)
-			}
-		}
-
-		_, err = c.Do("EXEC")
-		if err != nil {
-			return err
-		}
 	}
 	return nil
-}
-
-func GetUserInfo(userID uint64, c redis.Conn) (UserInfo, error) {
-	var userInfo UserInfo
-	accountKey := GetAccountKey(userID)
-
-	values, err := redis.Values(c.Do("HMGET", accountKey,
-		UserField,
-		CellFiled,
-		MailField,
-		QQField,
-		NameField,
-		PassField,
-		ConfigField,
-		DeviceField))
-	if err != nil {
-		return userInfo, err
-	}
-
-	userInfo.UserID, err = redis.Uint64(values[0], err)
-	if err != nil {
-		return userInfo, err
-	}
-	userInfo.CellNumber, err = redis.String(values[1], err)
-	if err != nil {
-		return userInfo, err
-	}
-	userInfo.MailAddress, err = redis.String(values[2], err)
-	if err != nil {
-		return userInfo, err
-	}
-	userInfo.QQNumber, err = redis.String(values[3], err)
-	if err != nil {
-		return userInfo, err
-	}
-	userInfo.UserName, err = redis.String(values[4], err)
-	if err != nil {
-		return userInfo, err
-	}
-	userInfo.Password, err = redis.String(values[5], err)
-	if err != nil {
-		return userInfo, err
-	}
-	userInfo.Config, err = redis.Uint64(values[6], err)
-	if err != nil {
-		return userInfo, err
-	}
-	userInfo.DeviceID, err = redis.String(values[7], err)
-	if err != nil {
-		return userInfo, err
-	}
-
-	return userInfo, nil
 }

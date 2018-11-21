@@ -4,19 +4,12 @@ import (
 	"PeoConServer/share"
 	"PeoConServer/user"
 	"fmt"
+	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
 )
-
-type MessegeTime struct {
-	year   uint16
-	month  uint8
-	day    uint8
-	hour   uint8
-	minute uint8
-}
 
 type Messege struct {
 	From    uint64 `json:"from"`
@@ -26,6 +19,14 @@ type Messege struct {
 
 func GetMessegeKey(userID uint64) string {
 	return "mess:" + strconv.FormatUint(userID, 10)
+}
+
+func sendSyncRequest(address string) error {
+	_, err := http.Get(address)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func getMessegeInfo(messegeData string) (uint64, string, string) {

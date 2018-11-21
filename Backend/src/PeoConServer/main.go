@@ -23,7 +23,8 @@ type SyncReturn struct {
 }
 
 func syncHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hi, This is an example of https service in golang!")
+	sss := r.Header.Get("X-Forwarded-For")
+	fmt.Fprintf(w, "%s %s", r.RemoteAddr, sss)
 }
 
 func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,6 +34,8 @@ func getContactsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	http.HandleFunc("/sync", syncHandler)
+
 	http.HandleFunc("/login", user.LoginHandler)
 	http.HandleFunc("/registry", user.RegisterHandler)
 
