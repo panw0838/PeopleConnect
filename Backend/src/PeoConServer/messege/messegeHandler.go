@@ -17,6 +17,10 @@ type SendMessegeInput struct {
 	Mess string `json:"mess"`
 }
 
+type SendMessegeReturn struct {
+	IPAddress string `json:"ip"`
+}
+
 func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -61,7 +65,20 @@ func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Success")
+	var response SendMessegeReturn
+	inCash, userCash := share.GetAccountCash(input.To)
+	if inCash {
+		response.IPAddress = share.GetIPString(userCash.Ip)
+	} else {
+		response.IPAddress = ""
+	}
+	data, err := json.Marshal(&response)
+	if err != nil {
+		fmt.Fprintf(w, "Error: json output error %s", data)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", data)
 }
 
 type MessegeSyncInput struct {

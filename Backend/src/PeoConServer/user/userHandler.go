@@ -51,7 +51,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response AccountInfo
 	response.UserID = userID
-	share.UpdateAccountCash(userID, registryInfo.IPAddress, 0)
+	share.SetAccountCash(userID, registryInfo.IPAddress, 0)
 
 	data, err := json.Marshal(&response)
 	if err != nil {
@@ -98,7 +98,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	var feedback LoginResponse
 	feedback.UserID = userID
-	share.UpdateAccountCash(userID, loginInfo.IPAddress, 0)
+	share.SetAccountCash(userID, loginInfo.IPAddress, 0)
 
 	data, err := json.Marshal(&feedback)
 	if err != nil {

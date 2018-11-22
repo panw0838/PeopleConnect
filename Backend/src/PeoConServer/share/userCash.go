@@ -22,25 +22,25 @@ var UserIndexSize uint64 = 0x10000000
 var UserIndexMask uint64 = UserIndexSize - 1
 var ActiveUsers []UserCash = make([]UserCash, UserCashSize)
 var ActiveUsersIndex []uint32 = make([]uint32, UserIndexSize)
-var lastAvailble uint32 = 0
+var lastAvailble uint32 = 1
 
-func GetAccountCashIdx(uid uint64) uint32 {
-	return ActiveUsersIndex[(uid & UserIndexMask)]
+func getAccountCashIdx(uid uint64) uint32 {
+	return ActiveUsersIndex[(uid&UserIndexMask)] - 1
 }
 
-func ForceGetAcctountCashIdx(uid uint64) uint32 {
-	idx := ActiveUsersIndex[(uid & UserIndexMask)]
-	if idx >= lastAvailble {
+func forceGetAcctountCashIdx(uid uint64) uint32 {
+	addr := (uid & UserIndexMask)
+	if ActiveUsersIndex[addr] == 0 {
 		mutex.Lock()
-		idx = lastAvailble
+		ActiveUsersIndex[addr] = lastAvailble
 		lastAvailble++
 		mutex.Unlock()
 	}
-	return idx
+	return ActiveUsersIndex[addr] - 1
 }
 
 func UpdateAccountCash(uid uint64, ip string, flag uint64) {
-	idx := GetAccountCashIdx(uid)
+	idx := getAccountCashIdx(uid)
 	if idx < lastAvailble {
 		var activeUser UserCash
 		activeUser.UID = uid
@@ -52,7 +52,7 @@ func UpdateAccountCash(uid uint64, ip string, flag uint64) {
 }
 
 func SetAccountCash(uid uint64, ip string, flag uint64) {
-	idx := ForceGetAcctountCashIdx(uid)
+	idx := forceGetAcctountCashIdx(uid)
 	if idx < lastAvailble {
 		var activeUser UserCash
 		activeUser.UID = uid
@@ -61,10 +61,11 @@ func SetAccountCash(uid uint64, ip string, flag uint64) {
 		//activeUser.Time = time.Now()
 		ActiveUsers[idx] = activeUser
 	}
+	fmt.Printf("%x %s\n", idx, ip)
 }
 
 func ReturnAccountCash(uid uint64) {
-	idx := GetAccountCashIdx(uid)
+	idx := getAccountCashIdx(uid)
 	if idx < lastAvailble && ActiveUsers[idx].UID == uid {
 		mutex.Lock()
 		last := ActiveUsers[lastAvailble-1]
@@ -77,7 +78,7 @@ func ReturnAccountCash(uid uint64) {
 }
 
 func GetAccountCash(uid uint64) (bool, UserCash) {
-	idx := GetAccountCashIdx(uid)
+	idx := getAccountCashIdx(uid)
 	activeUser := ActiveUsers[idx]
 	if activeUser.UID == uid {
 		return true, activeUser
