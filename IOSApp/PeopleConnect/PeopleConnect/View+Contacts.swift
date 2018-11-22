@@ -24,13 +24,13 @@ class SubTagHeader: UICollectionReusableView {
 class ContactsView: UIViewController,
     UITabBarDelegate,
     UICollectionViewDataSource, UICollectionViewDelegate,
-    ContactRequestCallback, TagRequestCallback {
+    ContactRequestCallback, SearchContactCallback {
     
     @IBOutlet weak var m_tabsBar: UITabBar!
     @IBOutlet weak var m_contacts: UICollectionView!
     
     var m_curTag: Int = 0
-    var m_selectContact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
+    var m_selectContact:UInt64 = 0
     
     func TagUpdateUI() {
         m_tabsBar.items?.removeAll()
@@ -46,6 +46,21 @@ class ContactsView: UIViewController,
     
     func ContactUpdateUI() {
         self.m_contacts.reloadData()
+    }
+    
+    func SearchUpdateUI(uid:UInt64) {
+        if uid == 0 {
+            let error = UIAlertController(title: "查找失败", message: "", preferredStyle: .Alert)
+            let okAction = UIAlertAction(title: "确定", style: .Default, handler: nil)
+            error.addAction(okAction)
+            //holding.presentingViewController!.dismissViewControllerAnimated(false, completion: nil)
+            presentViewController(error, animated: false, completion: nil)
+        }
+        else {
+            m_selectContact = uid
+            //self.dismissViewControllerAnimated(false, completion: nil)
+            performSegueWithIdentifier("ShowContact", sender: nil)
+        }
     }
 
     func tagNameChanged(sender:UITextField) {
@@ -95,45 +110,13 @@ class ContactsView: UIViewController,
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
-    func httpSearchContact(key:String) {
-        let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "key":key]
-        http.postRequest("searchcontact", params: params,
-            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-                let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-                if (html.hasPrefix("Error")) {
-                    let error = UIAlertController(title: "错误", message: html, preferredStyle: .Alert)
-                    let okAction = UIAlertAction(title: "确定", style: .Default, handler: nil)
-                    error.addAction(okAction)
-                    //holding.presentingViewController!.dismissViewControllerAnimated(false, completion: nil)
-                    self.presentViewController(error, animated: false, completion: nil)
-                }
-                else {
-                    let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
-                    if (jsonObj != nil) {
-                        let dict: NSDictionary = jsonObj as! NSDictionary
-                        self.m_selectContact.user = (UInt64)((dict["user"]?.integerValue)!)
-                        self.m_selectContact.name = dict["name"] as! String
-                        self.m_selectContact.flag = 0
-                        //self.dismissViewControllerAnimated(false, completion: nil)
-                        self.performSegueWithIdentifier("ShowContact", sender: nil)
-                    }
-                }
-            },
-            fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-                let error = UIAlertController(title: "错误", message: "请求失败", preferredStyle: .Alert)
-                let okAction = UIAlertAction(title: "确定", style: .Default, handler: nil)
-                error.addAction(okAction)
-                self.presentViewController(error, animated: false, completion: nil)
-        })
-    }
-    
     @IBAction func SearchContact(sender: AnyObject) {
         let alert = UIAlertController(title: "搜索联系人", message: "", preferredStyle: UIAlertControllerStyle.Alert)
         let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
             handler: {
                 action in
-                self.httpSearchContact((alert.textFields?.first?.text)!)
+                httpSearchContact((alert.textFields?.first?.text)!)
                 //self.presentViewController(holding, animated: false, completion: nil)
         })
         alert.addTextFieldWithConfigurationHandler {
@@ -159,7 +142,7 @@ class ContactsView: UIViewController,
         let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
         //cell.backgroundColor = UIColor.blueColor()
         cell.m_image.image = UIImage(named: "default_profile")
-        cell.m_name.text = subTag.m_members[indexPath.row].name
+        cell.m_name.text = contactsData.m_contacts[subTag.m_members[indexPath.row]]?.name
         return cell
     }
     
@@ -187,15 +170,10 @@ class ContactsView: UIViewController,
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tagCallbacks.append(self)
+        TagUpdateUI()
         contactCallbacks.append(self)
     }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        TagUpdateUI()
-    }
-    
+
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "ShowMoveMember" {
             let from = sender?.superview as! SubTagHeader
@@ -204,7 +182,7 @@ class ContactsView: UIViewController,
         }
         if segue.identifier == "ShowContact" {
             let to = segue.destinationViewController as! ContactView
-            to.m_contact = self.m_selectContact
+            to.m_contact = contactsData.m_contacts[self.m_selectContact]!
         }
     }
 }

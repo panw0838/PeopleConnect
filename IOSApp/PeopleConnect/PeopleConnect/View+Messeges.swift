@@ -33,8 +33,6 @@ class MessegesView: UITableViewController, MessegeRequestCallback {
     override func viewDidLoad() {
         super.viewDidLoad()
         messegeCallbacks.append(self)
-        httpSyncMessege()
-        httpSyncRequests()
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {

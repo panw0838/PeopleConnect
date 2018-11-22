@@ -23,6 +23,10 @@
 		18DB289821A1CD200024092C /* View+Messege.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289721A1CD200024092C /* View+Messege.swift */; };
 		18DB289A21A3A8BA0024092C /* Requests+Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289921A3A8BA0024092C /* Requests+Contact.swift */; };
 		18DB289C21A3AF750024092C /* Requests+Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289B21A3AF750024092C /* Requests+Tag.swift */; };
+		18DB28B321A5B9590024092C /* CocoaAsyncSocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18DB28A921A5B9120024092C /* CocoaAsyncSocket.framework */; };
+		18DB28B421A5B9590024092C /* CocoaAsyncSocket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 18DB28A921A5B9120024092C /* CocoaAsyncSocket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		18DB28BE21A5B9CC0024092C /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB28BD21A5B9CC0024092C /* Observer.swift */; };
+		18DB28C021A6CCE60024092C /* Requests+User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB28BF21A6CCE60024092C /* Requests+User.swift */; };
 		18E8CB80219331A400E29383 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CB7F219331A400E29383 /* AppDelegate.swift */; };
 		18E8CB87219331A400E29383 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18E8CB85219331A400E29383 /* Main.storyboard */; };
 		18E8CB89219331A400E29383 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18E8CB88219331A400E29383 /* Assets.xcassets */; };
@@ -89,6 +93,34 @@
 			remoteGlobalIDString = 299522381BBF104D00859F49;
 			remoteInfo = "AFNetworking iOS";
 		};
+		18DB28A821A5B9120024092C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 18DB28A221A5B9120024092C /* CocoaAsyncSocket.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6CD990101B77868C0011A685;
+			remoteInfo = "iOS CocoaAsyncSocket";
+		};
+		18DB28AA21A5B9120024092C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 18DB28A221A5B9120024092C /* CocoaAsyncSocket.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9FC41F131B9D965000578BEB;
+			remoteInfo = "Mac CocoaAsyncSocket";
+		};
+		18DB28AC21A5B9120024092C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 18DB28A221A5B9120024092C /* CocoaAsyncSocket.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7D8B70C41BCFA15700D8E273;
+			remoteInfo = "tvOS CocoaAsyncSocket";
+		};
+		18DB28B521A5B9590024092C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 18DB28A221A5B9120024092C /* CocoaAsyncSocket.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 6CD9900F1B77868C0011A685;
+			remoteInfo = "iOS CocoaAsyncSocket";
+		};
 		18E8CB93219331A400E29383 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 18E8CB74219331A400E29383 /* Project object */;
@@ -112,6 +144,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				18DB28B421A5B9590024092C /* CocoaAsyncSocket.framework in Embed Frameworks */,
 				18D3A9402199796100EB3289 /* AFNetworking.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -135,6 +168,10 @@
 		18DB289721A1CD200024092C /* View+Messege.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Messege.swift"; sourceTree = "<group>"; };
 		18DB289921A3A8BA0024092C /* Requests+Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Contact.swift"; sourceTree = "<group>"; };
 		18DB289B21A3AF750024092C /* Requests+Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Tag.swift"; sourceTree = "<group>"; };
+		18DB28A221A5B9120024092C /* CocoaAsyncSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CocoaAsyncSocket.xcodeproj; path = "../CocoaAsyncSocket-master/CocoaAsyncSocket.xcodeproj"; sourceTree = "<group>"; };
+		18DB28BD21A5B9CC0024092C /* Observer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
+		18DB28BF21A6CCE60024092C /* Requests+User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+User.swift"; sourceTree = "<group>"; };
+		18DB28C121A6D76A0024092C /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		18E8CB7C219331A400E29383 /* PeopleConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeopleConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E8CB7F219331A400E29383 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		18E8CB86219331A400E29383 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -155,6 +192,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18DB28B321A5B9590024092C /* CocoaAsyncSocket.framework in Frameworks */,
 				18D3A93F2199796100EB3289 /* AFNetworking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -190,9 +228,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		18DB28A321A5B9120024092C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				18DB28A921A5B9120024092C /* CocoaAsyncSocket.framework */,
+				18DB28AB21A5B9120024092C /* CocoaAsyncSocket.framework */,
+				18DB28AD21A5B9120024092C /* CocoaAsyncSocket.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		18E8CB73219331A400E29383 = {
 			isa = PBXGroup;
 			children = (
+				18DB28A221A5B9120024092C /* CocoaAsyncSocket.xcodeproj */,
 				18D3A91F2199792F00EB3289 /* AFNetworking.xcodeproj */,
 				18E8CB7E219331A400E29383 /* PeopleConnect */,
 				18E8CB95219331A400E29383 /* PeopleConnectTests */,
@@ -215,11 +264,14 @@
 			isa = PBXGroup;
 			children = (
 				18AE41F52199E2680008B792 /* server.cer */,
+				18DB28C121A6D76A0024092C /* Bridging-Header.h */,
 				18E8CB7F219331A400E29383 /* AppDelegate.swift */,
+				18DB28BD21A5B9CC0024092C /* Observer.swift */,
 				18E8CBAF2193441500E29383 /* Requests.swift */,
 				18DB289321A145410024092C /* Requests+Messege.swift */,
 				18DB289921A3A8BA0024092C /* Requests+Contact.swift */,
 				18DB289B21A3AF750024092C /* Requests+Tag.swift */,
+				18DB28BF21A6CCE60024092C /* Requests+User.swift */,
 				18AE420B219AE3AD0008B792 /* User.swift */,
 				18DB289521A1C2C30024092C /* Messege.swift */,
 				18D3A8E42198061100EB3289 /* Contact.swift */,
@@ -272,6 +324,7 @@
 			);
 			dependencies = (
 				18D3A9422199796100EB3289 /* PBXTargetDependency */,
+				18DB28B621A5B9590024092C /* PBXTargetDependency */,
 			);
 			name = PeopleConnect;
 			productName = PeopleConnect;
@@ -353,6 +406,10 @@
 					ProductGroup = 18D3A9202199792F00EB3289 /* Products */;
 					ProjectRef = 18D3A91F2199792F00EB3289 /* AFNetworking.xcodeproj */;
 				},
+				{
+					ProductGroup = 18DB28A321A5B9120024092C /* Products */;
+					ProjectRef = 18DB28A221A5B9120024092C /* CocoaAsyncSocket.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -413,6 +470,27 @@
 			remoteRef = 18D3A9352199792F00EB3289 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		18DB28A921A5B9120024092C /* CocoaAsyncSocket.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = CocoaAsyncSocket.framework;
+			remoteRef = 18DB28A821A5B9120024092C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		18DB28AB21A5B9120024092C /* CocoaAsyncSocket.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = CocoaAsyncSocket.framework;
+			remoteRef = 18DB28AA21A5B9120024092C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		18DB28AD21A5B9120024092C /* CocoaAsyncSocket.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = CocoaAsyncSocket.framework;
+			remoteRef = 18DB28AC21A5B9120024092C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -449,12 +527,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				18D3A8E52198061100EB3289 /* Contact.swift in Sources */,
+				18DB28BE21A5B9CC0024092C /* Observer.swift in Sources */,
 				18DB289221A03FCC0024092C /* View+Contact.swift in Sources */,
 				18DB289821A1CD200024092C /* View+Messege.swift in Sources */,
 				18AE420A219AC4170008B792 /* View+Login.swift in Sources */,
 				18DB289C21A3AF750024092C /* Requests+Tag.swift in Sources */,
 				18D3A8DF2197F3CD00EB3289 /* View+Messeges.swift in Sources */,
 				18E8CBB02193441500E29383 /* Requests.swift in Sources */,
+				18DB28C021A6CCE60024092C /* Requests+User.swift in Sources */,
 				18DB289621A1C2C30024092C /* Messege.swift in Sources */,
 				18DB289421A145410024092C /* Requests+Messege.swift in Sources */,
 				18DB287A219D85BF0024092C /* View+MoveMembers.swift in Sources */,
@@ -489,6 +569,11 @@
 			isa = PBXTargetDependency;
 			name = "AFNetworking iOS";
 			targetProxy = 18D3A9412199796100EB3289 /* PBXContainerItemProxy */;
+		};
+		18DB28B621A5B9590024092C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "iOS CocoaAsyncSocket";
+			targetProxy = 18DB28B521A5B9590024092C /* PBXContainerItemProxy */;
 		};
 		18E8CB94219331A400E29383 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -609,10 +694,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = PeopleConnect/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Pan.PeopleConnect;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "PeopleConnect/Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -620,10 +708,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = PeopleConnect/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Pan.PeopleConnect;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "PeopleConnect/Bridging-Header.h";
 			};
 			name = Release;
 		};

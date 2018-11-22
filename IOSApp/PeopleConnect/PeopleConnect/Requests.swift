@@ -22,8 +22,8 @@ struct LoginInfo {
     var pass:String
 }
 
-protocol TagRequestCallback {
-    func TagUpdateUI()->Void
+protocol LogonRequestCallback {
+    func LogonUpdateUI()->Void
 }
 
 protocol ContactRequestCallback {
@@ -34,14 +34,20 @@ protocol MessegeRequestCallback {
     func MessegeUpdateUI()->Void
 }
 
+protocol SearchContactCallback {
+    func SearchUpdateUI(uid:UInt64)->Void
+}
+
 let http: HttpService = HttpService()
-var tagCallbacks:Array<TagRequestCallback> = Array<TagRequestCallback>()
+
+var searchCallbacks:Array<SearchContactCallback> = Array<SearchContactCallback>()
+var logonCallbacks:Array<LogonRequestCallback> = Array<LogonRequestCallback>()
 var contactCallbacks:Array<ContactRequestCallback> = Array<ContactRequestCallback>()
 var messegeCallbacks:Array<MessegeRequestCallback> = Array<MessegeRequestCallback>()
 
 class HttpService {
     var afManager: AFHTTPSessionManager = AFHTTPSessionManager()
-    var baseURL: String = "https://192.168.0.100:8080/"
+    var baseURL: String = "https://192.168.0.103:8080/"
     
     init() {
         let cerSet: Set<NSData> = AFSecurityPolicy.certificatesInBundle(NSBundle.mainBundle())

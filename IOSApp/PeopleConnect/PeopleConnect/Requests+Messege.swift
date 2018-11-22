@@ -45,6 +45,13 @@ func httpSendMessege(to:UInt64, messege:String) {
                 print("%s", html)
             }
             else {
+                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
+                if (jsonObj != nil) {
+                    let dict: NSDictionary = jsonObj as! NSDictionary
+                    let ip:String = dict["ip"] as! String
+                    contactsData.m_contacts[to]?.ip = ip
+                }
+
                 var selfMessege = MessegeInfo()
                 selfMessege.from = userInfo.userID
                 selfMessege.time = ""

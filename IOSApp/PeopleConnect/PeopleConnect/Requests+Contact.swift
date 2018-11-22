@@ -40,9 +40,6 @@ func httpGetContacts() {
                     for callback in contactCallbacks {
                         callback.ContactUpdateUI()
                     }
-                    for callback in tagCallbacks {
-                        callback.TagUpdateUI()
-                    }
                 }
             }
         },
@@ -133,3 +130,32 @@ func httpMoveContacts(tagID:UInt8, addMembers:Array<UInt64>, remMembers:Array<UI
             print("请求失败")
     })
 }
+
+func httpSearchContact(key:String) {
+    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "key":key]
+    http.postRequest("searchcontact", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            var uid:UInt64 = 0
+            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
+            if (html.hasPrefix("Error")) {
+            }
+            else {
+                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
+                if (jsonObj != nil) {
+                    let dict: NSDictionary = jsonObj as! NSDictionary
+                    var contact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
+                    contact.user = (UInt64)((dict["user"]?.integerValue)!)
+                    contact.name = dict["name"] as! String
+                    contactsData.addContact(contact)
+                    uid = contact.user
+                }
+            }
+            for callback in searchCallbacks {
+                callback.SearchUpdateUI(uid)
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+    })
+}
+

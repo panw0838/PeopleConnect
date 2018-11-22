@@ -54,12 +54,12 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
     
     func reloadData() {
         let bit:UInt64 = BitOne << UInt64(m_tagID)
-        for member in contactsData.m_contacts {
-            if member.flag & bit == 0 {
-                m_outTagMembers.append(member)
+        for contact in contactsData.m_contacts.values {
+            if contact.flag & bit == 0 {
+                m_outTagMembers.append(contact)
             }
             else {
-                m_inTagMembers.append(member)
+                m_inTagMembers.append(contact)
             }
         }
         m_title.title = contactsData.getTag(m_tagID)!.m_tagName
