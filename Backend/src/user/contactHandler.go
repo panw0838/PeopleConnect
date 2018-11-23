@@ -1,11 +1,11 @@
 package user
 
 import (
-	"PeoConServer/share"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"share"
 
 	"github.com/garyburd/redigo/redis"
 )

@@ -1,12 +1,12 @@
 package messege
 
 import (
-	"PeoConServer/share"
-	"PeoConServer/user"
 	"fmt"
 	"net/http"
+	"share"
 	"strconv"
 	"time"
+	"user"
 
 	"github.com/garyburd/redigo/redis"
 )

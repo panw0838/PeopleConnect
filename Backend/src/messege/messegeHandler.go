@@ -1,12 +1,12 @@
 package messege
 
 import (
-	"PeoConServer/share"
-	"PeoConServer/user"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"share"
+	"user"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -42,12 +42,12 @@ func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	relation, err := GetRelation(input.From, input.To, c)
+	relation, err := user.GetRelation(input.From, input.To, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
-	if !IsFriend(relation) {
+	if !user.IsFriend(relation) {
 		fmt.Fprintf(w, "Error: not friend %v", relation)
 		return
 	}

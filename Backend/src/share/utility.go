@@ -9,6 +9,9 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
+const ONE_64 uint64 = 0x1
+const ZERO_64 uint64 = 0x0
+
 const ContactDB = "127.0.0.1:6379"
 
 func GetUint64(reply interface{}, err error) (uint64, error) {

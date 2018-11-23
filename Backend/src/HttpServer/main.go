@@ -1,15 +1,15 @@
 package main
 
 import (
-	"PeoConServer/messege"
-	"PeoConServer/user"
 	"fmt"
 	"log"
+	"messege"
 	"net/http"
+	"user"
 )
 
-const crtPath = "C:/Users/panwang/PeopleConnect/Backend/src/PeoConServer/server.crt"
-const keyPath = "C:/Users/panwang/PeopleConnect/Backend/src/PeoConServer/server.key"
+const crtPath = "C:/Users/panwang/PeopleConnect/Backend/src/server.crt"
+const keyPath = "C:/Users/panwang/PeopleConnect/Backend/src/server.key"
 
 type SyncInput struct {
 	Mess uint32 `json:"messID"`

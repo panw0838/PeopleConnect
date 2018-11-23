@@ -6,7 +6,8 @@ import (
 )
 
 type IPAddress struct {
-	p [4]uint8
+	a [4]uint8
+	p uint16
 }
 
 type UserCash struct {
@@ -89,12 +90,12 @@ func GetAccountCash(uid uint64) (bool, UserCash) {
 
 func getIPAddr(addrStr string) IPAddress {
 	var ipAddr IPAddress
-	fmt.Sscanf(addrStr, "%d.%d.%d.%d",
-		&ipAddr.p[0], &ipAddr.p[1], &ipAddr.p[2], &ipAddr.p[3])
+	fmt.Sscanf(addrStr, "%d.%d.%d.%d:%d",
+		&ipAddr.a[0], &ipAddr.a[1], &ipAddr.a[2], &ipAddr.a[3], &ipAddr.p)
 	return ipAddr
 }
 
 func GetIPString(ip IPAddress) string {
-	ipString := fmt.Sprintf("%d,%d,%d,%d", ip.p[0], ip.p[1], ip.p[2], ip.p[3])
+	ipString := fmt.Sprintf("%d.%d.%d.%d:%d", ip.a[0], ip.a[1], ip.a[2], ip.a[3], ip.p)
 	return ipString
 }

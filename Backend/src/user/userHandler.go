@@ -1,10 +1,10 @@
 package user
 
 import (
-	"PeoConServer/share"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"share"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -29,7 +29,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	registryInfo.IPAddress = trimIPString(r.RemoteAddr)
+	registryInfo.IPAddress = r.RemoteAddr
 
 	if len(registryInfo.CellNumber) == 0 {
 		fmt.Fprintf(w, "Error: null cell number")
@@ -81,7 +81,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error: json read error")
 		return
 	}
-	loginInfo.IPAddress = trimIPString(r.RemoteAddr)
+	loginInfo.IPAddress = r.RemoteAddr
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {

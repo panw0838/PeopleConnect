@@ -21,11 +21,6 @@ const ConfigField = "config"
 const PassField = "pass"
 const IPField = "ip"
 
-func trimIPString(rawStr string) string {
-	idx := strings.Index(rawStr, ":")
-	return rawStr[0:idx]
-}
-
 func GetAccountKey(userID uint64) string {
 	return "user:" + strconv.FormatUint(userID, 10)
 }

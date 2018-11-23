@@ -1,8 +1,8 @@
 package user
 
 import (
-	"PeoConServer/share"
 	"fmt"
+	"share"
 	"strconv"
 
 	"github.com/garyburd/redigo/redis"
@@ -11,6 +11,14 @@ import (
 const FlagField = "flag"
 const NameField = "name"
 const MessField = "mess"
+
+const NAME_SIZE uint32 = 20
+
+type ContactInfo struct {
+	User uint64 `json:"user"`
+	Flag uint64 `json:"flag"`
+	Name string `json:"name"`
+}
 
 func GetRelationKey(user1 uint64, user2 uint64) string {
 	return "relate:" +
