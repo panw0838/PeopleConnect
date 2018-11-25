@@ -102,5 +102,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Printf("%d %s\n", userID, r.RemoteAddr)
 	fmt.Fprintf(w, "%s", data)
 }

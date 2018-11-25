@@ -85,6 +85,7 @@ func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
 
 type MessegeSyncInput struct {
 	User uint64 `json:"user"`
+	//Last uint32 `json:"last"`
 }
 
 type MessegeSyncReturn struct {
@@ -107,7 +108,7 @@ func SyncMessegeHandler(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	var output MessegeSyncReturn
-	messeges, err := dbGetMesseges(input.User, c)
+	messeges, err := dbGetOfflienMesseges(input.User, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return

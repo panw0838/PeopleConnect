@@ -1,12 +1,15 @@
 package main
 
 import (
+	"cashes"
 	"fmt"
 	"messege"
 	"net"
 )
 
 func main() {
+	cash.InitUserCash()
+	cash.InitRelationCash()
 	lisener, err := net.Listen("tcp", ":8888")
 	if err != nil {
 		fmt.Println("listen err")

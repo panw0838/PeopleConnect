@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"share"
 	"strconv"
+	"strings"
 	"time"
 	"user"
 
@@ -33,8 +34,11 @@ func getMessegeInfo(messegeData string) (uint64, string, string) {
 	var id uint64 = 0
 	var from uint64 = 0
 	var messege string
-	time := messegeData[:25]
-	fmt.Sscanf(messegeData[26:], "%d,%d,%s", &id, &from, &messege)
+	var dotIdx = strings.IndexByte(messegeData, ',')
+	var strIdx = share.GetIndex(messegeData, ',', 3)
+	time := messegeData[:dotIdx]
+	fmt.Sscanf(messegeData[dotIdx+1:], "%d,%d", &id, &from)
+	messege = messegeData[strIdx+1:]
 	return from, time, messege
 }
 
@@ -44,7 +48,7 @@ func GetMessegeData(from uint64, messege string) string {
 	return messegeData
 }
 
-func dbAppendMessege(messege SendMessegeInput, c redis.Conn) error {
+func dbAddOfflineMessege(messege SendMessegeInput, c redis.Conn) error {
 	messegeData := GetMessegeData(messege.From, messege.Mess)
 	messegeKey := GetMessegeKey(messege.To)
 	_, err := c.Do("RPUSH", messegeKey, messegeData)
@@ -54,7 +58,7 @@ func dbAppendMessege(messege SendMessegeInput, c redis.Conn) error {
 	return nil
 }
 
-func dbGetMesseges(user uint64, c redis.Conn) ([]Messege, error) {
+func dbGetOfflienMesseges(user uint64, c redis.Conn) ([]Messege, error) {
 	messegeKey := GetMessegeKey(user)
 	numMesseges, err := redis.Uint64(c.Do("LLEN", messegeKey))
 	if err != nil {

@@ -1,4 +1,4 @@
-package share
+package cash
 
 import (
 	"fmt"
@@ -23,8 +23,8 @@ var mutex sync.Mutex
 var UserCashSize uint32 = 0x8000000
 var UserIndexSize uint64 = 0x10000000
 var UserIndexMask uint64 = UserIndexSize - 1
-var ActiveUsers []UserCash = make([]UserCash, UserCashSize)
-var ActiveUsersIndex []uint32 = make([]uint32, UserIndexSize)
+var ActiveUsers []UserCash
+var ActiveUsersIndex []uint32
 var lastAvailble uint32 = 1
 
 func getAccountCashIdx(uid uint64) uint32 {
@@ -40,6 +40,11 @@ func forceGetAcctountCashIdx(uid uint64) uint32 {
 		mutex.Unlock()
 	}
 	return ActiveUsersIndex[addr]
+}
+
+func InitUserCash() {
+	ActiveUsers = make([]UserCash, UserCashSize)
+	ActiveUsersIndex = make([]uint32, UserIndexSize)
 }
 
 func UpdateAccountCash(uid uint64, conn net.Conn) {

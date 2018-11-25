@@ -40,6 +40,21 @@ func ReadInput(r *http.Request, v interface{}) error {
 	return nil
 }
 
+func GetIndex(str string, c byte, n int) int {
+	var left = n
+	var i = 0
+	for {
+		if left == 0 {
+			break
+		}
+		if str[i] == c {
+			left--
+		}
+		i++
+	}
+	return i - 1
+}
+
 func GetRequestsKey(user uint64) string {
 	return "requests:" + strconv.FormatUint(user, 10)
 }

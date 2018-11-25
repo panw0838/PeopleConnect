@@ -1,11 +1,15 @@
 package messege
 
 import (
+	cash "cashes"
 	"encoding/json"
+	"fmt"
 	"net"
 	"share"
 	"time"
 	"user"
+
+	"github.com/garyburd/redigo/redis"
 )
 
 const Connect_Ack byte = 0
@@ -22,7 +26,7 @@ func HandleLogon(buf []byte, conn net.Conn) error {
 		return err
 	}
 
-	share.SetAccountCash(input.UserID, conn)
+	cash.SetAccountCash(input.UserID, conn)
 
 	feed := []byte{Log_Act, 0}
 	conn.Write(feed)
@@ -48,23 +52,35 @@ func HandleSendMessege(buf []byte, conn net.Conn) {
 		return
 	}
 
-	//c, err := redis.Dial("tcp", share.ContactDB)
-	//if err != nil {
-	//	return
-	//}
-	//defer c.Close()
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		return
+	}
+	defer c.Close()
 
-	//relation, err := user.GetRelation(input.From, input.To, c)
-	//if err != nil {
-	//	return
-	//}
-	//if !user.IsFriend(relation) {
-	//	return
-	//}
+	var less uint64
+	var more uint64
+	if input.From < input.To {
+		less = input.From
+		more = input.To
+	} else if input.From > input.To {
+		less = input.To
+		more = input.From
+	} else {
+		return
+	}
+	relation, err := cash.GetRelation(less, more, c)
+	if err != nil {
+		return
+	}
+	if !cash.IsFriend(relation) {
+		fmt.Println("messege: not friend")
+		return
+	}
 
 	// TODO, notify user2 to receive messege
 	notified := false
-	cashed, userCash := share.GetAccountCash(input.To)
+	cashed, userCash := cash.GetAccountCash(input.To)
 	if cashed {
 		var messege Messege
 		messege.From = input.From
@@ -79,11 +95,13 @@ func HandleSendMessege(buf []byte, conn net.Conn) {
 		data := append([]byte{Messege_Fwd, 0}, messegeData...)
 		n, err := userCash.Conn.Write(data)
 		if err == nil && n > 0 {
+			fmt.Println("messege: notified")
 			notified = true
 		}
 	}
 	if !notified {
-		//err = dbAppendMessege(input, c)
+		err = dbAddOfflineMessege(input, c)
+		fmt.Println("messege: add offline messege")
 		if err != nil {
 			return
 		}

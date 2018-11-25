@@ -1,8 +1,15 @@
-package user
+package cash
 
 import (
+	"share"
+	"user"
+
 	"github.com/garyburd/redigo/redis"
 )
+
+const RelationCashSize uint64 = 0x4000000
+
+var cash []Relation
 
 type Relation struct {
 	less  uint64
@@ -11,31 +18,33 @@ type Relation struct {
 	mFlag uint64
 }
 
-var RelationCashSize uint64 = 0x4000000
-var RelationCash []Relation = make([]Relation, RelationCashSize)
+func InitRelationCash() {
+	cash = make([]Relation, RelationCashSize)
+}
 
 func IsFriend(relation Relation) bool {
 	return (relation.lFlag != 0) && (relation.mFlag != 0) &&
-		((relation.lFlag & BLK_BIT) == 0) && ((relation.mFlag & BLK_BIT) == 0)
+		((relation.lFlag & user.BLK_BIT) == 0) &&
+		((relation.mFlag & user.BLK_BIT) == 0)
 }
 
 func GetRelation(less uint64, more uint64, c redis.Conn) (Relation, error) {
-	idx := (less ^ more) & (RelationCashSize - ONE_64)
-	relation := RelationCash[idx]
+	idx := (less ^ more) & (RelationCashSize - share.ONE_64)
+	relation := cash[idx]
 	if relation.less != less || relation.more != more {
 		relation.less = less
 		relation.more = more
-		lFlag, err := DbGetFlag(less, more, c)
+		lFlag, err := user.DbGetFlag(less, more, c)
 		if err != nil {
 			return relation, err
 		}
-		mFlag, err := DbGetFlag(more, less, c)
+		mFlag, err := user.DbGetFlag(more, less, c)
 		if err != nil {
 			return relation, err
 		}
 		relation.lFlag = lFlag
 		relation.mFlag = mFlag
-		RelationCash[idx] = relation
+		cash[idx] = relation
 	}
 	return relation, nil
 }
