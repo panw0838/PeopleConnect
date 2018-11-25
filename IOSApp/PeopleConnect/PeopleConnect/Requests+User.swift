@@ -55,6 +55,9 @@ func httpLogon(cellNumber:String, password:String) {
                 httpSyncMessege()
                 httpSyncRequests()
                 
+                tcp.start("192.168.0.103", port: 8888)
+                tcp.logon()
+                
                 for callback in logonCallbacks {
                     callback.LogonUpdateUI()
                 }

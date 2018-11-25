@@ -32,7 +32,8 @@ class MessegeView: UIViewController, UITableViewDataSource, UITableViewDelegate,
     @IBAction func SendMessege(sender: AnyObject) {
         let messege = m_text.text
         if messege?.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) > 0 {
-            httpSendMessege(m_conversastion!.m_id, messege: messege!)
+            //httpSendMessege(m_conversastion!.m_id, messege: messege!)
+            tcp.sendMessege(m_conversastion!.m_id, messege: messege!)
         }
     }
     
