@@ -3,7 +3,7 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "ContactsView.(httpGetContacts(ContactsView) -&gt; () -&gt; ()).(closure #1):ContactRequests.swift">
+         contextName = "ContactsView.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:ContactsView.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsView.numberOfSectionsInCollectionView(UICollectionView) -&gt; Int:ContactsView.swift">
@@ -51,10 +51,21 @@
          contextName = "HttpService.(loginRequest(HttpService) -&gt; () -&gt; ()).(closure #2):Requests.swift">
       </ContextState>
       <ContextState
-         contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():ContactsView.swift">
+         contextName = "MessegeView.tableView(UITableView, numberOfRowsInSection : Int) -&gt; Int:View+Messege.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "messegeData">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "LoginView.login(AnyObject) -&gt; ():LoginView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "MessegesView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Messeges.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():ContactsView.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsView.collectionView(UICollectionView, cellForItemAtIndexPath : NSIndexPath) -&gt; UICollectionViewCell:ContactsView.swift">
@@ -68,18 +79,10 @@
          contextName = "ContactView.viewWillAppear(Bool) -&gt; ():ContactView.swift">
       </ContextState>
       <ContextState
-         contextName = "MessegesView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Messeges.swift">
-      </ContextState>
-      <ContextState
-         contextName = "MessegeView.tableView(UITableView, numberOfRowsInSection : Int) -&gt; Int:View+Messege.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "messegeData">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
          contextName = "MessegeData.AddNewMessege(UInt64, newMessege : MessegeInfo) -&gt; ():Messege.swift">
+      </ContextState>
+      <ContextState
+         contextName = "TCPClient.logon() -&gt; ():Observer.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsView.httpRemTag(UInt8) -&gt; ():ContactRequests.swift">
@@ -94,6 +97,11 @@
       </ContextState>
       <ContextState
          contextName = "(httpSyncMessege() -&gt; ()).(closure #1):Requests+Messege.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "messegeData">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "MessegeView.viewWillAppear(Bool) -&gt; ():View+Messege.swift">
@@ -122,7 +130,7 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ContactsView.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:ContactsView.swift">
+         contextName = "ContactsView.(httpGetContacts(ContactsView) -&gt; () -&gt; ()).(closure #1):ContactRequests.swift">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

@@ -36,6 +36,7 @@ func httpGetContacts() {
                             }
                         }
                     }
+                    httpSyncMessege()
                     contactsData.loadContacts(contacts, userTags: userTags)
                     for callback in contactCallbacks {
                         callback.ContactUpdateUI()

@@ -78,9 +78,9 @@ func httpSyncMessege() {
             }
             else {
                 if let json = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers) as! [String:AnyObject] {
-                    if let tagObjs = json["mess"] as? [AnyObject] {
-                        for case let tagObj in (tagObjs as? [[String:AnyObject]])! {
-                            if let messege = MessegeInfo(json: tagObj) {
+                    if let messObjs = json["mess"] as? [AnyObject] {
+                        for case let messObj in (messObjs as? [[String:AnyObject]])! {
+                            if let messege = MessegeInfo(json: messObj) {
                                 messegeData.AddNewMessege(messege.from, newMessege: messege)
                             }
                         }

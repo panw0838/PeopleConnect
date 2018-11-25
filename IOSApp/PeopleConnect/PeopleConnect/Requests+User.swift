@@ -52,7 +52,6 @@ func httpLogon(cellNumber:String, password:String) {
                     userInfo.userID = (UInt64)((dict.valueForKey("user")?.integerValue)!)
                 }
                 httpGetContacts()
-                httpSyncMessege()
                 httpSyncRequests()
                 
                 tcp.start("192.168.0.103", port: 8888)
