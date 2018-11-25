@@ -11,7 +11,7 @@ type Relation struct {
 	mFlag uint64
 }
 
-var RelationCashSize uint64 = 0x40000000
+var RelationCashSize uint64 = 0x4000000
 var RelationCash []Relation = make([]Relation, RelationCashSize)
 
 func IsFriend(relation Relation) bool {

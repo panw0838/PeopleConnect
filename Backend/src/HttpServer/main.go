@@ -49,9 +49,9 @@ func main() {
 	http.HandleFunc("/updatetagmember", user.UpdateTagMemberHandler)
 
 	http.HandleFunc("/syncmessege", messege.SyncMessegeHandler)
-	http.HandleFunc("/sendmessege", messege.SendMessegeHandler)
 	http.HandleFunc("/requestcontact", messege.RequestContactHandler)
 	http.HandleFunc("/syncrequests", messege.SyncRequestsHandler)
+	//http.HandleFunc("/sendmessege", messege.SendMessegeHandler)
 
 	e := http.ListenAndServeTLS(":8080", crtPath, keyPath, nil)
 	if e != nil {

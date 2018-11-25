@@ -38,14 +38,14 @@ func getMessegeInfo(messegeData string) (uint64, string, string) {
 	return from, time, messege
 }
 
-func getMessegeData(from uint64, messege string) string {
+func GetMessegeData(from uint64, messege string) string {
 	messegeData := fmt.Sprintf("%s,%d,%d,%s",
 		time.Now().Format(time.RFC3339), from, from, messege)
 	return messegeData
 }
 
 func dbAppendMessege(messege SendMessegeInput, c redis.Conn) error {
-	messegeData := getMessegeData(messege.From, messege.Mess)
+	messegeData := GetMessegeData(messege.From, messege.Mess)
 	messegeKey := GetMessegeKey(messege.To)
 	_, err := c.Do("RPUSH", messegeKey, messegeData)
 	if err != nil {

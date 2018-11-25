@@ -51,8 +51,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response AccountInfo
 	response.UserID = userID
-	share.SetAccountCash(userID, registryInfo.IPAddress, 0)
-
 	data, err := json.Marshal(&response)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
@@ -98,8 +96,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	var feedback LoginResponse
 	feedback.UserID = userID
-	share.SetAccountCash(userID, loginInfo.IPAddress, 0)
-
 	data, err := json.Marshal(&feedback)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)

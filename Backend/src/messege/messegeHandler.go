@@ -3,7 +3,6 @@ package messege
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"share"
 	"user"
@@ -11,6 +10,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
+/*
 type SendMessegeInput struct {
 	From uint64 `json:"from"`
 	To   uint64 `json:"to"`
@@ -20,6 +20,7 @@ type SendMessegeInput struct {
 type SendMessegeReturn struct {
 	IPAddress string `json:"ip"`
 }
+
 
 func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
@@ -80,6 +81,7 @@ func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "%s", data)
 }
+*/
 
 type MessegeSyncInput struct {
 	User uint64 `json:"user"`
@@ -90,16 +92,10 @@ type MessegeSyncReturn struct {
 }
 
 func SyncMessegeHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Error: read request")
-		return
-	}
-
 	var input MessegeSyncInput
-	err = json.Unmarshal(body, &input)
+	err := share.ReadInput(r, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error %s", body)
+		fmt.Fprintf(w, "Error: read input")
 		return
 	}
 

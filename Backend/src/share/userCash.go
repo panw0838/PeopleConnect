@@ -2,6 +2,7 @@ package share
 
 import (
 	"fmt"
+	"net"
 	"sync"
 )
 
@@ -13,7 +14,8 @@ type IPAddress struct {
 type UserCash struct {
 	UID  uint64
 	Flag uint64
-	Ip   IPAddress
+	//Ip   IPAddress
+	Conn net.Conn
 	//Time time.Time
 }
 
@@ -26,7 +28,7 @@ var ActiveUsersIndex []uint32 = make([]uint32, UserIndexSize)
 var lastAvailble uint32 = 1
 
 func getAccountCashIdx(uid uint64) uint32 {
-	return ActiveUsersIndex[(uid&UserIndexMask)] - 1
+	return ActiveUsersIndex[(uid & UserIndexMask)]
 }
 
 func forceGetAcctountCashIdx(uid uint64) uint32 {
@@ -37,32 +39,32 @@ func forceGetAcctountCashIdx(uid uint64) uint32 {
 		lastAvailble++
 		mutex.Unlock()
 	}
-	return ActiveUsersIndex[addr] - 1
+	return ActiveUsersIndex[addr]
 }
 
-func UpdateAccountCash(uid uint64, ip string, flag uint64) {
-	idx := getAccountCashIdx(uid)
-	if idx < lastAvailble {
+func UpdateAccountCash(uid uint64, conn net.Conn) {
+	idx := forceGetAcctountCashIdx(uid)
+	if idx != 0 {
 		var activeUser UserCash
 		activeUser.UID = uid
-		activeUser.Flag = flag
-		activeUser.Ip = getIPAddr(ip)
-		//activeUser.Time = time.Now()
+		//activeUser.Flag = flag
+		//activeUser.Ip = getIPAddr(ip)
+		activeUser.Conn = conn
 		ActiveUsers[idx] = activeUser
 	}
 }
 
-func SetAccountCash(uid uint64, ip string, flag uint64) {
+func SetAccountCash(uid uint64, conn net.Conn) {
 	idx := forceGetAcctountCashIdx(uid)
 	if idx < lastAvailble {
 		var activeUser UserCash
 		activeUser.UID = uid
-		activeUser.Flag = flag
-		activeUser.Ip = getIPAddr(ip)
-		//activeUser.Time = time.Now()
+		//activeUser.Flag = flag
+		//activeUser.Ip = getIPAddr(ip)
+		activeUser.Conn = conn
 		ActiveUsers[idx] = activeUser
 	}
-	fmt.Printf("%x %s\n", idx, ip)
+	fmt.Printf("%x %s\n", idx, conn.RemoteAddr())
 }
 
 func ReturnAccountCash(uid uint64) {
@@ -80,6 +82,7 @@ func ReturnAccountCash(uid uint64) {
 
 func GetAccountCash(uid uint64) (bool, UserCash) {
 	idx := getAccountCashIdx(uid)
+	fmt.Printf("%d %d\n", idx, uid)
 	activeUser := ActiveUsers[idx]
 	if activeUser.UID == uid {
 		return true, activeUser
