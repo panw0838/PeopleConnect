@@ -85,10 +85,12 @@ func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
 
 type MessegeSyncInput struct {
 	User uint64 `json:"user"`
+	Sync uint32 `json:"sync"`
 	//Last uint32 `json:"last"`
 }
 
 type MessegeSyncReturn struct {
+	Sync     uint32    `json:"sync"`
 	Messeges []Messege `json:"mess"`
 }
 
@@ -108,12 +110,13 @@ func SyncMessegeHandler(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	var output MessegeSyncReturn
-	messeges, err := dbGetOfflienMesseges(input.User, c)
+	newSyncID, messeges, err := dbGetMesseges(input, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 	output.Messeges = messeges
+	output.Sync = newSyncID
 
 	data, err := json.Marshal(&output)
 	if err != nil {

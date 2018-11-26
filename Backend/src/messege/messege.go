@@ -58,29 +58,84 @@ func dbAddOfflineMessege(messege SendMessegeInput, c redis.Conn) error {
 	return nil
 }
 
-func dbGetOfflienMesseges(user uint64, c redis.Conn) ([]Messege, error) {
-	messegeKey := GetMessegeKey(user)
-	numMesseges, err := redis.Uint64(c.Do("LLEN", messegeKey))
+func dbGetMesseges(input MessegeSyncInput, c redis.Conn) (uint32, []Messege, error) {
+	messegeKey := GetMessegeKey(input.User)
+
+	// no messege
+	messSize, err := redis.Int(c.Do("LLEN", messegeKey))
 	if err != nil {
-		return nil, err
+		return 0, nil, err
+	}
+	if messSize == 0 {
+		return 0, nil, nil
 	}
 
-	rawDatas, err := redis.Strings(c.Do("LRANGE", messegeKey, 0, numMesseges))
-	if err != nil {
-		return nil, err
-	}
-
+	var newSyncID = input.Sync
+	var syncedIdx int = -1
+	var i int
 	var messeges []Messege
-	for _, rawData := range rawDatas {
-		_from, _time, _messege := getMessegeInfo(rawData)
-		var messege Messege
-		messege.From = _from
-		messege.Time = _time
-		messege.Content = _messege
-		messeges = append(messeges, messege)
+	var pushNewSync = true
+	for i = 0; i < messSize; i++ {
+		messData, err := redis.String(c.Do("LINDEX", messegeKey, i))
+		if err != nil {
+			return 0, nil, err
+		}
+		if strings.HasPrefix(messData, "Sync:") {
+			var syncID uint32
+			fmt.Sscanf(messData, "Sync:%d", &syncID)
+			if i == (messSize - 1) {
+				pushNewSync = false
+			}
+			if syncID <= input.Sync {
+				var newMesseges []Messege
+				messeges = newMesseges
+				syncedIdx = i
+			} else {
+				newSyncID = syncID
+			}
+		} else {
+			_from, _time, _messege := getMessegeInfo(messData)
+			var messege Messege
+			messege.From = _from
+			messege.Time = _time
+			messege.Content = _messege
+			messeges = append(messeges, messege)
+		}
 	}
 
-	return messeges, nil
+	if syncedIdx > 0 {
+		_, err := c.Do("LTRIM", messegeKey, syncedIdx+1, -1)
+		if err != nil {
+			return 0, nil, err
+		}
+		messSize -= (syncedIdx + 1)
+	}
+
+	if pushNewSync {
+		newSyncID += 1
+		syncData := fmt.Sprintf("Sync:%d", newSyncID)
+		newSize, err := redis.Int(c.Do("RPUSH", messegeKey, syncData))
+		if err != nil {
+			return 0, nil, err
+		}
+
+		if newSize > (messSize + 1) {
+			for i = messSize; i < (newSize - 1); i++ {
+				messData, err := redis.String(c.Do("LINDEX", messegeKey, i))
+				if err != nil {
+					return 0, nil, err
+				}
+				_from, _time, _messege := getMessegeInfo(messData)
+				var messege Messege
+				messege.From = _from
+				messege.Time = _time
+				messege.Content = _messege
+				messeges = append(messeges, messege)
+			}
+		}
+	}
+
+	return newSyncID, messeges, nil
 }
 
 func dbAddRequest(input RequestContactInput, c redis.Conn) error {

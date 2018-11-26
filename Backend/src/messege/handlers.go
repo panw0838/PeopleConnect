@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 	"share"
-	"time"
 	"user"
 
 	"github.com/garyburd/redigo/redis"
@@ -17,7 +16,7 @@ const Log_Pkg byte = 1
 const Log_Act byte = 2
 const Messege_Pkg byte = 3
 const Messege_Ack byte = 4
-const Messege_Fwd byte = 5
+const Messege_Syc byte = 5
 
 func HandleLogon(buf []byte, conn net.Conn) error {
 	var input user.AccountInfo
@@ -82,18 +81,8 @@ func HandleSendMessege(buf []byte, conn net.Conn) {
 	notified := false
 	cashed, userCash := cash.GetAccountCash(input.To)
 	if cashed {
-		var messege Messege
-		messege.From = input.From
-		messege.Time = time.Now().Format(time.RFC3339)
-		messege.Content = input.Mess
-
-		messegeData, err := json.Marshal(&messege)
-		if err != nil {
-			return
-		}
-
-		data := append([]byte{Messege_Fwd, 0}, messegeData...)
-		n, err := userCash.Conn.Write(data)
+		sync := []byte{Messege_Syc, 0} // messege id
+		n, err := userCash.Conn.Write(sync)
 		if err == nil && n > 0 {
 			fmt.Println("messege: notified")
 			notified = true
