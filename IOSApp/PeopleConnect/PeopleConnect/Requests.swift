@@ -62,16 +62,38 @@ class HttpService {
     func postRequest(path:String, params:NSDictionary,
         success:(task: NSURLSessionDataTask, responseObject: AnyObject?)->Void,
         fail:(task: NSURLSessionDataTask?, error : NSError)->Void) {
-            let url:String = baseURL + path
-            afManager.requestSerializer = AFJSONRequestSerializer()
-            afManager.responseSerializer = AFHTTPResponseSerializer()
-            afManager.POST(url, parameters: params, headers: nil, progress: nil, success: success, failure: fail)
+            
+        let url:String = baseURL + path
+        afManager.requestSerializer = AFJSONRequestSerializer()
+        afManager.responseSerializer = AFHTTPResponseSerializer()
+        afManager.POST(url, parameters: params, headers: nil, progress: nil, success: success, failure: fail)
+    }
+    
+    func postDataRequest(path:String, params:NSDictionary,
+            constructingBodyWithBlock block:((AFMultipartFormData) -> Void)?,
+            progress uploadProgress: ((NSProgress) -> Void)?,
+            success:(task: NSURLSessionDataTask, responseObject: AnyObject?)->Void,
+            fail:(task: NSURLSessionDataTask?, error : NSError)->Void) {
+        let url:String = baseURL + path
+        afManager.requestSerializer = AFJSONRequestSerializer()
+        afManager.responseSerializer = AFHTTPResponseSerializer()
+        afManager.requestSerializer.timeoutInterval = 20
+        afManager.responseSerializer.acceptableContentTypes = Set<String>(["text/plain", "multipart/form-data", "application/json", "text/html", "image/jpeg", "image/png", "application/octet-stream", "text/json"])
+        afManager.POST(url, parameters: params, headers: nil, constructingBodyWithBlock: block, progress: nil, success: success, failure: fail)
     }
     
     func getIDArrayParam(array:Array<UInt64>)->NSMutableArray {
         let param:NSMutableArray = NSMutableArray()
         for member in array {
             param.addObject(NSNumber(unsignedLongLong: member))
+        }
+        return param
+    }
+    
+    func getStringArrayParam(array:Array<String>)->NSMutableArray {
+        let param:NSMutableArray = NSMutableArray()
+        for member in array {
+            param.addObject(member)
         }
         return param
     }

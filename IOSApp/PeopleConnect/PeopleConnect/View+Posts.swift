@@ -8,6 +8,22 @@
 
 import UIKit
 
-class PostView: UITableViewController {
+class PostCell: UITableViewCell {
     
+}
+
+class PostsView: UIViewController, UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate {
+        
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 0
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("PostCell") as! PostCell
+        return cell
+    }
 }

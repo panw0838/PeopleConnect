@@ -10,14 +10,12 @@ import UIKit
 
 class ReceiveCell: UITableViewCell {
     @IBOutlet weak var m_profile: UIImageView!
-    @IBOutlet weak var m_name: UILabel!
     @IBOutlet weak var m_messege: UILabel!
     
 }
 
 class SendCell: UITableViewCell {
     @IBOutlet weak var m_profile: UIImageView!
-    @IBOutlet weak var m_name: UILabel!
     @IBOutlet weak var m_messege: UILabel!
     
 }

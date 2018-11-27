@@ -69,7 +69,7 @@ func httpSendMessege(to:UInt64, messege:String) {
 }
 
 func httpSyncMessege() {
-    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
+    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "sync":NSNumber(unsignedInt: 1)]
     http.postRequest("syncmessege", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
@@ -88,6 +88,8 @@ func httpSyncMessege() {
                             callback.MessegeUpdateUI()
                         }
                     }
+                    let newSyncID:UInt = (UInt)((json["sync"]?.integerValue)!)
+                    print("fff")
                 }
             }
         },

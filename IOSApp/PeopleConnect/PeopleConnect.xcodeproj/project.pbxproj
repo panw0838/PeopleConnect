@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1854304521AC3D99004973E6 /* Requests+Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1854304421AC3D99004973E6 /* Requests+Post.swift */; };
+		1854304721AD78A4004973E6 /* View+CreatePost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1854304621AD78A4004973E6 /* View+CreatePost.swift */; };
 		18AE41F62199E2680008B792 /* server.cer in Resources */ = {isa = PBXBuildFile; fileRef = 18AE41F52199E2680008B792 /* server.cer */; };
 		18AE420A219AC4170008B792 /* View+Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE4209219AC4170008B792 /* View+Login.swift */; };
 		18AE420C219AE3AD0008B792 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE420B219AE3AD0008B792 /* User.swift */; };
@@ -153,6 +155,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1854304421AC3D99004973E6 /* Requests+Post.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Post.swift"; sourceTree = "<group>"; };
+		1854304621AD78A4004973E6 /* View+CreatePost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+CreatePost.swift"; sourceTree = "<group>"; };
 		18AE41F52199E2680008B792 /* server.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = server.cer; sourceTree = "<group>"; };
 		18AE4209219AC4170008B792 /* View+Login.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Login.swift"; sourceTree = "<group>"; };
 		18AE420B219AE3AD0008B792 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -268,6 +272,7 @@
 				18E8CB7F219331A400E29383 /* AppDelegate.swift */,
 				18DB28BD21A5B9CC0024092C /* Observer.swift */,
 				18E8CBAF2193441500E29383 /* Requests.swift */,
+				1854304421AC3D99004973E6 /* Requests+Post.swift */,
 				18DB289321A145410024092C /* Requests+Messege.swift */,
 				18DB289921A3A8BA0024092C /* Requests+Contact.swift */,
 				18DB289B21A3AF750024092C /* Requests+Tag.swift */,
@@ -282,6 +287,7 @@
 				18D3A8E02198015C00EB3289 /* View+Contacts.swift */,
 				18DB2879219D85BF0024092C /* View+MoveMembers.swift */,
 				18D3A8E22198017000EB3289 /* View+Posts.swift */,
+				1854304621AD78A4004973E6 /* View+CreatePost.swift */,
 				18E8CB85219331A400E29383 /* Main.storyboard */,
 				18E8CB88219331A400E29383 /* Assets.xcassets */,
 				18E8CB8A219331A400E29383 /* LaunchScreen.storyboard */,
@@ -536,6 +542,7 @@
 				18E8CBB02193441500E29383 /* Requests.swift in Sources */,
 				18DB28C021A6CCE60024092C /* Requests+User.swift in Sources */,
 				18DB289621A1C2C30024092C /* Messege.swift in Sources */,
+				1854304721AD78A4004973E6 /* View+CreatePost.swift in Sources */,
 				18DB289421A145410024092C /* Requests+Messege.swift in Sources */,
 				18DB287A219D85BF0024092C /* View+MoveMembers.swift in Sources */,
 				18AE420C219AE3AD0008B792 /* User.swift in Sources */,
@@ -543,6 +550,7 @@
 				18D3A8E32198017000EB3289 /* View+Posts.swift in Sources */,
 				18DB289A21A3A8BA0024092C /* Requests+Contact.swift in Sources */,
 				18D3A8E12198015C00EB3289 /* View+Contacts.swift in Sources */,
+				1854304521AC3D99004973E6 /* Requests+Post.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -696,11 +704,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = PeopleConnect/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Pan.PeopleConnect;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "PeopleConnect/Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -710,10 +720,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = PeopleConnect/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Pan.PeopleConnect;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "PeopleConnect/Bridging-Header.h";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

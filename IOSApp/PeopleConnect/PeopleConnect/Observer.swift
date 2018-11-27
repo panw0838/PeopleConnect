@@ -16,7 +16,7 @@ let Log_Pkg:UInt8 = 1
 let Log_Act:UInt8 = 2
 let Messege_Pkg:UInt8 = 3
 let Messege_Ack:UInt8 = 4
-let Messege_Fwd:UInt8 = 5
+let Messege_Syc:UInt8 = 5
 
 
 class TCPClient:NSObject, GCDAsyncSocketDelegate {
@@ -90,7 +90,9 @@ class TCPClient:NSObject, GCDAsyncSocketDelegate {
         case Messege_Ack:
             print("messege ack")
             break
-        case Messege_Fwd:
+        case Messege_Syc:
+            httpSyncMessege()
+            /*
             let content = data.subdataWithRange(NSRange(location: 2, length: data.length-2))
             if let json = try? NSJSONSerialization.JSONObjectWithData(content, options: .MutableContainers) as! [String:AnyObject] {
                 if let messege = MessegeInfo(json: json) {
@@ -100,6 +102,7 @@ class TCPClient:NSObject, GCDAsyncSocketDelegate {
                     }
                 }
             }
+            */
             break
         default:
             break
