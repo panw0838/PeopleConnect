@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -53,6 +54,12 @@ func GetIndex(str string, c byte, n int) int {
 		i++
 	}
 	return i - 1
+}
+
+func GetTimeID(t time.Time) uint64 {
+	var startTime = time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local)
+	duration := t.Sub(startTime)
+	return uint64(duration / 1000 / 1000 / 1000)
 }
 
 func GetRequestsKey(user uint64) string {
