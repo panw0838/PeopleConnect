@@ -1,7 +1,7 @@
 package messege
 
 import (
-	cash "cashes"
+	"cashes"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -77,23 +77,18 @@ func HandleSendMessege(buf []byte, conn net.Conn) {
 		return
 	}
 
-	// TODO, notify user2 to receive messege
-	notified := false
+	// notify user2 to receive messege
 	cashed, userCash := cash.GetAccountCash(input.To)
 	if cashed {
 		sync := []byte{Messege_Syc, 0} // messege id
 		n, err := userCash.Conn.Write(sync)
 		if err == nil && n > 0 {
 			fmt.Println("messege: notified")
-			notified = true
 		}
 	}
-	if !notified {
-		err = dbAddOfflineMessege(input, c)
-		fmt.Println("messege: add offline messege")
-		if err != nil {
-			return
-		}
+	err = dbAddMessege(input, c)
+	if err != nil {
+		return
 	}
 
 	var response SendMessegeReturn

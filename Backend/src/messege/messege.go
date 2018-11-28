@@ -48,7 +48,7 @@ func GetMessegeData(from uint64, messege string) string {
 	return messegeData
 }
 
-func dbAddOfflineMessege(messege SendMessegeInput, c redis.Conn) error {
+func dbAddMessege(messege SendMessegeInput, c redis.Conn) error {
 	messegeData := GetMessegeData(messege.From, messege.Mess)
 	messegeKey := GetMessegeKey(messege.To)
 	_, err := c.Do("RPUSH", messegeKey, messegeData)

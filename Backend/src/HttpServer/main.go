@@ -5,6 +5,7 @@ import (
 	"log"
 	"messege"
 	"net/http"
+	"post"
 	"user"
 )
 
@@ -27,12 +28,6 @@ func syncHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s %s", r.RemoteAddr, sss)
 }
 
-func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
-}
-
-func getContactsHandler(w http.ResponseWriter, r *http.Request) {
-}
-
 func main() {
 	http.HandleFunc("/sync", syncHandler)
 
@@ -52,6 +47,13 @@ func main() {
 	http.HandleFunc("/requestcontact", messege.RequestContactHandler)
 	http.HandleFunc("/syncrequests", messege.SyncRequestsHandler)
 	//http.HandleFunc("/sendmessege", messege.SendMessegeHandler)
+
+	http.HandleFunc("/newpost", post.NewPostHandler)
+	http.HandleFunc("/delpost", post.DelPostHandler)
+	http.HandleFunc("/syncposts", post.SyncPostsHandler)
+
+	fs := http.FileServer(http.Dir("files"))
+	http.Handle("/files/", http.StripPrefix("/files", fs))
 
 	e := http.ListenAndServeTLS(":8080", crtPath, keyPath, nil)
 	if e != nil {
