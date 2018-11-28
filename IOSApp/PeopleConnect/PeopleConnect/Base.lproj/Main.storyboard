@@ -642,6 +642,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="m_allowed" destination="Qsu-hj-rte" id="6oQ-RH-d5R"/>
+                        <outlet property="m_attachments" destination="T5I-mL-cMa" id="2rq-Hc-zQ7"/>
                         <outlet property="m_desc" destination="a1Z-gT-LKQ" id="nKS-Ok-Eg7"/>
                     </connections>
                 </tableViewController>

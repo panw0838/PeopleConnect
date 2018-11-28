@@ -9,17 +9,22 @@
 import Foundation
 import AFNetworking
 
-func httpSendPost(flag:UInt64, desc:String, files:Array<String>) {
+func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>) {
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "flag":NSNumber(unsignedLongLong: flag), "desc":desc]
-    http.postDataRequest("sendmessege", params: params,
+    http.postDataRequest("newpost", params: params,
         constructingBodyWithBlock: { (formData: AFMultipartFormData) -> Void in
-            let data = NSData(contentsOfFile: files[0])
-            formData.appendPartWithFileData(data!, name: "", fileName: "", mimeType: "image/jpeg")
-            //UIImage *image = headImage[i];
-            //NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
+            for (idx, data) in datas.enumerate() {
+                formData.appendPartWithFileData(data, name:String(idx), fileName:String(idx), mimeType: "image/jpeg")
+            }
         },
         progress: nil,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
+            if (html.hasPrefix("Error")) {
+                print("%s", html)
+            }
+            else {
+            }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
             print("请求失败")

@@ -13,18 +13,36 @@ class AttachmentCell:UICollectionViewCell {
     
 }
 
-class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     
+    @IBOutlet weak var m_attachments: UICollectionView!
     @IBOutlet weak var m_desc: UITextField!
     @IBOutlet weak var m_allowed: UISegmentedControl!
     
     
     @IBAction func CreatePost(sender: AnyObject) {
+        let desc = m_desc.text
+        var datas = Array<NSData>()
+        for image in m_atts {
+            let data = UIImagePNGRepresentation(image)
+            datas.append(data!)
+        }
+        httpSendPost(0, desc: desc!, datas: datas)
     }
     
     var m_picker:UIImagePickerController = UIImagePickerController()
-    var m_atts:Array<String> = Array<String>()
+    var m_atts:Array<UIImage> = Array<UIImage>()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        m_picker.delegate = self
+    }
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
+        m_atts.append(image)
+        m_attachments.reloadData()
+    }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         return 1
@@ -37,7 +55,7 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("AttachmentCell", forIndexPath: indexPath) as! AttachmentCell
         if indexPath.row < m_atts.count {
-            
+            cell.m_preview.image = m_atts[indexPath.row]
         }
         else {
             cell.m_preview.image = UIImage(named: "plus")
