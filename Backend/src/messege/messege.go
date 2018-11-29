@@ -1,6 +1,7 @@
 package messege
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"share"
@@ -19,7 +20,7 @@ type Messege struct {
 }
 
 func GetMessegeKey(userID uint64) string {
-	return "mess:" + strconv.FormatUint(userID, 10)
+	return "msg:" + strconv.FormatUint(userID, 10)
 }
 
 func sendSyncRequest(address string) error {
@@ -30,28 +31,17 @@ func sendSyncRequest(address string) error {
 	return nil
 }
 
-func getMessegeInfo(messegeData string) (uint64, string, string) {
-	var id uint64 = 0
-	var from uint64 = 0
-	var messege string
-	var dotIdx = strings.IndexByte(messegeData, ',')
-	var strIdx = share.GetIndex(messegeData, ',', 3)
-	time := messegeData[:dotIdx]
-	fmt.Sscanf(messegeData[dotIdx+1:], "%d,%d", &id, &from)
-	messege = messegeData[strIdx+1:]
-	return from, time, messege
-}
-
-func GetMessegeData(from uint64, messege string) string {
-	messegeData := fmt.Sprintf("%s,%d,%d,%s",
-		time.Now().Format(time.RFC3339), from, from, messege)
-	return messegeData
-}
-
-func dbAddMessege(messege SendMessegeInput, c redis.Conn) error {
-	messegeData := GetMessegeData(messege.From, messege.Mess)
-	messegeKey := GetMessegeKey(messege.To)
-	_, err := c.Do("RPUSH", messegeKey, messegeData)
+func dbAddMessege(input SendMessegeInput, c redis.Conn) error {
+	var msg Messege
+	msg.From = input.From
+	msg.Time = time.Now().Format(time.RFC3339)
+	msg.Content = input.Mess
+	data, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+	msgKey := GetMessegeKey(input.To)
+	_, err = c.Do("RPUSH", msgKey, data)
 	if err != nil {
 		return err
 	}
@@ -76,13 +66,13 @@ func dbGetMesseges(input MessegeSyncInput, c redis.Conn) (uint32, []Messege, err
 	var messeges []Messege
 	var pushNewSync = true
 	for i = 0; i < messSize; i++ {
-		messData, err := redis.String(c.Do("LINDEX", messegeKey, i))
+		msgData, err := redis.String(c.Do("LINDEX", messegeKey, i))
 		if err != nil {
 			return 0, nil, err
 		}
-		if strings.HasPrefix(messData, "Sync:") {
+		if strings.HasPrefix(msgData, "Sync:") {
 			var syncID uint32
-			fmt.Sscanf(messData, "Sync:%d", &syncID)
+			fmt.Sscanf(msgData, "Sync:%d", &syncID)
 			if i == (messSize - 1) {
 				pushNewSync = false
 			}
@@ -94,11 +84,11 @@ func dbGetMesseges(input MessegeSyncInput, c redis.Conn) (uint32, []Messege, err
 				newSyncID = syncID
 			}
 		} else {
-			_from, _time, _messege := getMessegeInfo(messData)
 			var messege Messege
-			messege.From = _from
-			messege.Time = _time
-			messege.Content = _messege
+			err := json.Unmarshal([]byte(msgData), &messege)
+			if err != nil {
+				return 0, nil, err
+			}
 			messeges = append(messeges, messege)
 		}
 	}
@@ -121,15 +111,15 @@ func dbGetMesseges(input MessegeSyncInput, c redis.Conn) (uint32, []Messege, err
 
 		if newSize > (messSize + 1) {
 			for i = messSize; i < (newSize - 1); i++ {
-				messData, err := redis.String(c.Do("LINDEX", messegeKey, i))
+				msgData, err := redis.Bytes(c.Do("LINDEX", messegeKey, i))
 				if err != nil {
 					return 0, nil, err
 				}
-				_from, _time, _messege := getMessegeInfo(messData)
 				var messege Messege
-				messege.From = _from
-				messege.Time = _time
-				messege.Content = _messege
+				err = json.Unmarshal(msgData, &messege)
+				if err != nil {
+					return 0, nil, err
+				}
 				messeges = append(messeges, messege)
 			}
 		}

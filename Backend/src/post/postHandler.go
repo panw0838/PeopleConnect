@@ -57,7 +57,6 @@ func getFormFile(uID uint64, pID uint64, form *multipart.Form) ([]string, error)
 	var files []string
 	for _, v := range form.File {
 		for i := 0; i < len(v); i++ {
-			fmt.Println("file part ", i, "-->")
 			fmt.Println("fileName   :", v[i].Filename)
 			fmt.Println("part-header:", v[i].Header)
 			f, err := v[i].Open()
@@ -169,6 +168,12 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = dbPublishPost(input.User, pID, input.Flag, c)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+
 	var response NewPostReturn
 	response.Post = pID
 	bytes, err := json.Marshal(response)
@@ -189,6 +194,7 @@ type SyncPostInput struct {
 }
 
 type SyncPostReturn struct {
+	Posts []PublishData `json:"posts"`
 }
 
 func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
@@ -199,4 +205,26 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+	defer c.Close()
+
+	posts, err := dbGetPublish(input.User, 0, 0xffffffffffffffff, c)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+
+	var response SyncPostReturn
+	response.Posts = posts
+	bytes, err := json.Marshal(response)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", bytes)
 }
