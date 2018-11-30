@@ -34,6 +34,10 @@ protocol MessegeRequestCallback {
     func MessegeUpdateUI()->Void
 }
 
+protocol PostRequestCallback {
+    func PostUpdateUI()->Void
+}
+
 protocol SearchContactCallback {
     func SearchUpdateUI(uid:UInt64)->Void
 }
@@ -44,6 +48,7 @@ var searchCallbacks:Array<SearchContactCallback> = Array<SearchContactCallback>(
 var logonCallbacks:Array<LogonRequestCallback> = Array<LogonRequestCallback>()
 var contactCallbacks:Array<ContactRequestCallback> = Array<ContactRequestCallback>()
 var messegeCallbacks:Array<MessegeRequestCallback> = Array<MessegeRequestCallback>()
+var postCallbacks:Array<PostRequestCallback> = Array<PostRequestCallback>()
 
 class HttpService {
     var afManager: AFHTTPSessionManager = AFHTTPSessionManager()
@@ -57,6 +62,15 @@ class HttpService {
         policy.validatesDomainName = true
         
         afManager.securityPolicy = policy
+    }
+    
+    func getFile(fileName:String,
+                 success:(task: NSURLSessionDataTask, responseObject: AnyObject?)->Void,
+                 fail:(task: NSURLSessionDataTask?, error : NSError)->Void) {
+        let url:String = baseURL + "files/" + fileName
+        afManager.requestSerializer = AFHTTPRequestSerializer()
+        afManager.responseSerializer = AFHTTPResponseSerializer()
+        afManager.GET(url, parameters: nil, headers: nil, progress: nil, success: success, failure: fail)
     }
     
     func postRequest(path:String, params:NSDictionary,

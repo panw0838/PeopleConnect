@@ -23,12 +23,13 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
     
     @IBAction func CreatePost(sender: AnyObject) {
         let desc = m_desc.text
+        let flag = UInt64(2)//UInt64(m_allowed.tag + 1)
         var datas = Array<NSData>()
         for image in m_atts {
             let data = UIImagePNGRepresentation(image)
             datas.append(data!)
         }
-        httpSendPost(0, desc: desc!, datas: datas)
+        httpSendPost(flag, desc: desc!, datas: datas)
     }
     
     var m_picker:UIImagePickerController = UIImagePickerController()
