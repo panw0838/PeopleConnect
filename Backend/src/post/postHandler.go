@@ -194,7 +194,7 @@ type SyncPostInput struct {
 }
 
 type SyncPostReturn struct {
-	Posts []PublishData `json:"posts"`
+	Posts []PostData `json:"posts"`
 }
 
 func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {

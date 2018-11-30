@@ -6,6 +6,7 @@ import (
 	"messege"
 	"net/http"
 	"post"
+	"strings"
 	"user"
 )
 
@@ -24,8 +25,8 @@ type SyncReturn struct {
 }
 
 func syncHandler(w http.ResponseWriter, r *http.Request) {
-	sss := r.Header.Get("X-Forwarded-For")
-	fmt.Fprintf(w, "%s %s", r.RemoteAddr, sss)
+	p := strings.TrimPrefix(r.URL.Path, "/files/")
+	fmt.Println(p)
 }
 
 func main() {
@@ -53,7 +54,7 @@ func main() {
 	http.HandleFunc("/syncposts", post.SyncPostsHandler)
 
 	fs := http.FileServer(http.Dir("files"))
-	http.Handle("/files/", http.StripPrefix("/files", fs))
+	http.Handle("/files/", http.StripPrefix("/files/", fs))
 
 	e := http.ListenAndServeTLS(":8080", crtPath, keyPath, nil)
 	if e != nil {

@@ -3,25 +3,26 @@ package post
 import (
 	"encoding/json"
 	"fmt"
+	"image"
+	"image/png"
+	"math"
+	"os"
+	"path/filepath"
 	"strconv"
 	"user"
 
 	"github.com/garyburd/redigo/redis"
+	"github.com/nfnt/resize"
 )
 
 type PostData struct {
-	Desc  string   `json:"desc"`
-	Flag  uint64   `json:"flag"`
-	Time  string   `json:"time"`
-	Files []string `json:"file"`
-}
-
-type PublishData struct {
-	User  uint64   `json:"user"`
-	Desc  string   `json:"desc"`
-	Flag  uint64   `json:"flag"`
-	Time  string   `json:"time"`
-	Files []string `json:"file"`
+	User   uint64        `json:"user,omitempty"`
+	Post   uint64        `json:"post,omitempty"`
+	Desc   string        `json:"desc"`
+	Flag   uint64        `json:"flag"`
+	Time   string        `json:"time"`
+	Files  []string      `json:"file"`
+	Images []image.Image `json:"image,omitempty"`
 }
 
 func getPostKey(userID uint64) string {
@@ -34,6 +35,80 @@ func getPublishKey(uID uint64) string {
 
 func canSeePost(cFlag uint64, pFlag uint64) bool {
 	return (cFlag & pFlag) != 0
+}
+
+func getFilePath(cID uint64, pID uint64, fileName string) string {
+	uPath := strconv.FormatUint(cID, 10)
+	pPath := strconv.FormatUint(pID, 10)
+	return filepath.Join("files", uPath, pPath, fileName)
+}
+
+func getSnapPath(cID uint64, pID uint64, fileName string) string {
+	uPath := strconv.FormatUint(cID, 10)
+	pPath := strconv.FormatUint(pID, 10)
+	return filepath.Join("files", uPath, pPath, "snap_"+fileName)
+}
+
+const DEFAULT_MAX_WIDTH float64 = 320
+const DEFAULT_MAX_HEIGHT float64 = 240
+
+// 计算图片缩放后的尺寸
+func calculateRatioFit(srcWidth, srcHeight int) (int, int) {
+	ratio := math.Min(DEFAULT_MAX_WIDTH/float64(srcWidth), DEFAULT_MAX_HEIGHT/float64(srcHeight))
+	return int(math.Ceil(float64(srcWidth) * ratio)), int(math.Ceil(float64(srcHeight) * ratio))
+}
+
+func getSnapshot(cID uint64, pID uint64, fileName string) (image.Image, error) {
+	snapPath := getSnapPath(cID, pID, fileName)
+	if _, err := os.Stat(snapPath); !os.IsNotExist(err) {
+		file, err := os.Open(snapPath)
+		if err != nil {
+			return nil, err
+		}
+		defer file.Close()
+
+		img, _, err := image.Decode(file)
+		if err != nil {
+			return nil, err
+		}
+
+		return img, nil
+	} else {
+		file, err := os.Open(getFilePath(cID, pID, fileName))
+		if err != nil {
+			return nil, err
+		}
+		defer file.Close()
+
+		img, _, err := image.Decode(file)
+		if err != nil {
+			return nil, err
+		}
+
+		b := img.Bounds()
+		width := b.Max.X
+		height := b.Max.Y
+
+		w, h := calculateRatioFit(width, height)
+
+		fmt.Println("width = ", width, " height = ", height)
+		fmt.Println("w = ", w, " h = ", h)
+
+		// 调用resize库进行图片缩放
+		m := resize.Resize(uint(w), uint(h), img, resize.Lanczos3)
+
+		// 需要保存的文件
+		imgfile, _ := os.Create(snapPath)
+		defer imgfile.Close()
+
+		// 以PNG格式保存文件
+		err = png.Encode(imgfile, m)
+		if err != nil {
+			return nil, err
+		}
+
+		return m, nil
+	}
 }
 
 func dbAddPost(uID uint64, pID uint64, data PostData, c redis.Conn) error {
@@ -86,8 +161,8 @@ func dbGetContactPosts(uID uint64, cID uint64, from uint64, to uint64, c redis.C
 }
 */
 
-func dbGetPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]PublishData, error) {
-	var results []PublishData
+func dbGetPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
+	var results []PostData
 	publishKey := getPublishKey(uID)
 	publishes, err := redis.Strings(c.Do("ZRANGEBYSCORE", publishKey, from, to))
 	if err != nil {
@@ -115,13 +190,16 @@ func dbGetPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]PublishDa
 				return results, err
 			}
 			if canSeePost(cFlag, post.Flag) {
-				var publish PublishData
-				publish.User = cID
-				publish.Flag = post.Flag
-				publish.Desc = post.Desc
-				publish.Time = post.Time
-				publish.Files = post.Files
-				results = append(results, publish)
+				post.User = cID
+				post.Post = pID
+				for _, file := range post.Files {
+					_, err := getSnapshot(cID, pID, file)
+					if err != nil {
+						return results, err
+					}
+					//publish.Images = append(publish.Images, img)
+				}
+				results = append(results, post)
 			}
 		}
 	}
