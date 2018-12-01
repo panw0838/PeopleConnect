@@ -52,6 +52,7 @@ func main() {
 	http.HandleFunc("/newpost", post.NewPostHandler)
 	http.HandleFunc("/delpost", post.DelPostHandler)
 	http.HandleFunc("/syncposts", post.SyncPostsHandler)
+	http.HandleFunc("/previews", post.GetPreviewsHandler)
 
 	fs := http.FileServer(http.Dir("files"))
 	http.Handle("/files/", http.StripPrefix("/files/", fs))

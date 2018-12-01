@@ -1,6 +1,7 @@
 package post
 
 import (
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -227,4 +228,52 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, "%s", bytes)
+}
+
+type GetPreviewsInput struct {
+	Files []string `json:"files"`
+}
+
+func GetPreviewsHandler(w http.ResponseWriter, r *http.Request) {
+	var input GetPreviewsInput
+	var header = []byte{byte(0)}
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		header[0] = 1
+		w.Write(header)
+		return
+	}
+
+	var lens []int
+	var datas [][]byte
+
+	for _, file := range input.Files {
+		var cID uint64
+		var pID uint64
+		var fName string
+		fmt.Sscanf(file, "%d_%d_%s", &cID, &pID, &fName)
+		data, err := getSnapshot(cID, pID, fName)
+		if err != nil {
+			header[0] = 2
+			w.Write(header)
+			return
+		}
+
+		len := len(data)
+		lens = append(lens, len)
+		datas = append(datas, data)
+	}
+
+	header = append(header, byte(len(lens)))
+	w.Write(header)
+
+	for _, len := range lens {
+		var bufU32 = make([]byte, 4)
+		binary.LittleEndian.PutUint32(bufU32, uint32(len))
+		w.Write(bufU32)
+	}
+
+	for _, data := range datas {
+		w.Write(data)
+	}
 }

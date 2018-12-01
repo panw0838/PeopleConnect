@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image"
 	"image/png"
+	"io/ioutil"
 	"math"
 	"os"
 	"path/filepath"
@@ -15,14 +16,21 @@ import (
 	"github.com/nfnt/resize"
 )
 
+type Snap struct {
+	Width  uint32 `json:"w"`
+	Height uint32 `json:"h"`
+	Stride uint32 `json:"s"`
+	Data   []byte `json:"d"`
+}
+
 type PostData struct {
-	User   uint64        `json:"user,omitempty"`
-	Post   uint64        `json:"post,omitempty"`
-	Desc   string        `json:"desc"`
-	Flag   uint64        `json:"flag"`
-	Time   string        `json:"time"`
-	Files  []string      `json:"file"`
-	Images []image.Image `json:"image,omitempty"`
+	User  uint64   `json:"user,omitempty"`
+	Post  uint64   `json:"post,omitempty"`
+	Desc  string   `json:"desc"`
+	Flag  uint64   `json:"flag"`
+	Time  string   `json:"time"`
+	Files []string `json:"file"`
+	//Images []image.Image `json:"image,omitempty"`
 }
 
 func getPostKey(userID uint64) string {
@@ -58,22 +66,9 @@ func calculateRatioFit(srcWidth, srcHeight int) (int, int) {
 	return int(math.Ceil(float64(srcWidth) * ratio)), int(math.Ceil(float64(srcHeight) * ratio))
 }
 
-func getSnapshot(cID uint64, pID uint64, fileName string) (image.Image, error) {
+func getSnapshot(cID uint64, pID uint64, fileName string) ([]byte, error) {
 	snapPath := getSnapPath(cID, pID, fileName)
-	if _, err := os.Stat(snapPath); !os.IsNotExist(err) {
-		file, err := os.Open(snapPath)
-		if err != nil {
-			return nil, err
-		}
-		defer file.Close()
-
-		img, _, err := image.Decode(file)
-		if err != nil {
-			return nil, err
-		}
-
-		return img, nil
-	} else {
+	if _, err := os.Stat(snapPath); os.IsNotExist(err) {
 		file, err := os.Open(getFilePath(cID, pID, fileName))
 		if err != nil {
 			return nil, err
@@ -106,9 +101,20 @@ func getSnapshot(cID uint64, pID uint64, fileName string) (image.Image, error) {
 		if err != nil {
 			return nil, err
 		}
-
-		return m, nil
 	}
+
+	file, err := os.Open(snapPath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 func dbAddPost(uID uint64, pID uint64, data PostData, c redis.Conn) error {
@@ -192,13 +198,6 @@ func dbGetPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData,
 			if canSeePost(cFlag, post.Flag) {
 				post.User = cID
 				post.Post = pID
-				for _, file := range post.Files {
-					_, err := getSnapshot(cID, pID, file)
-					if err != nil {
-						return results, err
-					}
-					//publish.Images = append(publish.Images, img)
-				}
 				results = append(results, post)
 			}
 		}
