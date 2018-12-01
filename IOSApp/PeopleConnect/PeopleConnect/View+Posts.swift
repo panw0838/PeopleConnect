@@ -38,6 +38,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PreviewCell", forIndexPath: indexPath) as! PreviewCell
+        /*
         cell.m_preview.image = UIImage(named: "loading")
         http.getFile((m_post?.m_imgUrls[indexPath.row])!,
             success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
@@ -48,6 +49,14 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
                 print("请求失败")
             }
         )
+*/
+        let imgKey = m_post?.m_imgKeys[indexPath.row]
+        if postData.m_snaps[imgKey!] == nil {
+            cell.m_preview.image = UIImage(named: "loading")
+        }
+        else {
+            cell.m_preview.image = postData.m_snaps[imgKey!]
+        }
         return cell
     }
 }

@@ -50,6 +50,31 @@ var contactCallbacks:Array<ContactRequestCallback> = Array<ContactRequestCallbac
 var messegeCallbacks:Array<MessegeRequestCallback> = Array<MessegeRequestCallback>()
 var postCallbacks:Array<PostRequestCallback> = Array<PostRequestCallback>()
 
+func splitData(srcData:NSData)->Array<NSData> {
+    var lens = Array<UInt32>()
+    var datas = Array<NSData>()
+    var numDatas:UInt8 = 0
+    var offset = 1
+    
+    srcData.getBytes(&numDatas, length: sizeof(UInt8))
+    
+    for var i:UInt8=0; i<numDatas; i++ {
+        var len:UInt32 = 0
+        let subData = srcData.subdataWithRange(NSRange(location: offset, length: sizeof(UInt32)))
+        subData.getBytes(&len, length: sizeof(UInt32))
+        lens.append(len)
+        offset += sizeof(UInt32)
+    }
+    
+    for var i:UInt8=0; i<numDatas; i++ {
+        let subData = srcData.subdataWithRange(NSRange(location: offset, length: Int(lens[Int(i)])))
+        offset += Int(lens[Int(i)])
+        datas.append(subData)
+    }
+    
+    return datas
+}
+
 class HttpService {
     var afManager: AFHTTPSessionManager = AFHTTPSessionManager()
     var baseURL: String = "https://192.168.0.103:8080/"

@@ -9,10 +9,6 @@
 import Foundation
 import AFNetworking
 
-func getSnapshotUrl(cID:UInt64, pID:UInt64, fileName:String)->String {
-    return String(cID) + "/" + String(pID) + "/snap_" + fileName
-}
-
 func getFileUrl(cID:UInt64, pID:UInt64, fileName:String)->String {
     return String(cID) + "/" + String(pID) + "/" + fileName
 }
@@ -66,6 +62,7 @@ func httpSyncPost() {
                                 postData.AddPost(post)
                             }
                         }
+                        postData.getPreviews()
                         for callback in postCallbacks {
                             callback.PostUpdateUI()
                         }
@@ -79,8 +76,30 @@ func httpSyncPost() {
     )
 }
 
-func httpGetSnapshot() {
-    
+func httpGetSnapshots(files:Array<String>) {
+    let fileParam = http.getStringArrayParam(files)
+    let params: Dictionary = ["files":fileParam]
+    http.postRequest("previews", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let data = response as! NSData
+            var errCode:UInt8 = 0
+            data.getBytes(&errCode, length: sizeof(UInt8))
+            if errCode == 0 {
+                let previewsData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
+                let subDatas = splitData(previewsData)
+                for (i, file) in files.enumerate() {
+                    let image = UIImage(data: subDatas[i])
+                    postData.m_snaps[file] = image
+                }
+                for callback in postCallbacks {
+                    callback.PostUpdateUI()
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+        }
+    )
 }
 
 func httpCommentPost() {
