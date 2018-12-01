@@ -66,7 +66,7 @@ func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
 		return 0, err
 	}
 
-	flag, err := DbGetFlag(contactID, userID, c)
+	flag, err := GetCashFlag(contactID, userID, c)
 	if err != nil {
 		return 0, err
 	}
@@ -77,6 +77,7 @@ func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
 }
 
 func dbAddContact(user1 uint64, user2 uint64, flag uint64, name string, c redis.Conn) error {
+	ClearCashRelation(user1, user2)
 	requestKey := share.GetRequestKey(user2, user1)
 	values, err := redis.Values(c.Do("HMGET", requestKey, FlagField, NameField))
 	if err != nil {
@@ -138,6 +139,7 @@ func dbAddContact(user1 uint64, user2 uint64, flag uint64, name string, c redis.
 }
 
 func dbRemoveContact(user1 uint64, user2 uint64) error {
+	ClearCashRelation(user1, user2)
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
 		return err
@@ -170,7 +172,8 @@ func dbRemoveContact(user1 uint64, user2 uint64) error {
 }
 
 func dbEnableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error {
-	flag, err := DbGetFlag(user1, user2, c)
+	ClearCashRelation(user1, user2)
+	flag, err := dbGetFlag(user1, user2, c)
 	if err != nil {
 		return err
 	}
@@ -190,7 +193,8 @@ func dbEnableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error {
 }
 
 func dbDisableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error {
-	flag, err := DbGetFlag(user1, user2, c)
+	ClearCashRelation(user1, user2)
+	flag, err := dbGetFlag(user1, user2, c)
 	if err != nil {
 		return err
 	}
@@ -226,7 +230,7 @@ func dbSetName(user1 uint64, user2 uint64, name []byte) error {
 	return nil
 }
 
-func DbGetFlag(user1 uint64, user2 uint64, c redis.Conn) (uint64, error) {
+func dbGetFlag(user1 uint64, user2 uint64, c redis.Conn) (uint64, error) {
 	relationKey := GetRelationKey(user1, user2)
 	exists, err := redis.Int64(c.Do("EXISTS", relationKey))
 	if err != nil {

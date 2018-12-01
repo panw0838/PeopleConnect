@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 	"user"
 
 	"github.com/garyburd/redigo/redis"
@@ -25,12 +26,11 @@ type Snap struct {
 
 type PostData struct {
 	User  uint64   `json:"user,omitempty"`
-	Post  uint64   `json:"post,omitempty"`
+	Post  uint64   `json:"post"`
 	Desc  string   `json:"desc"`
 	Flag  uint64   `json:"flag"`
 	Time  string   `json:"time"`
 	Files []string `json:"file"`
-	//Images []image.Image `json:"image,omitempty"`
 }
 
 func getPostKey(userID uint64) string {
@@ -39,6 +39,14 @@ func getPostKey(userID uint64) string {
 
 func getPublishKey(uID uint64) string {
 	return "fposts" + strconv.FormatUint(uID, 10)
+}
+
+func getGroupPublishKey(gID uint64) string {
+	return "gposts:" + strconv.FormatUint(gID, 10)
+}
+
+func getCommentKey(uID uint64, pID uint64) string {
+	return "cmt:" + strconv.FormatUint(uID, 10) + strconv.FormatUint(pID, 10)
 }
 
 func canSeePost(cFlag uint64, pFlag uint64) bool {
@@ -128,6 +136,7 @@ func dbAddPost(uID uint64, pID uint64, data PostData, c redis.Conn) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -138,13 +147,14 @@ func dbPublishPost(uID uint64, pID uint64, pFlag uint64, c redis.Conn) error {
 		return err
 	}
 
+	// add to friends timeline
 	for _, contact := range contacts {
 		cID, err := strconv.ParseUint(contact, 10, 64)
 		if err != nil {
 			return err
 		}
 		fpostsKey := getPublishKey(cID)
-		cFlag, err := user.DbGetFlag(cID, uID, c)
+		cFlag, err := user.GetCashFlag(uID, cID, c)
 		if err != nil {
 			return err
 		}
@@ -157,15 +167,126 @@ func dbPublishPost(uID uint64, pID uint64, pFlag uint64, c redis.Conn) error {
 		}
 	}
 
+	// add to self timeline
+	fpostsKey := getPublishKey(uID)
+	publishStr := fmt.Sprintf("%d:%d", uID, pID)
+	_, err = c.Do("ZADD", fpostsKey, pID, publishStr)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-/*
-func dbGetContactPosts(uID uint64, cID uint64, from uint64, to uint64, c redis.Conn) ([]PostData, []uint64, error) {
-	postsKey := getPostKey(uID)
-	c.Do("ZRANGE", postsKey, from, to, "WITHSCORES")
+func dbPublishGroupPost(uID uint64, groups []uint64, pID uint64, pFlag uint64, c redis.Conn) error {
+	for _, group := range groups {
+		groupKey := getGroupPublishKey(group)
+		publishStr := fmt.Sprintf("%d:%d", uID, pID)
+		_, err := c.Do("ZADD", groupKey, pID, publishStr)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
-*/
+
+func dbGetContactPosts(uID uint64, cID uint64, pIdx int, c redis.Conn) ([]PostData, error) {
+	postsKey := getPostKey(cID)
+	if pIdx == 0 {
+		num, err := redis.Int(c.Do("ZCARD", postsKey))
+		if err != nil {
+			return nil, err
+		}
+		pIdx = num
+	}
+
+	end := pIdx - 1
+	start := end - 10
+	if start < 0 {
+		start = 0
+	}
+	if end < 0 {
+		return nil, nil
+	}
+
+	values, err := redis.Values(c.Do("ZRANGE", postsKey, start, end))
+	if err != nil {
+		return nil, err
+	}
+
+	var results []PostData
+	for _, value := range values {
+		postData, err := redis.Bytes(value, err)
+		if err != nil {
+			return results, err
+		}
+		var post PostData
+		err = json.Unmarshal(postData, &post)
+		if err != nil {
+			return results, err
+		}
+
+		if uID != cID {
+			cFlag, err := user.GetCashFlag(cID, uID, c)
+			if err != nil {
+				return results, err
+			}
+			if canSeePost(cFlag, post.Flag) {
+				post.User = cID
+				results = append(results, post)
+			}
+		} else {
+			post.User = uID
+			results = append(results, post)
+		}
+	}
+
+	return results, nil
+}
+
+func dbGetGroupPosts(uID uint64, gID uint64, pIdx int, c redis.Conn) ([]PostData, error) {
+	groupKey := getGroupPublishKey(gID)
+	if pIdx == 0 {
+		num, err := redis.Int(c.Do("ZCARD", groupKey))
+		if err != nil {
+			return nil, err
+		}
+		pIdx = num
+	}
+
+	end := pIdx - 1
+	start := end - 10
+	if start < 0 {
+		start = 0
+	}
+	if end < 0 {
+		return nil, nil
+	}
+
+	values, err := redis.Values(c.Do("ZRANGE", groupKey, start, end))
+	if err != nil {
+		return nil, err
+	}
+
+	var results []PostData
+	for _, value := range values {
+		postData, err := redis.Bytes(value, err)
+		if err != nil {
+			return results, err
+		}
+		var post PostData
+		err = json.Unmarshal(postData, &post)
+		if err != nil {
+			return results, err
+		}
+
+		post.User = uID
+		results = append(results, post)
+	}
+
+	return results, nil
+}
 
 func dbGetPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
 	var results []PostData
@@ -191,16 +312,85 @@ func dbGetPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData,
 			if err != nil {
 				return results, err
 			}
-			cFlag, err := user.DbGetFlag(cID, uID, c)
+			cFlag, err := user.GetCashFlag(cID, uID, c)
 			if err != nil {
 				return results, err
 			}
 			if canSeePost(cFlag, post.Flag) {
 				post.User = cID
-				post.Post = pID
 				results = append(results, post)
 			}
 		}
+	}
+
+	return results, nil
+}
+
+type CommentInput struct {
+	User  uint64 `json:"user"`
+	Owner uint64 `json:"owner"`
+	Post  uint64 `json:"post"`
+	Reply uint32 `json:"reply"`
+	Msg   string `json:"msg"`
+}
+
+type Comment struct {
+	From  uint64 `json:"from"`
+	Reply uint32 `json:"reply"`
+	Msg   string `json:"msg"`
+	Time  string `json:"time,omitempty"`
+}
+
+func dbCommentPost(input CommentInput, c redis.Conn) error {
+	var comment Comment
+	comment.From = input.User
+	comment.Reply = input.Reply
+	comment.Msg = input.Msg
+	comment.Time = time.Now().Format(time.RFC3339)
+	bytes, err := json.Marshal(comment)
+	if err != nil {
+		return err
+	}
+
+	cmtKey := getCommentKey(input.Owner, input.Post)
+	_, err = c.Do("RPUSH", cmtKey, bytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type GetCommentsInput struct {
+	User  uint64 `json:"user"`
+	Owner uint64 `json:"owner"`
+	Post  uint64 `json:"post"`
+}
+
+func dbGetPostComments(input GetCommentsInput, c redis.Conn) ([]Comment, error) {
+	var results []Comment
+	cmtKey := getCommentKey(input.Owner, input.Post)
+	numCmts, err := redis.Int(c.Do("LLEN", cmtKey))
+	if err != nil {
+		return nil, err
+	}
+
+	values, err := redis.Values(c.Do("LRANGE", cmtKey, 0, numCmts))
+	if err != nil {
+		return nil, err
+	}
+
+	for _, value := range values {
+		cmtData, err := redis.Bytes(value, err)
+		if err != nil {
+			return nil, err
+		}
+		var comment Comment
+		err = json.Unmarshal(cmtData, &comment)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, comment)
 	}
 
 	return results, nil

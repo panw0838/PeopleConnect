@@ -10,29 +10,17 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-/*
 type SendMessegeInput struct {
 	From uint64 `json:"from"`
 	To   uint64 `json:"to"`
-	Mess string `json:"mess"`
+	Msg  string `json:"msg"`
 }
-
-type SendMessegeReturn struct {
-	IPAddress string `json:"ip"`
-}
-
 
 func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Error: read request")
-		return
-	}
-
 	var input SendMessegeInput
-	err = json.Unmarshal(body, &input)
+	err := share.ReadInput(r, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error %s", body)
+		fmt.Fprintf(w, "Error: json read error")
 		return
 	}
 
@@ -43,45 +31,24 @@ func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	relation, err := user.GetRelation(input.From, input.To, c)
+	friend, err := user.IsFriend(input.From, input.To, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
-	if !user.IsFriend(relation) {
-		fmt.Fprintf(w, "Error: not friend %v", relation)
+	if !friend {
+		fmt.Fprintf(w, "Error: not friend")
 		return
 	}
 
-	// TODO, notify user2 to receive messege
-	cashed, userCash := share.GetAccountCash(input.To)
-	if cashed {
-		ipStr := share.GetIPString(userCash.Ip)
-		sendSyncRequest(ipStr + ":8181/sync")
-	}
-
-	err = dbAppendMessege(input, c)
+	err = dbAddMessege(input, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
-	var response SendMessegeReturn
-	inCash, userCash := share.GetAccountCash(input.To)
-	if inCash {
-		response.IPAddress = share.GetIPString(userCash.Ip)
-	} else {
-		response.IPAddress = ""
-	}
-	data, err := json.Marshal(&response)
-	if err != nil {
-		fmt.Fprintf(w, "Error: json output error %s", data)
-		return
-	}
-
-	fmt.Fprintf(w, "%s", data)
+	fmt.Fprintf(w, "Success")
 }
-*/
 
 type MessegeSyncInput struct {
 	User uint64 `json:"user"`

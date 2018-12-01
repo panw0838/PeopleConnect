@@ -115,10 +115,10 @@ func removePostFiles(uID uint64, pID uint64) {
 }
 
 type NewPostInput struct {
-	User uint64 `json:"user"`
-	Flag uint64 `json:"flag"`
-	Desc string `json:"desc"`
-	//Last uint32 `json:"last"`
+	User   uint64   `json:"user"`
+	Flag   uint64   `json:"flag"`
+	Desc   string   `json:"desc"`
+	Groups []uint64 `json:"group,omitempty"`
 }
 
 type NewPostReturn struct {
@@ -162,6 +162,7 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	postData.Flag = input.Flag
 	postData.Files = files
 	postData.Time = t.Format(time.RFC3339)
+	postData.Post = pID
 	err = dbAddPost(input.User, pID, postData, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)

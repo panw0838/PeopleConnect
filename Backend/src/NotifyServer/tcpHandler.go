@@ -1,38 +1,6 @@
-package messege
+package main
 
-import (
-	"cashes"
-	"encoding/json"
-	"fmt"
-	"net"
-	"share"
-	"user"
-
-	"github.com/garyburd/redigo/redis"
-)
-
-const Connect_Ack byte = 0
-const Log_Pkg byte = 1
-const Log_Act byte = 2
-const Messege_Pkg byte = 3
-const Messege_Ack byte = 4
-const Messege_Syc byte = 5
-
-func HandleLogon(buf []byte, conn net.Conn) error {
-	var input user.AccountInfo
-	err := json.Unmarshal(buf[0:], &input)
-	if err != nil {
-		return err
-	}
-
-	cash.SetAccountCash(input.UserID, conn)
-
-	feed := []byte{Log_Act, 0}
-	conn.Write(feed)
-
-	return nil
-}
-
+/*
 type SendMessegeInput struct {
 	ID   uint32 `json:"id"`
 	From uint64 `json:"from"`
@@ -100,3 +68,4 @@ func HandleSendMessege(buf []byte, conn net.Conn) {
 	feed := append([]byte{Messege_Ack, 0}, data...)
 	conn.Write(feed)
 }
+*/

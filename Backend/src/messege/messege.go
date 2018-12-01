@@ -35,7 +35,7 @@ func dbAddMessege(input SendMessegeInput, c redis.Conn) error {
 	var msg Messege
 	msg.From = input.From
 	msg.Time = time.Now().Format(time.RFC3339)
-	msg.Content = input.Mess
+	msg.Content = input.Msg
 	data, err := json.Marshal(msg)
 	if err != nil {
 		return err

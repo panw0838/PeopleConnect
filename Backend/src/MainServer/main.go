@@ -30,6 +30,8 @@ func syncHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	user.InitRelationCash()
+
 	http.HandleFunc("/sync", syncHandler)
 
 	http.HandleFunc("/login", user.LoginHandler)
@@ -47,7 +49,7 @@ func main() {
 	http.HandleFunc("/syncmessege", messege.SyncMessegeHandler)
 	http.HandleFunc("/requestcontact", messege.RequestContactHandler)
 	http.HandleFunc("/syncrequests", messege.SyncRequestsHandler)
-	//http.HandleFunc("/sendmessege", messege.SendMessegeHandler)
+	http.HandleFunc("/sendmessege", messege.SendMessegeHandler)
 
 	http.HandleFunc("/newpost", post.NewPostHandler)
 	http.HandleFunc("/delpost", post.DelPostHandler)
