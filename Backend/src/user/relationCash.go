@@ -82,6 +82,18 @@ func IsFriend(user1 uint64, user2 uint64, c redis.Conn) (bool, error) {
 		((relation.mFlag & BLK_BIT) == 0)), nil
 }
 
+func IsStranger(uID uint64, cID uint64, c redis.Conn) (bool, error) {
+	less, more, err := GetLessMore(uID, cID)
+	if err != nil {
+		return false, err
+	}
+	relation, err := GetRelation(less, more, c)
+	if err != nil {
+		return false, err
+	}
+	return (relation.lFlag == 0) && (relation.mFlag == 0), nil
+}
+
 func GetCashFlag(user1 uint64, user2 uint64, c redis.Conn) (uint64, error) {
 	less, more, err := GetLessMore(user1, user2)
 	if err != nil {

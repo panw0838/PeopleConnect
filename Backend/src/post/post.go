@@ -17,20 +17,14 @@ import (
 	"github.com/nfnt/resize"
 )
 
-type Snap struct {
-	Width  uint32 `json:"w"`
-	Height uint32 `json:"h"`
-	Stride uint32 `json:"s"`
-	Data   []byte `json:"d"`
-}
-
 type PostData struct {
-	User  uint64   `json:"user,omitempty"`
-	Post  uint64   `json:"post"`
-	Desc  string   `json:"desc"`
-	Flag  uint64   `json:"flag"`
-	Time  string   `json:"time"`
-	Files []string `json:"file"`
+	User    uint64   `json:"user,omitempty"`
+	Time    uint64   `json:"time"`
+	Content string   `json:"cont"`
+	Flag    uint64   `json:"flag"`
+	X       float32  `json:"x"`
+	Y       float32  `json:"y"`
+	Files   []string `json:"file"`
 }
 
 func getPostKey(userID uint64) string {
@@ -365,6 +359,7 @@ type GetCommentsInput struct {
 	User  uint64 `json:"user"`
 	Owner uint64 `json:"owner"`
 	Post  uint64 `json:"post"`
+	Start uint32 `json:"start"`
 }
 
 func dbGetPostComments(input GetCommentsInput, c redis.Conn) ([]Comment, error) {
@@ -375,7 +370,7 @@ func dbGetPostComments(input GetCommentsInput, c redis.Conn) ([]Comment, error) 
 		return nil, err
 	}
 
-	values, err := redis.Values(c.Do("LRANGE", cmtKey, 0, numCmts))
+	values, err := redis.Values(c.Do("LRANGE", cmtKey, input.Start, numCmts))
 	if err != nil {
 		return nil, err
 	}

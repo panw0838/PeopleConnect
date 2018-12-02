@@ -15,7 +15,7 @@ import (
 
 type Messege struct {
 	From    uint64 `json:"from"`
-	Time    string `json:"time"`
+	Time    uint64 `json:"time"`
 	Content string `json:"cont"`
 }
 
@@ -34,7 +34,7 @@ func sendSyncRequest(address string) error {
 func dbAddMessege(input SendMessegeInput, c redis.Conn) error {
 	var msg Messege
 	msg.From = input.From
-	msg.Time = time.Now().Format(time.RFC3339)
+	msg.Time = share.GetTimeID(time.Now())
 	msg.Content = input.Msg
 	data, err := json.Marshal(msg)
 	if err != nil {

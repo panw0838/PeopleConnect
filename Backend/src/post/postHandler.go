@@ -40,8 +40,8 @@ func getFormInput(form *multipart.Form, param *NewPostInput) error {
 				return err
 			}
 			param.Flag = uint64(value)
-		} else if strings.Compare(k, "desc") == 0 {
-			param.Desc = v[0]
+		} else if strings.Compare(k, "cont") == 0 {
+			param.Content = v[0]
 		}
 	}
 
@@ -115,10 +115,12 @@ func removePostFiles(uID uint64, pID uint64) {
 }
 
 type NewPostInput struct {
-	User   uint64   `json:"user"`
-	Flag   uint64   `json:"flag"`
-	Desc   string   `json:"desc"`
-	Groups []uint64 `json:"group,omitempty"`
+	User    uint64   `json:"user"`
+	Flag    uint64   `json:"flag"`
+	Content string   `json:"cont"`
+	X       float32  `json:"X"`
+	Y       float32  `json:"Y"`
+	Groups  []uint64 `json:"group,omitempty"`
 }
 
 type NewPostReturn struct {
@@ -126,7 +128,6 @@ type NewPostReturn struct {
 }
 
 func NewPostHandler(w http.ResponseWriter, r *http.Request) {
-	t := time.Now()
 	err := r.ParseMultipartForm(maxUploadSize)
 	if err != nil {
 		fmt.Fprintf(w, "Error: file too big")
@@ -141,7 +142,7 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("input %d %d\n", input.User, input.Flag)
 
-	pID := share.GetTimeID(t)
+	pID := share.GetTimeID(time.Now())
 	files, err := getFormFile(input.User, pID, r.MultipartForm)
 	if err != nil {
 		fmt.Fprintf(w, "Error: process file %v", err)
@@ -158,11 +159,12 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	var postData PostData
-	postData.Desc = input.Desc
+	postData.Content = input.Content
 	postData.Flag = input.Flag
+	postData.X = input.X
+	postData.Y = input.Y
 	postData.Files = files
-	postData.Time = t.Format(time.RFC3339)
-	postData.Post = pID
+	postData.Time = pID
 	err = dbAddPost(input.User, pID, postData, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)

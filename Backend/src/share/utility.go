@@ -41,25 +41,41 @@ func ReadInput(r *http.Request, v interface{}) error {
 	return nil
 }
 
-func GetIndex(str string, c byte, n int) int {
-	var left = n
-	var i = 0
-	for {
-		if left == 0 {
-			break
-		}
-		if str[i] == c {
-			left--
-		}
-		i++
-	}
-	return i - 1
-}
-
 func GetTimeID(t time.Time) uint64 {
 	var startTime = time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local)
 	duration := t.Sub(startTime)
 	return uint64(duration / 1000 / 1000 / 1000)
+}
+
+func GetGeoID(x float64, y float64) uint64 {
+	var resultX uint64 = 0
+	var _x float64 = x + 90
+	var midX float64 = 90.0
+	steps := 20
+	for i := 0; i < steps; i++ {
+		if _x > midX {
+			resultX |= 0x1
+			_x -= midX
+		}
+		midX /= 2
+		if i < (steps - 1) {
+			resultX <<= 2
+		}
+	}
+	var resultY uint64 = 0
+	var _y float64 = y + 180
+	var midY float64 = 180.0
+	for i := 0; i < steps; i++ {
+		if _y > midY {
+			resultY |= 0x2
+			_y -= midY
+		}
+		midY /= 2
+		if i < (steps - 1) {
+			resultY <<= 2
+		}
+	}
+	return (resultX | resultY)
 }
 
 func GetRequestsKey(user uint64) string {
