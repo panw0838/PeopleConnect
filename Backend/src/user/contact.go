@@ -20,18 +20,8 @@ type ContactInfo struct {
 	Name string `json:"name"`
 }
 
-func GetRelationKey(user1 uint64, user2 uint64) string {
-	return "relate:" +
-		strconv.FormatUint(user1, 10) + ":" +
-		strconv.FormatUint(user2, 10)
-}
-
 func GetContactsKey(user uint64) string {
 	return "contacts:" + strconv.FormatUint(user, 10)
-}
-
-func GetStrangersKey() string {
-	return "strangers"
 }
 
 func AddContactPreCheck(from uint64, to uint64, flag uint64, name string) error {
@@ -175,84 +165,6 @@ func dbRemoveContact(user1 uint64, user2 uint64) error {
 	return nil
 }
 
-func dbEnableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error {
-	ClearCashRelation(user1, user2)
-	flag, err := dbGetFlag(user1, user2, c)
-	if err != nil {
-		return err
-	}
-	// if flag is 0, user has no relation with contact
-	if flag == 0 {
-		return fmt.Errorf("invalid contact")
-	}
-
-	flag = (flag | bits)
-
-	relateKey := GetRelationKey(user1, user2)
-	_, err = c.Do("HMSET", relateKey, FlagField, flag)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func dbDisableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error {
-	ClearCashRelation(user1, user2)
-	flag, err := dbGetFlag(user1, user2, c)
-	if err != nil {
-		return err
-	}
-	// if flag is 0, user has no relation with contact
-	if flag == 0 {
-		return fmt.Errorf("invalid contact")
-	}
-
-	flag = (flag & (^bits))
-
-	relateKey := GetRelationKey(user1, user2)
-	_, err = c.Do("HMSET", relateKey, FlagField, flag)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func dbSetName(user1 uint64, user2 uint64, name []byte) error {
-	c, err := redis.Dial("tcp", share.ContactDB)
-	if err != nil {
-		return err
-	}
-	defer c.Close()
-
-	relateKey := GetRelationKey(user1, user2)
-	_, err = c.Do("HMSET", relateKey, NameField, name)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func dbGetFlag(user1 uint64, user2 uint64, c redis.Conn) (uint64, error) {
-	relationKey := GetRelationKey(user1, user2)
-	exists, err := redis.Int64(c.Do("EXISTS", relationKey))
-	if err != nil {
-		return 0, err
-	}
-	if exists == 0 {
-		return 0, nil // 0 means no relation
-	}
-
-	values, err := redis.Values(c.Do("HMGET", relationKey, FlagField))
-	relation, err := share.GetUint64(values[0], err)
-	if err != nil {
-		return 0, err
-	}
-
-	return relation, nil
-}
-
 func dbGetContacts(userID uint64, c redis.Conn) ([]ContactInfo, error) {
 	var contacts []ContactInfo
 	contactsKey := GetContactsKey(userID)
@@ -289,72 +201,4 @@ func dbGetContacts(userID uint64, c redis.Conn) ([]ContactInfo, error) {
 	}
 
 	return contacts, nil
-}
-
-func getDiffKey(uID uint64, cID uint64) string {
-	return "diff" + strconv.FormatUint(uID, 10) + ":" + strconv.FormatUint(cID, 10)
-}
-
-func getUnionKey(uID uint64) string {
-	return "union:" + strconv.FormatUint(uID, 10)
-}
-
-func dbUpdatePoContacts(uID uint64, c redis.Conn) error {
-	uKey := GetContactsKey(uID)
-	values, err := redis.Strings(c.Do("SMEMBERS", uKey))
-	if err != nil {
-		return err
-	}
-
-	uinonKey := getUnionKey(uID)
-	for _, value := range values {
-		cID, err := share.GetUint64(value, err)
-		if err != nil {
-			return err
-		}
-		cKey := GetContactsKey(cID)
-		contacts, err := redis.Strings(c.Do("SDIFF", cKey, uKey))
-		if err != nil {
-			return err
-		}
-		for _, contact := range contacts {
-			_, err = c.Do("ZINCRBY", uinonKey, 1, contact)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	_, err = c.Do("ZREM", uinonKey, uID)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func dbGetStrangers(uID uint64, posID uint64, c redis.Conn) ([]uint64, error) {
-	strangersKey := GetStrangersKey()
-	var step uint64 = 0x3
-	values, err := redis.Values(c.Do("ZRANGEBYSCORE", strangersKey, posID-step, posID+step))
-	if err != nil {
-		return nil, err
-	}
-	var results []uint64
-	for _, value := range values {
-		cID, err := share.GetUint64(value, err)
-		if err != nil {
-			return nil, err
-		}
-		if uID != cID {
-			isStranger, err := IsStranger(uID, cID, c)
-			if err != nil {
-				return nil, err
-			}
-			if isStranger {
-				results = append(results, cID)
-			}
-		}
-	}
-	return results, nil
 }

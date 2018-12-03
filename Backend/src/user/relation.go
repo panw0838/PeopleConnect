@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"share"
+	"strconv"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -16,6 +17,12 @@ type Relation struct {
 	more  uint64
 	lFlag uint64
 	mFlag uint64
+}
+
+func GetRelationKey(user1 uint64, user2 uint64) string {
+	return "relate:" +
+		strconv.FormatUint(user1, 10) + ":" +
+		strconv.FormatUint(user2, 10)
 }
 
 func InitRelationCash() {
@@ -108,4 +115,82 @@ func GetCashFlag(user1 uint64, user2 uint64, c redis.Conn) (uint64, error) {
 	} else {
 		return relation.mFlag, nil
 	}
+}
+
+func dbEnableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error {
+	ClearCashRelation(user1, user2)
+	flag, err := dbGetFlag(user1, user2, c)
+	if err != nil {
+		return err
+	}
+	// if flag is 0, user has no relation with contact
+	if flag == 0 {
+		return fmt.Errorf("invalid contact")
+	}
+
+	flag = (flag | bits)
+
+	relateKey := GetRelationKey(user1, user2)
+	_, err = c.Do("HMSET", relateKey, FlagField, flag)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func dbDisableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error {
+	ClearCashRelation(user1, user2)
+	flag, err := dbGetFlag(user1, user2, c)
+	if err != nil {
+		return err
+	}
+	// if flag is 0, user has no relation with contact
+	if flag == 0 {
+		return fmt.Errorf("invalid contact")
+	}
+
+	flag = (flag & (^bits))
+
+	relateKey := GetRelationKey(user1, user2)
+	_, err = c.Do("HMSET", relateKey, FlagField, flag)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func dbSetName(user1 uint64, user2 uint64, name []byte) error {
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+
+	relateKey := GetRelationKey(user1, user2)
+	_, err = c.Do("HMSET", relateKey, NameField, name)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func dbGetFlag(user1 uint64, user2 uint64, c redis.Conn) (uint64, error) {
+	relationKey := GetRelationKey(user1, user2)
+	exists, err := redis.Int64(c.Do("EXISTS", relationKey))
+	if err != nil {
+		return 0, err
+	}
+	if exists == 0 {
+		return 0, nil // 0 means no relation
+	}
+
+	values, err := redis.Values(c.Do("HMGET", relationKey, FlagField))
+	relation, err := share.GetUint64(values[0], err)
+	if err != nil {
+		return 0, err
+	}
+
+	return relation, nil
 }
