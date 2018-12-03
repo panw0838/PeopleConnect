@@ -61,7 +61,13 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
     }
 }
 
-class PostsView: UITableViewController, PostRequestCallback, UIImagePickerControllerDelegate {
+class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, UITableViewDelegate {
+    
+    @IBOutlet weak var m_tabs: UISegmentedControl!
+    @IBOutlet weak var m_posts: UITableView!
+    
+    @IBAction func switchPosts(sender: AnyObject) {
+    }
     
     override func viewDidLoad() {
         httpSyncPost()
@@ -69,18 +75,18 @@ class PostsView: UITableViewController, PostRequestCallback, UIImagePickerContro
     }
     
     func PostUpdateUI() {
-        self.tableView.reloadData()
+        m_posts.reloadData()
     }
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return postData.numOfPosts()
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("PostCell") as! PostCell
         cell.m_idx = indexPath.row
         cell.reload()

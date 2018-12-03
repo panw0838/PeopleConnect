@@ -84,34 +84,35 @@ extension TagInfo {
 }
 
 class Tag {
-    var m_tagID: UInt8
-    var m_fatherID: UInt8
-    var m_bit: UInt64
-    var m_fatherBit:UInt64
-    var m_subBits: UInt64   // sons' bits
-    var m_tagName: String
-    var m_members: Array<UInt64>
-    var m_subTags: Array<Tag>
+    var m_tagID: UInt8 = 0
+    var m_fatherID: UInt8 = 0
+    var m_bit: UInt64 = 0
+    var m_fatherBit:UInt64 = 0
+    var m_subBits: UInt64 = 0
+    var m_tagName: String = ""
+    var m_members: Array<UInt64> = Array<UInt64>()
+    var m_subTags: Array<Tag> = Array<Tag>()
     
     init(id: UInt8, father: UInt8, name: String) {
         m_tagID = id
         m_fatherID = father
-        m_bit = (BitOne << UInt64(id))
-        m_fatherBit = (father == 0 ? 0 : (BitOne << UInt64(father)))
-        m_subBits = 0
         m_tagName = name
-        m_members = Array<UInt64>()
-        m_subTags = Array<Tag>()
+
+        if id != 0xff {
+            m_bit = (BitOne << UInt64(id))
+            m_fatherBit = (father == 0 ? 0 : (BitOne << UInt64(father)))
+        }
     }
     
     func canBeDelete()->Bool {
-        return ((m_bit & DefineTagMask) != 0)
+        return (m_tagID != 0xff)
+            && ((m_bit & DefineTagMask) != 0)
             && (m_members.count == 0)
             && (m_subTags.count == 0)
     }
     
     func canBeEdit()->Bool {
-        return (m_bit & UndefineBit) == 0
+        return (m_tagID != 0xff) && (m_bit & UndefineBit) == 0
     }
     
     func addMember(contact: ContactInfo) {
@@ -140,7 +141,9 @@ class Tag {
     
     func addSubTag(tag: Tag) {
         m_subTags.append(tag)
-        m_subBits |= (BitOne << UInt64(tag.m_tagID))
+        if tag.m_tagID != 0xff {
+            m_subBits |= (BitOne << UInt64(tag.m_tagID))
+        }
     }
     
     func remSubTag(tagID: UInt8) {
@@ -172,37 +175,45 @@ var contactsData:ContactsData = ContactsData()
 
 class ContactsData {
     var m_blacklist: Tag = Tag(id: 0, father: 0, name: "黑名单")
-    var m_undefine: Tag = Tag(id: 1, father: 0, name: "未分类")
+    var m_undefine:Tag? = nil
+    var m_possible: Tag? = nil
+    var m_stranger:Tag? = nil
     var m_tags: Array<Tag> = Array<Tag>()
     var m_contacts:Dictionary<UInt64, ContactInfo> = Dictionary<UInt64, ContactInfo>()
 
     init() {
         m_tags.removeAll()
-        initSystemTags()
         m_contacts.removeAll()
+        initSystemTags()
     }
     
     func initSystemTags() {
         m_blacklist.m_members.removeAll()
-        m_undefine.m_members.removeAll()
         // system tags
         m_tags.append(Tag(id: 2, father: 0, name: "家人"))
         m_tags.append(Tag(id: 3, father: 0, name: "同学"))
         m_tags.append(Tag(id: 4, father: 0, name: "同事"))
         m_tags.append(Tag(id: 5, father: 0, name: "朋友"))
+        m_tags.append(Tag(id: 1, father: 0, name: "未分类"))
+        m_undefine = m_tags.last!
+        m_tags.append(Tag(id: 0xff, father: 0, name: ""))
+        m_tags.last!.addSubTag(Tag(id: 0xff, father: 0, name: "可能认识的人"))
+        m_possible = m_tags.last!.m_subTags.last
+        m_tags.last!.addSubTag(Tag(id: 0xff, father: 0, name: "附近的陌生人"))
+        m_stranger = m_tags.last!.m_subTags.last
     }
     
     func numMainTags()->Int {
-        return m_tags.count + 1
+        return m_tags.count
     }
     
     func getMainTag(idx:Int)->Tag {
-        return idx == m_tags.count ? m_undefine : m_tags[idx]
+        return m_tags[idx]
     }
     
     func numSubTags(idx:Int)->Int {
         let tag = getMainTag(idx)
-        return tag.m_subTags.count + 1
+        return tag.m_subTags.count + (tag.m_tagID == 0xff ? 0 : 1)
     }
 
     func getSubTag(idx:Int, subIdx:Int)->Tag {
@@ -276,7 +287,7 @@ class ContactsData {
         }
         else {
             if contact.isUndefine() {
-                m_undefine.addMember(contact)
+                m_undefine!.addMember(contact)
             }
             else {
                 for tag in m_tags {
@@ -287,8 +298,18 @@ class ContactsData {
         }
     }
     
+    func addPossible(contact:ContactInfo) {
+        m_possible?.m_members.append(contact.user)
+        m_contacts[contact.user] = contact
+    }
+    
+    func addStranger(contact:ContactInfo) {
+        m_stranger?.m_members.append(contact.user)
+        m_contacts[contact.user] = contact
+    }
+    
     func remContact(contactID:UInt64) {
-        m_undefine.remMember(contactID)
+        m_undefine!.remMember(contactID)
         for tag in m_tags {
             tag.remMember(contactID)
         }
@@ -305,7 +326,7 @@ class ContactsData {
         let father = getFatherTag(tagID)
         father?.remMember(contactID)
         if contact.isUndefine() {
-            m_undefine.remMember(contactID)
+            m_undefine!.remMember(contactID)
         }
         contact.flag |= (tag.m_bit | tag.m_fatherBit)
         tag.addMember(contact)
@@ -320,7 +341,7 @@ class ContactsData {
         contact.flag &= ~(tag.m_bit | tag.m_subBits)
         father?.addMember(contact)
         if contact.isUndefine() {
-            m_undefine.addMember(contact)
+            m_undefine!.addMember(contact)
         }
         m_contacts[contactID] = contact
     }

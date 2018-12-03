@@ -22,26 +22,20 @@ class SubTagHeader: UICollectionReusableView {
 }
 
 class ContactsView: UIViewController,
-    UITabBarDelegate,
     UICollectionViewDataSource, UICollectionViewDelegate,
     ContactRequestCallback, SearchContactCallback {
     
-    @IBOutlet weak var m_tabsBar: UITabBar!
+    @IBOutlet weak var m_tabsBar: UISegmentedControl!
     @IBOutlet weak var m_contacts: UICollectionView!
+    @IBOutlet weak var m_createSubTag: UIBarButtonItem!
     
     var m_curTag: Int = 0
     var m_selectContact:UInt64 = 0
     
-    func TagUpdateUI() {
-        m_tabsBar.items?.removeAll()
-        var tagIdx = 0
-        for tag in contactsData.m_tags {
-            let newTab:UITabBarItem = UITabBarItem.init(title: tag.m_tagName, image: nil, tag: tagIdx)
-            m_tabsBar.items?.append(newTab)
-            tagIdx++
-        }
-        let newTab:UITabBarItem = UITabBarItem.init(title: "未分类", image: nil, tag: tagIdx)
-        m_tabsBar.items?.append(newTab)
+    @IBAction func ChangeTab(sender: AnyObject) {
+        m_curTag = m_tabsBar.selectedSegmentIndex
+        m_contacts.reloadData()
+        m_createSubTag.enabled = (m_curTag < 4)
     }
     
     func ContactUpdateUI() {
@@ -73,28 +67,20 @@ class ContactsView: UIViewController,
     
     @IBAction func AddNewTag(sender: AnyObject) {
         let curTag = contactsData.getSubTag(m_curTag, subIdx: 0)
-        if curTag.m_tagID == 1 {
-            let alert = UIAlertController(title: "添加标签", message: "不能向未分类组添加标签", preferredStyle: .Alert)
-            let okAction = UIAlertAction(title: "确定", style: .Default, handler: nil)
-            alert.addAction(okAction)
-            self.presentViewController(alert, animated: true, completion: nil)
+        let alert = UIAlertController(title: "添加标签", message: "添加子标签到 "+curTag.m_tagName, preferredStyle: .Alert)
+        let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .Default,
+            handler: { action in
+                httpAddTag(0, name: (alert.textFields?.first?.text)!)})
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "标签名称"
+            textField.addTarget(self, action: Selector("tagNameChanged:"), forControlEvents: .EditingChanged)
         }
-        else {
-            let alert = UIAlertController(title: "添加标签", message: "添加子标签到 "+curTag.m_tagName, preferredStyle: .Alert)
-            let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
-            let okAction = UIAlertAction(title: "确定", style: .Default,
-                handler: { action in
-                    httpAddTag(0, name: (alert.textFields?.first?.text)!)})
-            alert.addTextFieldWithConfigurationHandler {
-                (textField: UITextField!) -> Void in
-                textField.placeholder = "标签名称"
-                textField.addTarget(self, action: Selector("tagNameChanged:"), forControlEvents: .EditingChanged)
-            }
-            okAction.enabled = false
-            alert.addAction(cancelAction)
-            alert.addAction(okAction)
-            self.presentViewController(alert, animated: true, completion: nil)
-        }
+        okAction.enabled = false
+        alert.addAction(cancelAction)
+        alert.addAction(okAction)
+        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     @IBAction func DelSubTag(sender: AnyObject) {
@@ -170,7 +156,6 @@ class ContactsView: UIViewController,
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        TagUpdateUI()
         contactCallbacks.append(self)
     }
 

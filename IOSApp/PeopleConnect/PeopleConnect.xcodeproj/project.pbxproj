@@ -37,7 +37,6 @@
 		18E8CB97219331A400E29383 /* PeopleConnectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CB96219331A400E29383 /* PeopleConnectTests.swift */; };
 		18E8CBA2219331A400E29383 /* PeopleConnectUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CBA1219331A400E29383 /* PeopleConnectUITests.swift */; };
 		18E8CBB02193441500E29383 /* Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CBAF2193441500E29383 /* Requests.swift */; };
-		18F6937021B1A64800DF46DA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F6936F21B1A64800DF46DA /* libz.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -192,7 +191,6 @@
 		18E8CBA1219331A400E29383 /* PeopleConnectUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleConnectUITests.swift; sourceTree = "<group>"; };
 		18E8CBA3219331A400E29383 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		18E8CBAF2193441500E29383 /* Requests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Requests.swift; sourceTree = "<group>"; };
-		18F6936F21B1A64800DF46DA /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,7 +198,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				18F6937021B1A64800DF46DA /* libz.tbd in Frameworks */,
 				18DB28B321A5B9590024092C /* CocoaAsyncSocket.framework in Frameworks */,
 				18D3A93F2199796100EB3289 /* AFNetworking.framework in Frameworks */,
 			);
@@ -250,7 +247,6 @@
 		18E8CB73219331A400E29383 = {
 			isa = PBXGroup;
 			children = (
-				18F6936F21B1A64800DF46DA /* libz.tbd */,
 				18DB28A221A5B9120024092C /* CocoaAsyncSocket.xcodeproj */,
 				18D3A91F2199792F00EB3289 /* AFNetworking.xcodeproj */,
 				18E8CB7E219331A400E29383 /* PeopleConnect */,
