@@ -37,7 +37,7 @@ func httpSyncRequests() {
 }
 
 func httpSendMessege(to:UInt64, messege:String) {
-    let params: Dictionary = ["from":NSNumber(unsignedLongLong: userInfo.userID), "to":NSNumber(unsignedLongLong: to), "mess":messege]
+    let params: Dictionary = ["from":NSNumber(unsignedLongLong: userInfo.userID), "to":NSNumber(unsignedLongLong: to), "msg":messege]
     http.postRequest("sendmessege", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
@@ -45,16 +45,10 @@ func httpSendMessege(to:UInt64, messege:String) {
                 print("%s", html)
             }
             else {
-                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
-                if (jsonObj != nil) {
-                    let dict: NSDictionary = jsonObj as! NSDictionary
-                    let ip:String = dict["ip"] as! String
-                    contactsData.m_contacts[to]?.ip = ip
-                }
-
+                tcp.notifyMessege(to)
                 var selfMessege = MessegeInfo()
                 selfMessege.from = userInfo.userID
-                selfMessege.time = ""
+                selfMessege.time = 0
                 selfMessege.data = messege
                 selfMessege.type = .String
                 messegeData.AddNewMessege(to, newMessege: selfMessege)

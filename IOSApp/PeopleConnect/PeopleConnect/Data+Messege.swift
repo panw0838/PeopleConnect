@@ -39,7 +39,7 @@ enum MessegeType {
 
 struct MessegeInfo {
     var from:UInt64 = 0
-    var time:String = ""
+    var time:UInt64 = 0
     var data:String = ""
     var type:MessegeType = .String
 }
@@ -48,13 +48,13 @@ extension MessegeInfo {
     init?(json: [String: AnyObject]) {
         guard
             let from = json["from"] as? NSNumber,
-            let time = json["time"] as? String,
+            let time = json["time"] as? NSNumber,
             let data = json["cont"] as? String
             else {
                 return nil
         }
         self.from = UInt64(from.unsignedLongLongValue)
-        self.time = time
+        self.time = UInt64(time.unsignedLongLongValue)
         self.data = data
     }
 }
@@ -128,7 +128,7 @@ class MessegeData {
     
     func AddNewRequest(newRequest:RequestInfo) {
         let conversation = GetConversation(newRequest.from)
-        let messege = MessegeInfo(from: newRequest.from, time: "", data: newRequest.messege, type: .Request)
+        let messege = MessegeInfo(from: newRequest.from, time: 0, data: newRequest.messege, type: .Request)
         conversation?.addMessege(messege)
     }
 }
