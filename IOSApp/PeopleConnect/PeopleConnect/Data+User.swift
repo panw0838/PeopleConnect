@@ -8,6 +8,11 @@
 
 import Foundation
 
+struct GroupInfo {
+    var id:UInt32 = 0
+    var name:String = ""
+}
+
 struct UserInfo {
     var userID : UInt64
     var cellNumber : String
@@ -20,6 +25,8 @@ struct UserInfo {
     var config : UInt64
     var deviceID : String
     var ipAddress : String
+    
+    var groups = Array<GroupInfo>()
     
     init () {
         userID = 0
@@ -39,6 +46,9 @@ struct UserInfo {
 var userInfo:UserInfo = UserInfo()
 
 class User {
+    
+    
+    
     func getIFAddresses() -> [String] {
         var addresses = [String]()
         

@@ -104,6 +104,12 @@ class Tag {
         }
     }
     
+    func clear() {
+        m_members.removeAll()
+        m_subTags.removeAll()
+        m_subBits = 0
+    }
+    
     func canBeDelete()->Bool {
         return (m_tagID != 0xff)
             && ((m_bit & DefineTagMask) != 0)
@@ -174,55 +180,61 @@ class Tag {
 var contactsData:ContactsData = ContactsData()
 
 class ContactsData {
-    var m_blacklist: Tag = Tag(id: 0, father: 0, name: "黑名单")
+    var m_blacklist = Tag(id: 0, father: 0, name: "黑名单")
+    var m_possible = Tag(id: 0xff, father: 0, name: "可能认识的人")
+    var m_stranger = Tag(id: 0xff, father: 0, name: "附近的陌生人")
     var m_undefine:Tag? = nil
-    var m_possible: Tag? = nil
-    var m_stranger:Tag? = nil
     var m_tags: Array<Tag> = Array<Tag>()
     var m_contacts:Dictionary<UInt64, ContactInfo> = Dictionary<UInt64, ContactInfo>()
 
     init() {
-        m_tags.removeAll()
         m_contacts.removeAll()
-        initSystemTags()
+        initKnownTags()
     }
     
-    func initSystemTags() {
+    func initKnownTags() {
+        m_tags.removeAll()
         m_blacklist.m_members.removeAll()
         // system tags
         m_tags.append(Tag(id: 2, father: 0, name: "家人"))
         m_tags.append(Tag(id: 3, father: 0, name: "同学"))
         m_tags.append(Tag(id: 4, father: 0, name: "同事"))
         m_tags.append(Tag(id: 5, father: 0, name: "朋友"))
-        m_tags.append(Tag(id: 1, father: 0, name: "未分类"))
+        m_tags.append(Tag(id: 1, father: 0, name: "联系人"))
         m_undefine = m_tags.last!
-        m_tags.append(Tag(id: 0xff, father: 0, name: ""))
-        m_tags.last!.addSubTag(Tag(id: 0xff, father: 0, name: "可能认识的人"))
-        m_possible = m_tags.last!.m_subTags.last
-        m_tags.last!.addSubTag(Tag(id: 0xff, father: 0, name: "附近的陌生人"))
-        m_stranger = m_tags.last!.m_subTags.last
+    }
+    
+    func getPostTags()->Array<Tag> {
+        var tags = Array<Tag>()
+        for tag in m_tags {
+            tags.append(tag)
+            for subTag in tag.m_subTags {
+                tags.append(subTag)
+            }
+        }
+        return tags
     }
     
     func numMainTags()->Int {
-        return m_tags.count
-    }
-    
-    func getMainTag(idx:Int)->Tag {
-        return m_tags[idx]
+        return m_tags.count + 1
     }
     
     func numSubTags(idx:Int)->Int {
-        let tag = getMainTag(idx)
-        return tag.m_subTags.count + (tag.m_tagID == 0xff ? 0 : 1)
+        return idx < m_tags.count ? (m_tags[idx].m_subTags.count + 1) : 2
     }
 
     func getSubTag(idx:Int, subIdx:Int)->Tag {
-        let tag = getMainTag(idx)
-        if subIdx == tag.m_subTags.count {
-            return tag
+        if idx < m_tags.count {
+            let tag = m_tags[idx]
+            if subIdx == tag.m_subTags.count {
+                return tag
+            }
+            else {
+                return tag.m_subTags[subIdx]
+            }
         }
         else {
-            return tag.m_subTags[subIdx]
+            return subIdx == 0 ? m_possible : m_stranger
         }
     }
     
@@ -299,12 +311,12 @@ class ContactsData {
     }
     
     func addPossible(contact:ContactInfo) {
-        m_possible?.m_members.append(contact.user)
+        m_possible.m_members.append(contact.user)
         m_contacts[contact.user] = contact
     }
     
     func addStranger(contact:ContactInfo) {
-        m_stranger?.m_members.append(contact.user)
+        m_stranger.m_members.append(contact.user)
         m_contacts[contact.user] = contact
     }
     
@@ -347,10 +359,10 @@ class ContactsData {
     }
     
     func loadContacts(contacts:Array<ContactInfo>, userTags:Array<TagInfo>) {
-        m_tags.removeAll()
-        
-        // system tags
-        initSystemTags()
+        // clear tag members
+        for tag in m_tags {
+            tag.clear()
+        }
         
         // load user tags
         for tagInfo in userTags {

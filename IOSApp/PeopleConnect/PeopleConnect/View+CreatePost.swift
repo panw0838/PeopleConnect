@@ -9,72 +9,85 @@
 import UIKit
 
 class AttachmentCell:UICollectionViewCell {
+
     @IBOutlet weak var m_preview: UIImageView!
+    @IBOutlet weak var m_delete: UIButton!
+    @IBOutlet weak var m_add: UIImageView!
     
+    @IBAction func deleteAttachment(sender: AnyObject) {
+    }
 }
 
-class TagCell:UITableViewCell {
+class PostTagCell:UICollectionViewCell {
     
+    @IBOutlet weak var m_tagName: UILabel!
 }
 
-class TagTable:UITableViewController {
+class PostTags:UITableViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
     
-    let undefine_section = 4
+    var m_tags:Array<Tag>?
     var m_flag:UInt64 = 0
-    var m_tags = Set<String>()
     
-    @IBAction func tagSelected(sender: AnyObject) {
-        self.navigationController?.popViewControllerAnimated(true)
-        let dst = self.navigationController?.visibleViewController as! CreatePostView
-        dst.m_flag = m_flag
-        var visibleStr = ""
-        for (i, tag) in m_tags.enumerate() {
-            if i != 0 {
-                visibleStr += ","
-            }
-            visibleStr += tag
-        }
-        dst.m_tags = visibleStr.isEmpty ? "没有好友可见" : visibleStr + "可见"
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        return 1
     }
     
-    func getTagName(indexPath: NSIndexPath)->String {
-        if indexPath.section == undefine_section {
-            return "全部联系人"
-        }
-        else {
-            let subTag = contactsData.getSubTag(indexPath.section, subIdx: indexPath.row)
-            return subTag.m_tagName
-        }
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return m_tags!.count
     }
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return contactsData.numMainTags() - 1
-    }
-    
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return contactsData.numSubTags(section)
-    }
-    
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return " "
-    }
-    
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("TagSelectCell", forIndexPath: indexPath)
-        cell.textLabel?.text = getTagName(indexPath)
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PostTagCell", forIndexPath: indexPath) as! PostTagCell
+        cell.m_tagName.text = m_tags![indexPath.row].m_tagName
         return cell
     }
     
-    override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
-        let tag = contactsData.getSubTag(indexPath.section, subIdx: indexPath.row)
-        m_flag &= (~tag.m_bit)
-        m_tags.remove(getTagName(indexPath))
+    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath)
+        cell?.backgroundColor = UIColor.lightGrayColor()
+        m_flag &= ~(m_tags![indexPath.row].m_bit)
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let tag = contactsData.getSubTag(indexPath.section, subIdx: indexPath.row)
-        m_flag |= tag.m_bit
-        m_tags.insert(getTagName(indexPath))
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath)
+       m_flag |= (m_tags![indexPath.row].m_bit)
+        cell?.backgroundColor = UIColor(red: 0, green: 0.4, blue: 0.8, alpha: 1.0)
+    }
+}
+
+class PostGroupCell:UICollectionViewCell {
+    
+    @IBOutlet weak var m_groupName: UILabel!
+}
+
+class PostGroups:UITableViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
+    
+    var m_selectGroups = Set<UInt32>()
+    
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return userInfo.groups.count
+    }
+    
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PostGroupCell", forIndexPath: indexPath) as! PostGroupCell
+        cell.m_groupName.text = userInfo.groups[indexPath.row].name
+        return cell
+    }
+    
+    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath)
+        cell?.backgroundColor = UIColor.lightGrayColor()
+        m_selectGroups.remove(userInfo.groups[indexPath.row].id)
+    }
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath)
+        cell?.backgroundColor = UIColor(red: 0, green: 0.4, blue: 0.8, alpha: 1.0)
+        m_selectGroups.insert(userInfo.groups[indexPath.row].id)
     }
 }
 
@@ -83,9 +96,11 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
     
     @IBOutlet weak var m_attachments: UICollectionView!
     @IBOutlet weak var m_desc: UITextField!
-    @IBOutlet weak var m_visibleTags: UILabel!
-    var m_flag:UInt64 = 0
-    var m_tags:String = "没有好友可见"
+    @IBOutlet weak var m_postTags: UICollectionView!
+    @IBOutlet weak var m_postTagsCell: PostTags!
+    @IBOutlet weak var m_postGroupsCell: PostGroups!
+    @IBOutlet weak var m_postGroups: UICollectionView!
+    @IBOutlet weak var m_strangerSee: UISwitch!
     
     @IBAction func CreatePost(sender: AnyObject) {
         let desc = m_desc.text
@@ -104,11 +119,17 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
     override func viewDidLoad() {
         super.viewDidLoad()
         m_picker.delegate = self
+        m_postTags.allowsSelection = true
+        m_postTags.allowsMultipleSelection = true
+        m_postGroups.allowsSelection = true
+        m_postGroups.allowsMultipleSelection = true
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        m_visibleTags.text = m_tags
+        m_postTagsCell.m_tags = contactsData.getPostTags()
+        m_postTagsCell.m_flag = 0
+        m_postGroupsCell.m_selectGroups.removeAll()
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
@@ -128,9 +149,13 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("AttachmentCell", forIndexPath: indexPath) as! AttachmentCell
         if indexPath.row < m_atts.count {
             cell.m_preview.image = m_atts[indexPath.row]
+            cell.m_delete.hidden = false
+            cell.m_add.hidden = true
         }
         else {
-            cell.m_preview.image = UIImage(named: "plus")
+            cell.m_preview.image = nil
+            cell.m_delete.hidden = true
+            cell.m_add.hidden = false
         }
         return cell
     }
