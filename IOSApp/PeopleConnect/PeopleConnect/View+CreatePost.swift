@@ -93,7 +93,6 @@ class PostGroups:UITableViewCell, UICollectionViewDataSource, UICollectionViewDe
 
 class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    
     @IBOutlet weak var m_attachments: UICollectionView!
     @IBOutlet weak var m_desc: UITextField!
     @IBOutlet weak var m_postTags: UICollectionView!
@@ -101,20 +100,22 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
     @IBOutlet weak var m_postGroupsCell: PostGroups!
     @IBOutlet weak var m_postGroups: UICollectionView!
     @IBOutlet weak var m_strangerSee: UISwitch!
+    @IBOutlet weak var m_createPostBtn: UIBarButtonItem!
     
     @IBAction func CreatePost(sender: AnyObject) {
         let desc = m_desc.text
-        let flag = UInt64(2)//UInt64(m_allowed.tag + 1)
+        let flag = m_postTagsCell.m_flag
         var datas = Array<NSData>()
         for image in m_atts {
             let data = UIImagePNGRepresentation(image)
             datas.append(data!)
         }
         httpSendPost(flag, desc: desc!, datas: datas)
+        navigationController?.popViewControllerAnimated(true)
     }
     
-    var m_picker:UIImagePickerController = UIImagePickerController()
-    var m_atts:Array<UIImage> = Array<UIImage>()
+    var m_picker = UIImagePickerController()
+    var m_atts = Array<UIImage>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -127,12 +128,14 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        m_createPostBtn.enabled = false
         m_postTagsCell.m_tags = contactsData.getPostTags()
         m_postTagsCell.m_flag = 0
         m_postGroupsCell.m_selectGroups.removeAll()
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
+        m_createPostBtn.enabled = true
         m_atts.append(image)
         m_attachments.reloadData()
     }

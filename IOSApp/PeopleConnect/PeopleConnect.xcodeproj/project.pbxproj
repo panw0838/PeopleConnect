@@ -13,7 +13,7 @@
 		18AE41F62199E2680008B792 /* server.cer in Resources */ = {isa = PBXBuildFile; fileRef = 18AE41F52199E2680008B792 /* server.cer */; };
 		18AE420A219AC4170008B792 /* View+Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE4209219AC4170008B792 /* View+Login.swift */; };
 		18AE420C219AE3AD0008B792 /* Data+User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE420B219AE3AD0008B792 /* Data+User.swift */; };
-		18D3A8DF2197F3CD00EB3289 /* View+Messeges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D3A8DE2197F3CD00EB3289 /* View+Messeges.swift */; };
+		18D3A8DF2197F3CD00EB3289 /* View+Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D3A8DE2197F3CD00EB3289 /* View+Messages.swift */; };
 		18D3A8E12198015C00EB3289 /* View+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D3A8E02198015C00EB3289 /* View+Contacts.swift */; };
 		18D3A8E32198017000EB3289 /* View+Posts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D3A8E22198017000EB3289 /* View+Posts.swift */; };
 		18D3A8E52198061100EB3289 /* Data+Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D3A8E42198061100EB3289 /* Data+Contact.swift */; };
@@ -23,7 +23,7 @@
 		18DB289221A03FCC0024092C /* View+Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289121A03FCC0024092C /* View+Contact.swift */; };
 		18DB289421A145410024092C /* Requests+Messege.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289321A145410024092C /* Requests+Messege.swift */; };
 		18DB289621A1C2C30024092C /* Data+Messege.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289521A1C2C30024092C /* Data+Messege.swift */; };
-		18DB289821A1CD200024092C /* View+Messege.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289721A1CD200024092C /* View+Messege.swift */; };
+		18DB289821A1CD200024092C /* View+Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289721A1CD200024092C /* View+Conversation.swift */; };
 		18DB289A21A3A8BA0024092C /* Requests+Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289921A3A8BA0024092C /* Requests+Contact.swift */; };
 		18DB289C21A3AF750024092C /* Requests+Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289B21A3AF750024092C /* Requests+Tag.swift */; };
 		18DB28B321A5B9590024092C /* CocoaAsyncSocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18DB28A921A5B9120024092C /* CocoaAsyncSocket.framework */; };
@@ -162,7 +162,7 @@
 		18AE41F52199E2680008B792 /* server.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = server.cer; sourceTree = "<group>"; };
 		18AE4209219AC4170008B792 /* View+Login.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Login.swift"; sourceTree = "<group>"; };
 		18AE420B219AE3AD0008B792 /* Data+User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+User.swift"; sourceTree = "<group>"; };
-		18D3A8DE2197F3CD00EB3289 /* View+Messeges.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Messeges.swift"; sourceTree = "<group>"; };
+		18D3A8DE2197F3CD00EB3289 /* View+Messages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Messages.swift"; sourceTree = "<group>"; };
 		18D3A8E02198015C00EB3289 /* View+Contacts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Contacts.swift"; sourceTree = "<group>"; };
 		18D3A8E22198017000EB3289 /* View+Posts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Posts.swift"; sourceTree = "<group>"; };
 		18D3A8E42198061100EB3289 /* Data+Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Contact.swift"; sourceTree = "<group>"; };
@@ -171,7 +171,7 @@
 		18DB289121A03FCC0024092C /* View+Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Contact.swift"; sourceTree = "<group>"; };
 		18DB289321A145410024092C /* Requests+Messege.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Messege.swift"; sourceTree = "<group>"; };
 		18DB289521A1C2C30024092C /* Data+Messege.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Messege.swift"; sourceTree = "<group>"; };
-		18DB289721A1CD200024092C /* View+Messege.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Messege.swift"; sourceTree = "<group>"; };
+		18DB289721A1CD200024092C /* View+Conversation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Conversation.swift"; sourceTree = "<group>"; };
 		18DB289921A3A8BA0024092C /* Requests+Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Contact.swift"; sourceTree = "<group>"; };
 		18DB289B21A3AF750024092C /* Requests+Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Tag.swift"; sourceTree = "<group>"; };
 		18DB28A221A5B9120024092C /* CocoaAsyncSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CocoaAsyncSocket.xcodeproj; path = "../CocoaAsyncSocket-master/CocoaAsyncSocket.xcodeproj"; sourceTree = "<group>"; };
@@ -284,8 +284,8 @@
 				18DB289521A1C2C30024092C /* Data+Messege.swift */,
 				18D3A8E42198061100EB3289 /* Data+Contact.swift */,
 				18AE4209219AC4170008B792 /* View+Login.swift */,
-				18DB289721A1CD200024092C /* View+Messege.swift */,
-				18D3A8DE2197F3CD00EB3289 /* View+Messeges.swift */,
+				18DB289721A1CD200024092C /* View+Conversation.swift */,
+				18D3A8DE2197F3CD00EB3289 /* View+Messages.swift */,
 				18DB289121A03FCC0024092C /* View+Contact.swift */,
 				18D3A8E02198015C00EB3289 /* View+Contacts.swift */,
 				18DB2879219D85BF0024092C /* View+MoveMembers.swift */,
@@ -538,10 +538,10 @@
 				18D3A8E52198061100EB3289 /* Data+Contact.swift in Sources */,
 				18DB28BE21A5B9CC0024092C /* Observer.swift in Sources */,
 				18DB289221A03FCC0024092C /* View+Contact.swift in Sources */,
-				18DB289821A1CD200024092C /* View+Messege.swift in Sources */,
+				18DB289821A1CD200024092C /* View+Conversation.swift in Sources */,
 				18AE420A219AC4170008B792 /* View+Login.swift in Sources */,
 				18DB289C21A3AF750024092C /* Requests+Tag.swift in Sources */,
-				18D3A8DF2197F3CD00EB3289 /* View+Messeges.swift in Sources */,
+				18D3A8DF2197F3CD00EB3289 /* View+Messages.swift in Sources */,
 				18E8CBB02193441500E29383 /* Requests.swift in Sources */,
 				18DB28C021A6CCE60024092C /* Requests+User.swift in Sources */,
 				18DB289621A1C2C30024092C /* Data+Messege.swift in Sources */,

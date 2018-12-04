@@ -23,6 +23,7 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
     
     @IBOutlet weak var m_title: UINavigationItem!
     @IBOutlet weak var m_table: UICollectionView!
+    @IBOutlet weak var m_moveBtn: UIBarButtonItem!
 
     var m_tagID:UInt8 = 0
     var m_inTagMembers:Array<ContactInfo> = Array<ContactInfo>()
@@ -44,22 +45,26 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
         }
         if addMembers.count != 0 || remMembers.count != 0 {
             httpMoveContacts(m_tagID, addMembers: addMembers, remMembers: remMembers)
+            navigationController?.popViewControllerAnimated(true)
         }
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        m_moveBtn.enabled = false
         reloadData()
     }
     
     func reloadData() {
         let bit:UInt64 = BitOne << UInt64(m_tagID)
         for contact in contactsData.m_contacts.values {
-            if contact.flag & bit == 0 {
-                m_outTagMembers.append(contact)
-            }
-            else {
-                m_inTagMembers.append(contact)
+            if contact.isContact() {
+                if contact.flag & bit == 0 {
+                    m_outTagMembers.append(contact)
+                }
+                else {
+                    m_inTagMembers.append(contact)
+                }
             }
         }
         m_title.title = contactsData.getTag(m_tagID)!.m_tagName
@@ -74,9 +79,15 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
     }
     
     func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
-        let header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "MembersHeader", forIndexPath: indexPath) as! MembersHeader
-        header.m_name.text = indexPath.section == 0 ? "已包含成员" : "未包含成员"
-        return header
+        if kind == "UICollectionElementKindSectionHeader" {
+            let header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "MembersHeader", forIndexPath: indexPath) as! MembersHeader
+            header.m_name.text = indexPath.section == 0 ? "已包含成员" : "未包含成员"
+            return header
+        }
+        else {
+            let footer = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "MembersFooter", forIndexPath: indexPath)
+            return footer
+        }
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
@@ -89,6 +100,7 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        m_moveBtn.enabled = true
         if indexPath.section == 0 {
             let member = m_inTagMembers.removeAtIndex(indexPath.row)
             m_outTagMembers.append(member)

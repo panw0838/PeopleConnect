@@ -71,7 +71,7 @@ class ContactsView: UIViewController,
         let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Default,
             handler: { action in
-                httpAddTag(0, name: (alert.textFields?.first?.text)!)})
+                httpAddTag(curTag.m_tagID, name: (alert.textFields?.first?.text)!)})
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
             textField.placeholder = "标签名称"
@@ -133,14 +133,20 @@ class ContactsView: UIViewController,
     }
     
     func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
-        let header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "SubTagHeader", forIndexPath: indexPath) as! SubTagHeader
-        let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
+        if kind == "UICollectionElementKindSectionHeader" {
+            let header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "SubTagHeader", forIndexPath: indexPath) as! SubTagHeader
+            let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
         
-        header.m_tagName.text = subTag.m_tagName
-        header.m_editBtn.hidden = !subTag.canBeEdit()
-        header.m_delBtn.hidden = !subTag.canBeDelete()
-        header.m_tagID = subTag.m_tagID
-        return header
+            header.m_tagName.text = subTag.m_tagName
+            header.m_editBtn.hidden = !subTag.canBeEdit()
+            header.m_delBtn.hidden = !subTag.canBeDelete()
+            header.m_tagID = subTag.m_tagID
+            return header
+        }
+        else {
+            let footer = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "SubTagFooter", forIndexPath: indexPath)
+            return footer
+        }
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
