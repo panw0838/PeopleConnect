@@ -13,7 +13,7 @@
         <scene sceneID="gf6-xU-0vs">
             <objects>
                 <navigationController id="ryZ-x8-rSM" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="消息" id="JZH-Zq-6bh"/>
+                    <tabBarItem key="tabBarItem" title="消息" image="tab_msg" selectedImage="tab_msg_hi" id="JZH-Zq-6bh"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="6r8-dC-anW">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -121,7 +121,7 @@
         <scene sceneID="bwo-Jo-e9d">
             <objects>
                 <navigationController id="hqL-Lj-Kar" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="联系人" id="56b-IY-RHV"/>
+                    <tabBarItem key="tabBarItem" title="联系人" image="tab_contacts" selectedImage="tab_contacts_hi" id="56b-IY-RHV"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="uI1-rW-92t">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1062,11 +1062,11 @@
                                     <action selector="switchPosts:" destination="YL6-cw-Vsr" eventType="valueChanged" id="xO7-vN-Lee"/>
                                 </connections>
                             </segmentedControl>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="singleLineEtched" rowHeight="263" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Rgo-PK-W5t">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="263" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Rgo-PK-W5t">
                                 <rect key="frame" x="0.0" y="108" width="600" height="435"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="PostCell" rowHeight="263" id="hTV-rI-p8z" customClass="PostCell" customModule="PeopleConnect" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="PostCell" rowHeight="263" id="hTV-rI-p8z" customClass="PostCell" customModule="PeopleConnect" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="600" height="263"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hTV-rI-p8z" id="VQX-EF-ShU">
@@ -1076,6 +1076,9 @@
                                                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="elD-UG-DSJ">
                                                     <rect key="frame" x="8" y="46" width="584" height="134"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.59999999999999998" colorSpace="calibratedRGB"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="134" id="cmd-ow-Vwx"/>
+                                                    </constraints>
                                                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="xxt-BR-c5W">
                                                         <size key="itemSize" width="50" height="50"/>
                                                         <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -1115,6 +1118,7 @@
                                                             <size key="customSize" width="121" height="121"/>
                                                             <connections>
                                                                 <outlet property="m_preview" destination="nEh-Ad-WQp" id="g59-kK-3MY"/>
+                                                                <segue destination="VEw-US-sxS" kind="show" id="qnB-pp-aQR"/>
                                                             </connections>
                                                         </collectionViewCell>
                                                     </cells>
@@ -1122,14 +1126,14 @@
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_profile" translatesAutoresizingMaskIntoConstraints="NO" id="xua-Pd-B4R">
                                                     <rect key="frame" x="8" y="8" width="35" height="35"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="35" id="8zc-G0-fo5"/>
+                                                        <constraint firstAttribute="width" constant="35" id="QdF-iW-6B5"/>
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8GW-rt-hSm">
                                                     <rect key="frame" x="51" y="8" width="149" height="15"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="15" id="BwG-Ud-NbI"/>
-                                                        <constraint firstAttribute="width" constant="149" id="hcT-iV-ZKI"/>
+                                                        <constraint firstAttribute="width" constant="149" id="4Lb-sI-aeG"/>
+                                                        <constraint firstAttribute="height" constant="15" id="7gn-1O-EqF"/>
                                                     </constraints>
                                                     <attributedString key="attributedText">
                                                         <fragment content="Label">
@@ -1150,22 +1154,20 @@
                                             </subviews>
                                             <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
                                             <constraints>
-                                                <constraint firstItem="xua-Pd-B4R" firstAttribute="bottom" secondItem="1Bo-Ej-kpY" secondAttribute="bottom" id="1mt-Cc-1ZQ"/>
-                                                <constraint firstItem="elD-UG-DSJ" firstAttribute="leading" secondItem="VQX-EF-ShU" secondAttribute="leadingMargin" id="8HR-oZ-uhv"/>
-                                                <constraint firstItem="elD-UG-DSJ" firstAttribute="trailing" secondItem="VQX-EF-ShU" secondAttribute="trailingMargin" id="AwV-eW-LCG"/>
-                                                <constraint firstItem="1Bo-Ej-kpY" firstAttribute="top" secondItem="VQX-EF-ShU" secondAttribute="topMargin" constant="14" id="GUZ-cd-gsW"/>
-                                                <constraint firstItem="8GW-rt-hSm" firstAttribute="leading" secondItem="1Bo-Ej-kpY" secondAttribute="leading" id="ThT-6L-8is"/>
-                                                <constraint firstItem="elD-UG-DSJ" firstAttribute="top" secondItem="xua-Pd-B4R" secondAttribute="bottom" constant="3" id="WUu-su-LyB"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="1Bo-Ej-kpY" secondAttribute="trailing" constant="7" id="dcd-Ab-Uzv"/>
-                                                <constraint firstItem="8GW-rt-hSm" firstAttribute="top" secondItem="xua-Pd-B4R" secondAttribute="top" id="e38-va-yP4"/>
-                                                <constraint firstItem="xua-Pd-B4R" firstAttribute="top" secondItem="VQX-EF-ShU" secondAttribute="topMargin" id="fYn-Gq-tl1"/>
-                                                <constraint firstItem="elD-UG-DSJ" firstAttribute="top" secondItem="8GW-rt-hSm" secondAttribute="bottom" constant="23" id="oI0-CR-f0i"/>
-                                                <constraint firstItem="8GW-rt-hSm" firstAttribute="leading" secondItem="xua-Pd-B4R" secondAttribute="trailing" constant="8" symbolic="YES" id="ogQ-YJ-ws8"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="elD-UG-DSJ" secondAttribute="bottom" constant="74" id="pKO-vl-pW5"/>
-                                                <constraint firstItem="elD-UG-DSJ" firstAttribute="leading" secondItem="xua-Pd-B4R" secondAttribute="leading" id="xNl-QV-5Ja"/>
+                                                <constraint firstItem="1Bo-Ej-kpY" firstAttribute="top" secondItem="VQX-EF-ShU" secondAttribute="topMargin" constant="14" id="1Ii-ww-COq"/>
+                                                <constraint firstItem="8GW-rt-hSm" firstAttribute="leading" secondItem="xua-Pd-B4R" secondAttribute="trailing" constant="8" symbolic="YES" id="3gR-41-btm"/>
+                                                <constraint firstItem="1Bo-Ej-kpY" firstAttribute="leading" secondItem="8GW-rt-hSm" secondAttribute="leading" id="8K9-U5-l5t"/>
+                                                <constraint firstItem="xua-Pd-B4R" firstAttribute="leading" secondItem="VQX-EF-ShU" secondAttribute="leadingMargin" id="TTV-he-NZK"/>
+                                                <constraint firstItem="elD-UG-DSJ" firstAttribute="top" secondItem="xua-Pd-B4R" secondAttribute="bottom" constant="3" id="VMw-ru-qQ7"/>
+                                                <constraint firstItem="elD-UG-DSJ" firstAttribute="trailing" secondItem="VQX-EF-ShU" secondAttribute="trailingMargin" id="YEH-mI-CTF"/>
+                                                <constraint firstItem="xua-Pd-B4R" firstAttribute="leading" secondItem="elD-UG-DSJ" secondAttribute="leading" id="ZGY-EI-PCf"/>
+                                                <constraint firstItem="8GW-rt-hSm" firstAttribute="top" secondItem="VQX-EF-ShU" secondAttribute="topMargin" id="hH3-Rq-eDp"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="1Bo-Ej-kpY" secondAttribute="trailing" constant="7" id="nZR-0l-qq8"/>
+                                                <constraint firstItem="1Bo-Ej-kpY" firstAttribute="bottom" secondItem="xua-Pd-B4R" secondAttribute="bottom" id="oo7-Hk-hWP"/>
+                                                <constraint firstItem="elD-UG-DSJ" firstAttribute="top" secondItem="8GW-rt-hSm" secondAttribute="bottom" constant="23" id="q2r-ru-8HA"/>
+                                                <constraint firstItem="8GW-rt-hSm" firstAttribute="top" secondItem="xua-Pd-B4R" secondAttribute="top" id="rn8-0S-wh8"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="1" green="0.80000001192092896" blue="0.40000000596046448" alpha="1" colorSpace="calibratedRGB"/>
                                         <connections>
                                             <outlet property="m_article" destination="1Bo-Ej-kpY" id="u7f-Gm-oP1"/>
                                             <outlet property="m_name" destination="8GW-rt-hSm" id="7ZK-2o-4Ih"/>
@@ -1209,11 +1211,29 @@
             </objects>
             <point key="canvasLocation" x="717" y="922"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="HvW-Cs-oDG">
+            <objects>
+                <viewController id="VEw-US-sxS" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="sA2-w1-Oqr"/>
+                        <viewControllerLayoutGuide type="bottom" id="agy-Wt-h7P"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="bB2-d5-f9V">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5P8-as-n2y" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="717" y="1613"/>
+        </scene>
         <!--动态-->
         <scene sceneID="7mK-am-h84">
             <objects>
                 <navigationController id="q5P-Xk-Mi8" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="动态" id="atp-j3-Kmo"/>
+                    <tabBarItem key="tabBarItem" title="动态" image="tab_moment" selectedImage="tab_moment_hi" id="atp-j3-Kmo"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="bhf-LG-Jjm">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1322,6 +1342,12 @@
         <image name="delete" width="64" height="64"/>
         <image name="plus" width="512" height="512"/>
         <image name="remove" width="30" height="30"/>
+        <image name="tab_contacts" width="27" height="23"/>
+        <image name="tab_contacts_hi" width="27" height="23"/>
+        <image name="tab_moment" width="23" height="23"/>
+        <image name="tab_moment_hi" width="23" height="23"/>
+        <image name="tab_msg" width="25" height="23"/>
+        <image name="tab_msg_hi" width="25" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="BLz-7v-FTZ"/>

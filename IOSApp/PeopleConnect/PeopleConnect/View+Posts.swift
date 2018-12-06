@@ -30,70 +30,73 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         let contact = contactsData.getContact((m_post?.m_info.user)!)
         m_name.text = contact?.name
         m_article.text = m_post?.m_info.content
-
-        let previewCount = m_post?.m_imgUrls.count
         
-        if previewCount > 0 {
+        if m_post?.m_imgUrls.count > 0 {
             m_previews.hidden = false
             m_previews.dataSource = self
             m_previews.delegate = self
             
-            if previewCount == 1 {
-                m_preCellGeo.append(CGRectMake(0, 0, 1, 1))
-            }
-            else if previewCount == 2 {
-                m_preCellGeo.append(CGRectMake(0, 0, 2, 1))
-                m_preCellGeo.append(CGRectMake(0, 1, 2, 1))
-            }
-            else if previewCount == 3 {
-                m_preCellGeo.append(CGRectMake(0, 0, 3, 1))
-                m_preCellGeo.append(CGRectMake(1, 0, 3, 1))
-                m_preCellGeo.append(CGRectMake(2, 0, 3, 1))
-            }
-            else if previewCount == 4 {
-                m_preCellGeo.append(CGRectMake(0, 0, 4, 1))
-                m_preCellGeo.append(CGRectMake(1, 0, 4, 1))
-                m_preCellGeo.append(CGRectMake(2, 0, 4, 1))
-                m_preCellGeo.append(CGRectMake(3, 0, 4, 1))
-            }
-            else if previewCount == 5 {
-                m_preCellGeo.append(CGRectMake(0, 0, 4, 1))
-                m_preCellGeo.append(CGRectMake(1, 0, 4, 1))
-                m_preCellGeo.append(CGRectMake(2, 0, 4, 1))
-                m_preCellGeo.append(CGRectMake(3, 0, 4, 2))
-                m_preCellGeo.append(CGRectMake(3, 1, 4, 2))
-            }
-            else if previewCount == 6 {
-                m_preCellGeo.append(CGRectMake(0, 0, 3, 2))
-                m_preCellGeo.append(CGRectMake(1, 0, 3, 2))
-                m_preCellGeo.append(CGRectMake(2, 0, 3, 2))
-                m_preCellGeo.append(CGRectMake(0, 1, 3, 2))
-                m_preCellGeo.append(CGRectMake(1, 1, 3, 2))
-                m_preCellGeo.append(CGRectMake(2, 1, 3, 2))
-            }
-            else if previewCount == 7 {
-                m_preCellGeo.append(CGRectMake(0, 0, 4, 2))
-                m_preCellGeo.append(CGRectMake(1, 0, 4, 2))
-                m_preCellGeo.append(CGRectMake(2, 0, 4, 2))
-                m_preCellGeo.append(CGRectMake(0, 1, 4, 2))
-                m_preCellGeo.append(CGRectMake(1, 1, 4, 2))
-                m_preCellGeo.append(CGRectMake(2, 1, 4, 2))
-                m_preCellGeo.append(CGRectMake(3, 0, 4, 1))
-            }
-            else if previewCount == 8 {
-                m_preCellGeo.append(CGRectMake(0, 0, 4, 2))
-                m_preCellGeo.append(CGRectMake(1, 0, 4, 2))
-                m_preCellGeo.append(CGRectMake(2, 0, 4, 2))
-                m_preCellGeo.append(CGRectMake(3, 0, 4, 2))
-                m_preCellGeo.append(CGRectMake(0, 1, 4, 2))
-                m_preCellGeo.append(CGRectMake(1, 1, 4, 2))
-                m_preCellGeo.append(CGRectMake(2, 1, 3, 2))
-                m_preCellGeo.append(CGRectMake(3, 1, 4, 2))
-            }
+            setupPreviewGeo()
             m_previews.reloadData()
         }
         else {
             m_previews.hidden = true
+        }
+    }
+    
+    func setupPreviewGeo() {
+        let previewCount = m_post?.m_imgUrls.count
+        if previewCount == 1 {
+            m_preCellGeo.append(CGRectMake(0, 0, 1, 1))
+        }
+        else if previewCount == 2 {
+            m_preCellGeo.append(CGRectMake(0, 0, 2, 1))
+            m_preCellGeo.append(CGRectMake(0, 1, 2, 1))
+        }
+        else if previewCount == 3 {
+            m_preCellGeo.append(CGRectMake(0, 0, 3, 1))
+            m_preCellGeo.append(CGRectMake(1, 0, 3, 1))
+            m_preCellGeo.append(CGRectMake(2, 0, 3, 1))
+        }
+        else if previewCount == 4 {
+            m_preCellGeo.append(CGRectMake(0, 0, 4, 1))
+            m_preCellGeo.append(CGRectMake(1, 0, 4, 1))
+            m_preCellGeo.append(CGRectMake(2, 0, 4, 1))
+            m_preCellGeo.append(CGRectMake(3, 0, 4, 1))
+        }
+        else if previewCount == 5 {
+            m_preCellGeo.append(CGRectMake(0, 0, 4, 1))
+            m_preCellGeo.append(CGRectMake(1, 0, 4, 1))
+            m_preCellGeo.append(CGRectMake(2, 0, 4, 1))
+            m_preCellGeo.append(CGRectMake(3, 0, 4, 2))
+            m_preCellGeo.append(CGRectMake(3, 1, 4, 2))
+        }
+        else if previewCount == 6 {
+            m_preCellGeo.append(CGRectMake(0, 0, 3, 2))
+            m_preCellGeo.append(CGRectMake(1, 0, 3, 2))
+            m_preCellGeo.append(CGRectMake(2, 0, 3, 2))
+            m_preCellGeo.append(CGRectMake(0, 1, 3, 2))
+            m_preCellGeo.append(CGRectMake(1, 1, 3, 2))
+            m_preCellGeo.append(CGRectMake(2, 1, 3, 2))
+        }
+        else if previewCount == 7 {
+            m_preCellGeo.append(CGRectMake(0, 0, 4, 2))
+            m_preCellGeo.append(CGRectMake(1, 0, 4, 2))
+            m_preCellGeo.append(CGRectMake(2, 0, 4, 2))
+            m_preCellGeo.append(CGRectMake(0, 1, 4, 2))
+            m_preCellGeo.append(CGRectMake(1, 1, 4, 2))
+            m_preCellGeo.append(CGRectMake(2, 1, 4, 2))
+            m_preCellGeo.append(CGRectMake(3, 0, 4, 1))
+        }
+        else if previewCount == 8 {
+            m_preCellGeo.append(CGRectMake(0, 0, 4, 2))
+            m_preCellGeo.append(CGRectMake(1, 0, 4, 2))
+            m_preCellGeo.append(CGRectMake(2, 0, 4, 2))
+            m_preCellGeo.append(CGRectMake(3, 0, 4, 2))
+            m_preCellGeo.append(CGRectMake(0, 1, 4, 2))
+            m_preCellGeo.append(CGRectMake(1, 1, 4, 2))
+            m_preCellGeo.append(CGRectMake(2, 1, 3, 2))
+            m_preCellGeo.append(CGRectMake(3, 1, 4, 2))
         }
     }
     
