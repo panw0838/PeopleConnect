@@ -25,7 +25,15 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ContactsData.numSubTags(Int) -&gt; Int:Contact.swift">
+         contextName = "TagTable.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+CreatePost.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "indexPath.row">
+            </PersistentString>
+            <PersistentString
+               value = "indexPath.section">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "ContactsView.numberOfSectionsInCollectionView(UICollectionView) -&gt; Int:ContactsView.swift">
@@ -44,33 +52,30 @@
             <PersistentString
                value = "cell.m_preview.image">
             </PersistentString>
+            <PersistentString
+               value = "cell.frame">
+            </PersistentString>
+            <PersistentString
+               value = "m_previews.frame">
+            </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ContactsData.numSubTags(Int) -&gt; Int:Contact.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsView.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:ContactsView.swift">
       </ContextState>
       <ContextState
-         contextName = "TagTable.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+CreatePost.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "indexPath.row">
-            </PersistentString>
-            <PersistentString
-               value = "indexPath.section">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
          contextName = "MessegeData.AddNewMessege(UInt64, newMessege : MessegeInfo) -&gt; ():Messege.swift">
       </ContextState>
       <ContextState
-         contextName = "MoveMemberView.(httpMoveMembers(MoveMemberView) -&gt; (UInt8, addMembers : [UInt64], remMembers : [UInt64]) -&gt; ()).(closure #1):ContactRequests.swift">
-      </ContextState>
-      <ContextState
-         contextName = "LoginView.login(AnyObject) -&gt; ():LoginView.swift">
-      </ContextState>
-      <ContextState
-         contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():ContactsView.swift">
+         contextName = "PostsView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Posts.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "cell.frame">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "TagTable.numberOfSectionsInTableView(UITableView) -&gt; Int:View+CreatePost.swift">
@@ -79,6 +84,15 @@
                value = "contactsData">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "LoginView.login(AnyObject) -&gt; ():LoginView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():ContactsView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "MoveMemberView.(httpMoveMembers(MoveMemberView) -&gt; (UInt8, addMembers : [UInt64], remMembers : [UInt64]) -&gt; ()).(closure #1):ContactRequests.swift">
       </ContextState>
       <ContextState
          contextName = "TCPClient.logon() -&gt; ():Observer.swift">

@@ -8,18 +8,25 @@
 
 import UIKit
 
+protocol RemoveAttDelegate {
+    func removeAtt(idx:Int)
+}
+
 class AttachmentCell:UICollectionViewCell {
 
     @IBOutlet weak var m_preview: UIImageView!
     @IBOutlet weak var m_delete: UIButton!
     @IBOutlet weak var m_add: UIImageView!
     
+    var m_idx = 0
+    var m_delegate:RemoveAttDelegate?
+    
     @IBAction func deleteAttachment(sender: AnyObject) {
+        m_delegate?.removeAtt(m_idx)
     }
 }
 
 class PostTagCell:UICollectionViewCell {
-    
     @IBOutlet weak var m_tagName: UILabel!
 }
 
@@ -56,7 +63,6 @@ class PostTags:UITableViewCell, UICollectionViewDataSource, UICollectionViewDele
 }
 
 class PostGroupCell:UICollectionViewCell {
-    
     @IBOutlet weak var m_groupName: UILabel!
 }
 
@@ -91,7 +97,7 @@ class PostGroups:UITableViewCell, UICollectionViewDataSource, UICollectionViewDe
     }
 }
 
-class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, RemoveAttDelegate {
     
     @IBOutlet weak var m_attachments: UICollectionView!
     @IBOutlet weak var m_desc: UITextField!
@@ -124,20 +130,32 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
         m_postTags.allowsMultipleSelection = true
         m_postGroups.allowsSelection = true
         m_postGroups.allowsMultipleSelection = true
+        m_createPostBtn.enabled = false
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        m_createPostBtn.enabled = false
         m_postTagsCell.m_tags = contactsData.getPostTags()
         m_postTagsCell.m_flag = 0
         m_postGroupsCell.m_selectGroups.removeAll()
     }
     
+    func removeAtt(idx: Int) {
+        m_atts.removeAtIndex(idx)
+        m_attachments.reloadData()
+    }
+    
     func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
         m_createPostBtn.enabled = true
+        for (idx, img) in m_atts.enumerate() {
+            if img == image {
+                m_atts.removeAtIndex(idx)
+                break
+            }
+        }
         m_atts.append(image)
         m_attachments.reloadData()
+        //navigationController?.popViewControllerAnimated(true)
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -160,6 +178,8 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
             cell.m_delete.hidden = true
             cell.m_add.hidden = false
         }
+        cell.m_idx = indexPath.row
+        cell.m_delegate = self
         return cell
     }
     
