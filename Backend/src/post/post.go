@@ -249,13 +249,19 @@ func dbGetPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData,
 			if err != nil {
 				return results, err
 			}
-			cFlag, err := user.GetCashFlag(cID, uID, c)
-			if err != nil {
-				return results, err
-			}
-			if canSeePost(cFlag, post.Flag) {
-				post.User = cID
+
+			if cID == uID {
+				post.User = uID
 				results = append(results, post)
+			} else {
+				cFlag, err := user.GetCashFlag(cID, uID, c)
+				if err != nil {
+					return results, err
+				}
+				if canSeePost(cFlag, post.Flag) {
+					post.User = cID
+					results = append(results, post)
+				}
 			}
 		}
 	}
