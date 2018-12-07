@@ -54,7 +54,7 @@ func httpLogon(cellNumber:String, password:String) {
                 httpGetContacts()
                 httpSyncRequests()
                 
-                tcp.start("192.168.0.103", port: 8888)
+                tcp.start("192.168.0.105", port: 8888)
                 tcp.logon()
                 
                 for callback in logonCallbacks {

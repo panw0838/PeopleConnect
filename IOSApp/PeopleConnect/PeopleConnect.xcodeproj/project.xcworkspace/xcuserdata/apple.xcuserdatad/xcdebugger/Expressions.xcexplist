@@ -126,10 +126,13 @@
          contextName = "PostCell.reload() -&gt; ():View+Posts.swift">
          <PersistentStrings>
             <PersistentString
-               value = "m_previews.frame">
+               value = "m_previewTop.first?.constant">
             </PersistentString>
             <PersistentString
-               value = "m_previewTop.first?.constant">
+               value = "m_cellButtom.first?.constant">
+            </PersistentString>
+            <PersistentString
+               value = "m_previews.frame">
             </PersistentString>
             <PersistentString
                value = "m_article.frame">

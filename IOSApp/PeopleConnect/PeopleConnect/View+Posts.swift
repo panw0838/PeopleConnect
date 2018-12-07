@@ -18,10 +18,8 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
     @IBOutlet weak var m_name: UILabel!
     @IBOutlet weak var m_article: UILabel!
     @IBOutlet weak var m_previews: UICollectionView!
-    
-    @IBOutlet var m_contentTop: [NSLayoutConstraint]!
-    @IBOutlet var m_previewTop: [NSLayoutConstraint]!
-    @IBOutlet var m_cellButtom: [NSLayoutConstraint]!
+    @IBOutlet weak var m_comments: UITableView!
+    @IBOutlet weak var m_stack: UIStackView!
     
     var m_idx:Int = 0
     var m_post:Post? = nil
@@ -40,37 +38,26 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         m_previews.delegate = self
         
         // sub view rects
-        m_profile.frame.origin = CGPointMake(m_profile.frame.origin.x, PostItemGapF)
-        m_profile.frame.size = CGSizeMake(m_profile.frame.width, 35.0)
-        
-        m_article.frame.origin = CGPointMake(m_article.frame.origin.x, (m_post?.m_contentY)!)
         m_article.frame.size = CGSizeMake(m_article.frame.width, (m_post?.m_contentHeight)!)
         m_article.backgroundColor = UIColor.yellowColor()
-        //m_article.preferredMaxLayoutWidth = 150
-        //m_article.sizeToFit()
         
         let text:NSString = m_article.text!
         if text.length > 0 {
             m_article.hidden = false
-            m_previewTop.first?.constant = PostItemGapF
         }
         else {
             m_article.hidden = true
-            m_previewTop.first?.constant = 0.0
         }
         
-        m_previews.frame.origin = CGPointMake(m_previews.frame.origin.x, (m_post?.m_previewY)!)
-        m_previews.frame.size = CGSizeMake(m_previews.frame.width, (m_post?.m_previewHeight)!)
+        m_stack.frame.size = CGSizeMake(m_previews.frame.width, ((m_post?.m_previewHeight)! + (m_post?.m_contentHeight)!))
         
         if m_post?.m_imgUrls.count > 0 {
             setupPreviewGeo()
             m_previews.hidden = false
             m_previews.reloadData()
-            m_cellButtom.first?.constant = PostItemGapF
         }
         else {
             m_previews.hidden = true
-            m_cellButtom.first?.constant = 0
         }
         
         self.updateConstraints()

@@ -41,21 +41,42 @@ extension PostInfo {
     }
 }
 
+struct CommentInfo {
+    var user:UInt64 = 0
+    var flag:UInt8 = 0
+    var cmt:String = ""
+}
+
+extension CommentInfo {
+    init?(json:[String:AnyObject]) {
+        guard
+        let user = json["user"] as? NSNumber,
+        let flag = json["flag"] as? NSNumber
+        else {
+            return nil
+        }
+        self.user = UInt64(user.unsignedLongLongValue)
+        self.flag = UInt8(flag.unsignedCharValue)
+        let cmt = json["cmt"] as? String
+        self.cmt = (cmt == nil ? "" : cmt!)
+    }
+}
+
 var postData:PostData = PostData()
 let PostItemGap = 8
 let PostItemGapF:CGFloat = 8.0
 
 class Post {
     var m_info:PostInfo = PostInfo()
-    var m_imgUrls:Array<String> = Array<String>()
-    var m_imgKeys:Array<String> = Array<String>()
+    var m_comments = Array<CommentInfo>()
+    var m_imgUrls  = Array<String>()
+    var m_imgKeys  = Array<String>()
     
-    var m_contentY:CGFloat = 0.0
+    var m_geoSetted = false
     var m_contentHeight:CGFloat = 0.0
-    var m_previewY:CGFloat = 0.0
     var m_previewHeight:CGFloat = 0.0
-    var m_commentY:CGFloat = 0.0
     var m_commentHeight:CGFloat = 0.0
+    var m_stackHeight:CGFloat = 0.0
     var m_height:CGFloat = 0.0
 
     init(info:PostInfo) {
@@ -69,34 +90,36 @@ class Post {
     }
     
     func setupGeometry(width:CGFloat) {
-        var bottom:CGFloat = CGFloat(PostItemGap + 35)
-        m_height = CGFloat(PostItemGap + 35 + PostItemGap)
+        if m_geoSetted {
+            return
+        }
+        m_geoSetted = true
+        
+        var m_numStackItems = 0
+        m_height = CGFloat(35) + PostItemGapF
 
         let text:NSString = m_info.content
         if text.length == 0 {
-            m_contentY = bottom
             m_contentHeight = 0.0
         }
         else {
             let maxSize = CGSizeMake(width, CGFloat(MAXFLOAT))
             let size = text.boundingRectWithSize(maxSize, options: .UsesLineFragmentOrigin, attributes: ["NSFontAttributeName":UIFont.systemFontOfSize(13.0)], context: nil)
             let height = Int(size.height + 1.0)
-            m_contentY = bottom + PostItemGapF
             m_contentHeight = CGFloat(height)
-            bottom += (PostItemGapF + m_contentHeight)
-            m_height += (m_contentHeight + PostItemGapF)
+            m_numStackItems++
         }
         
         if m_imgUrls.count == 0 {
-            m_previewY = bottom
             m_previewHeight = 0.0
         }
         else {
             m_previewHeight = 130.0
-            m_previewY = bottom + PostItemGapF
-            bottom += (PostItemGapF + m_previewHeight)
-            m_height += (m_previewHeight + PostItemGapF)
+            m_numStackItems++
         }
+        
+        m_stackHeight = m_contentHeight + m_previewHeight + (m_numStackItems > 1 ? CGFloat(m_numStackItems-1)*8.0 : 0.0)
+        m_height += m_stackHeight
     }
 }
 
