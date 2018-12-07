@@ -130,7 +130,6 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
         m_postTags.allowsMultipleSelection = true
         m_postGroups.allowsSelection = true
         m_postGroups.allowsMultipleSelection = true
-        m_createPostBtn.enabled = false
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -146,7 +145,6 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
-        m_createPostBtn.enabled = true
         for (idx, img) in m_atts.enumerate() {
             if img == image {
                 m_atts.removeAtIndex(idx)

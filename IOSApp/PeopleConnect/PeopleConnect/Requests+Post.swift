@@ -14,7 +14,7 @@ func getFileUrl(cID:UInt64, pID:UInt64, fileName:String)->String {
 }
 
 func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>) {
-    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "flag":NSNumber(unsignedLongLong: flag), "desc":desc]
+    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "flag":NSNumber(unsignedLongLong: flag), "cont":desc]
     http.postDataRequest("newpost", params: params,
         constructingBodyWithBlock: { (formData: AFMultipartFormData) -> Void in
             for (idx, data) in datas.enumerate() {

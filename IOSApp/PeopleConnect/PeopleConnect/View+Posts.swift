@@ -14,6 +14,7 @@ class PreviewCell: UICollectionViewCell {
 
 class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
     
+    @IBOutlet weak var m_profile: UIImageView!
     @IBOutlet weak var m_name: UILabel!
     @IBOutlet weak var m_article: UILabel!
     @IBOutlet weak var m_previews: UICollectionView!
@@ -26,22 +27,45 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
 
     func reload() {
         m_post = postData.postAtIdx(m_idx)
-        
+
         let contact = contactsData.getContact((m_post?.m_info.user)!)
         m_name.text = contact?.name
         m_article.text = m_post?.m_info.content
+
+        m_previews.dataSource = self
+        m_previews.delegate = self
+        
+        // sub view rects
+        m_profile.frame.origin = CGPointMake(m_profile.frame.origin.x, PostItemGapF)
+        m_profile.frame.size = CGSizeMake(m_profile.frame.width, 35.0)
+        
+        m_article.frame.origin = CGPointMake(m_article.frame.origin.x, (m_post?.m_contentY)!)
+        m_article.frame.size = CGSizeMake(m_article.frame.width, (m_post?.m_contentHeight)!)
+        m_article.backgroundColor = UIColor.yellowColor()
+        //m_article.preferredMaxLayoutWidth = 150
+        //m_article.sizeToFit()
+        
+        let text:NSString = m_article.text!
+        if text.length > 0 {
+            m_article.hidden = false
+        }
+        else {
+            m_article.hidden = true
+        }
+        
+        m_previews.frame.origin = CGPointMake(m_previews.frame.origin.x, (m_post?.m_previewY)!)
+        m_previews.frame.size = CGSizeMake(m_previews.frame.width, (m_post?.m_previewHeight)!)
         
         if m_post?.m_imgUrls.count > 0 {
-            m_previews.hidden = false
-            m_previews.dataSource = self
-            m_previews.delegate = self
-            
             setupPreviewGeo()
+            m_previews.hidden = false
             m_previews.reloadData()
         }
         else {
             m_previews.hidden = true
         }
+        
+        self.updateConstraints()
     }
     
     func setupPreviewGeo() {
@@ -160,7 +184,8 @@ class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, U
     override func viewDidLoad() {
         httpSyncPost()
         postCallbacks.append(self)
-        //m_posts.rowHeight = UITableViewAutomaticDimension
+        m_posts.estimatedRowHeight = 80
+        m_posts.rowHeight = UITableViewAutomaticDimension
     }
     
     func PostUpdateUI() {
@@ -177,8 +202,18 @@ class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, U
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("PostCell") as! PostCell
+        let post = postData.postAtIdx(indexPath.row)
+        let contentWidth = m_posts.contentSize.width - PostItemGapF * 2
         cell.m_idx = indexPath.row
+        post.setupGeometry(contentWidth)
         cell.reload()
         return cell
+    }
+
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        let post = postData.postAtIdx(indexPath.row)
+        let contentWidth = m_posts.contentSize.width - PostItemGapF * 2
+        post.setupGeometry(contentWidth)
+        return post.m_height
     }
 }

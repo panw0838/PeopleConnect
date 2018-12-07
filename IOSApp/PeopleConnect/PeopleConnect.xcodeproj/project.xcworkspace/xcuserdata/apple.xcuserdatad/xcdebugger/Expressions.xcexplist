@@ -123,6 +123,17 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "PostCell.reload() -&gt; ():View+Posts.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_previews.frame">
+            </PersistentString>
+            <PersistentString
+               value = "m_article.frame">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "Tag.addMember(ContactInfo) -&gt; ():Contact.swift">
       </ContextState>
       <ContextState
