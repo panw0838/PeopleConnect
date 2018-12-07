@@ -53,6 +53,9 @@
                value = "cell.m_preview.image">
             </PersistentString>
             <PersistentString
+               value = "m_stack.frame">
+            </PersistentString>
+            <PersistentString
                value = "cell.frame">
             </PersistentString>
             <PersistentString
@@ -68,6 +71,9 @@
       </ContextState>
       <ContextState
          contextName = "MessegeData.AddNewMessege(UInt64, newMessege : MessegeInfo) -&gt; ():Messege.swift">
+      </ContextState>
+      <ContextState
+         contextName = "PostsView.tableView(UITableView, heightForRowAtIndexPath : NSIndexPath) -&gt; CGFloat:View+Posts.swift">
       </ContextState>
       <ContextState
          contextName = "PostsView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Posts.swift">
@@ -98,7 +104,35 @@
          contextName = "TCPClient.logon() -&gt; ():Observer.swift">
       </ContextState>
       <ContextState
-         contextName = "HttpService.loginRequest() -&gt; ():Requests.swift">
+         contextName = "PreviewCell.init(coder : NSCoder) -&gt; PreviewCell?:(null)">
+         <PersistentStrings>
+            <PersistentString
+               value = "rbp">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "PostCell.reload() -&gt; ():View+Posts.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_previewTop.first?.constant">
+            </PersistentString>
+            <PersistentString
+               value = "m_cellButtom.first?.constant">
+            </PersistentString>
+            <PersistentString
+               value = "m_stack.frame">
+            </PersistentString>
+            <PersistentString
+               value = "m_previews.frame">
+            </PersistentString>
+            <PersistentString
+               value = "m_article.frame">
+            </PersistentString>
+            <PersistentString
+               value = "m_previews">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "PostInfo.init(json : [String : AnyObject]) -&gt; PostInfo?:Data+Post.swift">
@@ -123,21 +157,10 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "PostCell.reload() -&gt; ():View+Posts.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "m_previewTop.first?.constant">
-            </PersistentString>
-            <PersistentString
-               value = "m_cellButtom.first?.constant">
-            </PersistentString>
-            <PersistentString
-               value = "m_previews.frame">
-            </PersistentString>
-            <PersistentString
-               value = "m_article.frame">
-            </PersistentString>
-         </PersistentStrings>
+         contextName = "PostCell.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:View+Posts.swift">
+      </ContextState>
+      <ContextState
+         contextName = "HttpService.loginRequest() -&gt; ():Requests.swift">
       </ContextState>
       <ContextState
          contextName = "Tag.addMember(ContactInfo) -&gt; ():Contact.swift">
