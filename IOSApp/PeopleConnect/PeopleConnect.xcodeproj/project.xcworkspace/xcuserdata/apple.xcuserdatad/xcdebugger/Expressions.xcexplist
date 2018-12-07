@@ -129,6 +129,9 @@
                value = "m_previews.frame">
             </PersistentString>
             <PersistentString
+               value = "m_previewTop.first?.constant">
+            </PersistentString>
+            <PersistentString
                value = "m_article.frame">
             </PersistentString>
          </PersistentStrings>
@@ -149,6 +152,9 @@
                value = "messegeData">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Post.setupGeometry(CGFloat) -&gt; ():Data+Post.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsView.updateTags() -&gt; ():ContactsView.swift">

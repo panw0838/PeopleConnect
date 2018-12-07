@@ -73,25 +73,27 @@ class Post {
         m_height = CGFloat(PostItemGap + 35 + PostItemGap)
 
         let text:NSString = m_info.content
-        m_contentY = bottom + PostItemGapF
         if text.length == 0 {
+            m_contentY = bottom
             m_contentHeight = 0.0
         }
         else {
             let maxSize = CGSizeMake(width, CGFloat(MAXFLOAT))
             let size = text.boundingRectWithSize(maxSize, options: .UsesLineFragmentOrigin, attributes: ["NSFontAttributeName":UIFont.systemFontOfSize(13.0)], context: nil)
             let height = Int(size.height + 1.0)
+            m_contentY = bottom + PostItemGapF
             m_contentHeight = CGFloat(height)
             bottom += (PostItemGapF + m_contentHeight)
             m_height += (m_contentHeight + PostItemGapF)
         }
         
-        m_previewY = bottom + PostItemGapF
         if m_imgUrls.count == 0 {
+            m_previewY = bottom
             m_previewHeight = 0.0
         }
         else {
             m_previewHeight = 130.0
+            m_previewY = bottom + PostItemGapF
             bottom += (PostItemGapF + m_previewHeight)
             m_height += (m_previewHeight + PostItemGapF)
         }
