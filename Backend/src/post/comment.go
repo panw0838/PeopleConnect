@@ -29,7 +29,7 @@ func getCommentKey(uID uint64, pID uint64) string {
 	return "cmt:" + strconv.FormatUint(uID, 10) + ":" + strconv.FormatUint(pID, 10)
 }
 
-func canSeePrivateComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool, error) {
+func friendComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool, error) {
 	var canSee = true
 
 	if uID != from {
@@ -51,7 +51,29 @@ func canSeePrivateComment(uID uint64, from uint64, to uint64, c redis.Conn) (boo
 	return canSee, nil
 }
 
-func canSeePublicComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool, error) {
+func strangerComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool, error) {
+	var canSee = true
+
+	if uID != from {
+		isStranger, err := user.IsStranger(from, uID, c)
+		if err != nil {
+			return false, err
+		}
+		canSee = isStranger
+	}
+
+	if canSee && to != 0 && uID != to {
+		isStranger, err := user.IsStranger(to, uID, c)
+		if err != nil {
+			return false, err
+		}
+		canSee = isStranger
+	}
+
+	return canSee, nil
+}
+
+func publicComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool, error) {
 	var canSee = true
 
 	if uID != from {
@@ -73,17 +95,21 @@ func canSeePublicComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool
 	return canSee, nil
 }
 
-func canSeeComment(uID uint64, publish uint8, from uint64, to uint64, c redis.Conn) (bool, error) {
-	if publish == 0 {
+func canSeeComment(uID uint64, pubLvl uint8, from uint64, to uint64, c redis.Conn) (bool, error) {
+	if pubLvl == PubLvl_Friend {
 		// friends publish
-		return canSeePrivateComment(uID, from, to, c)
-	} else {
-		// other publish
-		return canSeePublicComment(uID, from, to, c)
+		return friendComment(uID, from, to, c)
+	} else if pubLvl == PubLvl_Group {
+		// group publish
+		return publicComment(uID, from, to, c)
+	} else if pubLvl == PubLvl_Stranger {
+		// stranger publish
+		return strangerComment(uID, from, to, c)
 	}
+	return false, nil
 }
 
-func dbGetComments(cmtKey string, publish uint8, uID uint64, from int, to int, c redis.Conn) ([]Comment, error) {
+func dbGetComments(cmtKey string, pubLvl uint8, uID uint64, from int, to int, c redis.Conn) ([]Comment, error) {
 	numCmts, err := redis.Int(c.Do("LLEN", cmtKey))
 	if err != nil {
 		return nil, err
@@ -110,7 +136,7 @@ func dbGetComments(cmtKey string, publish uint8, uID uint64, from int, to int, c
 		if err != nil {
 			return nil, err
 		}
-		canSee, err := canSeeComment(uID, publish, comment.From, comment.To, c)
+		canSee, err := canSeeComment(uID, pubLvl, comment.From, comment.To, c)
 		if err != nil {
 			return nil, err
 		}
@@ -141,7 +167,7 @@ func dbCommentPost(input CommentInput, c redis.Conn) (int, []Comment, error) {
 	}
 
 	if idx > input.Last+1 {
-		comments, err := dbGetComments(cmtKey, input.Publish, input.User, input.Last, idx-1, c)
+		comments, err := dbGetComments(cmtKey, input.PubLvl, input.User, input.Last, idx-1, c)
 		if err != nil {
 			return 0, nil, err
 		}

@@ -16,8 +16,12 @@ import (
 	"github.com/nfnt/resize"
 )
 
+const PubLvl_Friend uint8 = 0
+const PubLvl_Group uint8 = 1
+const PubLvl_Stranger uint8 = 2
+
 type PostData struct {
-	User     uint64    `json:"user,omitempty"`
+	Owner    uint64    `json:"user,omitempty"`
 	Time     uint64    `json:"time"`
 	Content  string    `json:"cont"`
 	Flag     uint64    `json:"flag"`
@@ -214,7 +218,7 @@ func dbGetContactPosts(uID uint64, cID uint64, pIdx int, c redis.Conn) ([]PostDa
 			return results, err
 		}
 
-		post.User = cID
+		post.Owner = cID
 		canSee, err := canSeePost(uID, cID, post.Flag, c)
 		if err != nil {
 			return nil, err
@@ -255,7 +259,7 @@ func dbGetPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData,
 				return nil, err
 			}
 
-			post.User = cID
+			post.Owner = cID
 			canSee, err := canSeePost(uID, cID, post.Flag, c)
 			if err != nil {
 				return nil, err
@@ -263,8 +267,8 @@ func dbGetPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData,
 
 			if canSee {
 				// get comments
-				cmtsKey := getCommentKey(post.User, post.Time)
-				comments, err := dbGetComments(cmtsKey, 0, uID, 0, -1, c)
+				cmtsKey := getCommentKey(cID, post.Time)
+				comments, err := dbGetComments(cmtsKey, PubLvl_Friend, uID, 0, -1, c)
 				if err != nil {
 					return nil, err
 				}

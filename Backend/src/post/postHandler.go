@@ -284,14 +284,14 @@ func GetPreviewsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type CommentInput struct {
-	User    uint64 `json:"uid"`
-	To      uint64 `json:"to"`
-	Publish uint8  `json:"pub"`
-	Owner   uint64 `json:"cid"`
-	Post    uint64 `json:"pid"`
-	Last    int    `json:"last"`
-	Reply   uint16 `json:"re"`
-	Msg     string `json:"cmt"`
+	User   uint64 `json:"uid"`
+	To     uint64 `json:"to"`
+	PubLvl uint8  `json:"pub"`
+	Owner  uint64 `json:"cid"`
+	Post   uint64 `json:"pid"`
+	Last   int    `json:"last"`
+	Reply  uint16 `json:"re"`
+	Msg    string `json:"cmt"`
 }
 
 type CommentResponse struct {
@@ -350,7 +350,7 @@ type UpdateCmtReturn struct {
 
 type UpdateCommentsInput struct {
 	User     uint64          `json:"user"`
-	Publish  uint8           `json:"pub"`
+	PubLvl   uint8           `json:"pub"`
 	Comments []UpdateCmtInfo `json:"cmts"`
 }
 
@@ -380,7 +380,7 @@ func UpdateCommentsHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, cmtInput := range input.Comments {
 		cmtKey := getCommentKey(cmtInput.Owner, cmtInput.Post)
-		comments, err := dbGetComments(cmtKey, input.Publish, input.User, cmtInput.Start, -1, c)
+		comments, err := dbGetComments(cmtKey, input.PubLvl, input.User, cmtInput.Start, -1, c)
 		if err != nil {
 			header[0] = 3
 			w.Write(header)

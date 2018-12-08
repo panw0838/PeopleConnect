@@ -56,7 +56,13 @@ func dbGetGroupPosts(uID uint64, gID uint64, pIdx int, c redis.Conn) ([]PostData
 			return results, err
 		}
 
-		post.User = uID
+		// get comments
+		cmtsKey := getCommentKey(post.Owner, post.Time)
+		comments, err := dbGetComments(cmtsKey, PubLvl_Group, uID, 0, -1, c)
+		if err != nil {
+			return nil, err
+		}
+		post.Comments = comments
 		results = append(results, post)
 	}
 
