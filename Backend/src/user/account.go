@@ -101,12 +101,12 @@ func dbLogon(loginInfo LoginInfo, c redis.Conn) (uint64, error) {
 		return 0, err
 	}
 
-	password, err := DbGetUserInfoField(accountKey, PassField, c)
+	userID, err := getAccountID(accountKey)
 	if err != nil {
 		return 0, err
 	}
 
-	userID, err := getAccountID(accountKey)
+	password, err := DbGetUserInfoField(accountKey, PassField, c)
 	if err != nil {
 		return 0, err
 	}

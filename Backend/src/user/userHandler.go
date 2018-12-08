@@ -70,6 +70,7 @@ type LoginInfo struct {
 
 type LoginResponse struct {
 	UserID uint64 `json:"user"`
+	Name   string `json:"name"`
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -94,8 +95,16 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	accountKey := GetAccountKey(userID)
+	name, err := DbGetUserInfoField(accountKey, NameField, c)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %v", err)
+		return
+	}
+
 	var feedback LoginResponse
 	feedback.UserID = userID
+	feedback.Name = name
 	data, err := json.Marshal(&feedback)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)

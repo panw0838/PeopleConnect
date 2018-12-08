@@ -2,66 +2,40 @@ package post
 
 import (
 	"encoding/json"
+	"share"
+	"strconv"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
 )
 
-type CommentInput struct {
-	User  uint64 `json:"user"`
-	Owner uint64 `json:"owner"`
-	Post  uint64 `json:"post"`
-	Reply uint32 `json:"reply"`
-	Msg   string `json:"msg"`
-}
-
 type Comment struct {
 	From  uint64 `json:"from"`
-	Reply uint32 `json:"reply"`
+	Reply uint16 `json:"reply"`
 	Msg   string `json:"msg"`
-	Time  string `json:"time,omitempty"`
+	Time  uint64 `json:"time,omitempty"`
 }
 
-func dbCommentPost(input CommentInput, c redis.Conn) error {
-	var comment Comment
-	comment.From = input.User
-	comment.Reply = input.Reply
-	comment.Msg = input.Msg
-	comment.Time = time.Now().Format(time.RFC3339)
-	bytes, err := json.Marshal(comment)
-	if err != nil {
-		return err
-	}
-
-	cmtKey := getCommentKey(input.Owner, input.Post)
-	_, err = c.Do("RPUSH", cmtKey, bytes)
-	if err != nil {
-		return err
-	}
-
-	return nil
+func getCommentKey(uID uint64, pID uint64) string {
+	return "cmt:" + strconv.FormatUint(uID, 10) + ":" + strconv.FormatUint(pID, 10)
 }
 
-type GetCommentsInput struct {
-	User  uint64 `json:"user"`
-	Owner uint64 `json:"owner"`
-	Post  uint64 `json:"post"`
-	Start uint32 `json:"start"`
-}
-
-func dbGetPostComments(input GetCommentsInput, c redis.Conn) ([]Comment, error) {
-	var results []Comment
-	cmtKey := getCommentKey(input.Owner, input.Post)
+func dbGetComments(cmtKey string, from int, to int, c redis.Conn) ([]Comment, error) {
 	numCmts, err := redis.Int(c.Do("LLEN", cmtKey))
 	if err != nil {
 		return nil, err
 	}
 
-	values, err := redis.Values(c.Do("LRANGE", cmtKey, input.Start, numCmts))
+	if numCmts < from {
+		return nil, nil
+	}
+
+	values, err := redis.Values(c.Do("LRANGE", cmtKey, from, to))
 	if err != nil {
 		return nil, err
 	}
 
+	var results []Comment
 	for _, value := range values {
 		cmtData, err := redis.Bytes(value, err)
 		if err != nil {
@@ -76,4 +50,33 @@ func dbGetPostComments(input GetCommentsInput, c redis.Conn) ([]Comment, error) 
 	}
 
 	return results, nil
+
+}
+
+func dbCommentPost(input CommentInput, c redis.Conn) (int, []Comment, error) {
+	var comment Comment
+	comment.From = input.User
+	comment.Reply = input.Reply
+	comment.Msg = input.Msg
+	comment.Time = share.GetTimeID(time.Now())
+	bytes, err := json.Marshal(comment)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	cmtKey := getCommentKey(input.Owner, input.Post)
+	idx, err := redis.Int(c.Do("RPUSH", cmtKey, bytes))
+	if err != nil {
+		return 0, nil, err
+	}
+
+	if idx > input.Last+1 {
+		comments, err := dbGetComments(cmtKey, input.Last, idx-1, c)
+		if err != nil {
+			return 0, nil, err
+		}
+		return idx, comments, nil
+	}
+
+	return 0, nil, nil
 }

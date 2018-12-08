@@ -38,10 +38,6 @@ func getGroupKey(gID uint64) string {
 	return "gposts:" + strconv.FormatUint(gID, 10)
 }
 
-func getCommentKey(uID uint64, pID uint64) string {
-	return "cmt:" + strconv.FormatUint(uID, 10) + strconv.FormatUint(pID, 10)
-}
-
 func canSeePost(cFlag uint64, pFlag uint64) bool {
 	return (cFlag & pFlag) != 0
 }

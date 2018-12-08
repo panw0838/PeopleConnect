@@ -280,3 +280,119 @@ func GetPreviewsHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(data)
 	}
 }
+
+type CommentInput struct {
+	User  uint64 `json:"uid"`
+	Owner uint64 `json:"cid"`
+	Post  uint64 `json:"pid"`
+	Last  int    `json:"last"`
+	Reply uint16 `json:"re"`
+	Msg   string `json:"cmt"`
+}
+
+type CommentResponse struct {
+	Index    int       `json:"idx"`
+	Comments []Comment `json:"cmts"`
+}
+
+func NewCommentHandler(w http.ResponseWriter, r *http.Request) {
+	var input CommentInput
+	var header = []byte{byte(0)}
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		header[0] = 1
+		w.Write(header)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		header[0] = 2
+		w.Write(header)
+		return
+	}
+	defer c.Close()
+
+	idx, comments, err := dbCommentPost(input, c)
+	if err != nil {
+		header[0] = 3
+		w.Write(header)
+		return
+	}
+
+	var response CommentResponse
+	response.Index = idx
+	response.Comments = comments
+	bytes, err := json.Marshal(response)
+	if err != nil {
+		header[0] = 4
+		w.Write(header)
+		return
+	}
+
+	w.Write(header)
+	w.Write(bytes)
+}
+
+type UpdateCmtInfo struct {
+	Owner uint64 `json:"owner"`
+	Post  uint64 `json:"post"`
+	Start int    `json:"start"`
+}
+
+type UpdateCmtReturn struct {
+	Comments []Comment `json:"cmts"`
+}
+
+type UpdateCommentsInput struct {
+	User     uint64          `json:"user"`
+	Comments []UpdateCmtInfo `json:"cmts"`
+}
+
+type UpdateCommentsReturn struct {
+	Returns []UpdateCmtReturn `json:"rets"`
+}
+
+func UpdateCommentsHandler(w http.ResponseWriter, r *http.Request) {
+	var input UpdateCommentsInput
+	var header = []byte{byte(0)}
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		header[0] = 1
+		w.Write(header)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		header[0] = 2
+		w.Write(header)
+		return
+	}
+	defer c.Close()
+
+	var response UpdateCommentsReturn
+
+	for _, cmtInput := range input.Comments {
+		cmtKey := getCommentKey(cmtInput.Owner, cmtInput.Post)
+		comments, err := dbGetComments(cmtKey, cmtInput.Start, -1, c)
+		if err != nil {
+			header[0] = 3
+			w.Write(header)
+			return
+		}
+		var cmtReturn UpdateCmtReturn
+		cmtReturn.Comments = comments
+		response.Returns = append(response.Returns, cmtReturn)
+	}
+
+	bytes, err := json.Marshal(response)
+	if err != nil {
+		header[0] = 4
+		w.Write(header)
+		return
+	}
+
+	w.Write(header)
+	w.Write(bytes)
+}
