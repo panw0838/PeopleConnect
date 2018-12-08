@@ -216,7 +216,8 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	posts, err := dbGetPublish(input.User, 0, 0xffffffffffffffff, c)
+	now := share.GetTimeID(time.Now())
+	posts, err := dbGetPublish(input.User, input.Post, now, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -224,6 +225,7 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response SyncPostReturn
 	response.Posts = posts
+
 	bytes, err := json.Marshal(response)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
@@ -282,12 +284,14 @@ func GetPreviewsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type CommentInput struct {
-	User  uint64 `json:"uid"`
-	Owner uint64 `json:"cid"`
-	Post  uint64 `json:"pid"`
-	Last  int    `json:"last"`
-	Reply uint16 `json:"re"`
-	Msg   string `json:"cmt"`
+	User    uint64 `json:"uid"`
+	To      uint64 `json:"to"`
+	Publish uint8  `json:"pub"`
+	Owner   uint64 `json:"cid"`
+	Post    uint64 `json:"pid"`
+	Last    int    `json:"last"`
+	Reply   uint16 `json:"re"`
+	Msg     string `json:"cmt"`
 }
 
 type CommentResponse struct {
@@ -346,6 +350,7 @@ type UpdateCmtReturn struct {
 
 type UpdateCommentsInput struct {
 	User     uint64          `json:"user"`
+	Publish  uint8           `json:"pub"`
 	Comments []UpdateCmtInfo `json:"cmts"`
 }
 
@@ -375,7 +380,7 @@ func UpdateCommentsHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, cmtInput := range input.Comments {
 		cmtKey := getCommentKey(cmtInput.Owner, cmtInput.Post)
-		comments, err := dbGetComments(cmtKey, cmtInput.Start, -1, c)
+		comments, err := dbGetComments(cmtKey, input.Publish, input.User, cmtInput.Start, -1, c)
 		if err != nil {
 			header[0] = 3
 			w.Write(header)

@@ -17,13 +17,14 @@ import (
 )
 
 type PostData struct {
-	User    uint64   `json:"user,omitempty"`
-	Time    uint64   `json:"time"`
-	Content string   `json:"cont"`
-	Flag    uint64   `json:"flag"`
-	X       float32  `json:"x"`
-	Y       float32  `json:"y"`
-	Files   []string `json:"file"`
+	User     uint64    `json:"user,omitempty"`
+	Time     uint64    `json:"time"`
+	Content  string    `json:"cont"`
+	Flag     uint64    `json:"flag"`
+	X        float32   `json:"x"`
+	Y        float32   `json:"y"`
+	Files    []string  `json:"file"`
+	Comments []Comment `json:"cmt,omitempty"`
 }
 
 func getPostKey(userID uint64) string {
@@ -38,8 +39,18 @@ func getGroupKey(gID uint64) string {
 	return "gposts:" + strconv.FormatUint(gID, 10)
 }
 
-func canSeePost(cFlag uint64, pFlag uint64) bool {
-	return (cFlag & pFlag) != 0
+func canSeePost(uID uint64, cID uint64, pFlag uint64, c redis.Conn) (bool, error) {
+	var canSee = true
+
+	if cID != uID {
+		cFlag, err := user.GetCashFlag(cID, uID, c)
+		if err != nil {
+			return false, err
+		}
+		canSee = ((cFlag & pFlag) != 0)
+	}
+
+	return canSee, nil
 }
 
 func getFilePath(cID uint64, pID uint64, fileName string) string {
@@ -143,11 +154,11 @@ func dbPublishPost(uID uint64, pID uint64, pFlag uint64, c redis.Conn) error {
 			return err
 		}
 		fpostsKey := getPublishKey(cID)
-		cFlag, err := user.GetCashFlag(uID, cID, c)
+		canSee, err := canSeePost(uID, cID, pFlag, c)
 		if err != nil {
 			return err
 		}
-		if canSeePost(cFlag, pFlag) {
+		if canSee {
 			publishStr := fmt.Sprintf("%d:%d", uID, pID)
 			_, err := c.Do("ZADD", fpostsKey, pID, publishStr)
 			if err != nil {
@@ -203,17 +214,14 @@ func dbGetContactPosts(uID uint64, cID uint64, pIdx int, c redis.Conn) ([]PostDa
 			return results, err
 		}
 
-		if uID != cID {
-			cFlag, err := user.GetCashFlag(cID, uID, c)
-			if err != nil {
-				return results, err
-			}
-			if canSeePost(cFlag, post.Flag) {
-				post.User = cID
-				results = append(results, post)
-			}
-		} else {
-			post.User = uID
+		post.User = cID
+		canSee, err := canSeePost(uID, cID, post.Flag, c)
+		if err != nil {
+			return nil, err
+		}
+
+		// no comments for contact posts
+		if canSee {
 			results = append(results, post)
 		}
 	}
@@ -221,6 +229,7 @@ func dbGetContactPosts(uID uint64, cID uint64, pIdx int, c redis.Conn) ([]PostDa
 	return results, nil
 }
 
+// private publish
 func dbGetPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
 	var results []PostData
 	publishKey := getPublishKey(uID)
@@ -238,26 +247,29 @@ func dbGetPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData,
 		for _, value := range values {
 			postData, err := redis.Bytes(value, err)
 			if err != nil {
-				return results, err
+				return nil, err
 			}
 			var post PostData
 			err = json.Unmarshal(postData, &post)
 			if err != nil {
-				return results, err
+				return nil, err
 			}
 
-			if cID == uID {
-				post.User = uID
-				results = append(results, post)
-			} else {
-				cFlag, err := user.GetCashFlag(cID, uID, c)
+			post.User = cID
+			canSee, err := canSeePost(uID, cID, post.Flag, c)
+			if err != nil {
+				return nil, err
+			}
+
+			if canSee {
+				// get comments
+				cmtsKey := getCommentKey(post.User, post.Time)
+				comments, err := dbGetComments(cmtsKey, 0, uID, 0, -1, c)
 				if err != nil {
-					return results, err
+					return nil, err
 				}
-				if canSeePost(cFlag, post.Flag) {
-					post.User = cID
-					results = append(results, post)
-				}
+				post.Comments = comments
+				results = append(results, post)
 			}
 		}
 	}
