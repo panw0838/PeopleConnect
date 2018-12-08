@@ -43,22 +43,22 @@ extension PostInfo {
 
 struct CommentInfo {
     var user:UInt64 = 0
-    var flag:UInt8 = 0
+    var re:UInt16 = 0
     var cmt:String = ""
 }
 
 extension CommentInfo {
     init?(json:[String:AnyObject]) {
         guard
-        let user = json["user"] as? NSNumber,
-        let flag = json["flag"] as? NSNumber
+        let user = json["from"] as? NSNumber,
+        let re = json["re"] as? NSNumber,
+        let cmt = json["msg"] as? String
         else {
             return nil
         }
         self.user = UInt64(user.unsignedLongLongValue)
-        self.flag = UInt8(flag.unsignedCharValue)
-        let cmt = json["cmt"] as? String
-        self.cmt = (cmt == nil ? "" : cmt!)
+        self.re = UInt16(re.unsignedShortValue)
+        self.cmt = cmt
     }
 }
 
@@ -68,12 +68,15 @@ let PostItemGapF:CGFloat = 8.0
 
 class Post {
     var m_info:PostInfo = PostInfo()
+    var m_likes = Array<UInt64>()
     var m_comments = Array<CommentInfo>()
     var m_imgUrls  = Array<String>()
     var m_imgKeys  = Array<String>()
-    var m_preCellGeo = Array<CGRect>()
+    var m_commentLayout = Array<CGFloat>()
+    var m_previewLayout = Array<CGRect>()
     
     var m_geoSetted = false
+    var m_width:CGFloat = 0.0
     var m_contentHeight:CGFloat = 0.0
     var m_previewHeight:CGFloat = 0.0
     var m_commentHeight:CGFloat = 0.0
@@ -95,20 +98,26 @@ class Post {
             return
         }
         m_geoSetted = true
-        
-        var m_numStackItems = 0
+        m_width = width
+        updateGeometry()
+    }
+    
+    func updateGeometry() {
+        var numStackItems = 0
         m_height = CGFloat(35) + PostItemGapF
-
+        m_stackHeight = 0.0
+        
         let text:NSString = m_info.content
         if text.length == 0 {
             m_contentHeight = 0.0
         }
         else {
-            let maxSize = CGSizeMake(width, CGFloat(MAXFLOAT))
+            let maxSize = CGSizeMake(m_width, CGFloat(MAXFLOAT))
             let size = text.boundingRectWithSize(maxSize, options: .UsesLineFragmentOrigin, attributes: ["NSFontAttributeName":UIFont.systemFontOfSize(13.0)], context: nil)
             let height = Int(size.height + 1.0)
             m_contentHeight = CGFloat(height)
-            m_numStackItems++
+            m_stackHeight += m_contentHeight
+            numStackItems++
         }
         
         if m_imgUrls.count == 0 {
@@ -117,66 +126,92 @@ class Post {
         else {
             setupPreviewGeo()
             m_previewHeight = 130.0
-            m_numStackItems++
+            m_stackHeight += m_previewHeight
+            numStackItems++
         }
         
-        m_stackHeight = m_contentHeight + m_previewHeight + (m_numStackItems > 1 ? CGFloat(m_numStackItems-1)*8.0 : 0.0)
+        if m_comments.count == 0 {
+            m_commentHeight = 0.0
+        }
+        else {
+            getCommentsHeight()
+            m_stackHeight += m_commentHeight
+            numStackItems++
+        }
+        
+        m_stackHeight += (numStackItems > 1 ? CGFloat(numStackItems-1)*8.0 : 0.0)
         m_height += m_stackHeight
     }
     
+    func getCommentsHeight() {
+        let maxSize = CGSizeMake(m_width, CGFloat(MAXFLOAT))
+        let attribute = ["NSFontAttributeName":UIFont.systemFontOfSize(13.0)]
+        m_commentHeight = 0.0
+        m_commentLayout.removeAll()
+        for comment in m_comments {
+            let userName = contactsData.getContact(comment.user)?.name
+            let commentStr = userName! + comment.cmt + ":"
+            let size = commentStr.boundingRectWithSize(maxSize, options: .UsesLineFragmentOrigin, attributes: attribute, context: nil)
+            let height = CGFloat(Int(size.height + 1.0))
+            m_commentLayout.append(height)
+            m_commentHeight += height
+        }
+    }
+    
     func setupPreviewGeo() {
+        m_previewLayout.removeAll()
         let previewCount = m_imgUrls.count
         if previewCount == 1 {
-            m_preCellGeo.append(CGRectMake(0, 0, 1, 1))
+            m_previewLayout.append(CGRectMake(0, 0, 1, 1))
         }
         else if previewCount == 2 {
-            m_preCellGeo.append(CGRectMake(0, 0, 2, 1))
-            m_preCellGeo.append(CGRectMake(0, 1, 2, 1))
+            m_previewLayout.append(CGRectMake(0, 0, 2, 1))
+            m_previewLayout.append(CGRectMake(0, 1, 2, 1))
         }
         else if previewCount == 3 {
-            m_preCellGeo.append(CGRectMake(0, 0, 3, 1))
-            m_preCellGeo.append(CGRectMake(1, 0, 3, 1))
-            m_preCellGeo.append(CGRectMake(2, 0, 3, 1))
+            m_previewLayout.append(CGRectMake(0, 0, 3, 1))
+            m_previewLayout.append(CGRectMake(1, 0, 3, 1))
+            m_previewLayout.append(CGRectMake(2, 0, 3, 1))
         }
         else if previewCount == 4 {
-            m_preCellGeo.append(CGRectMake(0, 0, 4, 1))
-            m_preCellGeo.append(CGRectMake(1, 0, 4, 1))
-            m_preCellGeo.append(CGRectMake(2, 0, 4, 1))
-            m_preCellGeo.append(CGRectMake(3, 0, 4, 1))
+            m_previewLayout.append(CGRectMake(0, 0, 4, 1))
+            m_previewLayout.append(CGRectMake(1, 0, 4, 1))
+            m_previewLayout.append(CGRectMake(2, 0, 4, 1))
+            m_previewLayout.append(CGRectMake(3, 0, 4, 1))
         }
         else if previewCount == 5 {
-            m_preCellGeo.append(CGRectMake(0, 0, 4, 1))
-            m_preCellGeo.append(CGRectMake(1, 0, 4, 1))
-            m_preCellGeo.append(CGRectMake(2, 0, 4, 1))
-            m_preCellGeo.append(CGRectMake(3, 0, 4, 2))
-            m_preCellGeo.append(CGRectMake(3, 1, 4, 2))
+            m_previewLayout.append(CGRectMake(0, 0, 4, 1))
+            m_previewLayout.append(CGRectMake(1, 0, 4, 1))
+            m_previewLayout.append(CGRectMake(2, 0, 4, 1))
+            m_previewLayout.append(CGRectMake(3, 0, 4, 2))
+            m_previewLayout.append(CGRectMake(3, 1, 4, 2))
         }
         else if previewCount == 6 {
-            m_preCellGeo.append(CGRectMake(0, 0, 3, 2))
-            m_preCellGeo.append(CGRectMake(1, 0, 3, 2))
-            m_preCellGeo.append(CGRectMake(2, 0, 3, 2))
-            m_preCellGeo.append(CGRectMake(0, 1, 3, 2))
-            m_preCellGeo.append(CGRectMake(1, 1, 3, 2))
-            m_preCellGeo.append(CGRectMake(2, 1, 3, 2))
+            m_previewLayout.append(CGRectMake(0, 0, 3, 2))
+            m_previewLayout.append(CGRectMake(1, 0, 3, 2))
+            m_previewLayout.append(CGRectMake(2, 0, 3, 2))
+            m_previewLayout.append(CGRectMake(0, 1, 3, 2))
+            m_previewLayout.append(CGRectMake(1, 1, 3, 2))
+            m_previewLayout.append(CGRectMake(2, 1, 3, 2))
         }
         else if previewCount == 7 {
-            m_preCellGeo.append(CGRectMake(0, 0, 4, 2))
-            m_preCellGeo.append(CGRectMake(1, 0, 4, 2))
-            m_preCellGeo.append(CGRectMake(2, 0, 4, 2))
-            m_preCellGeo.append(CGRectMake(0, 1, 4, 2))
-            m_preCellGeo.append(CGRectMake(1, 1, 4, 2))
-            m_preCellGeo.append(CGRectMake(2, 1, 4, 2))
-            m_preCellGeo.append(CGRectMake(3, 0, 4, 1))
+            m_previewLayout.append(CGRectMake(0, 0, 4, 2))
+            m_previewLayout.append(CGRectMake(1, 0, 4, 2))
+            m_previewLayout.append(CGRectMake(2, 0, 4, 2))
+            m_previewLayout.append(CGRectMake(0, 1, 4, 2))
+            m_previewLayout.append(CGRectMake(1, 1, 4, 2))
+            m_previewLayout.append(CGRectMake(2, 1, 4, 2))
+            m_previewLayout.append(CGRectMake(3, 0, 4, 1))
         }
         else if previewCount == 8 {
-            m_preCellGeo.append(CGRectMake(0, 0, 4, 2))
-            m_preCellGeo.append(CGRectMake(1, 0, 4, 2))
-            m_preCellGeo.append(CGRectMake(2, 0, 4, 2))
-            m_preCellGeo.append(CGRectMake(3, 0, 4, 2))
-            m_preCellGeo.append(CGRectMake(0, 1, 4, 2))
-            m_preCellGeo.append(CGRectMake(1, 1, 4, 2))
-            m_preCellGeo.append(CGRectMake(2, 1, 3, 2))
-            m_preCellGeo.append(CGRectMake(3, 1, 4, 2))
+            m_previewLayout.append(CGRectMake(0, 0, 4, 2))
+            m_previewLayout.append(CGRectMake(1, 0, 4, 2))
+            m_previewLayout.append(CGRectMake(2, 0, 4, 2))
+            m_previewLayout.append(CGRectMake(3, 0, 4, 2))
+            m_previewLayout.append(CGRectMake(0, 1, 4, 2))
+            m_previewLayout.append(CGRectMake(1, 1, 4, 2))
+            m_previewLayout.append(CGRectMake(2, 1, 3, 2))
+            m_previewLayout.append(CGRectMake(3, 1, 4, 2))
         }
     }
 }

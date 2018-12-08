@@ -3,6 +3,17 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "PostCell.tableView(UITableView, numberOfRowsInSection : Int) -&gt; Int:View+Posts.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_post?.m_comments.count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Post.updateGeometry() -&gt; ():Data+Post.swift">
+      </ContextState>
+      <ContextState
          contextName = "ContactView.viewWillAppear(Bool) -&gt; ():ContactView.swift">
       </ContextState>
       <ContextState
@@ -101,6 +112,9 @@
          contextName = "MoveMemberView.(httpMoveMembers(MoveMemberView) -&gt; (UInt8, addMembers : [UInt64], remMembers : [UInt64]) -&gt; ()).(closure #1):ContactRequests.swift">
       </ContextState>
       <ContextState
+         contextName = "(httpCommentPost(Post, re : UInt16, cmt : String) -&gt; ()).(closure #1):Requests+Post.swift">
+      </ContextState>
+      <ContextState
          contextName = "TCPClient.logon() -&gt; ():Observer.swift">
       </ContextState>
       <ContextState
@@ -112,22 +126,28 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "Post.getCommentsHeight() -&gt; ():Data+Post.swift">
+      </ContextState>
+      <ContextState
          contextName = "PostCell.reload() -&gt; ():View+Posts.swift">
          <PersistentStrings>
             <PersistentString
-               value = "m_previewTop.first?.constant">
-            </PersistentString>
-            <PersistentString
                value = "m_cellButtom.first?.constant">
-            </PersistentString>
-            <PersistentString
-               value = "m_stack.frame">
             </PersistentString>
             <PersistentString
                value = "m_previews.frame">
             </PersistentString>
             <PersistentString
+               value = "m_comments.frame">
+            </PersistentString>
+            <PersistentString
                value = "m_article.frame">
+            </PersistentString>
+            <PersistentString
+               value = "m_previewTop.first?.constant">
+            </PersistentString>
+            <PersistentString
+               value = "m_stack.frame">
             </PersistentString>
             <PersistentString
                value = "m_previews">
@@ -167,6 +187,9 @@
       </ContextState>
       <ContextState
          contextName = "MessegeData.PopConversation(UInt64) -&gt; Conversation?:Messege.swift">
+      </ContextState>
+      <ContextState
+         contextName = "PostCell.actComment(AnyObject) -&gt; ():View+Posts.swift">
       </ContextState>
       <ContextState
          contextName = "LoginView.(registry(LoginView) -&gt; (AnyObject) -&gt; ()).(closure #2):LoginView.swift">

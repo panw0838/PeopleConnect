@@ -102,7 +102,50 @@ func httpGetSnapshots(files:Array<String>) {
     )
 }
 
-func httpCommentPost() {
+func httpCommentPost(post:Post, re:UInt16, cmt:String) {
+    let params: Dictionary = ["uid":NSNumber(unsignedLongLong: userInfo.userID), "cid":NSNumber(unsignedLongLong: post.m_info.user), "pid":NSNumber(unsignedLongLong: post.m_info.time), "last":NSNumber(unsignedShort: UInt16(post.m_comments.count)), "re":NSNumber(unsignedShort: re), "cmt":cmt]
+    http.postRequest("comment", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let data = response as! NSData
+            var errCode:UInt8 = 0
+            data.getBytes(&errCode, length: sizeof(UInt8))
+            if errCode == 0 {
+                let subData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
+                if let json = try? NSJSONSerialization.JSONObjectWithData(subData, options: .MutableContainers) as! [String:AnyObject] {
+                    if let cmtObjs = json["cmts"] as? [AnyObject] {
+                        for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
+                            if let comment = CommentInfo(json: cmtObj) {
+                                post.m_comments.append(comment)
+                            }
+                        }
+                    }
+                    if let idx = json["idx"] as? NSNumber {
+                        var newComment = CommentInfo()
+                        newComment.user = userInfo.userID
+                        newComment.re   = re
+                        newComment.cmt  = cmt
+                        post.m_comments.append(newComment)
+                        print("comment %d %d\n", idx, post.m_comments.count)
+                    }
+
+                    post.updateGeometry()
+                    
+                    for callback in postCallbacks {
+                        callback.PostUpdateUI()
+                    }
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+        }
+    )
+}
+
+func httpGetComments() {
+}
+
+func httpDelComment() {
     
 }
 

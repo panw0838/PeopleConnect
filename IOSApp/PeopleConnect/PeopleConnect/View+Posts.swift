@@ -12,7 +12,11 @@ class PreviewCell: UICollectionViewCell {
     @IBOutlet weak var m_preview: UIImageView!
 }
 
-class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
+class CommentCell: UITableViewCell {
+    @IBOutlet weak var m_comment: UILabel!
+}
+
+class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate {
     
     @IBOutlet weak var m_profile: UIImageView!
     @IBOutlet weak var m_name: UILabel!
@@ -20,6 +24,38 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
     @IBOutlet weak var m_previews: UICollectionView!
     @IBOutlet weak var m_comments: UITableView!
     @IBOutlet weak var m_stack: UIStackView!
+    @IBOutlet weak var m_liktBtn: UIButton!
+    
+    var m_father:PostsView? = nil
+    
+    func commentChanged(sender:UITextField) {
+        let alert:UIAlertController = self.m_father!.presentedViewController as! UIAlertController
+        let input:String = (alert.textFields?.first?.text)!
+        let okAction:UIAlertAction = alert.actions.last!
+        let nameSize = input.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
+        okAction.enabled = (nameSize > 0 && nameSize < 18)
+    }
+
+    @IBAction func actComment(sender: AnyObject) {
+        let alert = UIAlertController(title: "添加评论", message: "", preferredStyle: .Alert)
+        let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .Default,
+            handler: { action in
+                httpCommentPost(self.m_post!, re: 0, cmt: (alert.textFields?.first?.text)!)
+            })
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "最多输入18个字"
+            textField.addTarget(self, action: Selector("commentChanged:"), forControlEvents: .EditingChanged)
+        }
+        okAction.enabled = false
+        alert.addAction(cancelAction)
+        alert.addAction(okAction)
+        self.m_father!.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    @IBAction func actLike(sender: AnyObject) {
+    }
     
     var m_idx:Int = 0
     var m_post:Post? = nil
@@ -36,6 +72,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         // sub view rects
         m_article.frame.size = CGSizeMake(m_article.frame.width, (m_post?.m_contentHeight)!)
         m_previews.frame.size = CGSizeMake(m_previews.frame.width, (m_post?.m_previewHeight)!)
+        m_comments.frame.size = CGSizeMake(m_comments.frame.width, (m_post?.m_commentHeight)!)
         m_stack.frame.size = CGSizeMake(m_stack.frame.width, ((m_post?.m_stackHeight)!))
         
         m_article.backgroundColor = UIColor.yellowColor()
@@ -58,7 +95,15 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
             m_previews.hidden = true
         }
         
-        m_comments.hidden = true
+        if m_post?.m_comments.count > 0 {
+            m_comments.hidden = false
+            m_comments.dataSource = self
+            m_comments.delegate = self
+            m_comments.reloadData()
+        }
+        else {
+            m_comments.hidden = true
+        }
     }
         
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -81,7 +126,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         
         let frame = m_previews.frame
         if indexPath.row < 9 {
-            let geo = m_post!.m_preCellGeo[indexPath.row]
+            let geo = m_post!.m_previewLayout[indexPath.row]
             let width  = (frame.width  - preGap * (geo.width-1)) / geo.width
             let height = (frame.height - preGap * (geo.height-1)) / geo.height
             let x = (width  + preGap) * geo.origin.x
@@ -107,6 +152,31 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         )
         */
         return
+    }
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return (m_post?.m_comments.count)!
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("CommentCell", forIndexPath: indexPath) as! CommentCell
+        let comment = m_post?.m_comments[indexPath.row]
+        let userName = contactsData.getContact(comment!.user)?.name
+        let commentStr = userName! + ":" + comment!.cmt
+        cell.m_comment.text = commentStr
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return (m_post?.m_commentLayout[indexPath.row])!
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        //todo comment
     }
 }
 
@@ -142,6 +212,7 @@ class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, U
         let post = postData.postAtIdx(indexPath.row)
         let contentWidth = m_posts.contentSize.width - PostItemGapF * 2
         cell.m_idx = indexPath.row
+        cell.m_father = self
         post.setupGeometry(contentWidth)
         cell.reload()
         return cell

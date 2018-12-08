@@ -25,9 +25,6 @@ func httpRegistry(cellNumber:String, password:String) {
                     let dict: NSDictionary = jsonObj as! NSDictionary
                     userInfo.userID = (UInt64)((dict["user"]?.integerValue)!)
                 }
-                for callback in contactCallbacks {
-                    //callback.ContactUpdateUI()
-                }
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -50,6 +47,9 @@ func httpLogon(cellNumber:String, password:String) {
                 if (jsonObj != nil) {
                     let dict: NSDictionary = jsonObj as! NSDictionary
                     userInfo.userID = (UInt64)((dict.valueForKey("user")?.integerValue)!)
+                    userInfo.userName = dict["name"] as! String
+                    let newContact = ContactInfo(id: userInfo.userID, f: 0, n: userInfo.userName)
+                    contactsData.m_contacts[newContact.user] = newContact
                 }
                 httpGetContacts()
                 httpSyncRequests()
