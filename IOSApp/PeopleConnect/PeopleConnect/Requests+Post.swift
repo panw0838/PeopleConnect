@@ -110,15 +110,14 @@ func httpGetSnapshots(files:Array<String>) {
     )
 }
 
-func httpCommentPost(post:Post, to:UInt64, pub:UInt8, re:UInt16, cmt:String) {
+func httpAddComment(post:Post, to:UInt64, pub:UInt8, cmt:String) {
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "to":NSNumber(unsignedLongLong: to),
         "pub":NSNumber(unsignedChar: pub),
-        "cid":NSNumber(unsignedLongLong: post.m_info.user),
+        "oid":NSNumber(unsignedLongLong: post.m_info.user),
         "pid":NSNumber(unsignedLongLong: post.m_info.id),
-        "last":NSNumber(unsignedShort: UInt16(post.m_comments.count)),
-        "re":NSNumber(unsignedShort: re),
+        "last":NSNumber(unsignedLongLong: (post.m_comments.count == 0 ? 0 : (post.m_comments.last?.id)!)),
         "cmt":cmt]
     http.postRequest("comment", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
@@ -135,14 +134,13 @@ func httpCommentPost(post:Post, to:UInt64, pub:UInt8, re:UInt16, cmt:String) {
                             }
                         }
                     }
-                    if let idx = json["idx"] as? NSNumber {
+                    if let id = json["cid"] as? NSNumber {
                         var newComment = CommentInfo()
                         newComment.from = userInfo.userID
                         newComment.to   = post.m_info.user
-                        newComment.re   = re
+                        newComment.id   = id.unsignedLongLongValue
                         newComment.cmt  = cmt
                         post.m_comments.append(newComment)
-                        print("comment %d %d\n", idx, post.m_comments.count)
                     }
 
                     post.updateGeometry()
@@ -159,11 +157,51 @@ func httpCommentPost(post:Post, to:UInt64, pub:UInt8, re:UInt16, cmt:String) {
     )
 }
 
-func httpGetComments() {
+func httpDelComment(post:Post, cmt:CommentInfo, pub:UInt8) {
+    let params: Dictionary = [
+        "uid":NSNumber(unsignedLongLong: userInfo.userID),
+        "cid":NSNumber(unsignedLongLong: cmt.id),
+        "pub":NSNumber(unsignedChar: pub),
+        "oid":NSNumber(unsignedLongLong: post.m_info.user),
+        "pid":NSNumber(unsignedLongLong: post.m_info.id),
+        "last":NSNumber(unsignedLongLong: (post.m_comments.count == 0 ? 0 : (post.m_comments.last?.id)!))]
+    http.postRequest("delcmt", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let data = response as! NSData
+            var errCode:UInt8 = 0
+            data.getBytes(&errCode, length: sizeof(UInt8))
+            if errCode == 0 {
+                let subData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
+                if let json = try? NSJSONSerialization.JSONObjectWithData(subData, options: .MutableContainers) as! [String:AnyObject] {
+                    if let cmtObjs = json["cmts"] as? [AnyObject] {
+                        for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
+                            if let comment = CommentInfo(json: cmtObj) {
+                                post.m_comments.append(comment)
+                            }
+                        }
+                    }
+                    
+                    for (idx, comment) in post.m_comments.enumerate() {
+                        if comment.id == cmt.id && comment.from == cmt.from {
+                            post.m_comments.removeAtIndex(idx)
+                        }
+                    }
+                    
+                    post.updateGeometry()
+                    
+                    for callback in postCallbacks {
+                        callback.PostUpdateUI()
+                    }
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+        }
+    )
 }
 
-func httpDelComment() {
-    
+func httpUpdateComments() {
 }
 
 func httpLikePost() {

@@ -10,5 +10,6 @@
 #define Bridging_Header_h
 
 #include <ifaddrs.h>
+#include "Widgets/UILabel+YBAttributeTextTapAction.h"
 
 #endif /* Bridging_Header_h */

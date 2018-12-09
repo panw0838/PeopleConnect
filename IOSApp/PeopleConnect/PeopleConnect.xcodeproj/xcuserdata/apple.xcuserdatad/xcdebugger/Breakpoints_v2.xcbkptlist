@@ -1657,7 +1657,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "120"
@@ -1833,7 +1833,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "143"
@@ -1849,7 +1849,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "88"
@@ -1865,7 +1865,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "123"
@@ -1881,7 +1881,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "124"
@@ -1897,12 +1897,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "222"
-            endingLineNumber = "222"
-            landmarkName = "tableView(_:cellForRowAtIndexPath:)"
+            startingLineNumber = "233"
+            endingLineNumber = "233"
+            landmarkName = "viewDidLoad()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1929,13 +1929,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "228"
-            endingLineNumber = "228"
-            landmarkName = "tableView(_:heightForRowAtIndexPath:)"
-            landmarkType = "5">
+            startingLineNumber = "239"
+            endingLineNumber = "239"
+            landmarkName = "PostsView"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1945,7 +1945,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "79"
@@ -1961,7 +1961,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "90"
@@ -1977,7 +1977,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "89"
@@ -1993,7 +1993,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "121"
@@ -2009,13 +2009,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "217"
-            endingLineNumber = "217"
-            landmarkName = "tableView(_:cellForRowAtIndexPath:)"
-            landmarkType = "5">
+            startingLineNumber = "228"
+            endingLineNumber = "228"
+            landmarkName = "PostsView"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -2025,7 +2025,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "117"
@@ -2041,7 +2041,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "100"
@@ -2056,28 +2056,12 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "99"
-            endingLineNumber = "99"
-            landmarkName = "reload()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Data+Post.swift"
-            timestampString = "565983615.3855619"
+            timestampString = "566069445.633844"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "124"
-            endingLineNumber = "124"
+            startingLineNumber = "121"
+            endingLineNumber = "121"
             landmarkName = "updateGeometry()"
             landmarkType = "5">
          </BreakpointContent>
@@ -2089,12 +2073,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Requests+Post.swift"
-            timestampString = "565983615.3855619"
+            timestampString = "566070057.339046"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "128"
-            endingLineNumber = "128"
-            landmarkName = "httpCommentPost(_:to:pub:re:cmt:)"
+            startingLineNumber = "127"
+            endingLineNumber = "127"
+            landmarkName = "httpAddComment(_:to:pub:cmt:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -2105,11 +2089,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "170"
-            endingLineNumber = "170"
+            startingLineNumber = "174"
+            endingLineNumber = "174"
             landmarkName = "tableView(_:cellForRowAtIndexPath:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -2121,7 +2105,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "164"
@@ -2137,7 +2121,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "161"
@@ -2153,7 +2137,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "165"
@@ -2169,11 +2153,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "169"
-            endingLineNumber = "169"
+            startingLineNumber = "173"
+            endingLineNumber = "173"
             landmarkName = "tableView(_:cellForRowAtIndexPath:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -2185,12 +2169,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "178"
-            endingLineNumber = "178"
-            landmarkName = "tableView(_:heightForRowAtIndexPath:)"
+            startingLineNumber = "189"
+            endingLineNumber = "189"
+            landmarkName = "tableView(_:cellForRowAtIndexPath:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -2201,12 +2185,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Requests+Post.swift"
-            timestampString = "565983615.3855619"
+            timestampString = "566070057.339046"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "148"
-            endingLineNumber = "148"
-            landmarkName = "httpCommentPost(_:to:pub:re:cmt:)"
+            startingLineNumber = "146"
+            endingLineNumber = "146"
+            landmarkName = "httpAddComment(_:to:pub:cmt:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -2217,11 +2201,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Data+Post.swift"
-            timestampString = "565983615.3855619"
+            timestampString = "566069445.633844"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "163"
-            endingLineNumber = "163"
+            startingLineNumber = "160"
+            endingLineNumber = "160"
             landmarkName = "getCommentsHeight()"
             landmarkType = "5">
          </BreakpointContent>
@@ -2233,11 +2217,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Data+Post.swift"
-            timestampString = "565983615.3855619"
+            timestampString = "566069445.633844"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "156"
-            endingLineNumber = "156"
+            startingLineNumber = "153"
+            endingLineNumber = "153"
             landmarkName = "updateGeometry()"
             landmarkType = "5">
          </BreakpointContent>
@@ -2265,11 +2249,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Data+Post.swift"
-            timestampString = "565983615.3855619"
+            timestampString = "566069445.633844"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "61"
-            endingLineNumber = "61"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
             landmarkName = "init(json:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -2281,11 +2265,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "566053650.12593"
+            timestampString = "566072231.471741"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "105"
-            endingLineNumber = "105"
+            startingLineNumber = "103"
+            endingLineNumber = "103"
             landmarkName = "reload()"
             landmarkType = "5">
          </BreakpointContent>
@@ -2304,6 +2288,102 @@
             endingLineNumber = "70"
             landmarkName = "splitData(_:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PeopleConnect/View+Posts.swift"
+            timestampString = "566072231.471741"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "176"
+            endingLineNumber = "176"
+            landmarkName = "tableView(_:cellForRowAtIndexPath:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PeopleConnect/View+Posts.swift"
+            timestampString = "566072231.471741"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "178"
+            endingLineNumber = "178"
+            landmarkName = "tableView(_:cellForRowAtIndexPath:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PeopleConnect/View+Posts.swift"
+            timestampString = "566072231.471741"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "189"
+            endingLineNumber = "189"
+            landmarkName = "tableView(_:cellForRowAtIndexPath:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PeopleConnect/Requests+Post.swift"
+            timestampString = "566070046.137787"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
+            landmarkName = "httpSyncPost()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PeopleConnect/View+Posts.swift"
+            timestampString = "566072231.471741"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "192"
+            endingLineNumber = "192"
+            landmarkName = "tableView(_:cellForRowAtIndexPath:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PeopleConnect/View+Posts.swift"
+            timestampString = "566072231.471741"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "99"
+            endingLineNumber = "99"
+            landmarkName = "reload()"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

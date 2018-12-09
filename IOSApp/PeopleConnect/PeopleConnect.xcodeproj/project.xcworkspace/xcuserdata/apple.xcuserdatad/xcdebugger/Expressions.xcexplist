@@ -3,18 +3,81 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "PostCell.tableView(UITableView, numberOfRowsInSection : Int) -&gt; Int:View+Posts.swift">
+         contextName = "ContactsView.collectionView(UICollectionView, cellForItemAtIndexPath : NSIndexPath) -&gt; UICollectionViewCell:ContactsView.swift">
          <PersistentStrings>
             <PersistentString
-               value = "m_post?.m_comments.count">
+               value = "contactsData">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "Post.updateGeometry() -&gt; ():Data+Post.swift">
+         contextName = "MessegeView.viewWillAppear(Bool) -&gt; ():View+Messege.swift">
       </ContextState>
       <ContextState
-         contextName = "ContactView.viewWillAppear(Bool) -&gt; ():ContactView.swift">
+         contextName = "ContactsView.(httpGetContacts(ContactsView) -&gt; () -&gt; ()).(closure #1):ContactRequests.swift">
+      </ContextState>
+      <ContextState
+         contextName = "(httpCommentPost(Post, re : UInt16, cmt : String) -&gt; ()).(closure #1):Requests+Post.swift">
+      </ContextState>
+      <ContextState
+         contextName = "PostCell.actComment(AnyObject) -&gt; ():View+Posts.swift">
+      </ContextState>
+      <ContextState
+         contextName = "PostsView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Posts.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "cell.frame">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ContactsData.loadContacts([ContactInfo], userTags : [TagInfo]) -&gt; ():Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():ContactsView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "LoginView.(login(LoginView) -&gt; (AnyObject) -&gt; ()).(closure #1):LoginView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "userInfo">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "LoginView.(registry(LoginView) -&gt; (AnyObject) -&gt; ()).(closure #2):LoginView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "__85-[UIImageView(AFNetworking) setImageWithURLRequest:placeholderImage:success:failure:]_block_invoke46:UIImageView+AFNetworking.m">
+      </ContextState>
+      <ContextState
+         contextName = "(httpAddComment(Post, to : UInt64, pub : UInt8, re : UInt16, cmt : String) -&gt; ()).(closure #1):Requests+Post.swift">
+      </ContextState>
+      <ContextState
+         contextName = "MessegeData.AddNewMessege(UInt64, newMessege : MessegeInfo) -&gt; ():Messege.swift">
+      </ContextState>
+      <ContextState
+         contextName = "PostCell.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:View+Posts.swift">
+      </ContextState>
+      <ContextState
+         contextName = "(httpAddComment(Post, to : UInt64, pub : UInt8, cmt : String) -&gt; ()).(closure #1):Requests+Post.swift">
+      </ContextState>
+      <ContextState
+         contextName = "CommentInfo.init(json : [String : AnyObject]) -&gt; CommentInfo?:Data+Post.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsData.moveContactOutTag(UInt64, tagID : UInt8) -&gt; ():Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "Tag.addMember(ContactInfo) -&gt; ():Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "splitData(NSData) -&gt; [NSData]:Requests.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "srcData.bytes">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "Post.init(info : PostInfo) -&gt; Post:Data+Post.swift">
@@ -25,32 +88,16 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ContactsView.httpRemTag(UInt8) -&gt; ():ContactRequests.swift">
+         contextName = "HttpService.loginRequest() -&gt; ():Requests.swift">
       </ContextState>
       <ContextState
-         contextName = "(httpSyncMessege() -&gt; ()).(closure #1):Requests+Messege.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "messegeData">
-            </PersistentString>
-         </PersistentStrings>
+         contextName = "ContactsView.AddNewTag(AnyObject) -&gt; ():ContactsView.swift">
       </ContextState>
       <ContextState
-         contextName = "TagTable.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+CreatePost.swift">
+         contextName = "PreviewCell.init(coder : NSCoder) -&gt; PreviewCell?:(null)">
          <PersistentStrings>
             <PersistentString
-               value = "indexPath.row">
-            </PersistentString>
-            <PersistentString
-               value = "indexPath.section">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "ContactsView.numberOfSectionsInCollectionView(UICollectionView) -&gt; Int:ContactsView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "contactsData">
+               value = "rbp">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -75,27 +122,7 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ContactsData.numSubTags(Int) -&gt; Int:Contact.swift">
-      </ContextState>
-      <ContextState
-         contextName = "ContactsView.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:ContactsView.swift">
-      </ContextState>
-      <ContextState
-         contextName = "(httpSyncPost() -&gt; ()).(closure #1):Requests+Post.swift">
-      </ContextState>
-      <ContextState
-         contextName = "MessegeData.AddNewMessege(UInt64, newMessege : MessegeInfo) -&gt; ():Messege.swift">
-      </ContextState>
-      <ContextState
-         contextName = "PostsView.tableView(UITableView, heightForRowAtIndexPath : NSIndexPath) -&gt; CGFloat:View+Posts.swift">
-      </ContextState>
-      <ContextState
-         contextName = "PostsView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Posts.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "cell.frame">
-            </PersistentString>
-         </PersistentStrings>
+         contextName = "LoginView.login(AnyObject) -&gt; ():LoginView.swift">
       </ContextState>
       <ContextState
          contextName = "TagTable.numberOfSectionsInTableView(UITableView) -&gt; Int:View+CreatePost.swift">
@@ -106,34 +133,95 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "LoginView.login(AnyObject) -&gt; ():LoginView.swift">
+         contextName = "(httpGetSnapshots([String]) -&gt; ()).(closure #1):Requests+Post.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "data.bytes">
+            </PersistentString>
+            <PersistentString
+               value = "postData">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():ContactsView.swift">
+         contextName = "PostsView.tableView(UITableView, heightForRowAtIndexPath : NSIndexPath) -&gt; CGFloat:View+Posts.swift">
       </ContextState>
       <ContextState
-         contextName = "MoveMemberView.(httpMoveMembers(MoveMemberView) -&gt; (UInt8, addMembers : [UInt64], remMembers : [UInt64]) -&gt; ()).(closure #1):ContactRequests.swift">
+         contextName = "PostInfo.init(json : [String : AnyObject]) -&gt; PostInfo?:Data+Post.swift">
       </ContextState>
       <ContextState
-         contextName = "(httpCommentPost(Post, re : UInt16, cmt : String) -&gt; ()).(closure #1):Requests+Post.swift">
+         contextName = "ContactsData.numSubTags(Int) -&gt; Int:Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactView.viewWillAppear(Bool) -&gt; ():ContactView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "Conversation.init(id : UInt64) -&gt; Conversation:Messege.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "contactsData">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Post.updateGeometry() -&gt; ():Data+Post.swift">
+      </ContextState>
+      <ContextState
+         contextName = "MoveMemberView.reloadData() -&gt; ():MoveMemberView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "contactsData">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Post.setupGeometry(CGFloat) -&gt; ():Data+Post.swift">
+      </ContextState>
+      <ContextState
+         contextName = "MessegeData.PopConversation(UInt64) -&gt; Conversation?:Messege.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsView.numberOfSectionsInCollectionView(UICollectionView) -&gt; Int:ContactsView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "contactsData">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Tag.canBeEdit() -&gt; Bool:Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "PostCell.tableView(UITableView, numberOfRowsInSection : Int) -&gt; Int:View+Posts.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_post?.m_comments.count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "(httpSyncPost() -&gt; ()).(closure #1):Requests+Post.swift">
       </ContextState>
       <ContextState
          contextName = "TCPClient.logon() -&gt; ():Observer.swift">
       </ContextState>
       <ContextState
-         contextName = "PreviewCell.init(coder : NSCoder) -&gt; PreviewCell?:(null)">
+         contextName = "ContactsView.updateTags() -&gt; ():ContactsView.swift">
          <PersistentStrings>
             <PersistentString
-               value = "rbp">
+               value = "contactsData">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "Post.getCommentsHeight() -&gt; ():Data+Post.swift">
+         contextName = "MessegesView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Messeges.swift">
       </ContextState>
       <ContextState
          contextName = "PostCell.reload() -&gt; ():View+Posts.swift">
          <PersistentStrings>
+            <PersistentString
+               value = "m_commentConstrain.constant">
+            </PersistentString>
             <PersistentString
                value = "m_cellButtom.first?.constant">
             </PersistentString>
@@ -150,58 +238,21 @@
                value = "m_comments.contentOffset">
             </PersistentString>
             <PersistentString
-               value = "m_previewTop.first?.constant">
+               value = "m_stack.frame">
             </PersistentString>
             <PersistentString
-               value = "m_stack.frame">
+               value = "m_previewTop.first?.constant">
             </PersistentString>
             <PersistentString
                value = "m_previews">
             </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "PostInfo.init(json : [String : AnyObject]) -&gt; PostInfo?:Data+Post.swift">
-      </ContextState>
-      <ContextState
-         contextName = "splitData(NSData) -&gt; [NSData]:Requests.swift">
-         <PersistentStrings>
             <PersistentString
-               value = "srcData.bytes">
+               value = "m_post?.m_comments">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "Tag.canBeEdit() -&gt; Bool:Contact.swift">
-      </ContextState>
-      <ContextState
-         contextName = "ContactsView.collectionView(UICollectionView, cellForItemAtIndexPath : NSIndexPath) -&gt; UICollectionViewCell:ContactsView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "contactsData">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "PostCell.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:View+Posts.swift">
-      </ContextState>
-      <ContextState
-         contextName = "HttpService.loginRequest() -&gt; ():Requests.swift">
-      </ContextState>
-      <ContextState
-         contextName = "Tag.addMember(ContactInfo) -&gt; ():Contact.swift">
-      </ContextState>
-      <ContextState
-         contextName = "CommentInfo.init(json : [String : AnyObject]) -&gt; CommentInfo?:Data+Post.swift">
-      </ContextState>
-      <ContextState
-         contextName = "MessegeData.PopConversation(UInt64) -&gt; Conversation?:Messege.swift">
-      </ContextState>
-      <ContextState
-         contextName = "PostCell.actComment(AnyObject) -&gt; ():View+Posts.swift">
-      </ContextState>
-      <ContextState
-         contextName = "LoginView.(registry(LoginView) -&gt; (AnyObject) -&gt; ()).(closure #2):LoginView.swift">
+         contextName = "MoveMemberView.(httpMoveMembers(MoveMemberView) -&gt; (UInt8, addMembers : [UInt64], remMembers : [UInt64]) -&gt; ()).(closure #1):ContactRequests.swift">
       </ContextState>
       <ContextState
          contextName = "MessegeView.tableView(UITableView, numberOfRowsInSection : Int) -&gt; Int:View+Messege.swift">
@@ -212,69 +263,30 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "Post.setupGeometry(CGFloat) -&gt; ():Data+Post.swift">
-      </ContextState>
-      <ContextState
-         contextName = "ContactsView.updateTags() -&gt; ():ContactsView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "contactsData">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "MoveMemberView.reloadData() -&gt; ():MoveMemberView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "contactsData">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "MessegesView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Messeges.swift">
-      </ContextState>
-      <ContextState
-         contextName = "LoginView.(login(LoginView) -&gt; (AnyObject) -&gt; ()).(closure #1):LoginView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "userInfo">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "ContactsView.(httpGetContacts(ContactsView) -&gt; () -&gt; ()).(closure #1):ContactRequests.swift">
-      </ContextState>
-      <ContextState
          contextName = "HttpService.(loginRequest(HttpService) -&gt; () -&gt; ()).(closure #1):Requests.swift">
       </ContextState>
       <ContextState
-         contextName = "ContactsData.loadContacts([ContactInfo], userTags : [TagInfo]) -&gt; ():Contact.swift">
+         contextName = "ContactsView.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:ContactsView.swift">
       </ContextState>
       <ContextState
-         contextName = "__85-[UIImageView(AFNetworking) setImageWithURLRequest:placeholderImage:success:failure:]_block_invoke46:UIImageView+AFNetworking.m">
-      </ContextState>
-      <ContextState
-         contextName = "Conversation.init(id : UInt64) -&gt; Conversation:Messege.swift">
+         contextName = "TagTable.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+CreatePost.swift">
          <PersistentStrings>
             <PersistentString
-               value = "contactsData">
+               value = "indexPath.row">
+            </PersistentString>
+            <PersistentString
+               value = "indexPath.section">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ContactsView.AddNewTag(AnyObject) -&gt; ():ContactsView.swift">
+         contextName = "ContactsView.httpRemTag(UInt8) -&gt; ():ContactRequests.swift">
       </ContextState>
       <ContextState
-         contextName = "MessegeView.viewWillAppear(Bool) -&gt; ():View+Messege.swift">
-      </ContextState>
-      <ContextState
-         contextName = "(httpGetSnapshots([String]) -&gt; ()).(closure #1):Requests+Post.swift">
+         contextName = "(httpSyncMessege() -&gt; ()).(closure #1):Requests+Messege.swift">
          <PersistentStrings>
             <PersistentString
-               value = "data.bytes">
-            </PersistentString>
-            <PersistentString
-               value = "postData">
+               value = "messegeData">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -282,7 +294,7 @@
          contextName = "HttpService.(loginRequest(HttpService) -&gt; () -&gt; ()).(closure #2):Requests.swift">
       </ContextState>
       <ContextState
-         contextName = "ContactsData.moveContactOutTag(UInt64, tagID : UInt8) -&gt; ():Contact.swift">
+         contextName = "Post.getCommentsHeight() -&gt; ():Data+Post.swift">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

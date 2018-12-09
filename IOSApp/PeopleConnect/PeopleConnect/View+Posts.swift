@@ -16,7 +16,7 @@ class CommentCell: UITableViewCell {
     @IBOutlet weak var m_comment: UILabel!
 }
 
-class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate {
+class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, YBAttributeTapActionDelegate {
     
     @IBOutlet weak var m_profile: UIImageView!
     @IBOutlet weak var m_name: UILabel!
@@ -43,7 +43,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Default,
             handler: { action in
-                httpCommentPost(self.m_post!, to:self.m_post!.m_info.user, pub: PubLvl_Friend, re: 0, cmt: (alert.textFields?.first?.text)!)
+                httpAddComment(self.m_post!, to:0, pub: PubLvl_Friend, cmt: (alert.textFields?.first?.text)!)
             })
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
@@ -100,11 +100,11 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
             m_comments.hidden = false
             m_comments.dataSource = self
             m_comments.delegate = self
-            m_comments.frame.size = CGSizeMake(m_comments.frame.width, (m_post?.m_commentHeight)!)
             m_commentConstrain.constant = (m_post?.m_commentHeight)!
             m_comments.reloadData()
         }
         else {
+            m_commentConstrain.constant = 0.0
             m_comments.hidden = true
         }
     }
@@ -165,12 +165,47 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         return (m_post?.m_comments.count)!
     }
     
+    func tapMessage() {
+        
+    }
+    
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("CommentCell", forIndexPath: indexPath) as! CommentCell
         let comment = m_post?.m_comments[indexPath.row]
         let userName = contactsData.getContact(comment!.from)?.name
         let commentStr = userName! + ":" + comment!.cmt
-        cell.m_comment.text = commentStr
+        let attStr = NSMutableAttributedString(string: commentStr)
+        let attDic:Dictionary = [NSForegroundColorAttributeName:UIColor.blackColor()]
+        attStr.setAttributes(attDic, range: NSMakeRange(0, commentStr.characters.count))
+        attStr.addAttribute(NSForegroundColorAttributeName, value: UIColor.blueColor(), range: NSMakeRange(0, (userName?.characters.count)!))
+        cell.m_comment.attributedText = attStr
+        
+/*
+        let msgStart = (userName?.characters.count)! + 1
+        let msgLength = comment?.cmt.characters.count
+        
+        //cell.m_comment.yb_addAttributeTapActionWithRanges([NSStringFromRange(NSMakeRange(msgStart, msgLength!))], delegate: <#T##YBAttributeTapActionDelegate!#>)
+
+        cell.m_comment.yb_addAttributeTapActionWithRanges(
+            [NSStringFromRange(NSMakeRange(msgStart, msgLength!))],
+            tapClicked: { (label:UILabel!, str:String!, range:NSRange!, idx:Int) -> Void in
+                if comment?.from == userInfo.userID {
+                    let alert = UIAlertController(title: "删除评论", message: "", preferredStyle: .Alert)
+                    let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+                    let okAction = UIAlertAction(title: "确定", style: .Destructive,
+                        handler: { action in
+                            httpDelComment(self.m_post!, cmt: comment!, pub: PubLvl_Friend)
+                        })
+                    alert.addAction(noAction)
+                    alert.addAction(okAction)
+                    self.m_father!.presentViewController(alert, animated: true, completion: nil)
+                }
+                else {
+                    
+                }
+            }
+        )
+*/
         return cell
     }
     

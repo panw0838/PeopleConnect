@@ -49,8 +49,7 @@ extension PostInfo {
 struct CommentInfo {
     var from:UInt64 = 0
     var to:UInt64 = 0
-    var idx:UInt16 = 0
-    var re:UInt16 = 0
+    var id:UInt64 = 0
     var cmt:String = ""
 }
 
@@ -59,16 +58,14 @@ extension CommentInfo {
         guard
         let from = json["from"] as? NSNumber,
         let to   = json["to"] as? NSNumber,
-        let idx  = json["idx"] as? NSNumber,
-        let re   = json["re"] as? NSNumber,
+        let id   = json["id"] as? NSNumber,
         let cmt  = json["msg"] as? String
         else {
             return nil
         }
         self.from = UInt64(from.unsignedLongLongValue)
         self.to   = UInt64(to.unsignedLongLongValue)
-        self.idx  = UInt16(idx.unsignedShortValue)
-        self.re   = UInt16(re.unsignedShortValue)
+        self.id   = UInt64(id.unsignedLongLongValue)
         self.cmt  = cmt
     }
 }
