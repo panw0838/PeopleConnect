@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"messege"
+	"message"
 	"net/http"
 	"post"
 	"share"
@@ -48,16 +48,17 @@ func main() {
 	http.HandleFunc("/remcontact", user.RemContactHandler)
 	http.HandleFunc("/updatetagmember", user.UpdateTagMemberHandler)
 
-	http.HandleFunc("/syncmessege", messege.SyncMessegeHandler)
-	http.HandleFunc("/requestcontact", messege.RequestContactHandler)
-	http.HandleFunc("/syncrequests", messege.SyncRequestsHandler)
-	http.HandleFunc("/sendmessege", messege.SendMessegeHandler)
+	http.HandleFunc("/syncmessege", message.SyncMessegeHandler)
+	http.HandleFunc("/requestcontact", message.RequestContactHandler)
+	http.HandleFunc("/syncrequests", message.SyncRequestsHandler)
+	http.HandleFunc("/sendmessege", message.SendMessegeHandler)
 
 	http.HandleFunc("/newpost", post.NewPostHandler)
 	http.HandleFunc("/delpost", post.DelPostHandler)
 	http.HandleFunc("/syncposts", post.SyncPostsHandler)
 	http.HandleFunc("/previews", post.GetPreviewsHandler)
 	http.HandleFunc("/comment", post.NewCommentHandler)
+	http.HandleFunc("/delcmt", post.DelCmtHandler)
 	http.HandleFunc("/updatecmts", post.UpdateCommentsHandler)
 
 	fs := http.FileServer(http.Dir("files"))

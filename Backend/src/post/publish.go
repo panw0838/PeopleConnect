@@ -106,7 +106,7 @@ func dbGetPublish(uID uint64, pubLvl uint8, key string, from uint64, to uint64, 
 			if canSee {
 				// get comments
 				cmtsKey := getCommentKey(cID, post.ID)
-				comments, err := dbGetComments(cmtsKey, pubLvl, uID, 0, -1, c)
+				comments, err := dbGetComments(cmtsKey, pubLvl, uID, 0, c)
 				if err != nil {
 					return nil, err
 				}
