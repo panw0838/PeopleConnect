@@ -10,14 +10,14 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-type SendMessegeInput struct {
+type SendMsgInput struct {
 	From uint64 `json:"from"`
 	To   uint64 `json:"to"`
 	Msg  string `json:"msg"`
 }
 
 func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
-	var input SendMessegeInput
+	var input SendMsgInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
 		fmt.Fprintf(w, "Error: json read error")
@@ -52,13 +52,13 @@ func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
 
 type MessegeSyncInput struct {
 	User uint64 `json:"user"`
-	Sync uint32 `json:"sync"`
+	Sync uint64 `json:"sync"`
 	//Last uint32 `json:"last"`
 }
 
 type MessegeSyncReturn struct {
-	Sync     uint32    `json:"sync"`
-	Messeges []Messege `json:"mess"`
+	Sync     uint64    `json:"sync"`
+	Messages []Message `json:"mess"`
 }
 
 func SyncMessegeHandler(w http.ResponseWriter, r *http.Request) {
@@ -77,12 +77,12 @@ func SyncMessegeHandler(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	var output MessegeSyncReturn
-	newSyncID, messeges, err := dbGetMesseges(input, c)
+	newSyncID, messages, err := dbGetMessages(input, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
-	output.Messeges = messeges
+	output.Messages = messages
 	output.Sync = newSyncID
 
 	data, err := json.Marshal(&output)
