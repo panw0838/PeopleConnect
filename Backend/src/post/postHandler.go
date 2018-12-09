@@ -164,7 +164,7 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	postData.X = input.X
 	postData.Y = input.Y
 	postData.Files = files
-	postData.Time = pID
+	postData.ID = pID
 	err = dbAddPost(input.User, pID, postData, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
@@ -172,7 +172,7 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = dbPublishPost(input.User, pID, input.Flag, c)
+	err = dbPublishPost(input.User, postData, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -217,7 +217,8 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	now := share.GetTimeID(time.Now())
-	posts, err := dbGetPublish(input.User, input.Post, now, c)
+	key := getFPubKey(input.User)
+	posts, err := dbGetPublish(input.User, PubLvl_Friend, key, input.Post, now, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
@@ -266,7 +267,10 @@ func GetPreviewsHandler(w http.ResponseWriter, r *http.Request) {
 
 		len := len(data)
 		lens = append(lens, len)
-		datas = append(datas, data)
+
+		if len != 0 {
+			datas = append(datas, data)
+		}
 	}
 
 	header = append(header, byte(len(lens)))

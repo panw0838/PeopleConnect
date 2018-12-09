@@ -69,8 +69,9 @@ type LoginInfo struct {
 }
 
 type LoginResponse struct {
-	UserID uint64 `json:"user"`
-	Name   string `json:"name"`
+	UserID uint64   `json:"user"`
+	Name   string   `json:"name"`
+	Groups []uint64 `json:"groups,omitempty"`
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -105,6 +106,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var feedback LoginResponse
 	feedback.UserID = userID
 	feedback.Name = name
+
 	data, err := json.Marshal(&feedback)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)

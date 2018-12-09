@@ -60,7 +60,7 @@ func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
 		return 0, err
 	}
 
-	flag, err := GetCashFlag(contactID, userID, c)
+	flag, _, err := GetCashFlag(contactID, userID, c)
 	if err != nil {
 		return 0, err
 	}

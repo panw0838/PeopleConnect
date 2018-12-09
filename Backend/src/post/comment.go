@@ -5,7 +5,6 @@ import (
 	"share"
 	"strconv"
 	"time"
-	"user"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -27,86 +26,6 @@ type CommentsData struct {
 
 func getCommentKey(uID uint64, pID uint64) string {
 	return "cmt:" + strconv.FormatUint(uID, 10) + ":" + strconv.FormatUint(pID, 10)
-}
-
-func friendComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool, error) {
-	var canSee = true
-
-	if uID != from {
-		isFriend, err := user.IsFriend(from, uID, c)
-		if err != nil {
-			return false, err
-		}
-		canSee = isFriend
-	}
-
-	if canSee && to != 0 && uID != to {
-		isFriend, err := user.IsFriend(to, uID, c)
-		if err != nil {
-			return false, err
-		}
-		canSee = isFriend
-	}
-
-	return canSee, nil
-}
-
-func strangerComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool, error) {
-	var canSee = true
-
-	if uID != from {
-		isStranger, err := user.IsStranger(from, uID, c)
-		if err != nil {
-			return false, err
-		}
-		canSee = isStranger
-	}
-
-	if canSee && to != 0 && uID != to {
-		isStranger, err := user.IsStranger(to, uID, c)
-		if err != nil {
-			return false, err
-		}
-		canSee = isStranger
-	}
-
-	return canSee, nil
-}
-
-func publicComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool, error) {
-	var canSee = true
-
-	if uID != from {
-		isBlack, err := user.IsBalcklist(from, uID, c)
-		if err != nil {
-			return false, err
-		}
-		canSee = !isBlack
-	}
-
-	if canSee && to != 0 && uID != to {
-		isBlack, err := user.IsBalcklist(to, uID, c)
-		if err != nil {
-			return false, err
-		}
-		canSee = !isBlack
-	}
-
-	return canSee, nil
-}
-
-func canSeeComment(uID uint64, pubLvl uint8, from uint64, to uint64, c redis.Conn) (bool, error) {
-	if pubLvl == PubLvl_Friend {
-		// friends publish
-		return friendComment(uID, from, to, c)
-	} else if pubLvl == PubLvl_Group {
-		// group publish
-		return publicComment(uID, from, to, c)
-	} else if pubLvl == PubLvl_Stranger {
-		// stranger publish
-		return strangerComment(uID, from, to, c)
-	}
-	return false, nil
 }
 
 func dbGetComments(cmtKey string, pubLvl uint8, uID uint64, from int, to int, c redis.Conn) ([]Comment, error) {
