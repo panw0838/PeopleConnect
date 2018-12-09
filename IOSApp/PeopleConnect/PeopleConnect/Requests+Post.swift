@@ -60,6 +60,14 @@ func httpSyncPost() {
                         for case let postObj in (postObjs as? [[String:AnyObject]])! {
                             if let post = PostInfo(json: postObj) {
                                 postData.AddPost(post)
+                                // add comments
+                                if let cmtObjs = postObj["cmt"] as? [AnyObject] {
+                                    for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
+                                        if let cmt = CommentInfo(json: cmtObj) {
+                                            postData.m_posts.last?.m_comments.append(cmt)
+                                        }
+                                    }
+                                }
                             }
                         }
                         postData.getPreviews()
@@ -102,8 +110,16 @@ func httpGetSnapshots(files:Array<String>) {
     )
 }
 
-func httpCommentPost(post:Post, re:UInt16, cmt:String) {
-    let params: Dictionary = ["uid":NSNumber(unsignedLongLong: userInfo.userID), "cid":NSNumber(unsignedLongLong: post.m_info.user), "pid":NSNumber(unsignedLongLong: post.m_info.time), "last":NSNumber(unsignedShort: UInt16(post.m_comments.count)), "re":NSNumber(unsignedShort: re), "cmt":cmt]
+func httpCommentPost(post:Post, to:UInt64, pub:UInt8, re:UInt16, cmt:String) {
+    let params: Dictionary = [
+        "uid":NSNumber(unsignedLongLong: userInfo.userID),
+        "to":NSNumber(unsignedLongLong: to),
+        "pub":NSNumber(unsignedChar: pub),
+        "cid":NSNumber(unsignedLongLong: post.m_info.user),
+        "pid":NSNumber(unsignedLongLong: post.m_info.id),
+        "last":NSNumber(unsignedShort: UInt16(post.m_comments.count)),
+        "re":NSNumber(unsignedShort: re),
+        "cmt":cmt]
     http.postRequest("comment", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let data = response as! NSData
@@ -121,7 +137,8 @@ func httpCommentPost(post:Post, re:UInt16, cmt:String) {
                     }
                     if let idx = json["idx"] as? NSNumber {
                         var newComment = CommentInfo()
-                        newComment.user = userInfo.userID
+                        newComment.from = userInfo.userID
+                        newComment.to   = post.m_info.user
                         newComment.re   = re
                         newComment.cmt  = cmt
                         post.m_comments.append(newComment)

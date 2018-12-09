@@ -10,9 +10,14 @@ import Foundation
 import UIKit
 import AFNetworking
 
+let PubLvl_Friend:UInt8 = 0
+let PubLvl_Group:UInt8 = 1
+let PubLvl_Stranger:UInt8 = 2
+
+
 struct PostInfo {
     var user:UInt64 = 0
-    var time:UInt64 = 0
+    var id:UInt64 = 0
     var flag:UInt64 = 0
     var content:String = ""
     var files:Array<String> = Array<String>()
@@ -23,14 +28,14 @@ extension PostInfo {
     init?(json: [String: AnyObject]) {
         guard
         let user = json["user"] as? NSNumber,
-        let time = json["time"] as? NSNumber,
+        let id = json["id"] as? NSNumber,
         let flag = json["flag"] as? NSNumber,
         let content = json["cont"] as? String
         else {
             return nil
         }
         self.user = UInt64(user.unsignedLongLongValue)
-        self.time = UInt64(time.unsignedLongLongValue)
+        self.id = UInt64(id.unsignedLongLongValue)
         self.flag = UInt64(flag.unsignedLongLongValue)
         self.content = content
         
@@ -42,7 +47,9 @@ extension PostInfo {
 }
 
 struct CommentInfo {
-    var user:UInt64 = 0
+    var from:UInt64 = 0
+    var to:UInt64 = 0
+    var idx:UInt16 = 0
     var re:UInt16 = 0
     var cmt:String = ""
 }
@@ -50,15 +57,19 @@ struct CommentInfo {
 extension CommentInfo {
     init?(json:[String:AnyObject]) {
         guard
-        let user = json["from"] as? NSNumber,
-        let re = json["re"] as? NSNumber,
-        let cmt = json["msg"] as? String
+        let from = json["from"] as? NSNumber,
+        let to   = json["to"] as? NSNumber,
+        let idx  = json["idx"] as? NSNumber,
+        let re   = json["re"] as? NSNumber,
+        let cmt  = json["msg"] as? String
         else {
             return nil
         }
-        self.user = UInt64(user.unsignedLongLongValue)
-        self.re = UInt16(re.unsignedShortValue)
-        self.cmt = cmt
+        self.from = UInt64(from.unsignedLongLongValue)
+        self.to   = UInt64(to.unsignedLongLongValue)
+        self.idx  = UInt16(idx.unsignedShortValue)
+        self.re   = UInt16(re.unsignedShortValue)
+        self.cmt  = cmt
     }
 }
 
@@ -87,9 +98,9 @@ class Post {
         m_info = info
         
         for file in m_info.files {
-            let fileUrl = getFileUrl(info.user, pID: info.time, fileName: file)
+            let fileUrl = getFileUrl(info.user, pID: info.id, fileName: file)
             m_imgUrls.append(fileUrl)
-            m_imgKeys.append(String(m_info.user) + "_" + String(m_info.time) + "_" + file)
+            m_imgKeys.append(String(m_info.user) + "_" + String(m_info.id) + "_" + file)
         }
     }
     
@@ -102,6 +113,12 @@ class Post {
         updateGeometry()
     }
     
+    func getTextHeight(text:String, width:CGFloat, font:UIFont)->CGFloat {
+        let maxSize = CGSizeMake(width, CGFloat(MAXFLOAT))
+        let size = text.boundingRectWithSize(maxSize, options: .UsesLineFragmentOrigin, attributes: ["NSFontAttributeName":font], context: nil)
+        return CGFloat(Int(size.height + 1.0))
+    }
+    
     func updateGeometry() {
         var numStackItems = 0
         m_height = CGFloat(35) + PostItemGapF
@@ -112,10 +129,7 @@ class Post {
             m_contentHeight = 0.0
         }
         else {
-            let maxSize = CGSizeMake(m_width, CGFloat(MAXFLOAT))
-            let size = text.boundingRectWithSize(maxSize, options: .UsesLineFragmentOrigin, attributes: ["NSFontAttributeName":UIFont.systemFontOfSize(13.0)], context: nil)
-            let height = Int(size.height + 1.0)
-            m_contentHeight = CGFloat(height)
+            m_contentHeight = getTextHeight(text as String, width: m_width, font: UIFont.systemFontOfSize(13.0))
             m_stackHeight += m_contentHeight
             numStackItems++
         }
@@ -144,15 +158,12 @@ class Post {
     }
     
     func getCommentsHeight() {
-        let maxSize = CGSizeMake(m_width, CGFloat(MAXFLOAT))
-        let attribute = ["NSFontAttributeName":UIFont.systemFontOfSize(13.0)]
         m_commentHeight = 0.0
         m_commentLayout.removeAll()
         for comment in m_comments {
-            let userName = contactsData.getContact(comment.user)?.name
+            let userName = contactsData.getContact(comment.from)?.name
             let commentStr = userName! + comment.cmt + ":"
-            let size = commentStr.boundingRectWithSize(maxSize, options: .UsesLineFragmentOrigin, attributes: attribute, context: nil)
-            let height = CGFloat(Int(size.height + 1.0))
+            let height = getTextHeight(commentStr, width: m_width, font: UIFont.systemFontOfSize(13.0))
             m_commentLayout.append(height)
             m_commentHeight += height
         }

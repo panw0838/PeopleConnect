@@ -81,6 +81,9 @@
          contextName = "ContactsView.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:ContactsView.swift">
       </ContextState>
       <ContextState
+         contextName = "(httpSyncPost() -&gt; ()).(closure #1):Requests+Post.swift">
+      </ContextState>
+      <ContextState
          contextName = "MessegeData.AddNewMessege(UInt64, newMessege : MessegeInfo) -&gt; ():Messege.swift">
       </ContextState>
       <ContextState
@@ -144,6 +147,9 @@
                value = "m_article.frame">
             </PersistentString>
             <PersistentString
+               value = "m_comments.contentOffset">
+            </PersistentString>
+            <PersistentString
                value = "m_previewTop.first?.constant">
             </PersistentString>
             <PersistentString
@@ -184,6 +190,9 @@
       </ContextState>
       <ContextState
          contextName = "Tag.addMember(ContactInfo) -&gt; ():Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "CommentInfo.init(json : [String : AnyObject]) -&gt; CommentInfo?:Data+Post.swift">
       </ContextState>
       <ContextState
          contextName = "MessegeData.PopConversation(UInt64) -&gt; Conversation?:Messege.swift">
