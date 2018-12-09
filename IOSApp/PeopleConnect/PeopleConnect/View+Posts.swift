@@ -35,7 +35,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         let input:String = (alert.textFields?.first?.text)!
         let okAction:UIAlertAction = alert.actions.last!
         let nameSize = input.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
-        okAction.enabled = (nameSize > 0 && nameSize < 18)
+        okAction.enabled = (nameSize > 0 && nameSize < 50)
     }
 
     @IBAction func actComment(sender: AnyObject) {
@@ -47,7 +47,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
             })
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
-            textField.placeholder = "最多输入18个字"
+            textField.placeholder = "最多输入50个字"
             textField.addTarget(self, action: Selector("commentChanged:"), forControlEvents: .EditingChanged)
         }
         okAction.enabled = false
@@ -179,33 +179,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         attStr.setAttributes(attDic, range: NSMakeRange(0, commentStr.characters.count))
         attStr.addAttribute(NSForegroundColorAttributeName, value: UIColor.blueColor(), range: NSMakeRange(0, (userName?.characters.count)!))
         cell.m_comment.attributedText = attStr
-        
-/*
-        let msgStart = (userName?.characters.count)! + 1
-        let msgLength = comment?.cmt.characters.count
-        
-        //cell.m_comment.yb_addAttributeTapActionWithRanges([NSStringFromRange(NSMakeRange(msgStart, msgLength!))], delegate: <#T##YBAttributeTapActionDelegate!#>)
 
-        cell.m_comment.yb_addAttributeTapActionWithRanges(
-            [NSStringFromRange(NSMakeRange(msgStart, msgLength!))],
-            tapClicked: { (label:UILabel!, str:String!, range:NSRange!, idx:Int) -> Void in
-                if comment?.from == userInfo.userID {
-                    let alert = UIAlertController(title: "删除评论", message: "", preferredStyle: .Alert)
-                    let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
-                    let okAction = UIAlertAction(title: "确定", style: .Destructive,
-                        handler: { action in
-                            httpDelComment(self.m_post!, cmt: comment!, pub: PubLvl_Friend)
-                        })
-                    alert.addAction(noAction)
-                    alert.addAction(okAction)
-                    self.m_father!.presentViewController(alert, animated: true, completion: nil)
-                }
-                else {
-                    
-                }
-            }
-        )
-*/
         return cell
     }
     
@@ -214,7 +188,35 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        //todo comment
+        let comment = m_post?.m_comments[indexPath.row]
+        if comment?.from == userInfo.userID {
+            let alert = UIAlertController(title: "删除评论", message: "", preferredStyle: .Alert)
+            let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+            let okAction = UIAlertAction(title: "确定", style: .Destructive,
+                handler: { action in
+                    httpDelComment(self.m_post!, cmt: comment!, pub: PubLvl_Friend)
+            })
+            alert.addAction(noAction)
+            alert.addAction(okAction)
+            self.m_father!.presentViewController(alert, animated: true, completion: nil)
+        }
+        else {
+            let alert = UIAlertController(title: "回复评论", message: comment?.cmt, preferredStyle: .Alert)
+            let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+            let okAction = UIAlertAction(title: "确定", style: .Default,
+                handler: { action in
+                    httpAddComment(self.m_post!, to: (comment?.from)!, pub: PubLvl_Friend, cmt: (alert.textFields?.first?.text)!)
+            })
+            alert.addTextFieldWithConfigurationHandler {
+                (textField: UITextField!) -> Void in
+                textField.placeholder = "最多输入50个字"
+                textField.addTarget(self, action: Selector("commentChanged:"), forControlEvents: .EditingChanged)
+            }
+            okAction.enabled = false
+            alert.addAction(noAction)
+            alert.addAction(okAction)
+            self.m_father!.presentViewController(alert, animated: true, completion: nil)
+        }
     }
 }
 
