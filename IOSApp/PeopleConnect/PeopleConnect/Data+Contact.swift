@@ -371,10 +371,11 @@ class ContactsData {
     }
     
     func loadContacts(contacts:Array<ContactInfo>, userTags:Array<TagInfo>) {
-        // clear tag members
+        // clear friends
         for tag in m_tags {
             tag.clear()
         }
+        m_undefine.clear()
         
         // load user tags
         for tagInfo in userTags {

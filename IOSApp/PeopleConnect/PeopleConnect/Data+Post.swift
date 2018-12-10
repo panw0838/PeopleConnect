@@ -14,6 +14,10 @@ let PubLvl_Friend:UInt8 = 0
 let PubLvl_Group:UInt8 = 1
 let PubLvl_Stranger:UInt8 = 2
 
+var friendPosts:PostData = PostData()
+var selfPosts:PostData = PostData()
+var nearPosts:PostData = PostData()
+var previews = Dictionary<String, UIImage>()
 
 struct PostInfo {
     var user:UInt64 = 0
@@ -70,7 +74,6 @@ extension CommentInfo {
     }
 }
 
-var postData:PostData = PostData()
 let PostItemGap = 8
 let PostItemGapF:CGFloat = 8.0
 
@@ -150,7 +153,7 @@ class Post {
             numStackItems++
         }
         
-        m_stackHeight += (numStackItems > 1 ? CGFloat(numStackItems-1)*8.0 : 0.0)
+        m_stackHeight += (numStackItems > 1 ? CGFloat(numStackItems-1)*5.0 : 0.0)
         m_height += m_stackHeight
     }
     
@@ -226,9 +229,13 @@ class Post {
 
 class PostData {
     var m_posts = Array<Post>()
-    var m_snaps = Dictionary<String, UIImage>()
     
     func AddPost(info:PostInfo) {
+        for post in m_posts {
+            if post.m_info.id == info.id && post.m_info.user == info.user {
+                return
+            }
+        }
         m_posts.append(Post(info: info))
     }
     

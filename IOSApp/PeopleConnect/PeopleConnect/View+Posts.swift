@@ -16,7 +16,7 @@ class CommentCell: UITableViewCell {
     @IBOutlet weak var m_comment: UILabel!
 }
 
-class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, YBAttributeTapActionDelegate {
+class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate {
     
     @IBOutlet weak var m_profile: UIImageView!
     @IBOutlet weak var m_name: UILabel!
@@ -26,6 +26,9 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
     @IBOutlet weak var m_stack: UIStackView!
     @IBOutlet weak var m_liktBtn: UIButton!
     
+
+    @IBOutlet weak var m_textConstrain: NSLayoutConstraint!
+    @IBOutlet weak var m_commentConstrain: NSLayoutConstraint!
     var m_father:PostsView? = nil
     
     func commentChanged(sender:UITextField) {
@@ -63,7 +66,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
     let preGap:CGFloat = 5.0
 
     func reload() {
-        m_post = postData.postAtIdx(m_idx)
+        m_post = friendPosts.postAtIdx(m_idx)
 
         let contact = contactsData.getContact((m_post?.m_info.user)!)
         m_name.text = contact?.name
@@ -78,6 +81,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         if text.length > 0 {
             m_article.hidden = false
             m_article.frame.size = CGSizeMake(m_article.frame.width, (m_post?.m_contentHeight)!)
+            m_textConstrain.constant = (m_post?.m_contentHeight)!
         }
         else {
             m_article.hidden = true
@@ -99,6 +103,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
             m_comments.dataSource = self
             m_comments.delegate = self
             m_comments.frame.size = CGSizeMake(m_comments.frame.width, (m_post?.m_commentHeight)!)
+            m_commentConstrain.constant = (m_post?.m_commentHeight)!
             m_comments.reloadData()
         }
         else {
@@ -117,11 +122,11 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PreviewCell", forIndexPath: indexPath) as! PreviewCell
         let imgKey = m_post?.m_imgKeys[indexPath.row]
-        if postData.m_snaps[imgKey!] == nil {
+        if previews[imgKey!] == nil {
             cell.m_preview.image = UIImage(named: "loading")
         }
         else {
-            cell.m_preview.image = postData.m_snaps[imgKey!]
+            cell.m_preview.image = previews[imgKey!]
         }
         
         let frame = m_previews.frame
@@ -160,10 +165,6 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return (m_post?.m_comments.count)!
-    }
-    
-    func tapMessage() {
-        
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -262,12 +263,12 @@ class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, U
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return postData.numOfPosts()
+        return friendPosts.numOfPosts()
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("PostCell") as! PostCell
-        let post = postData.postAtIdx(indexPath.row)
+        let post = friendPosts.postAtIdx(indexPath.row)
         let contentWidth = m_posts.contentSize.width - PostItemGapF * 2
         cell.m_idx = indexPath.row
         cell.m_father = self
@@ -277,7 +278,7 @@ class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, U
     }
 
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let post = postData.postAtIdx(indexPath.row)
+        let post = friendPosts.postAtIdx(indexPath.row)
         let contentWidth = m_posts.contentSize.width - PostItemGapF * 2
         post.setupGeometry(contentWidth)
         return post.m_height

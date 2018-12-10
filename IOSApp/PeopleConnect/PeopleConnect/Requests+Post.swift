@@ -59,18 +59,18 @@ func httpSyncPost() {
                     if let postObjs = json["posts"] as? [AnyObject] {
                         for case let postObj in (postObjs as? [[String:AnyObject]])! {
                             if let post = PostInfo(json: postObj) {
-                                postData.AddPost(post)
+                                friendPosts.AddPost(post)
                                 // add comments
                                 if let cmtObjs = postObj["cmt"] as? [AnyObject] {
                                     for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
                                         if let cmt = CommentInfo(json: cmtObj) {
-                                            postData.m_posts.last?.m_comments.append(cmt)
+                                            friendPosts.m_posts.last?.m_comments.append(cmt)
                                         }
                                     }
                                 }
                             }
                         }
-                        postData.getPreviews()
+                        friendPosts.getPreviews()
                         for callback in postCallbacks {
                             callback.PostUpdateUI()
                         }
@@ -97,7 +97,7 @@ func httpGetSnapshots(files:Array<String>) {
                 let subDatas = splitData(previewsData)
                 for (i, file) in files.enumerate() {
                     let image = UIImage(data: subDatas[i])
-                    postData.m_snaps[file] = image
+                    previews[file] = image
                 }
                 for callback in postCallbacks {
                     callback.PostUpdateUI()
