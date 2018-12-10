@@ -26,9 +26,6 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
     @IBOutlet weak var m_stack: UIStackView!
     @IBOutlet weak var m_liktBtn: UIButton!
     
-    @IBOutlet weak var m_articleConstrain: NSLayoutConstraint!
-    @IBOutlet weak var m_commentConstrain: NSLayoutConstraint!
-    
     var m_father:PostsView? = nil
     
     func commentChanged(sender:UITextField) {
@@ -80,7 +77,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         let text:NSString = m_article.text!
         if text.length > 0 {
             m_article.hidden = false
-            m_articleConstrain.constant = (m_post?.m_contentHeight)!
+            m_article.frame.size = CGSizeMake(m_article.frame.width, (m_post?.m_contentHeight)!)
         }
         else {
             m_article.hidden = true
@@ -101,11 +98,10 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
             m_comments.hidden = false
             m_comments.dataSource = self
             m_comments.delegate = self
-            m_commentConstrain.constant = (m_post?.m_commentHeight)!
+            m_comments.frame.size = CGSizeMake(m_comments.frame.width, (m_post?.m_commentHeight)!)
             m_comments.reloadData()
         }
         else {
-            m_commentConstrain.constant = 0.0
             m_comments.hidden = true
         }
     }
@@ -180,7 +176,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         var toLength = 0
         
         if comment?.to != 0 {
-            toName = (contactsData.getContact(comment!.from)?.name)!
+            toName = (contactsData.getContact(comment!.to)?.name)!
             cmtStr = fromName! + "回" + toName + ":" + comment!.cmt
             toStart = (fromName?.characters.count)! + 2
             toLength = toName.characters.count
@@ -222,7 +218,8 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
             self.m_father!.presentViewController(alert, animated: true, completion: nil)
         }
         else {
-            let alert = UIAlertController(title: "回复评论", message: comment?.cmt, preferredStyle: .Alert)
+            let userName = contactsData.getContact((comment?.from)!)?.name
+            let alert = UIAlertController(title: "回复 "+userName!, message: comment?.cmt, preferredStyle: .Alert)
             let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
             let okAction = UIAlertAction(title: "确定", style: .Default,
                 handler: { action in
