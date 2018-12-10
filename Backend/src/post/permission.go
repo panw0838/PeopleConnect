@@ -25,25 +25,25 @@ func friendPostFlag(uFlag uint64, pFlag uint64) bool {
 	return ((uFlag & pFlag & user.ContactMask) != 0)
 }
 
-func friendPost(uID uint64, post PostData, c redis.Conn) (bool, error) {
+func friendPost(uID uint64, oID uint64, pFlag uint64, c redis.Conn) (bool, error) {
 	var canSee = true
 
-	if uID != post.Owner {
-		oFlag, _, err := user.GetCashFlag(post.Owner, uID, c)
+	if uID != oID {
+		oFlag, _, err := user.GetCashFlag(oID, uID, c)
 		if err != nil {
 			return false, err
 		}
-		canSee = friendPostFlag(oFlag, post.Flag)
+		canSee = friendPostFlag(oFlag, pFlag)
 	}
 
 	return canSee, nil
 }
 
-func strangerPost(uID uint64, post PostData, c redis.Conn) (bool, error) {
+func strangerPost(uID uint64, oID uint64, c redis.Conn) (bool, error) {
 	var canSee = true
 
-	if uID != post.Owner {
-		isStranger, err := user.IsStranger(uID, post.Owner, c)
+	if uID != oID {
+		isStranger, err := user.IsStranger(uID, oID, c)
 		if err != nil {
 			return false, err
 		}
@@ -53,11 +53,11 @@ func strangerPost(uID uint64, post PostData, c redis.Conn) (bool, error) {
 	return canSee, nil
 }
 
-func publicPost(uID uint64, post PostData, c redis.Conn) (bool, error) {
+func publicPost(uID uint64, oID uint64, c redis.Conn) (bool, error) {
 	var canSee = true
 
-	if uID != post.Owner {
-		isBlacklist, err := user.IsBlacklist(uID, post.Owner, c)
+	if uID != oID {
+		isBlacklist, err := user.IsBlacklist(uID, oID, c)
 		if err != nil {
 			return false, err
 		}
@@ -67,16 +67,16 @@ func publicPost(uID uint64, post PostData, c redis.Conn) (bool, error) {
 	return canSee, nil
 }
 
-func canSeePost(pubLvl uint8, uID uint64, post PostData, c redis.Conn) (bool, error) {
+func canSeePost(pubLvl uint8, uID uint64, oID uint64, pFlag uint64, c redis.Conn) (bool, error) {
 	if pubLvl == PubLvl_Friend {
 		// friends publish
-		return friendPost(uID, post, c)
+		return friendPost(uID, oID, pFlag, c)
 	} else if pubLvl == PubLvl_Group {
 		// group publish
-		return publicPost(uID, post, c)
+		return publicPost(uID, oID, c)
 	} else if pubLvl == PubLvl_Stranger {
 		// stranger publish
-		return strangerPost(uID, post, c)
+		return strangerPost(uID, oID, c)
 	}
 	return false, nil
 }

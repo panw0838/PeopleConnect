@@ -24,14 +24,14 @@ func getPostKey(userID uint64) string {
 	return "post:" + strconv.FormatUint(userID, 10)
 }
 
-func dbAddPost(uID uint64, pID uint64, data PostData, c redis.Conn) error {
+func dbAddPost(uID uint64, data PostData, c redis.Conn) error {
 	bytes, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 
 	postKey := getPostKey(uID)
-	_, err = c.Do("ZADD", postKey, pID, string(bytes))
+	_, err = c.Do("ZADD", postKey, data.ID, string(bytes))
 	if err != nil {
 		return err
 	}

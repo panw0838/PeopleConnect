@@ -10,7 +10,7 @@ import (
 )
 
 func getFPubKey(uID uint64) string {
-	return "fposts" + strconv.FormatUint(uID, 10)
+	return "fposts:" + strconv.FormatUint(uID, 10)
 }
 
 func getGPubKey(gID int) string {
@@ -38,7 +38,7 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 				return err
 			}
 			fpostsKey := getFPubKey(cID)
-			canSee, err := friendPost(cID, post, c)
+			canSee, err := friendPost(cID, uID, post.Flag, c)
 			if err != nil {
 				return err
 			}
@@ -98,7 +98,7 @@ func dbGetPublish(uID uint64, pubLvl uint8, key string, from uint64, to uint64, 
 			}
 
 			post.Owner = cID
-			canSee, err := canSeePost(pubLvl, uID, post, c)
+			canSee, err := canSeePost(pubLvl, uID, cID, post.Flag, c)
 			if err != nil {
 				return nil, err
 			}

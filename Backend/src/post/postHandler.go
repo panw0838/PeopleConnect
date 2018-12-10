@@ -165,13 +165,14 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	postData.Y = input.Y
 	postData.Files = files
 	postData.ID = pID
-	err = dbAddPost(input.User, pID, postData, c)
+	err = dbAddPost(input.User, postData, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		removePostFiles(input.User, pID)
 		return
 	}
 
+	postData.Owner = input.User
 	err = dbPublishPost(input.User, postData, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
@@ -193,8 +194,8 @@ func DelPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type SyncPostInput struct {
-	User uint64 `json:"user"`
-	Post uint64 `json:"post"`
+	User   uint64 `json:"user"`
+	PostID uint64 `json:"post"`
 }
 
 type SyncPostReturn struct {
@@ -218,7 +219,11 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	now := share.GetTimeID(time.Now())
 	key := getFPubKey(input.User)
-	posts, err := dbGetPublish(input.User, PubLvl_Friend, key, input.Post, now, c)
+	var from uint64 = 0
+	if input.PostID != 0 {
+		from = input.PostID + 1
+	}
+	posts, err := dbGetPublish(input.User, PubLvl_Friend, key, from, now, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
