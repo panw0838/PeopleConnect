@@ -201,6 +201,11 @@
       </ContextState>
       <ContextState
          contextName = "(httpSyncPost() -&gt; ()).(closure #1):Requests+Post.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "userInfo.userID">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "TCPClient.logon() -&gt; ():Observer.swift">
@@ -220,34 +225,10 @@
          contextName = "PostCell.reload() -&gt; ():View+Posts.swift">
          <PersistentStrings>
             <PersistentString
-               value = "m_commentConstrain.constant">
+               value = "m_post?.m_info.content">
             </PersistentString>
             <PersistentString
-               value = "m_cellButtom.first?.constant">
-            </PersistentString>
-            <PersistentString
-               value = "m_previews.frame">
-            </PersistentString>
-            <PersistentString
-               value = "m_comments.frame">
-            </PersistentString>
-            <PersistentString
-               value = "m_article.frame">
-            </PersistentString>
-            <PersistentString
-               value = "m_comments.contentOffset">
-            </PersistentString>
-            <PersistentString
-               value = "m_stack.frame">
-            </PersistentString>
-            <PersistentString
-               value = "m_previewTop.first?.constant">
-            </PersistentString>
-            <PersistentString
-               value = "m_previews">
-            </PersistentString>
-            <PersistentString
-               value = "m_post?.m_comments">
+               value = "m_post">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

@@ -26,6 +26,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
     @IBOutlet weak var m_stack: UIStackView!
     @IBOutlet weak var m_liktBtn: UIButton!
     
+    @IBOutlet weak var m_articleConstrain: NSLayoutConstraint!
     @IBOutlet weak var m_commentConstrain: NSLayoutConstraint!
     
     var m_father:PostsView? = nil
@@ -79,7 +80,7 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
         let text:NSString = m_article.text!
         if text.length > 0 {
             m_article.hidden = false
-            m_article.frame.size = CGSizeMake(m_article.frame.width, (m_post?.m_contentHeight)!)
+            m_articleConstrain.constant = (m_post?.m_contentHeight)!
         }
         else {
             m_article.hidden = true
@@ -172,12 +173,32 @@ class PostCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDel
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("CommentCell", forIndexPath: indexPath) as! CommentCell
         let comment = m_post?.m_comments[indexPath.row]
-        let userName = contactsData.getContact(comment!.from)?.name
-        let commentStr = userName! + ":" + comment!.cmt
-        let attStr = NSMutableAttributedString(string: commentStr)
+        let fromName = contactsData.getContact(comment!.from)?.name
+        var toName = ""
+        var cmtStr = ""
+        var toStart = 0
+        var toLength = 0
+        
+        if comment?.to != 0 {
+            toName = (contactsData.getContact(comment!.from)?.name)!
+            cmtStr = fromName! + "回" + toName + ":" + comment!.cmt
+            toStart = (fromName?.characters.count)! + 2
+            toLength = toName.characters.count
+        }
+        else {
+            cmtStr = fromName! + ":" + comment!.cmt
+        }
+        
+        let attStr = NSMutableAttributedString(string: cmtStr)
         let attDic:Dictionary = [NSForegroundColorAttributeName:UIColor.blackColor()]
-        attStr.setAttributes(attDic, range: NSMakeRange(0, commentStr.characters.count))
-        attStr.addAttribute(NSForegroundColorAttributeName, value: UIColor.blueColor(), range: NSMakeRange(0, (userName?.characters.count)!))
+
+        attStr.setAttributes(attDic, range: NSMakeRange(0, cmtStr.characters.count))
+        attStr.addAttribute(NSForegroundColorAttributeName, value: UIColor.blueColor(), range: NSMakeRange(0, (fromName?.characters.count)!))
+        
+        if comment?.to != 0 {
+            attStr.addAttribute(NSForegroundColorAttributeName, value: UIColor.blueColor(), range: NSMakeRange(toStart, toLength))
+        }
+        
         cell.m_comment.attributedText = attStr
 
         return cell

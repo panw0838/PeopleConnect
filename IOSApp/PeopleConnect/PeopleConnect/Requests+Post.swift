@@ -137,7 +137,7 @@ func httpAddComment(post:Post, to:UInt64, pub:UInt8, cmt:String) {
                     if let id = json["cid"] as? NSNumber {
                         var newComment = CommentInfo()
                         newComment.from = userInfo.userID
-                        newComment.to   = post.m_info.user
+                        newComment.to   = to
                         newComment.id   = id.unsignedLongLongValue
                         newComment.cmt  = cmt
                         post.m_comments.append(newComment)
