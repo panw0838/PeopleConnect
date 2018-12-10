@@ -66,7 +66,7 @@ class ContactsView: UIViewController,
     }
     
     @IBAction func AddNewTag(sender: AnyObject) {
-        let curTag = contactsData.getSubTag(m_curTag, subIdx: 0)
+        let curTag = contactsData.m_tags[m_curTag]
         let alert = UIAlertController(title: "添加标签", message: "添加子标签到 "+curTag.m_tagName, preferredStyle: .Alert)
         let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Default,
