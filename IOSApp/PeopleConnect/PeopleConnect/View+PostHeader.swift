@@ -101,7 +101,7 @@ class PostHeader: UITableViewHeaderFooterView {
     @IBAction func actLike(sender: AnyObject) {
     }
 
-    func reload(post:Post) {
+    func reload(post:Post, width:CGFloat) {
         m_post = post
         var buttom:CGFloat = 0.0
         let contact = contactsData.getContact((m_post?.m_info.user)!)
@@ -114,11 +114,11 @@ class PostHeader: UITableViewHeaderFooterView {
         m_name.frame = CGRectMake(45, 0, 100, 20)
         
         if m_post?.m_info.content.characters.count > 0 {
-            let height = getTextHeight(post.m_info.content, width: self.frame.width, font: articleFont)
+            let height = getTextHeight(post.m_info.content, width: width, font: articleFont)
             m_article.text = m_post?.m_info.content
             m_article.hidden = false
             m_article.sizeToFit()
-            m_article.frame = CGRectMake(0, buttom + PostItemGapF, self.frame.width, height)
+            m_article.frame = CGRectMake(0, buttom + PostItemGapF, width, height)
             buttom += (height + PostItemGapF)
         }
         else {

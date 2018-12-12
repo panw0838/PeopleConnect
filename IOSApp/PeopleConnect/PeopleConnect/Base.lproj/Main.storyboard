@@ -1077,18 +1077,18 @@
                                             <rect key="frame" x="0.0" y="0.0" width="560" height="17"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fvf-gd-1TS">
-                                                    <rect key="frame" x="0.0" y="1" width="560" height="16"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="用户回复" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fvf-gd-1TS">
+                                                    <rect key="frame" x="0.0" y="0.0" width="560" height="17"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="fvf-gd-1TS" firstAttribute="centerY" secondItem="ecr-L4-zch" secondAttribute="centerY" id="IFK-x6-tNi"/>
-                                                <constraint firstAttribute="trailing" secondItem="fvf-gd-1TS" secondAttribute="trailing" id="Ief-lx-NGw"/>
-                                                <constraint firstAttribute="bottom" secondItem="fvf-gd-1TS" secondAttribute="bottom" id="naL-FT-KiB"/>
-                                                <constraint firstItem="fvf-gd-1TS" firstAttribute="leading" secondItem="ecr-L4-zch" secondAttribute="leading" id="vyj-t4-sj9"/>
+                                                <constraint firstItem="fvf-gd-1TS" firstAttribute="top" secondItem="ecr-L4-zch" secondAttribute="top" id="9iJ-rm-lYW"/>
+                                                <constraint firstItem="fvf-gd-1TS" firstAttribute="leading" secondItem="ecr-L4-zch" secondAttribute="leading" id="PnP-eP-MDx"/>
+                                                <constraint firstAttribute="bottom" secondItem="fvf-gd-1TS" secondAttribute="bottom" id="sKJ-G5-Me5"/>
+                                                <constraint firstAttribute="trailing" secondItem="fvf-gd-1TS" secondAttribute="trailing" id="zGD-Hn-xLj"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>

@@ -232,6 +232,9 @@
             <PersistentString
                value = "post.m_info.content">
             </PersistentString>
+            <PersistentString
+               value = "self.frame.width">
+            </PersistentString>
          </PersistentStrings>
       </ContextState>
       <ContextState
@@ -309,6 +312,14 @@
             </PersistentString>
             <PersistentString
                value = "m_post?.m_contentHeight">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "PostHeader.reload(Post, width : CGFloat) -&gt; ():View+PostHeader.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_post?.m_info.content">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

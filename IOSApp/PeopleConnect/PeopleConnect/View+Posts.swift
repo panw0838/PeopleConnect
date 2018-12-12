@@ -82,7 +82,7 @@ class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, U
         let header = tableView.dequeueReusableHeaderFooterViewWithIdentifier("PostHeader") as! PostHeader
         let post = friendPosts.postAtIdx(section)
         header.m_father = self
-        header.reload(post)
+        header.reload(post, width:m_posts.contentSize.width)
         return header
     }
 
@@ -95,14 +95,14 @@ class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, U
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         let post = friendPosts.postAtIdx(section)
-        return post.getHeight(m_posts.frame.width)
+        return post.getHeight(m_posts.contentSize.width)
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let post = friendPosts.postAtIdx(indexPath.section)
         let comment = post.m_comments[indexPath.row]
         if comment.from == userInfo.userID {
-            let alert = UIAlertController(title: "删除评论", message: "", preferredStyle: .Alert)
+            let alert = UIAlertController(title: "删除评论", message: comment.cmt, preferredStyle: .Alert)
             let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
             let okAction = UIAlertAction(title: "确定", style: .Destructive,
                 handler: { action in
