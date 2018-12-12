@@ -247,6 +247,14 @@
          contextName = "HttpService.(loginRequest(HttpService) -&gt; () -&gt; ()).(closure #1):Requests.swift">
       </ContextState>
       <ContextState
+         contextName = "PostsView.tableView(UITableView, heightForHeaderInSection : Int) -&gt; CGFloat:View+Posts.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_posts.frame">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ContactsView.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:ContactsView.swift">
       </ContextState>
       <ContextState
@@ -273,6 +281,23 @@
       </ContextState>
       <ContextState
          contextName = "HttpService.(loginRequest(HttpService) -&gt; () -&gt; ()).(closure #2):Requests.swift">
+      </ContextState>
+      <ContextState
+         contextName = "PostHeader.reload(Post) -&gt; ():View+Posts.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.frame">
+            </PersistentString>
+            <PersistentString
+               value = "m_post!.m_width">
+            </PersistentString>
+            <PersistentString
+               value = "m_post">
+            </PersistentString>
+            <PersistentString
+               value = "m_post?.m_contentHeight">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "Post.getCommentsHeight() -&gt; ():Data+Post.swift">

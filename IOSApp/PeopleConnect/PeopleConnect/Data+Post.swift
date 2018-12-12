@@ -14,6 +14,10 @@ let PubLvl_Friend:UInt8 = 0
 let PubLvl_Group:UInt8 = 1
 let PubLvl_Stranger:UInt8 = 2
 
+let nameFont = UIFont.systemFontOfSize(17.0)
+let articleFont = UIFont.systemFontOfSize(15.0)
+let commentFont = UIFont.systemFontOfSize(15.0)
+
 var friendPosts:PostData = PostData()
 var selfPosts:PostData = PostData()
 var nearPosts:PostData = PostData()
@@ -55,6 +59,21 @@ struct CommentInfo {
     var to:UInt64 = 0
     var id:UInt64 = 0
     var cmt:String = ""
+    
+    func getString()->String {
+        var str = ""
+        let fromName = contactsData.getContact(from)!.name
+        
+        if from != to && to != 0 {
+            let toName = contactsData.getContact(to)!.name
+            str = fromName + "回" + toName + "：" + cmt
+        }
+        else {
+            str = fromName + "：" + cmt
+        }
+        
+        return str
+    }
 }
 
 extension CommentInfo {
@@ -74,8 +93,14 @@ extension CommentInfo {
     }
 }
 
-let PostItemGap = 8
-let PostItemGapF:CGFloat = 8.0
+let PostItemGap = 5
+let PostItemGapF:CGFloat = 5.0
+
+func getTextHeight(text:String, width:CGFloat, font:UIFont)->CGFloat {
+    let maxSize = CGSizeMake(width, CGFloat(MAXFLOAT))
+    let size = text.boundingRectWithSize(maxSize, options: .UsesLineFragmentOrigin, attributes: ["NSFontAttributeName":font], context: nil)
+    return CGFloat(Int(size.height + 1.0))
+}
 
 class Post {
     var m_info:PostInfo = PostInfo()
@@ -83,16 +108,18 @@ class Post {
     var m_comments = Array<CommentInfo>()
     var m_imgUrls  = Array<String>()
     var m_imgKeys  = Array<String>()
-    var m_commentLayout = Array<CGFloat>()
-    var m_previewLayout = Array<CGRect>()
     
     var m_geoSetted = false
     var m_width:CGFloat = 0.0
+    var m_height:CGFloat = 0.0
+
     var m_contentHeight:CGFloat = 0.0
     var m_previewHeight:CGFloat = 0.0
     var m_commentHeight:CGFloat = 0.0
+    var m_contentY:CGFloat = 0.0
+    var m_previewY:CGFloat = 0.0
+    var m_commentY:CGFloat = 0.0
     var m_stackHeight:CGFloat = 0.0
-    var m_height:CGFloat = 0.0
 
     init(info:PostInfo) {
         m_info = info
@@ -113,117 +140,37 @@ class Post {
         updateGeometry()
     }
     
-    func getTextHeight(text:String, width:CGFloat, font:UIFont)->CGFloat {
-        let maxSize = CGSizeMake(width, CGFloat(MAXFLOAT))
-        let size = text.boundingRectWithSize(maxSize, options: .UsesLineFragmentOrigin, attributes: ["NSFontAttributeName":font], context: nil)
-        return CGFloat(Int(size.height + 1.0))
-    }
-    
     func updateGeometry() {
         var numStackItems = 0
-        m_height = CGFloat(35) + PostItemGapF
+        m_height = CGFloat(40)
         m_stackHeight = 0.0
+        var buttom = m_height
         
-        let text:NSString = m_info.content
-        if text.length == 0 {
+        if m_info.content.characters.count == 0 {
             m_contentHeight = 0.0
         }
         else {
-            m_contentHeight = getTextHeight(text as String, width: m_width, font: UIFont.systemFontOfSize(13.0))
+            m_contentY = buttom + PostItemGapF
+            m_contentHeight = getTextHeight(m_info.content, width: m_width, font: articleFont)
             m_stackHeight += m_contentHeight
             numStackItems++
+            buttom += (m_contentHeight + PostItemGapF)
+            m_height += (m_contentHeight + PostItemGapF)
         }
         
         if m_imgUrls.count == 0 {
             m_previewHeight = 0.0
         }
         else {
-            setupPreviewGeo()
-            m_previewHeight = 130.0
+            m_previewY = buttom + PostItemGapF
+            m_previewHeight = (m_width - PostItemGapF) / 2
             m_stackHeight += m_previewHeight
             numStackItems++
+            buttom += (m_previewHeight + PostItemGapF)
+            m_height += (m_previewHeight + PostItemGapF)
         }
-        
-        if m_comments.count == 0 {
-            m_commentHeight = 0.0
-        }
-        else {
-            getCommentsHeight()
-            m_stackHeight += m_commentHeight
-            numStackItems++
-        }
-        
-        m_stackHeight += (numStackItems > 1 ? CGFloat(numStackItems-1)*5.0 : 0.0)
-        m_height += m_stackHeight
-    }
-    
-    func getCommentsHeight() {
-        m_commentHeight = 0.0
-        m_commentLayout.removeAll()
-        for comment in m_comments {
-            let userName = contactsData.getContact(comment.from)?.name
-            let commentStr = userName! + comment.cmt + ":"
-            let height = getTextHeight(commentStr, width: m_width, font: UIFont.systemFontOfSize(13.0))
-            m_commentLayout.append(height)
-            m_commentHeight += height
-        }
-    }
-    
-    func setupPreviewGeo() {
-        m_previewLayout.removeAll()
-        let previewCount = m_imgUrls.count
-        if previewCount == 1 {
-            m_previewLayout.append(CGRectMake(0, 0, 1, 1))
-        }
-        else if previewCount == 2 {
-            m_previewLayout.append(CGRectMake(0, 0, 2, 1))
-            m_previewLayout.append(CGRectMake(0, 1, 2, 1))
-        }
-        else if previewCount == 3 {
-            m_previewLayout.append(CGRectMake(0, 0, 3, 1))
-            m_previewLayout.append(CGRectMake(1, 0, 3, 1))
-            m_previewLayout.append(CGRectMake(2, 0, 3, 1))
-        }
-        else if previewCount == 4 {
-            m_previewLayout.append(CGRectMake(0, 0, 4, 1))
-            m_previewLayout.append(CGRectMake(1, 0, 4, 1))
-            m_previewLayout.append(CGRectMake(2, 0, 4, 1))
-            m_previewLayout.append(CGRectMake(3, 0, 4, 1))
-        }
-        else if previewCount == 5 {
-            m_previewLayout.append(CGRectMake(0, 0, 4, 1))
-            m_previewLayout.append(CGRectMake(1, 0, 4, 1))
-            m_previewLayout.append(CGRectMake(2, 0, 4, 1))
-            m_previewLayout.append(CGRectMake(3, 0, 4, 2))
-            m_previewLayout.append(CGRectMake(3, 1, 4, 2))
-        }
-        else if previewCount == 6 {
-            m_previewLayout.append(CGRectMake(0, 0, 3, 2))
-            m_previewLayout.append(CGRectMake(1, 0, 3, 2))
-            m_previewLayout.append(CGRectMake(2, 0, 3, 2))
-            m_previewLayout.append(CGRectMake(0, 1, 3, 2))
-            m_previewLayout.append(CGRectMake(1, 1, 3, 2))
-            m_previewLayout.append(CGRectMake(2, 1, 3, 2))
-        }
-        else if previewCount == 7 {
-            m_previewLayout.append(CGRectMake(0, 0, 4, 2))
-            m_previewLayout.append(CGRectMake(1, 0, 4, 2))
-            m_previewLayout.append(CGRectMake(2, 0, 4, 2))
-            m_previewLayout.append(CGRectMake(0, 1, 4, 2))
-            m_previewLayout.append(CGRectMake(1, 1, 4, 2))
-            m_previewLayout.append(CGRectMake(2, 1, 4, 2))
-            m_previewLayout.append(CGRectMake(3, 0, 4, 1))
-        }
-        else if previewCount == 8 {
-            m_previewLayout.append(CGRectMake(0, 0, 4, 2))
-            m_previewLayout.append(CGRectMake(1, 0, 4, 2))
-            m_previewLayout.append(CGRectMake(2, 0, 4, 2))
-            m_previewLayout.append(CGRectMake(3, 0, 4, 2))
-            m_previewLayout.append(CGRectMake(0, 1, 4, 2))
-            m_previewLayout.append(CGRectMake(1, 1, 4, 2))
-            m_previewLayout.append(CGRectMake(2, 1, 3, 2))
-            m_previewLayout.append(CGRectMake(3, 1, 4, 2))
-        }
+
+        m_stackHeight += (numStackItems > 1 ? CGFloat(numStackItems-1)*PostItemGapF : 0.0)
     }
 }
 
