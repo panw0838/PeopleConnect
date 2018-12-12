@@ -14,10 +14,6 @@ let PubLvl_Friend:UInt8 = 0
 let PubLvl_Group:UInt8 = 1
 let PubLvl_Stranger:UInt8 = 2
 
-let nameFont = UIFont.systemFontOfSize(17.0)
-let articleFont = UIFont.systemFontOfSize(15.0)
-let commentFont = UIFont.systemFontOfSize(15.0)
-
 var friendPosts:PostData = PostData()
 var selfPosts:PostData = PostData()
 var nearPosts:PostData = PostData()
@@ -109,18 +105,6 @@ class Post {
     var m_imgUrls  = Array<String>()
     var m_imgKeys  = Array<String>()
     
-    var m_geoSetted = false
-    var m_width:CGFloat = 0.0
-    var m_height:CGFloat = 0.0
-
-    var m_contentHeight:CGFloat = 0.0
-    var m_previewHeight:CGFloat = 0.0
-    var m_commentHeight:CGFloat = 0.0
-    var m_contentY:CGFloat = 0.0
-    var m_previewY:CGFloat = 0.0
-    var m_commentY:CGFloat = 0.0
-    var m_stackHeight:CGFloat = 0.0
-
     init(info:PostInfo) {
         m_info = info
         
@@ -131,46 +115,10 @@ class Post {
         }
     }
     
-    func setupGeometry(width:CGFloat) {
-        if m_geoSetted {
-            return
-        }
-        m_geoSetted = true
-        m_width = width
-        updateGeometry()
-    }
-    
-    func updateGeometry() {
-        var numStackItems = 0
-        m_height = CGFloat(40)
-        m_stackHeight = 0.0
-        var buttom = m_height
-        
-        if m_info.content.characters.count == 0 {
-            m_contentHeight = 0.0
-        }
-        else {
-            m_contentY = buttom + PostItemGapF
-            m_contentHeight = getTextHeight(m_info.content, width: m_width, font: articleFont)
-            m_stackHeight += m_contentHeight
-            numStackItems++
-            buttom += (m_contentHeight + PostItemGapF)
-            m_height += (m_contentHeight + PostItemGapF)
-        }
-        
-        if m_imgUrls.count == 0 {
-            m_previewHeight = 0.0
-        }
-        else {
-            m_previewY = buttom + PostItemGapF
-            m_previewHeight = (m_width - PostItemGapF) / 2
-            m_stackHeight += m_previewHeight
-            numStackItems++
-            buttom += (m_previewHeight + PostItemGapF)
-            m_height += (m_previewHeight + PostItemGapF)
-        }
-
-        m_stackHeight += (numStackItems > 1 ? CGFloat(numStackItems-1)*PostItemGapF : 0.0)
+    func getHeight(width:CGFloat)->CGFloat {
+        let articleHeight = (m_info.content.characters.count == 0 ? 0.0 : (getTextHeight(m_info.content, width: width, font: articleFont) + PostItemGapF))
+        let previewHeight = (m_imgUrls.count == 0 ? 0.0 : ((width - PostItemGapF) / 2 + PostItemGapF))
+        return articleHeight + previewHeight + 40 + PostItemGapF
     }
 }
 

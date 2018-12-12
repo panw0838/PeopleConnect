@@ -42,6 +42,8 @@
 		18E8CBA2219331A400E29383 /* PeopleConnectUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CBA1219331A400E29383 /* PeopleConnectUITests.swift */; };
 		18E8CBB02193441500E29383 /* Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CBAF2193441500E29383 /* Requests.swift */; };
 		18FF5DCF21C0FC30008DB746 /* PostHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18FF5DCE21C0FC30008DB746 /* PostHeader.xib */; };
+		18FF5DD921C14BF9008DB746 /* View+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF5DD821C14BF9008DB746 /* View+Settings.swift */; };
+		18FF5DE121C156A7008DB746 /* View+PostHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF5DE021C156A7008DB746 /* View+PostHeader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -201,6 +203,8 @@
 		18E8CBA3219331A400E29383 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		18E8CBAF2193441500E29383 /* Requests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Requests.swift; sourceTree = "<group>"; };
 		18FF5DCE21C0FC30008DB746 /* PostHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PostHeader.xib; sourceTree = "<group>"; };
+		18FF5DD821C14BF9008DB746 /* View+Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "View+Settings.swift"; path = "../View+Settings.swift"; sourceTree = "<group>"; };
+		18FF5DE021C156A7008DB746 /* View+PostHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+PostHeader.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -296,6 +300,7 @@
 				1854304821B01E27004973E6 /* Data+Post.swift */,
 				18DB289521A1C2C30024092C /* Data+Messege.swift */,
 				18D3A8E42198061100EB3289 /* Data+Contact.swift */,
+				18FF5DD821C14BF9008DB746 /* View+Settings.swift */,
 				18AE4209219AC4170008B792 /* View+Login.swift */,
 				18DB289721A1CD200024092C /* View+Conversation.swift */,
 				18D3A8DE2197F3CD00EB3289 /* View+Messages.swift */,
@@ -303,6 +308,7 @@
 				18D3A8E02198015C00EB3289 /* View+Contacts.swift */,
 				18DB2879219D85BF0024092C /* View+MoveMembers.swift */,
 				18D3A8E22198017000EB3289 /* View+Posts.swift */,
+				18FF5DE021C156A7008DB746 /* View+PostHeader.swift */,
 				1801E9B121BFB1ED004C3FE2 /* View+PostImage.swift */,
 				1854304621AD78A4004973E6 /* View+CreatePost.swift */,
 				1806A87721B7F556005A5AF1 /* View+ImagePicker.swift */,
@@ -558,6 +564,7 @@
 				18DB289221A03FCC0024092C /* View+Contact.swift in Sources */,
 				1801E9B221BFB1ED004C3FE2 /* View+PostImage.swift in Sources */,
 				18DB289821A1CD200024092C /* View+Conversation.swift in Sources */,
+				18FF5DE121C156A7008DB746 /* View+PostHeader.swift in Sources */,
 				18AE420A219AC4170008B792 /* View+Login.swift in Sources */,
 				18DB289C21A3AF750024092C /* Requests+Tag.swift in Sources */,
 				18D3A8DF2197F3CD00EB3289 /* View+Messages.swift in Sources */,
@@ -573,6 +580,7 @@
 				18DB289A21A3A8BA0024092C /* Requests+Contact.swift in Sources */,
 				18D3A8E12198015C00EB3289 /* View+Contacts.swift in Sources */,
 				1806A87821B7F556005A5AF1 /* View+ImagePicker.swift in Sources */,
+				18FF5DD921C14BF9008DB746 /* View+Settings.swift in Sources */,
 				1854304521AC3D99004973E6 /* Requests+Post.swift in Sources */,
 				1854304921B01E27004973E6 /* Data+Post.swift in Sources */,
 			);

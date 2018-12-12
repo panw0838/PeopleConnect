@@ -142,8 +142,6 @@ func httpAddComment(post:Post, to:UInt64, pub:UInt8, cmt:String) {
                         newComment.cmt  = cmt
                         post.m_comments.append(newComment)
                     }
-
-                    post.updateGeometry()
                     
                     for callback in postCallbacks {
                         callback.PostUpdateUI()
@@ -186,9 +184,7 @@ func httpDelComment(post:Post, cmt:CommentInfo, pub:UInt8) {
                             post.m_comments.removeAtIndex(idx)
                         }
                     }
-                    
-                    post.updateGeometry()
-                    
+                                        
                     for callback in postCallbacks {
                         callback.PostUpdateUI()
                     }
