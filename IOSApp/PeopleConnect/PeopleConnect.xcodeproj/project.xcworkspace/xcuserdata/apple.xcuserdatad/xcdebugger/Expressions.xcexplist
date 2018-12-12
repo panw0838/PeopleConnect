@@ -145,6 +145,11 @@
       </ContextState>
       <ContextState
          contextName = "PostsView.tableView(UITableView, heightForRowAtIndexPath : NSIndexPath) -&gt; CGFloat:View+Posts.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_posts.contentSize.width">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "PostInfo.init(json : [String : AnyObject]) -&gt; PostInfo?:Data+Post.swift">
@@ -220,6 +225,14 @@
       </ContextState>
       <ContextState
          contextName = "MessegesView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Messeges.swift">
+      </ContextState>
+      <ContextState
+         contextName = "PostHeader.reload(Post) -&gt; ():View+PostHeader.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "post.m_info.content">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "PostCell.reload() -&gt; ():View+Posts.swift">

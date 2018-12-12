@@ -1062,7 +1062,7 @@
                                     <action selector="switchPosts:" destination="YL6-cw-Vsr" eventType="valueChanged" id="xO7-vN-Lee"/>
                                 </connections>
                             </segmentedControl>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="singleLineEtched" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="269" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="Rgo-PK-W5t">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="singleLineEtched" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="16" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="Rgo-PK-W5t">
                                 <rect key="frame" x="20" y="108" width="560" height="435"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="separatorColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -1070,25 +1070,25 @@
                                 <color key="sectionIndexBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="sectionIndexTrackingBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CommentCell" rowHeight="14" id="Je6-vN-obm" customClass="CommentCell" customModule="PeopleConnect" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="50" width="560" height="14"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CommentCell" rowHeight="18" id="Je6-vN-obm" customClass="CommentCell" customModule="PeopleConnect" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="50" width="560" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Je6-vN-obm" id="ecr-L4-zch">
-                                            <rect key="frame" x="0.0" y="0.0" width="560" height="13"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="560" height="17"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fvf-gd-1TS">
-                                                    <rect key="frame" x="8" y="0.0" width="544" height="14"/>
+                                                    <rect key="frame" x="0.0" y="1" width="560" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="fvf-gd-1TS" firstAttribute="top" secondItem="ecr-L4-zch" secondAttribute="top" id="2u5-bM-d8v"/>
-                                                <constraint firstItem="fvf-gd-1TS" firstAttribute="leading" secondItem="ecr-L4-zch" secondAttribute="leadingMargin" id="IxT-yR-vaW"/>
-                                                <constraint firstItem="fvf-gd-1TS" firstAttribute="centerY" secondItem="ecr-L4-zch" secondAttribute="centerY" id="Pfv-6F-xPE"/>
-                                                <constraint firstItem="fvf-gd-1TS" firstAttribute="trailing" secondItem="ecr-L4-zch" secondAttribute="trailingMargin" id="XGj-Rl-lSv"/>
+                                                <constraint firstItem="fvf-gd-1TS" firstAttribute="centerY" secondItem="ecr-L4-zch" secondAttribute="centerY" id="IFK-x6-tNi"/>
+                                                <constraint firstAttribute="trailing" secondItem="fvf-gd-1TS" secondAttribute="trailing" id="Ief-lx-NGw"/>
+                                                <constraint firstAttribute="bottom" secondItem="fvf-gd-1TS" secondAttribute="bottom" id="naL-FT-KiB"/>
+                                                <constraint firstItem="fvf-gd-1TS" firstAttribute="leading" secondItem="ecr-L4-zch" secondAttribute="leading" id="vyj-t4-sj9"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>

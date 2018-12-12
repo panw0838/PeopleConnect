@@ -89,15 +89,6 @@ extension CommentInfo {
     }
 }
 
-let PostItemGap = 5
-let PostItemGapF:CGFloat = 5.0
-
-func getTextHeight(text:String, width:CGFloat, font:UIFont)->CGFloat {
-    let maxSize = CGSizeMake(width, CGFloat(MAXFLOAT))
-    let size = text.boundingRectWithSize(maxSize, options: .UsesLineFragmentOrigin, attributes: ["NSFontAttributeName":font], context: nil)
-    return CGFloat(Int(size.height + 1.0))
-}
-
 class Post {
     var m_info:PostInfo = PostInfo()
     var m_likes = Array<UInt64>()
@@ -118,7 +109,7 @@ class Post {
     func getHeight(width:CGFloat)->CGFloat {
         let articleHeight = (m_info.content.characters.count == 0 ? 0.0 : (getTextHeight(m_info.content, width: width, font: articleFont) + PostItemGapF))
         let previewHeight = (m_imgUrls.count == 0 ? 0.0 : ((width - PostItemGapF) / 2 + PostItemGapF))
-        return articleHeight + previewHeight + 40 + PostItemGapF
+        return articleHeight + previewHeight + 40 + PostItemGapF + 20 + PostItemGapF
     }
 }
 

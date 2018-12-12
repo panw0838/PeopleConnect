@@ -58,15 +58,17 @@ class PostHeader: UITableViewHeaderFooterView {
         //m_showAllBtn.addTarget(self, action: "showAllArticle", forControlEvents: .TouchUpInside)
         self.addSubview(m_showAllBtn)
         
-        m_article.lineBreakMode = .ByWordWrapping
+        m_article.lineBreakMode = .ByCharWrapping
         m_article.numberOfLines = 0
         self.addSubview(m_article)
         
         self.addSubview(m_previews)
         
+        m_liktBtn.setImage(UIImage(named: "comment_like"), forState: .Normal)
         self.addSubview(m_liktBtn)
         
-        m_commentBtn.addTarget(self, action: "actComment", forControlEvents: .TouchDown)
+        m_commentBtn.setImage(UIImage(named: "comment_cmt"), forState: .Normal)
+        m_commentBtn.addTarget(self, action: Selector("actComment:"), forControlEvents: .TouchDown)
         self.addSubview(m_commentBtn)
     }
     
@@ -111,20 +113,11 @@ class PostHeader: UITableViewHeaderFooterView {
         m_name.text = contact?.name
         m_name.frame = CGRectMake(45, 0, 100, 20)
         
-        m_commentBtn.imageView?.image = UIImage(named: "comment_cmt")
-        m_commentBtn.frame = CGRectMake(200, 20, 25, 25)
-        
-        m_liktBtn.imageView?.image = UIImage(named: "comment_like")
-        m_liktBtn.frame = CGRectMake(250, 20, 25, 25)
-        
-        m_article.text = m_post?.m_info.content
-        
-        // sub view rects
-        m_article.backgroundColor = UIColor.yellowColor()
-        
         if m_post?.m_info.content.characters.count > 0 {
             let height = getTextHeight(post.m_info.content, width: self.frame.width, font: articleFont)
+            m_article.text = m_post?.m_info.content
             m_article.hidden = false
+            m_article.sizeToFit()
             m_article.frame = CGRectMake(0, buttom + PostItemGapF, self.frame.width, height)
             buttom += (height + PostItemGapF)
         }
@@ -142,5 +135,8 @@ class PostHeader: UITableViewHeaderFooterView {
         else {
             m_previews.hidden = true
         }
+        
+        m_commentBtn.frame = CGRectMake(self.frame.width - 30, buttom + PostItemGapF, 20, 20)
+        m_liktBtn.frame = CGRectMake(self.frame.width - 80, buttom + PostItemGapF, 20, 20)
     }
 }

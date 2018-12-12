@@ -26,7 +26,7 @@ class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, U
         
         httpSyncPost()
         postCallbacks.append(self)
-        m_posts.estimatedRowHeight = 80
+        m_posts.estimatedRowHeight = 16
         m_posts.rowHeight = UITableViewAutomaticDimension
     }
     
