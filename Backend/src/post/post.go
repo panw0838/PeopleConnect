@@ -41,7 +41,7 @@ func dbAddPost(uID uint64, data PostData, c redis.Conn) error {
 
 func dbGetSelfPosts(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
 	postsKey := getPostKey(uID)
-	values, err := redis.Values(c.Do("ZRANGE", postsKey, from, to))
+	values, err := redis.Values(c.Do("ZRANGEBYSCORE", postsKey, from, to))
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func dbGetUserPosts(uID uint64, cID uint64, from uint64, to uint64, c redis.Conn
 	}
 
 	postsKey := getPostKey(cID)
-	values, err := redis.Values(c.Do("ZRANGE", postsKey, from, to))
+	values, err := redis.Values(c.Do("ZRANGEBYSCORE", postsKey, from, to))
 	if err != nil {
 		return nil, err
 	}

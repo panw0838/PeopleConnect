@@ -2,6 +2,7 @@ package post
 
 import (
 	"encoding/json"
+	"fmt"
 	"share"
 	"strconv"
 	"time"
@@ -27,7 +28,7 @@ func getCommentKey(uID uint64, pID uint64) string {
 }
 
 func dbGetComments(cmtKey string, pubLvl uint8, uID uint64, from uint64, c redis.Conn) ([]Comment, error) {
-	values, err := redis.Values(c.Do("ZRANGE", cmtKey, from, -1))
+	values, err := redis.Values(c.Do("ZRANGEBYSCORE", cmtKey, from, share.MAX_TIME))
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +88,7 @@ func dbDelComment(input DelCmtInput, c redis.Conn) ([]Comment, error) {
 		return nil, err
 	}
 
-	values, err := redis.Values(c.Do("ZRANGE", cmtKey, input.CmtID, input.CmtID))
+	values, err := redis.Values(c.Do("ZRANGEBYSCORE", cmtKey, input.CmtID, input.CmtID))
 	if err != nil {
 		return nil, err
 	}
@@ -103,10 +104,12 @@ func dbDelComment(input DelCmtInput, c redis.Conn) ([]Comment, error) {
 			return nil, err
 		}
 		if comment.From == input.UID {
-			_, err = c.Do("ZREM", cmtKey, cmtData)
+			_, err = c.Do("ZREM", cmtKey, value)
 			if err != nil {
 				return nil, err
 			}
+		} else {
+			return nil, fmt.Errorf("Fail delete")
 		}
 	}
 

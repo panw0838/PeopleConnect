@@ -12,6 +12,7 @@ import (
 
 const ONE_64 uint64 = 0x1
 const ZERO_64 uint64 = 0x0
+const MAX_TIME uint64 = 0xffffffffffffffff
 
 const ContactDB = "127.0.0.1:6379"
 

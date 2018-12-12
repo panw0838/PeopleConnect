@@ -47,7 +47,7 @@ func dbGetMessages(input MessegeSyncInput, c redis.Conn) (uint64, []Message, err
 	}
 
 	// get new msg
-	values, err := redis.Values(c.Do("ZRANGE", msgKey, input.Sync+1, -1))
+	values, err := redis.Values(c.Do("ZRANGEBYSCORE", msgKey, input.Sync+1, share.MAX_TIME))
 	if err != nil {
 		return 0, nil, err
 	}
