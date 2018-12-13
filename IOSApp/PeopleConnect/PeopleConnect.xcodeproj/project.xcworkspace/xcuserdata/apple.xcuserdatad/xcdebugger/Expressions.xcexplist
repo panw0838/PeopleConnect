@@ -57,6 +57,14 @@
          contextName = "MessegeData.AddNewMessege(UInt64, newMessege : MessegeInfo) -&gt; ():Messege.swift">
       </ContextState>
       <ContextState
+         contextName = "MsgCell.reload(MessegeInfo, width : CGFloat) -&gt; ():View+Conversation.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_message.frame">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "PostCell.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:View+Posts.swift">
       </ContextState>
       <ContextState

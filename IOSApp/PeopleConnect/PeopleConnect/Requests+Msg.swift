@@ -52,6 +52,16 @@ func httpSendMessege(to:UInt64, messege:String) {
                 selfMessege.data = messege
                 selfMessege.type = .String
                 messegeData.AddNewMessege(to, newMessege: selfMessege)
+                
+                // for test
+                var otherMessege = MessegeInfo()
+                otherMessege.from = to
+                otherMessege.time = 0
+                otherMessege.data = "haha\n" + messege
+                otherMessege.type = .String
+                messegeData.AddNewMessege(to, newMessege: otherMessege)
+                
+                
                 for callback in messegeCallbacks {
                     callback.MessegeUpdateUI()
                 }

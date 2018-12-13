@@ -8,6 +8,8 @@
 
 import Foundation
 
+var messegeData:MessegeData = MessegeData()
+
 struct RequestInfo {
     var from:UInt64 = 0
     var name:String = ""
@@ -132,5 +134,3 @@ class MessegeData {
         conversation?.addMessege(messege)
     }
 }
-
-var messegeData:MessegeData = MessegeData()

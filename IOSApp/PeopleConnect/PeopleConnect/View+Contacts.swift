@@ -68,48 +68,44 @@ class ContactsView: UIViewController,
     @IBAction func AddNewTag(sender: AnyObject) {
         let curTag = contactsData.m_tags[m_curTag]
         let alert = UIAlertController(title: "添加标签", message: "添加子标签到 "+curTag.m_tagName, preferredStyle: .Alert)
-        let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Default,
             handler: { action in
                 httpAddTag(curTag.m_tagID, name: (alert.textFields?.first?.text)!)})
-        alert.addTextFieldWithConfigurationHandler {
-            (textField: UITextField!) -> Void in
+        alert.addTextFieldWithConfigurationHandler { (textField: UITextField!) -> Void in
             textField.placeholder = "标签名称"
             textField.addTarget(self, action: Selector("tagNameChanged:"), forControlEvents: .EditingChanged)
         }
         okAction.enabled = false
-        alert.addAction(cancelAction)
+        alert.addAction(noAction)
         alert.addAction(okAction)
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
     @IBAction func DelSubTag(sender: AnyObject) {
         let header = sender.superview as! SubTagHeader
-        let alert = UIAlertController(title: "删除标签", message: header.m_tagName.text, preferredStyle: UIAlertControllerStyle.Alert)
-        let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
+        let alert = UIAlertController(title: "删除标签", message: header.m_tagName.text, preferredStyle: .Alert)
+        let noAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
             handler: { action in
                 httpRemTag(header.m_tagID)
         })
-        alert.addAction(cancelAction)
+        alert.addAction(noAction)
         alert.addAction(okAction)
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
     @IBAction func SearchContact(sender: AnyObject) {
         let alert = UIAlertController(title: "搜索联系人", message: "", preferredStyle: UIAlertControllerStyle.Alert)
-        let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
-        let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
-            handler: {
-                action in
+        let noAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default, handler: { action in
                 httpSearchContact((alert.textFields?.first?.text)!)
                 //self.presentViewController(holding, animated: false, completion: nil)
         })
-        alert.addTextFieldWithConfigurationHandler {
-            (textField: UITextField!) -> Void in
+        alert.addTextFieldWithConfigurationHandler { (textField: UITextField!) -> Void in
             textField.placeholder = "请输入手机号"
         }
-        alert.addAction(cancelAction)
+        alert.addAction(noAction)
         alert.addAction(okAction)
         self.presentViewController(alert, animated: true, completion: nil)
     }
@@ -126,7 +122,6 @@ class ContactsView: UIViewController,
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ContactCell", forIndexPath: indexPath) as! ContactCell
         let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
-        //cell.backgroundColor = UIColor.blueColor()
         cell.m_image.image = UIImage(named: "default_profile")
         cell.m_name.text = contactsData.m_contacts[subTag.m_members[indexPath.row]]?.name
         return cell
@@ -152,7 +147,26 @@ class ContactsView: UIViewController,
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
         m_selectContact = subTag.m_members[indexPath.row]
-        self.performSegueWithIdentifier("ShowContact", sender: nil)
+        let name = contactsData.getContact(m_selectContact)?.name
+        
+        let alert = UIAlertController(title: name, message: "", preferredStyle: .ActionSheet)
+        let noAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
+        let msgAction = UIAlertAction(title: "发信息", style: .Default, handler: { action in
+            self.performSegueWithIdentifier("StartConversation", sender: nil)    
+        })
+        let callAction = UIAlertAction(title: "打电话", style: .Default, handler: { action in
+            
+        })
+        let detailAction = UIAlertAction(title: "查看资料", style: .Default, handler: { action in
+            self.performSegueWithIdentifier("ShowContact", sender: nil)
+        })
+        
+        alert.addAction(noAction)
+        alert.addAction(msgAction)
+        alert.addAction(callAction)
+        alert.addAction(detailAction)
+        
+        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     func tabBar(tabBar: UITabBar, didSelectItem item: UITabBarItem) {
@@ -174,6 +188,10 @@ class ContactsView: UIViewController,
         if segue.identifier == "ShowContact" {
             let to = segue.destinationViewController as! ContactView
             to.m_contact = contactsData.m_contacts[self.m_selectContact]!
+        }
+        if segue.identifier == "StartConversation" {
+            let to = segue.destinationViewController as! ConversationView
+            to.m_conversastion = messegeData.GetConversation(self.m_selectContact)
         }
     }
 }

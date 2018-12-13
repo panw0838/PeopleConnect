@@ -105,7 +105,7 @@
         </view>
     </objects>
     <resources>
-        <image name="comment_cmt" width="25" height="25"/>
+        <image name="comment_cmt" width="32" height="32"/>
         <image name="comment_like" width="25" height="25"/>
         <image name="default_profile" width="50" height="50"/>
     </resources>
