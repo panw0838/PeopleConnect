@@ -51,7 +51,7 @@ func main() {
 	http.HandleFunc("/syncmessege", message.SyncMessegeHandler)
 	http.HandleFunc("/requestcontact", message.RequestContactHandler)
 	http.HandleFunc("/syncrequests", message.SyncRequestsHandler)
-	http.HandleFunc("/sendmessege", message.SendMessegeHandler)
+	http.HandleFunc("/sendmessege", message.SendMsgHandler)
 
 	http.HandleFunc("/newpost", post.NewPostHandler)
 	http.HandleFunc("/delpost", post.DelPostHandler)

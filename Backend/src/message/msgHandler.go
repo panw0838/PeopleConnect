@@ -16,7 +16,7 @@ type SendMsgInput struct {
 	Msg  string `json:"msg"`
 }
 
-func SendMessegeHandler(w http.ResponseWriter, r *http.Request) {
+func SendMsgHandler(w http.ResponseWriter, r *http.Request) {
 	var input SendMsgInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
