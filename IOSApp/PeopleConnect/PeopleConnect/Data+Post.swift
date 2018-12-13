@@ -62,13 +62,38 @@ struct CommentInfo {
         
         if from != to && to != 0 {
             let toName = contactsData.getContact(to)!.name
-            str = fromName + "回" + toName + "：" + cmt
+            str = fromName + " 回 " + toName + "：" + cmt
         }
         else {
             str = fromName + "：" + cmt
         }
         
         return str
+    }
+    
+    func getAttrString()->NSMutableAttributedString {
+        let fromName = contactsData.getContact(from)!.name
+        var toStart = 0
+        var toLength = 0
+        
+        if from != to && to != 0 {
+            let toName = contactsData.getContact(to)!.name
+            toStart = fromName.characters.count + 3
+            toLength = toName.characters.count
+        }
+        
+        let str = getString()
+        let attStr = NSMutableAttributedString(string: str)
+        let attDic:Dictionary = [NSForegroundColorAttributeName:UIColor.blackColor()]
+        
+        attStr.setAttributes(attDic, range: NSMakeRange(0, str.characters.count))
+        attStr.addAttribute(NSForegroundColorAttributeName, value: linkTextColor, range: NSMakeRange(0, fromName.characters.count))
+        
+        if toLength != 0 {
+            attStr.addAttribute(NSForegroundColorAttributeName, value: linkTextColor, range: NSMakeRange(toStart, toLength))
+        }
+        
+        return attStr
     }
 }
 

@@ -71,8 +71,7 @@
 
 
 //#### 评论
-@interface CommentLabel : UIView <MLLinkLabelDelegate>
-
+font
 // 内容Label
 @property (nonatomic,strong) MLLinkLabel *linkLabel;
 // 评论

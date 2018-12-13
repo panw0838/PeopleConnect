@@ -58,7 +58,7 @@ class PostHeader: UITableViewHeaderFooterView {
         //m_showAllBtn.addTarget(self, action: "showAllArticle", forControlEvents: .TouchUpInside)
         self.addSubview(m_showAllBtn)
         
-        m_article.lineBreakMode = .ByCharWrapping
+        m_article.lineBreakMode = .ByWordWrapping
         m_article.numberOfLines = 0
         self.addSubview(m_article)
         
@@ -118,7 +118,7 @@ class PostHeader: UITableViewHeaderFooterView {
             m_article.text = m_post?.m_info.content
             m_article.hidden = false
             m_article.sizeToFit()
-            m_article.frame = CGRectMake(0, buttom + PostItemGapF, width, height)
+            m_article.frame = CGRectMake(0, buttom + PostItemGapF, width, CGFloat(ceilf(Float(height))))
             buttom += (height + PostItemGapF)
         }
         else {

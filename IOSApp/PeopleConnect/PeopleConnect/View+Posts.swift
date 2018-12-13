@@ -46,35 +46,7 @@ class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, U
         let cell = tableView.dequeueReusableCellWithIdentifier("CommentCell", forIndexPath: indexPath) as! CommentCell
         let post = friendPosts.postAtIdx(indexPath.section)
         let comment = post.m_comments[indexPath.row]
-
-        let fromName = contactsData.getContact(comment.from)?.name
-        var toName = ""
-        var cmtStr = ""
-        var toStart = 0
-        var toLength = 0
-        
-        if comment.to != 0 {
-            toName = (contactsData.getContact(comment.to)?.name)!
-            cmtStr = fromName! + "回" + toName + ":" + comment.cmt
-            toStart = (fromName?.characters.count)! + 1
-            toLength = toName.characters.count
-        }
-        else {
-            cmtStr = fromName! + ":" + comment.cmt
-        }
-        
-        let attStr = NSMutableAttributedString(string: cmtStr)
-        let attDic:Dictionary = [NSForegroundColorAttributeName:UIColor.blackColor()]
-        
-        attStr.setAttributes(attDic, range: NSMakeRange(0, cmtStr.characters.count))
-        attStr.addAttribute(NSForegroundColorAttributeName, value: linkTextColor, range: NSMakeRange(0, (fromName?.characters.count)!))
-        
-        if comment.to != 0 {
-            attStr.addAttribute(NSForegroundColorAttributeName, value: linkTextColor, range: NSMakeRange(toStart, toLength))
-        }
-        
-        cell.m_comment.attributedText = attStr
-        
+        cell.m_comment.attributedText = comment.getAttrString()
         return cell
     }
     
@@ -89,8 +61,7 @@ class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, U
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let post = friendPosts.postAtIdx(indexPath.section)
         let comment = post.m_comments[indexPath.row]
-        let height = getTextHeight(comment.getString(), width: m_posts.contentSize.width, font: commentFont)
-        return height
+        return getTextHeight(comment.getString(), width: m_posts.contentSize.width, font: commentFont)
     }
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

@@ -21,9 +21,22 @@ let PostItemGapF:CGFloat = 5.0
 
 func getTextHeight(text:String, width:CGFloat, font:UIFont)->CGFloat {
     let maxSize = CGSizeMake(width, CGFloat(MAXFLOAT))
-    let dict = ["NSFontAttributeName":font]
-    let size = text.boundingRectWithSize(maxSize, options: .UsesLineFragmentOrigin, attributes: dict, context: nil)
+    let style = NSMutableParagraphStyle()
+    style.alignment = .Justified
+    style.lineBreakMode = .ByWordWrapping
+    style.lineSpacing = 6
+
+    let dict = [NSFontAttributeName:font, NSParagraphStyleAttributeName:style]
+    let size = text.boundingRectWithSize(maxSize, options: [.UsesFontLeading, .UsesLineFragmentOrigin], attributes: dict, context: nil)
+    return CGFloat(ceilf(Float(size.height)))
+}
+
+func getAttrTextHeight(text:NSMutableAttributedString, width:CGFloat, font:UIFont)->CGFloat {
+    let maxSize = CGSizeMake(width, CGFloat(MAXFLOAT))
+    let size = text.boundingRectWithSize(maxSize, options: [.UsesFontLeading, .UsesLineFragmentOrigin], context: nil)
     let baseHeight = Int(size.height + 1)
     let linespace = 10
-    return CGFloat((baseHeight / 14 - 1) * linespace + baseHeight)
+    let numLines = baseHeight / 14
+    let ttt = ceilf(Float(size.height))
+    return CGFloat((numLines-1) * linespace + baseHeight + (numLines == 2 ? 2 : 0))
 }

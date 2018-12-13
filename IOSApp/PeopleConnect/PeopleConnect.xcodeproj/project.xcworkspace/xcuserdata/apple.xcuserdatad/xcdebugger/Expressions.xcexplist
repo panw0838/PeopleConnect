@@ -66,6 +66,17 @@
          contextName = "CommentInfo.init(json : [String : AnyObject]) -&gt; CommentInfo?:Data+Post.swift">
       </ContextState>
       <ContextState
+         contextName = "PostsView.tableView(UITableView, viewForHeaderInSection : Int) -&gt; UIView?:View+Posts.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_posts.frame">
+            </PersistentString>
+            <PersistentString
+               value = "UIScreen.mainScreen().bounds">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ContactsData.moveContactOutTag(UInt64, tagID : UInt8) -&gt; ():Contact.swift">
       </ContextState>
       <ContextState
@@ -238,6 +249,14 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "(httpDelComment(Post, cmt : CommentInfo, pub : UInt8) -&gt; ()).(closure #1):Requests+Post.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "userInfo.userID">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "PostCell.reload() -&gt; ():View+Posts.swift">
          <PersistentStrings>
             <PersistentString
@@ -272,6 +291,14 @@
       </ContextState>
       <ContextState
          contextName = "ContactsView.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:ContactsView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "getAttrTextHeight(NSMutableAttributedString, width : CGFloat, font : UIFont) -&gt; CGFloat:View+Settings.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "font.lineHeight">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "TagTable.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+CreatePost.swift">
@@ -320,6 +347,14 @@
          <PersistentStrings>
             <PersistentString
                value = "m_post?.m_info.content">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "getTextHeight(String, width : CGFloat, font : UIFont) -&gt; CGFloat:View+Settings.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "font.lineHeight">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
