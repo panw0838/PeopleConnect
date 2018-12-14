@@ -88,6 +88,9 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     
     func MessegeUpdateUI() {
         self.m_messegesTable.reloadData()
+        let lastMsg = messegeData.m_conversations.count - 1
+        let lastIdx = NSIndexPath(forRow: lastMsg, inSection: 0)
+        self.m_messegesTable.scrollToRowAtIndexPath(lastIdx, atScrollPosition: .Bottom, animated: true)
     }
     
     override func viewDidLoad() {

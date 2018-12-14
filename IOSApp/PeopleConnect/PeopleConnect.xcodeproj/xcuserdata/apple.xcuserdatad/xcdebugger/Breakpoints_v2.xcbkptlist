@@ -1241,11 +1241,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "564587166.4421149"
+            timestampString = "566503905.78757"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "14"
-            endingLineNumber = "14"
+            startingLineNumber = "80"
+            endingLineNumber = "80"
             landmarkName = "LogonUpdateUI()"
             landmarkType = "5">
          </BreakpointContent>

@@ -44,6 +44,7 @@
 		18FF5DCF21C0FC30008DB746 /* PostHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18FF5DCE21C0FC30008DB746 /* PostHeader.xib */; };
 		18FF5DD921C14BF9008DB746 /* View+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF5DD821C14BF9008DB746 /* View+Settings.swift */; };
 		18FF5DE121C156A7008DB746 /* View+PostHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF5DE021C156A7008DB746 /* View+PostHeader.swift */; };
+		18FF5DE321C38B66008DB746 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18FF5DE221C38B66008DB746 /* CoreTelephony.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -205,6 +206,7 @@
 		18FF5DCE21C0FC30008DB746 /* PostHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PostHeader.xib; sourceTree = "<group>"; };
 		18FF5DD821C14BF9008DB746 /* View+Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "View+Settings.swift"; path = "../View+Settings.swift"; sourceTree = "<group>"; };
 		18FF5DE021C156A7008DB746 /* View+PostHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+PostHeader.swift"; sourceTree = "<group>"; };
+		18FF5DE221C38B66008DB746 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,6 +214,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18FF5DE321C38B66008DB746 /* CoreTelephony.framework in Frameworks */,
 				1806A88221B81D90005A5AF1 /* Photos.framework in Frameworks */,
 				18DB28B321A5B9590024092C /* CocoaAsyncSocket.framework in Frameworks */,
 				18D3A93F2199796100EB3289 /* AFNetworking.framework in Frameworks */,
@@ -262,6 +265,7 @@
 		18E8CB73219331A400E29383 = {
 			isa = PBXGroup;
 			children = (
+				18FF5DE221C38B66008DB746 /* CoreTelephony.framework */,
 				1806A88121B81D90005A5AF1 /* Photos.framework */,
 				18DB28A221A5B9120024092C /* CocoaAsyncSocket.xcodeproj */,
 				18D3A91F2199792F00EB3289 /* AFNetworking.xcodeproj */,
