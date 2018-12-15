@@ -48,9 +48,17 @@ var userInfo:UserInfo = UserInfo()
 var userData = User()
 
 class User {
-    func getCarrier()->CTCarrier? {
+    func getCountryCode()->String {
         let networkInfo = CTTelephonyNetworkInfo()
-        return networkInfo.subscriberCellularProvider
+        let carrier = networkInfo.subscriberCellularProvider
+        if carrier != nil {
+            return "+" + carrier!.mobileCountryCode!
+        }
+        return "+86"
+    }
+    
+    func loadCountryCode() {
+        
     }
     
     func checkCellNumber(cell:String)->Bool {

@@ -33,6 +33,8 @@
 		18DB28B421A5B9590024092C /* CocoaAsyncSocket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 18DB28A921A5B9120024092C /* CocoaAsyncSocket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		18DB28BE21A5B9CC0024092C /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB28BD21A5B9CC0024092C /* Observer.swift */; };
 		18DB28C021A6CCE60024092C /* Requests+User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB28BF21A6CCE60024092C /* Requests+User.swift */; };
+		18DEBF2E21C50AD5004E88DD /* CountryCode in Resources */ = {isa = PBXBuildFile; fileRef = 18DEBF2D21C50AD5004E88DD /* CountryCode */; };
+		18DEBF3021C512EB004E88DD /* Data+Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DEBF2F21C512EB004E88DD /* Data+Country.swift */; };
 		18E13ED521BD630B006FCE28 /* Widgets in Resources */ = {isa = PBXBuildFile; fileRef = 18E13ED421BD630B006FCE28 /* Widgets */; };
 		18E8CB80219331A400E29383 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CB7F219331A400E29383 /* AppDelegate.swift */; };
 		18E8CB87219331A400E29383 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18E8CB85219331A400E29383 /* Main.storyboard */; };
@@ -189,6 +191,8 @@
 		18DB28BD21A5B9CC0024092C /* Observer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
 		18DB28BF21A6CCE60024092C /* Requests+User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+User.swift"; sourceTree = "<group>"; };
 		18DB28C121A6D76A0024092C /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
+		18DEBF2D21C50AD5004E88DD /* CountryCode */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CountryCode; sourceTree = "<group>"; };
+		18DEBF2F21C512EB004E88DD /* Data+Country.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Country.swift"; sourceTree = "<group>"; };
 		18E13ED421BD630B006FCE28 /* Widgets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Widgets; sourceTree = "<group>"; };
 		18E8CB7C219331A400E29383 /* PeopleConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeopleConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E8CB7F219331A400E29383 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -300,6 +304,7 @@
 				18DB289921A3A8BA0024092C /* Requests+Contact.swift */,
 				18DB289B21A3AF750024092C /* Requests+Tag.swift */,
 				18DB28BF21A6CCE60024092C /* Requests+User.swift */,
+				18DEBF2F21C512EB004E88DD /* Data+Country.swift */,
 				18AE420B219AE3AD0008B792 /* Data+User.swift */,
 				1854304821B01E27004973E6 /* Data+Post.swift */,
 				18DB289521A1C2C30024092C /* Data+Messege.swift */,
@@ -321,6 +326,7 @@
 				18E8CB88219331A400E29383 /* Assets.xcassets */,
 				18E8CB8A219331A400E29383 /* LaunchScreen.storyboard */,
 				18E8CB8D219331A400E29383 /* Info.plist */,
+				18DEBF2D21C50AD5004E88DD /* CountryCode */,
 			);
 			path = PeopleConnect;
 			sourceTree = "<group>";
@@ -535,6 +541,7 @@
 			files = (
 				18FF5DCF21C0FC30008DB746 /* PostHeader.xib in Resources */,
 				18E8CB8C219331A400E29383 /* LaunchScreen.storyboard in Resources */,
+				18DEBF2E21C50AD5004E88DD /* CountryCode in Resources */,
 				18AE41F62199E2680008B792 /* server.cer in Resources */,
 				18E13ED521BD630B006FCE28 /* Widgets in Resources */,
 				18E8CB89219331A400E29383 /* Assets.xcassets in Resources */,
@@ -576,6 +583,7 @@
 				18DB28C021A6CCE60024092C /* Requests+User.swift in Sources */,
 				18DB289621A1C2C30024092C /* Data+Messege.swift in Sources */,
 				1854304721AD78A4004973E6 /* View+CreatePost.swift in Sources */,
+				18DEBF3021C512EB004E88DD /* Data+Country.swift in Sources */,
 				18DB289421A145410024092C /* Requests+Msg.swift in Sources */,
 				18DB287A219D85BF0024092C /* View+MoveMembers.swift in Sources */,
 				18AE420C219AE3AD0008B792 /* Data+User.swift in Sources */,
