@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import CoreTelephony
 
 struct GroupInfo {
     var id:UInt32 = 0
@@ -48,29 +47,6 @@ var userInfo:UserInfo = UserInfo()
 var userData = User()
 
 class User {
-    func getCountryCode()->String {
-        let networkInfo = CTTelephonyNetworkInfo()
-        let carrier = networkInfo.subscriberCellularProvider
-        if carrier != nil {
-            return "+" + carrier!.mobileCountryCode!
-        }
-        return "+86"
-    }
-    
-    func loadCountryCode() {
-        
-    }
-    
-    func checkCellNumber(cell:String)->Bool {
-        let cellYD = "^1(3[0-9]|4[57]|5[0-35-9]|8[0-9]|7[0678])\\d{8}$"
-        let cellLT = "(^1(3[4-9]|4[7]|5[0-27-9]|7[8]|8[2-478])\\d{8}$)|(^1705\\d{7}$)"
-        let cellDX = "(^1(3[0-2]|4[5]|5[56]|7[6]|8[56])\\d{8}$)|(^1709\\d{7}$)"
-        let preYD = NSPredicate(format: "SELF MATCHES %s", cellYD)
-        let preLT = NSPredicate(format: "SELF MATCHES %s", cellLT)
-        let preDX = NSPredicate(format: "SELF MATCHES %s", cellDX)
-        
-        return preYD.evaluateWithObject(cell) || preLT.evaluateWithObject(cell) || preDX.evaluateWithObject(cell)
-    }
     
     func getIFAddresses() -> [String] {
         var addresses = [String]()

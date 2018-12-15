@@ -10,22 +10,18 @@ import UIKit
 
 var countryDict:Dictionary<Int, CountryInfo>? = nil
 
-class LogView: UITableViewController {
+class BaseLogRegView: UITableViewController {
     @IBOutlet weak var m_countryBtn: UIButton!
-    @IBOutlet weak var m_cellInput: UITextField!
-    @IBOutlet weak var m_passInput: UITextField!
-    @IBOutlet weak var m_getCodeBtn: UIButton!
-    @IBOutlet weak var m_logSwitchBtn: UIButton!
-    @IBOutlet weak var m_logBtn: UIButton!
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        m_countryBtn.setTitle(userData.getCountryCode(), forState: .Normal)
-    }
-    
+    @IBOutlet weak var m_cellBtn: UIButton!
+    @IBOutlet weak var m_passBtn: UIButton!
+
+    var m_countryCode:Int = 86
+    var m_cellNumber:String = ""
+    var m_password:String = ""
+
     func countryCodeChanged(sender:UITextField) {
         let alert = self.presentedViewController as! UIAlertController
-        let input:String = (alert.textFields?.first?.text)!
+        let input:String = (sender.text)!
         let okAction:UIAlertAction = alert.actions.last!
         let nameSize = input.characters.count
         
@@ -62,49 +58,181 @@ class LogView: UITableViewController {
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
+    func cellNumberChanged(sender:UITextField) {
+        let alert = self.presentedViewController as! UIAlertController
+        let okAction:UIAlertAction = alert.actions.last!
+        let input:String = (sender.text)!
+        let inputSize = input.characters.count
+        
+        okAction.enabled = false
+        
+        switch m_countryCode {
+        case 86:
+            if inputSize == 11 {
+                okAction.enabled = checkCNCellNumber(input)
+            }
+            break
+        case 1:
+            okAction.enabled = (inputSize == 10)
+            break
+        default:
+            break
+        }
+    }
     
-
+    @IBAction func changeCellNumber(sender:AnyObject) {
+        let alert = UIAlertController(title: "请输入手机号", message: "", preferredStyle: .Alert)
+        let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .Default,
+            handler: { action in
+                let cellNumber = (alert.textFields?.first?.text)!
+                self.m_cellBtn.setTitle(cellNumber, forState: .Normal)
+                self.m_cellNumber = cellNumber
+        })
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = ""
+            textField.keyboardType = .NumberPad
+            textField.addTarget(self, action: Selector("cellNumberChanged:"), forControlEvents: .EditingChanged)
+        }
+        okAction.enabled = false
+        alert.addAction(noAction)
+        alert.addAction(okAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func updateNextButton() {
+    }
 }
 
-class RegView: UITableViewController {
-    @IBOutlet weak var m_nickNameInput: UITextField!
-    @IBOutlet weak var m_countryBtn: UIButton!
-    @IBOutlet weak var m_cellInput: UITextField!
-    @IBOutlet weak var m_passInput: UITextField!
-    @IBOutlet weak var m_regBtn: UIButton!
+class LogView: BaseLogRegView {
+    @IBOutlet weak var m_logSwitchBtn: UIButton!
+    @IBOutlet weak var m_getCodeBtn: UIButton!
     
-    func countryCodeChanged(sender:UITextField) {
+    @IBOutlet weak var m_logBtn: UIButton!
+    
+    var m_usePassword = true
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        m_cellBtn.layer.cornerRadius = 10
+        m_countryBtn.layer.cornerRadius = 10
+        m_passBtn.layer.cornerRadius = 10
+        m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
+        m_getCodeBtn.hidden = true
+        m_logBtn.enabled = false
+    }
+    
+    func passwordChanged(sender:UITextField) {
         let alert = self.presentedViewController as! UIAlertController
-        let input:String = (alert.textFields?.first?.text)!
         let okAction:UIAlertAction = alert.actions.last!
-        let nameSize = input.characters.count
+        let input:String = (sender.text)!
+        let inputSize = input.characters.count
         
-        okAction.enabled = false
-        if nameSize > 0 && nameSize < 5 {
-            let code = Int(input)
-            if countryDict![code!] != nil {
-                alert.message = "+" + input + " " + countryDict![code!]!.cnName
-                okAction.enabled = true
-            }
-            else {
-                alert.message = " "
-            }
+        if m_usePassword {
+            okAction.enabled = (inputSize >= 8 && inputSize <= 16)
+        }
+        else {
+            okAction.enabled = (inputSize == 4)
         }
     }
     
-    @IBAction func changeCountryCode(sender: AnyObject) {
-        countryDict = loadCountryInfo()
-        let alert = UIAlertController(title: "请输入国家码", message: " ", preferredStyle: .Alert)
+    @IBAction func inputPassword(sender:AnyObject) {
+        let title = m_usePassword ? "请输入密码" : "请输入验证码"
+        let alert = UIAlertController(title: title, message: "", preferredStyle: .Alert)
         let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Default,
             handler: { action in
-                self.m_countryBtn.setTitle("+" + (alert.textFields?.first?.text)!, forState: .Normal)
+                self.m_password = (alert.textFields?.first?.text)!
+                self.updateNextButton()
         })
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
-            textField.placeholder = "不含+"
-            textField.keyboardType = .NumberPad
-            textField.addTarget(self, action: Selector("countryCodeChanged:"), forControlEvents: .EditingChanged)
+            textField.placeholder = "请输入" + (self.m_usePassword ? "8到16位密码" : "4位验证码")
+            textField.keyboardType = (self.m_usePassword ? .ASCIICapable : .NumberPad)
+            textField.addTarget(self, action: Selector("passwordChanged:"), forControlEvents: .EditingChanged)
+        }
+        okAction.enabled = false
+        alert.addAction(noAction)
+        alert.addAction(okAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    @IBAction func changeLogMethod(sender: AnyObject) {
+        m_usePassword = !m_usePassword
+        if m_usePassword {
+            m_passBtn.setTitle("请输入密码", forState: .Normal)
+            m_getCodeBtn.hidden = true
+            m_logSwitchBtn.setTitle("验证码登陆", forState: .Normal)
+        }
+        else {
+            m_passBtn.setTitle("请输入验证码", forState: .Normal)
+            m_getCodeBtn.hidden = false
+            m_logSwitchBtn.setTitle("密码登陆", forState: .Normal)
+        }
+    }
+    
+    override func updateNextButton() {
+        m_logBtn.enabled = m_cellNumber.characters.count != 0 && m_password.characters.count != 0
+    }
+}
+
+class RegView: BaseLogRegView {
+    @IBOutlet weak var m_nickNameBtn: UIButton!
+    @IBOutlet weak var m_regBtn: UIButton!
+    
+    func passwordChanged(sender:UITextField) {
+        let alert = self.presentedViewController as! UIAlertController
+        let okAction:UIAlertAction = alert.actions.last!
+        let input:String = (sender.text)!
+        let inputSize = input.characters.count
+        
+        okAction.enabled = (inputSize >= 8 && inputSize <= 16)
+    }
+
+    @IBAction func inputPassword(sender:AnyObject) {
+        let alert = UIAlertController(title: "请输入密码", message: "", preferredStyle: .Alert)
+        let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .Default,
+            handler: { action in
+                self.m_password = (alert.textFields?.first?.text)!
+                self.updateNextButton()
+        })
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "请输入8到16位密码"
+            textField.keyboardType = .ASCIICapable
+            textField.addTarget(self, action: Selector("passwordChanged:"), forControlEvents: .EditingChanged)
+        }
+        okAction.enabled = false
+        alert.addAction(noAction)
+        alert.addAction(okAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func nickNameChanged(sender:UITextField) {
+        let alert = self.presentedViewController as! UIAlertController
+        let okAction:UIAlertAction = alert.actions.last!
+        let input:String = (sender.text)!
+        let inputSize = input.characters.count
+        
+        okAction.enabled = (inputSize > 0 && inputSize <= 18)
+    }
+    
+    @IBAction func inputNickName(sender:AnyObject) {
+        let alert = UIAlertController(title: "请输入昵称", message: "", preferredStyle: .Alert)
+        let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .Default,
+            handler: { action in
+                let nickName = (alert.textFields?.first?.text)!
+                self.m_nickNameBtn.setTitle(nickName, forState: .Normal)
+                self.updateNextButton()
+        })
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "昵称不超过18个字符"
+            textField.keyboardType = .Default
+            textField.addTarget(self, action: Selector("nickNameChanged:"), forControlEvents: .EditingChanged)
         }
         okAction.enabled = false
         alert.addAction(noAction)
@@ -114,7 +242,16 @@ class RegView: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        m_countryBtn.setTitle(userData.getCountryCode(), forState: .Normal)
+        m_nickNameBtn.layer.cornerRadius = 10
+        m_countryBtn.layer.cornerRadius = 10
+        m_cellBtn.layer.cornerRadius = 10
+        m_passBtn.layer.cornerRadius = 10
+        m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
+        m_regBtn.enabled = false
+    }
+    
+    override func updateNextButton() {
+        m_regBtn.enabled = m_cellNumber.characters.count != 0 && m_password.characters.count != 0
     }
 }
 
