@@ -113,8 +113,8 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
         let flag = m_postTagsCell.m_flag
         var datas = Array<NSData>()
         for image in m_atts {
-            let data = UIImagePNGRepresentation(image)
-            datas.append(data!)
+            let data = compressImage(image)
+            datas.append(data)
         }
         httpSendPost(flag, desc: desc!, datas: datas)
         navigationController?.popViewControllerAnimated(true)

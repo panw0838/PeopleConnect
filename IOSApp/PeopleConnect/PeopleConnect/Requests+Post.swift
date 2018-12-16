@@ -47,7 +47,9 @@ func httpDeletePost() {
 }
 
 func httpSyncPost() {
-    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "post":NSNumber(unsignedLongLong: 0)]
+    let params: Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "post":NSNumber(unsignedLongLong: 0)]
     http.postRequest("syncposts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!

@@ -143,7 +143,9 @@ class LogView: BaseLogRegView {
         let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Default,
             handler: { action in
-                self.m_password = (alert.textFields?.first?.text)!
+                let input = (alert.textFields?.first?.text)!
+                self.m_password = input
+                self.m_passBtn.setTitle((self.m_usePassword ? "********" : input), forState: .Normal)
                 self.updateNextButton()
         })
         alert.addTextFieldWithConfigurationHandler {
@@ -172,14 +174,22 @@ class LogView: BaseLogRegView {
         }
     }
     
+    @IBAction func log() {
+        httpLogon(m_countryCode, cellNumber: m_cellNumber, password: m_password)
+    }
+    
     override func updateNextButton() {
         m_logBtn.enabled = m_cellNumber.characters.count != 0 && m_password.characters.count != 0
     }
 }
 
-class RegView: BaseLogRegView {
+class RegView: BaseLogRegView, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     @IBOutlet weak var m_nickNameBtn: UIButton!
     @IBOutlet weak var m_regBtn: UIButton!
+    
+    var m_picker = UIImagePickerController()
+    var m_photo:NSData? = nil
+    var m_nickName:String = ""
     
     func passwordChanged(sender:UITextField) {
         let alert = self.presentedViewController as! UIAlertController
@@ -196,6 +206,7 @@ class RegView: BaseLogRegView {
         let okAction = UIAlertAction(title: "确定", style: .Default,
             handler: { action in
                 self.m_password = (alert.textFields?.first?.text)!
+                self.m_passBtn.setTitle("********", forState: .Normal)
                 self.updateNextButton()
         })
         alert.addTextFieldWithConfigurationHandler {
@@ -239,6 +250,11 @@ class RegView: BaseLogRegView {
         alert.addAction(okAction)
         self.presentViewController(alert, animated: true, completion: nil)
     }
+    
+    @IBAction func selectPhoto(sender:AnyObject) {
+        m_picker.sourceType = .SavedPhotosAlbum
+        self.presentViewController(m_picker, animated: true) {() -> Void in}
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -248,16 +264,26 @@ class RegView: BaseLogRegView {
         m_passBtn.layer.cornerRadius = 10
         m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
         m_regBtn.enabled = false
+        m_picker.delegate = self
+        m_picker.allowsEditing = true
+    }
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
+        let editImg = editingInfo!["UIImagePickerControllerOriginalImage"] as! UIImage
+        m_photo = compressImage(editImg)
     }
     
     override func updateNextButton() {
-        m_regBtn.enabled = m_cellNumber.characters.count != 0 && m_password.characters.count != 0
+        m_regBtn.enabled =
+            m_cellNumber.characters.count != 0 &&
+            m_password.characters.count != 0 &&
+            m_nickName.characters.count != 0 &&
+            m_photo != nil
     }
 }
 
 class LoginView: UIViewController, LogonRequestCallback {
-    
-    
+
     @IBOutlet weak var m_logRegSwitch: UISegmentedControl!
     @IBOutlet weak var m_logView: UIView!
     @IBOutlet weak var m_regView: UIView!
@@ -295,15 +321,15 @@ class LoginView: UIViewController, LogonRequestCallback {
     }
     
     @IBAction func login1(sender: AnyObject) {
-        httpLogon("123456", password: "123456")
+        httpLogon(0, cellNumber: "123456", password: "123456")
     }
     
     @IBAction func login2(sender: AnyObject) {
-        httpLogon("123457", password: "123456")
+        httpLogon(0, cellNumber: "123457", password: "123456")
 
     }
     
     @IBAction func login3(sender: AnyObject) {
-        httpLogon("123458", password: "123456")
+        httpLogon(0, cellNumber: "123458", password: "123456")
     }
 }

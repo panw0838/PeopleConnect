@@ -32,9 +32,9 @@ func httpRegistry(cellNumber:String, password:String) {
     })
 }
 
-func httpLogon(cellNumber:String, password:String) {
+func httpLogon(countryCode:Int, cellNumber:String, password:String) {
     let deviceID:String = (UIDevice.currentDevice().identifierForVendor?.UUIDString)!
-    let params: Dictionary = ["cell":cellNumber, "code":"0838", "pass":password, "device":deviceID]
+    let params: Dictionary = ["cell":cellNumber, "code":NSNumber(integer: countryCode), "pass":password, "device":deviceID]
 
     http.postRequest("login", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
@@ -54,7 +54,7 @@ func httpLogon(cellNumber:String, password:String) {
                 httpGetContacts()
                 httpSyncRequests()
                 
-                tcp.start("192.168.0.105", port: 8888)
+                tcp.start("192.168.0.104", port: 8888)
                 tcp.logon()
                 
                 for callback in logonCallbacks {

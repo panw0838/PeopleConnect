@@ -1226,7 +1226,7 @@
         <scene sceneID="AQf-Y0-Llv">
             <objects>
                 <tableViewController id="cHn-Y1-bzI" customClass="LogView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="RaY-4M-l2w">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="static" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="RaY-4M-l2w">
                         <rect key="frame" x="0.0" y="0.0" width="560" height="277"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1354,6 +1354,9 @@
                                                     <state key="normal" title="登陆">
                                                         <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     </state>
+                                                    <connections>
+                                                        <action selector="log" destination="cHn-Y1-bzI" eventType="touchUpInside" id="ItD-nE-L1r"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                             <constraints>
@@ -1388,7 +1391,7 @@
         <scene sceneID="iUr-gh-DW5">
             <objects>
                 <tableViewController id="mnC-iP-NDe" customClass="RegView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="2Xf-8P-Oh6">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="static" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="2Xf-8P-Oh6">
                         <rect key="frame" x="0.0" y="0.0" width="560" height="277"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1405,6 +1408,9 @@
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EMO-z9-fN5">
                                                     <rect key="frame" x="255" y="24" width="50" height="50"/>
                                                     <state key="normal" image="photo"/>
+                                                    <connections>
+                                                        <action selector="selectPhoto:" destination="mnC-iP-NDe" eventType="touchUpInside" id="rFk-Ji-ppx"/>
+                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="选择头像" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xpx-MW-dcJ">
                                                     <rect key="frame" x="253" y="77" width="54" height="21"/>
@@ -1464,15 +1470,6 @@
                                                         <constraint firstAttribute="width" constant="30" id="FzD-Ke-vrk"/>
                                                     </constraints>
                                                 </imageView>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lKy-1k-M1Q">
-                                                    <rect key="frame" x="71" y="7" width="481" height="30"/>
-                                                    <color key="backgroundColor" red="1" green="1" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <state key="normal" title="请输入手机号"/>
-                                                    <connections>
-                                                        <action selector="changeCellNumber:" destination="cHn-Y1-bzI" eventType="touchUpInside" id="cR7-5B-k0d"/>
-                                                        <action selector="changeCellNumber:" destination="mnC-iP-NDe" eventType="touchUpInside" id="i1h-eP-3fx"/>
-                                                    </connections>
-                                                </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a3a-9V-R90">
                                                     <rect key="frame" x="8" y="7" width="55" height="30"/>
                                                     <color key="backgroundColor" red="0.80000001190000003" green="1" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
@@ -1483,6 +1480,15 @@
                                                     <connections>
                                                         <action selector="changeCountryCode:" destination="cHn-Y1-bzI" eventType="touchDown" id="6uD-7u-zyQ"/>
                                                         <action selector="changeCountryCode:" destination="mnC-iP-NDe" eventType="touchUpInside" id="DP4-2I-Kmo"/>
+                                                    </connections>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lKy-1k-M1Q">
+                                                    <rect key="frame" x="71" y="7" width="481" height="30"/>
+                                                    <color key="backgroundColor" red="1" green="1" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <state key="normal" title="请输入手机号"/>
+                                                    <connections>
+                                                        <action selector="changeCellNumber:" destination="cHn-Y1-bzI" eventType="touchUpInside" id="cR7-5B-k0d"/>
+                                                        <action selector="changeCellNumber:" destination="mnC-iP-NDe" eventType="touchUpInside" id="i1h-eP-3fx"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
@@ -1508,7 +1514,7 @@
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZgS-lj-4Lg">
                                                     <rect key="frame" x="71" y="7" width="481" height="30"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <state key="normal" title="请输入密码"/>
+                                                    <state key="normal" title="创建密码"/>
                                                     <connections>
                                                         <action selector="inputPassword:" destination="mnC-iP-NDe" eventType="touchUpInside" id="XZi-i6-MPh"/>
                                                         <action selector="inputPassword:" destination="cHn-Y1-bzI" eventType="touchUpInside" id="naR-Ue-Xep"/>
