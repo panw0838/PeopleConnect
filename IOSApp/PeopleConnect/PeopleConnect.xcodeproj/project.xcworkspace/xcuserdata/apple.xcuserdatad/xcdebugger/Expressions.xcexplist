@@ -34,6 +34,14 @@
          contextName = "ContactsData.loadContacts([ContactInfo], userTags : [TagInfo]) -&gt; ():Contact.swift">
       </ContextState>
       <ContextState
+         contextName = "MulImgPicker.collectionView(UICollectionView, shouldSelectItemAtIndexPath : NSIndexPath) -&gt; Bool:View+ImagePicker.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "cell.selected">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():ContactsView.swift">
       </ContextState>
       <ContextState
@@ -180,6 +188,14 @@
          contextName = "ContactView.viewWillAppear(Bool) -&gt; ():ContactView.swift">
       </ContextState>
       <ContextState
+         contextName = "MulImgPicker.fetchCollections() -&gt; ():View+ImagePicker.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.m_objs">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "Conversation.init(id : UInt64) -&gt; Conversation:Messege.swift">
          <PersistentStrings>
             <PersistentString
@@ -246,6 +262,14 @@
          contextName = "MessegesView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Messeges.swift">
       </ContextState>
       <ContextState
+         contextName = "(httpDelComment(Post, cmt : CommentInfo, pub : UInt8) -&gt; ()).(closure #1):Requests+Post.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "userInfo.userID">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "PostHeader.reload(Post) -&gt; ():View+PostHeader.swift">
          <PersistentStrings>
             <PersistentString
@@ -253,14 +277,6 @@
             </PersistentString>
             <PersistentString
                value = "self.frame.width">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "(httpDelComment(Post, cmt : CommentInfo, pub : UInt8) -&gt; ()).(closure #1):Requests+Post.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "userInfo.userID">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -365,6 +381,9 @@
                value = "font.lineHeight">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "loadCountryInfo() -&gt; [Int : CountryInfo]:Data+Country.swift">
       </ContextState>
       <ContextState
          contextName = "Post.getCommentsHeight() -&gt; ():Data+Post.swift">

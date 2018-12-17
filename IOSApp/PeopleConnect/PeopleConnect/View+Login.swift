@@ -269,7 +269,7 @@ class RegView: BaseLogRegView, UIImagePickerControllerDelegate, UINavigationCont
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
-        let editImg = editingInfo!["UIImagePickerControllerOriginalImage"] as! UIImage
+        let editImg = editingInfo![UIImagePickerControllerOriginalImage] as! UIImage
         m_photo = compressImage(editImg)
     }
     
