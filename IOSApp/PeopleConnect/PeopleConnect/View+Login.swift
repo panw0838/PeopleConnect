@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import PhotosUI
 
 var countryDict:Dictionary<Int, CountryInfo>? = nil
 
@@ -183,14 +184,15 @@ class LogView: BaseLogRegView {
     }
 }
 
-class RegView: BaseLogRegView, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class RegView: BaseLogRegView, MulImgPickerDelegate, UINavigationControllerDelegate {
     @IBOutlet weak var m_nickNameBtn: UIButton!
     @IBOutlet weak var m_regBtn: UIButton!
+    @IBOutlet weak var m_photoBtn: UIButton!
     
-    var m_picker = UIImagePickerController()
     var m_photo:NSData? = nil
     var m_nickName:String = ""
-    
+    var m_picker:MulImgPicker? = nil
+        
     func passwordChanged(sender:UITextField) {
         let alert = self.presentedViewController as! UIAlertController
         let okAction:UIAlertAction = alert.actions.last!
@@ -250,11 +252,6 @@ class RegView: BaseLogRegView, UIImagePickerControllerDelegate, UINavigationCont
         alert.addAction(okAction)
         self.presentViewController(alert, animated: true, completion: nil)
     }
-    
-    @IBAction func selectPhoto(sender:AnyObject) {
-        m_picker.sourceType = .SavedPhotosAlbum
-        self.presentViewController(m_picker, animated: true) {() -> Void in}
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -264,21 +261,33 @@ class RegView: BaseLogRegView, UIImagePickerControllerDelegate, UINavigationCont
         m_passBtn.layer.cornerRadius = 10
         m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
         m_regBtn.enabled = false
-        m_picker.delegate = self
-        m_picker.allowsEditing = true
     }
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
-        let editImg = editingInfo![UIImagePickerControllerOriginalImage] as! UIImage
-        m_photo = compressImage(editImg)
+    func didFinishedPickImage(imgs: Array<PHAsset>) {
+        let asset = imgs[0]
+        
+        PHCachingImageManager().requestImageForAsset(asset, targetSize: CGSizeMake(80, 80), contentMode: .AspectFill, options: nil, resultHandler: {(result:UIImage?, _: [NSObject:AnyObject]?)->Void in
+            self.m_photoBtn.setImage(result!, forState: .Normal)
+            self.m_photo = UIImagePNGRepresentation(result!)
+            })
+        
+        m_picker?.dismissViewControllerAnimated(true, completion: nil)
     }
-    
+
     override func updateNextButton() {
         m_regBtn.enabled =
             m_cellNumber.characters.count != 0 &&
             m_password.characters.count != 0 &&
             m_nickName.characters.count != 0 &&
             m_photo != nil
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "PickPhoto" {
+            m_picker = segue.destinationViewController as? MulImgPicker
+            m_picker!.m_delegate = self
+            m_picker!.m_maxCount = 1
+        }
     }
 }
 

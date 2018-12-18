@@ -16,17 +16,36 @@ class ImgCell:UICollectionViewCell {
     var m_order:Int = 0
 }
 
-class MulImgPicker: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+protocol MulImgPickerDelegate {
+    func didFinishedPickImage(imgs:Array<PHAsset>)
+}
+
+class MulImgPicker:
+    UIViewController,
+    UINavigationControllerDelegate,
+    UICollectionViewDataSource,
+    UICollectionViewDelegate {
+    
     var m_maxCount = 8
     var m_imgMgr = PHCachingImageManager()
     var m_imgs:Array<PHAsset>? = nil
     var m_selected = Array<PHAsset>()
+    var m_delegate:MulImgPickerDelegate? = nil
     
     @IBOutlet weak var m_imgTable: UICollectionView!
 
     override func viewDidLoad() {
         fetchAssets()
         m_imgTable.allowsMultipleSelection = true
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: Selector("cancel"))
+    }
+    
+    @IBAction func imgPicked(sender: AnyObject) {
+        self.m_delegate?.didFinishedPickImage(self.m_selected)
+    }
+    
+    func cancel() {
+        
     }
     
     func searchAsset(collections:PHFetchResult, items:NSMutableArray, options:PHFetchOptions) {
