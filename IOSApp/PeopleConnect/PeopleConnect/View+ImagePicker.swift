@@ -11,18 +11,22 @@ import Photos
 
 class ImgCell:UICollectionViewCell {
     @IBOutlet weak var m_img: UIImageView!
-    @IBOutlet weak var m_select: UIImageView!
+    @IBOutlet weak var m_mark: UILabel!
     var m_asset:PHAsset? = nil
+    var m_order:Int = 0
 }
 
 class MulImgPicker: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
-    var m_selectImgs = Set<PHAsset>()
     var m_maxCount = 8
     var m_imgMgr = PHCachingImageManager()
-    var m_imgs:Array<AnyObject>? = nil
+    var m_imgs:Array<PHAsset>? = nil
+    var m_selected = Array<PHAsset>()
     
+    @IBOutlet weak var m_imgTable: UICollectionView!
+
     override func viewDidLoad() {
         fetchAssets()
+        m_imgTable.allowsMultipleSelection = true
     }
     
     func searchAsset(collections:PHFetchResult, items:NSMutableArray, options:PHFetchOptions) {
@@ -71,7 +75,7 @@ class MulImgPicker: UIViewController, UICollectionViewDataSource, UICollectionVi
             }
         }
         
-        m_imgs = items.copy() as? Array<AnyObject>
+        m_imgs = items.copy() as? Array<PHAsset>
     }
 
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -81,11 +85,17 @@ class MulImgPicker: UIViewController, UICollectionViewDataSource, UICollectionVi
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return (m_imgs?.count)!
     }
-    
+        
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ImgCell", forIndexPath: indexPath) as! ImgCell
-        cell.m_asset = m_imgs![indexPath.row] as? PHAsset
-        cell.m_select.hidden = !cell.selected
+        cell.m_asset = m_imgs![indexPath.row]
+        cell.m_mark.hidden = !cell.selected
+        
+        if m_selected.contains(cell.m_asset!) {
+            let idx = m_selected.indexOf(cell.m_asset!)
+            cell.m_mark.text = String(idx!+1)
+        }
+
         m_imgMgr.requestImageForAsset(cell.m_asset!, targetSize: CGSizeMake(40, 40), contentMode: .AspectFill, options: nil, resultHandler: {
             (result:UIImage?, info:[NSObject:AnyObject]?)->Void in
                 cell.m_img.image = result
@@ -95,7 +105,7 @@ class MulImgPicker: UIViewController, UICollectionViewDataSource, UICollectionVi
     
     func collectionView(collectionView: UICollectionView, shouldSelectItemAtIndexPath indexPath: NSIndexPath) -> Bool {
         let cell = collectionView.cellForItemAtIndexPath(indexPath) as! ImgCell
-        if cell.selected || m_selectImgs.count == m_maxCount {
+        if cell.selected || m_selected.count == m_maxCount {
             return false
         }
         return true
@@ -103,13 +113,24 @@ class MulImgPicker: UIViewController, UICollectionViewDataSource, UICollectionVi
     
     func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
         let cell = collectionView.cellForItemAtIndexPath(indexPath) as! ImgCell
-        cell.m_select.hidden = true
-        m_selectImgs.remove(cell.m_asset!)
+        
+        cell.m_mark.hidden = true
+        
+        let idx = m_selected.indexOf(cell.m_asset!)
+        m_selected.removeAtIndex(idx!)
+        for var i=idx!; i<m_selected.count; i++ {
+            let k = m_imgs?.indexOf(m_selected[i])
+            let c = collectionView.cellForItemAtIndexPath(NSIndexPath(forRow: k!, inSection: 0)) as? ImgCell
+            if c != nil {
+                c!.m_mark.text = String(i+1)
+            }
+        }
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let cell = collectionView.cellForItemAtIndexPath(indexPath) as! ImgCell
-        cell.m_select.hidden = false
-        m_selectImgs.insert(cell.m_asset!)
+        cell.m_mark.hidden = false
+        m_selected.append(cell.m_asset!)
+        cell.m_mark.text = String(m_selected.count)
     }
 }

@@ -1044,7 +1044,9 @@
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jOE-Kk-DRd">
                                 <rect key="frame" x="0.0" y="0.0" width="560" height="44"/>
                                 <items>
-                                    <navigationItem title="Title" id="CZi-1B-Ogu"/>
+                                    <navigationItem title="Title" id="vek-tn-o56">
+                                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="done" id="99G-ee-mcr"/>
+                                    </navigationItem>
                                 </items>
                             </navigationBar>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="yrW-2l-FUd">
@@ -1067,25 +1069,24 @@
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="a8T-2S-03t">
                                                     <rect key="frame" x="2" y="2" width="100" height="100"/>
                                                 </imageView>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="choosed" translatesAutoresizingMaskIntoConstraints="NO" id="nz0-bh-ibn">
-                                                    <rect key="frame" x="76" y="8" width="20" height="20"/>
-                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="8" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CNu-M2-eZK">
+                                                    <rect key="frame" x="86" y="0.0" width="18" height="20"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                         <constraints>
-                                            <constraint firstItem="nz0-bh-ibn" firstAttribute="top" secondItem="lyj-lr-9To" secondAttribute="topMargin" id="0Rs-xN-0JM"/>
                                             <constraint firstItem="a8T-2S-03t" firstAttribute="centerX" secondItem="lyj-lr-9To" secondAttribute="centerX" id="1Dp-ZC-ZOg"/>
                                             <constraint firstItem="a8T-2S-03t" firstAttribute="top" secondItem="lyj-lr-9To" secondAttribute="topMargin" constant="-6" id="5rx-fu-gaN"/>
-                                            <constraint firstAttribute="bottomMargin" secondItem="nz0-bh-ibn" secondAttribute="bottom" constant="68" id="Tjn-It-02e"/>
                                             <constraint firstItem="a8T-2S-03t" firstAttribute="centerY" secondItem="lyj-lr-9To" secondAttribute="centerY" id="Uav-ca-y9d"/>
-                                            <constraint firstItem="nz0-bh-ibn" firstAttribute="trailing" secondItem="lyj-lr-9To" secondAttribute="trailingMargin" id="hf4-YY-AsE"/>
                                             <constraint firstItem="a8T-2S-03t" firstAttribute="leading" secondItem="lyj-lr-9To" secondAttribute="leadingMargin" constant="-6" id="i0u-j1-uti"/>
-                                            <constraint firstItem="nz0-bh-ibn" firstAttribute="leading" secondItem="lyj-lr-9To" secondAttribute="leadingMargin" constant="68" id="qXS-9A-IjZ"/>
                                         </constraints>
                                         <connections>
                                             <outlet property="m_img" destination="a8T-2S-03t" id="KoS-L4-j48"/>
-                                            <outlet property="m_select" destination="nz0-bh-ibn" id="chK-jT-WW4"/>
+                                            <outlet property="m_mark" destination="CNu-M2-eZK" id="obU-oE-jkv"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -1106,6 +1107,9 @@
                             <constraint firstItem="yrW-2l-FUd" firstAttribute="top" secondItem="jOE-Kk-DRd" secondAttribute="bottom" constant="12" id="r2l-QL-Bnh"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="m_imgTable" destination="yrW-2l-FUd" id="vok-di-E2L"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uze-ST-MWA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -1589,7 +1593,6 @@
     </scenes>
     <resources>
         <image name="add" width="64" height="64"/>
-        <image name="choosed" width="62" height="62"/>
         <image name="default_profile" width="50" height="50"/>
         <image name="delete" width="64" height="64"/>
         <image name="photo" width="50" height="50"/>
