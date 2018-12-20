@@ -9,13 +9,7 @@
 import UIKit
 
 class PostHeader: UITableViewHeaderFooterView {
-    
-    //@IBOutlet weak var m_profile: UIImageView!
-    //@IBOutlet weak var m_name: UILabel!
-    //@IBOutlet weak var m_article: UILabel!
-    //@IBOutlet weak var m_previews: ImgPreview!
-    //@IBOutlet weak var m_liktBtn: UIButton!
-    
+
     var m_profile    = UIImageView(frame: CGRectZero)
     var m_name       = UILabel(frame: CGRectZero)
     

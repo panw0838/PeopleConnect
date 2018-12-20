@@ -16,11 +16,11 @@ class ImgCell:UICollectionViewCell {
     var m_order:Int = 0
 }
 
-protocol MulImgPickerDelegate {
+protocol ImgPickerDelegate {
     func didFinishedPickImage(imgs:Array<PHAsset>)
 }
 
-class MulImgPicker:
+class ImgPicker:
     UIViewController,
     UINavigationControllerDelegate,
     UICollectionViewDataSource,
@@ -30,22 +30,43 @@ class MulImgPicker:
     var m_imgMgr = PHCachingImageManager()
     var m_imgs:Array<PHAsset>? = nil
     var m_selected = Array<PHAsset>()
-    var m_delegate:MulImgPickerDelegate? = nil
+    var m_delegate:ImgPickerDelegate? = nil
+    var m_singleView:SingleImgView? = nil
     
     @IBOutlet weak var m_imgTable: UICollectionView!
+    
+    init () {
+        super.init(nibName: "ImgPicker", bundle: NSBundle(forClass: ImgPicker.classForCoder()))
+    }
+    
+    //override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
+    //    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    //}
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
 
     override func viewDidLoad() {
-        fetchAssets()
+        let cellNib = UINib(nibName: "ImgCell", bundle: NSBundle(forClass: ImgCell.classForCoder()))
+        m_imgTable.registerNib(cellNib, forCellWithReuseIdentifier: "ImgCell")
         m_imgTable.allowsMultipleSelection = true
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: Selector("cancel"))
+
+        fetchAssets()
+        
+        let cancelBtn = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: Selector("cancel:"))
+        self.navigationItem.leftBarButtonItem = cancelBtn
+        
+        let doneBtn = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: Selector("imgPicked:"))
+        self.navigationItem.rightBarButtonItem = doneBtn
     }
     
     @IBAction func imgPicked(sender: AnyObject) {
         self.m_delegate?.didFinishedPickImage(self.m_selected)
     }
     
-    func cancel() {
-        
+    @IBAction func cancel(sender: AnyObject) {
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     func searchAsset(collections:PHFetchResult, items:NSMutableArray, options:PHFetchOptions) {
@@ -135,21 +156,28 @@ class MulImgPicker:
         
         cell.m_mark.hidden = true
         
-        let idx = m_selected.indexOf(cell.m_asset!)
-        m_selected.removeAtIndex(idx!)
-        for var i=idx!; i<m_selected.count; i++ {
-            let k = m_imgs?.indexOf(m_selected[i])
-            let c = collectionView.cellForItemAtIndexPath(NSIndexPath(forRow: k!, inSection: 0)) as? ImgCell
-            if c != nil {
-                c!.m_mark.text = String(i+1)
-            }
+        if m_maxCount > 1 {
+            let idx = m_selected.indexOf(cell.m_asset!)
+            m_selected.removeAtIndex(idx!)
+            for var i=idx!; i<m_selected.count; i++ {
+                let k = m_imgs?.indexOf(m_selected[i])
+                let c = collectionView.cellForItemAtIndexPath(NSIndexPath(forRow: k!, inSection: 0)) as? ImgCell
+                if c != nil {
+                    c!.m_mark.text = String(i+1)
+                }
+            }   
         }
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let cell = collectionView.cellForItemAtIndexPath(indexPath) as! ImgCell
-        cell.m_mark.hidden = false
-        m_selected.append(cell.m_asset!)
-        cell.m_mark.text = String(m_selected.count)
+        if m_maxCount == 1 {
+            self.performSegueWithIdentifier("ClipPhoto", sender: nil)
+        }
+        else {
+            cell.m_mark.hidden = false
+            m_selected.append(cell.m_asset!)
+            cell.m_mark.text = String(m_selected.count)
+        }
     }
 }

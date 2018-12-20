@@ -36,7 +36,8 @@
 		18DEBF2E21C50AD5004E88DD /* CountryCode in Resources */ = {isa = PBXBuildFile; fileRef = 18DEBF2D21C50AD5004E88DD /* CountryCode */; };
 		18DEBF3021C512EB004E88DD /* Data+CellNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DEBF2F21C512EB004E88DD /* Data+CellNumber.swift */; };
 		18DEBF3221C5F0D7004E88DD /* Data+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DEBF3121C5F0D7004E88DD /* Data+Image.swift */; };
-		18DEBF3421C7A04C004E88DD /* ImgPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18DEBF3321C7A04C004E88DD /* ImgPicker.xib */; };
+		18E08D2021CBA120007AACB4 /* ImgPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18E08D1F21CBA120007AACB4 /* ImgPicker.xib */; };
+		18E08D2221CBBFA5007AACB4 /* ImgCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18E08D2121CBBFA5007AACB4 /* ImgCell.xib */; };
 		18E13ED521BD630B006FCE28 /* Widgets in Resources */ = {isa = PBXBuildFile; fileRef = 18E13ED421BD630B006FCE28 /* Widgets */; };
 		18E8CB80219331A400E29383 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CB7F219331A400E29383 /* AppDelegate.swift */; };
 		18E8CB89219331A400E29383 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18E8CB88219331A400E29383 /* Assets.xcassets */; };
@@ -45,6 +46,7 @@
 		18E8CBA2219331A400E29383 /* PeopleConnectUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CBA1219331A400E29383 /* PeopleConnectUITests.swift */; };
 		18E8CBB02193441500E29383 /* Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CBAF2193441500E29383 /* Requests.swift */; };
 		18EC43D221C92B9C00DF18F2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18EC43D021C92B9C00DF18F2 /* Main.storyboard */; };
+		18EC43D421C9529700DF18F2 /* View+SingleImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EC43D321C9529700DF18F2 /* View+SingleImage.swift */; };
 		18FF5DD921C14BF9008DB746 /* View+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF5DD821C14BF9008DB746 /* View+Settings.swift */; };
 		18FF5DE121C156A7008DB746 /* View+PostHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF5DE021C156A7008DB746 /* View+PostHeader.swift */; };
 		18FF5DE321C38B66008DB746 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18FF5DE221C38B66008DB746 /* CoreTelephony.framework */; };
@@ -195,7 +197,8 @@
 		18DEBF2D21C50AD5004E88DD /* CountryCode */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CountryCode; sourceTree = "<group>"; };
 		18DEBF2F21C512EB004E88DD /* Data+CellNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+CellNumber.swift"; sourceTree = "<group>"; };
 		18DEBF3121C5F0D7004E88DD /* Data+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Image.swift"; sourceTree = "<group>"; };
-		18DEBF3321C7A04C004E88DD /* ImgPicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImgPicker.xib; sourceTree = "<group>"; };
+		18E08D1F21CBA120007AACB4 /* ImgPicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImgPicker.xib; sourceTree = "<group>"; };
+		18E08D2121CBBFA5007AACB4 /* ImgCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImgCell.xib; sourceTree = "<group>"; };
 		18E13ED421BD630B006FCE28 /* Widgets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Widgets; sourceTree = "<group>"; };
 		18E8CB7C219331A400E29383 /* PeopleConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeopleConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E8CB7F219331A400E29383 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -210,6 +213,7 @@
 		18E8CBA3219331A400E29383 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		18E8CBAF2193441500E29383 /* Requests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Requests.swift; sourceTree = "<group>"; };
 		18EC43D121C92B9C00DF18F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		18EC43D321C9529700DF18F2 /* View+SingleImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+SingleImage.swift"; sourceTree = "<group>"; };
 		18FF5DD821C14BF9008DB746 /* View+Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "View+Settings.swift"; path = "../View+Settings.swift"; sourceTree = "<group>"; };
 		18FF5DE021C156A7008DB746 /* View+PostHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+PostHeader.swift"; sourceTree = "<group>"; };
 		18FF5DE221C38B66008DB746 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
@@ -324,10 +328,12 @@
 				1801E9B121BFB1ED004C3FE2 /* View+PostImage.swift */,
 				1854304621AD78A4004973E6 /* View+CreatePost.swift */,
 				1806A87721B7F556005A5AF1 /* View+ImagePicker.swift */,
+				18EC43D321C9529700DF18F2 /* View+SingleImage.swift */,
 				18EC43D021C92B9C00DF18F2 /* Main.storyboard */,
-				18DEBF3321C7A04C004E88DD /* ImgPicker.xib */,
 				18E8CB88219331A400E29383 /* Assets.xcassets */,
 				18E8CB8A219331A400E29383 /* LaunchScreen.storyboard */,
+				18E08D1F21CBA120007AACB4 /* ImgPicker.xib */,
+				18E08D2121CBBFA5007AACB4 /* ImgCell.xib */,
 				18E8CB8D219331A400E29383 /* Info.plist */,
 				18DEBF2D21C50AD5004E88DD /* CountryCode */,
 			);
@@ -543,12 +549,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				18EC43D221C92B9C00DF18F2 /* Main.storyboard in Resources */,
+				18E08D2221CBBFA5007AACB4 /* ImgCell.xib in Resources */,
 				18E8CB8C219331A400E29383 /* LaunchScreen.storyboard in Resources */,
 				18DEBF2E21C50AD5004E88DD /* CountryCode in Resources */,
 				18AE41F62199E2680008B792 /* server.cer in Resources */,
 				18E13ED521BD630B006FCE28 /* Widgets in Resources */,
 				18E8CB89219331A400E29383 /* Assets.xcassets in Resources */,
-				18DEBF3421C7A04C004E88DD /* ImgPicker.xib in Resources */,
+				18E08D2021CBA120007AACB4 /* ImgPicker.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -599,6 +606,7 @@
 				18FF5DD921C14BF9008DB746 /* View+Settings.swift in Sources */,
 				1854304521AC3D99004973E6 /* Requests+Post.swift in Sources */,
 				1854304921B01E27004973E6 /* Data+Post.swift in Sources */,
+				18EC43D421C9529700DF18F2 /* View+SingleImage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

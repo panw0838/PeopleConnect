@@ -184,15 +184,24 @@ class LogView: BaseLogRegView {
     }
 }
 
-class RegView: BaseLogRegView, MulImgPickerDelegate, UINavigationControllerDelegate {
+class RegView: BaseLogRegView, ImgPickerDelegate, UINavigationControllerDelegate {
     @IBOutlet weak var m_nickNameBtn: UIButton!
     @IBOutlet weak var m_regBtn: UIButton!
     @IBOutlet weak var m_photoBtn: UIButton!
     
     var m_photo:NSData? = nil
     var m_nickName:String = ""
-    var m_picker:MulImgPicker? = nil
+    var m_picker:ImgPicker? = nil
+    
+    @IBAction func pickPhoto() {
+        //self.performSegueWithIdentifier("PickPhoto", sender: nil)
+        //self.presentViewController(m_picker!, animated: true, completion: nil)
         
+        let navi = UINavigationController(rootViewController: m_picker!)
+        navi.delegate = self
+        self.presentViewController(navi, animated: true, completion: nil)
+    }
+    
     func passwordChanged(sender:UITextField) {
         let alert = self.presentedViewController as! UIAlertController
         let okAction:UIAlertAction = alert.actions.last!
@@ -261,6 +270,8 @@ class RegView: BaseLogRegView, MulImgPickerDelegate, UINavigationControllerDeleg
         m_passBtn.layer.cornerRadius = 10
         m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
         m_regBtn.enabled = false
+        m_picker = ImgPicker()
+        m_picker?.m_delegate = self
     }
     
     func didFinishedPickImage(imgs: Array<PHAsset>) {
@@ -271,7 +282,7 @@ class RegView: BaseLogRegView, MulImgPickerDelegate, UINavigationControllerDeleg
             self.m_photo = UIImagePNGRepresentation(result!)
             })
         
-        m_picker?.dismissViewControllerAnimated(true, completion: nil)
+        m_picker!.dismissViewControllerAnimated(true, completion: nil)
     }
 
     override func updateNextButton() {
@@ -280,14 +291,6 @@ class RegView: BaseLogRegView, MulImgPickerDelegate, UINavigationControllerDeleg
             m_password.characters.count != 0 &&
             m_nickName.characters.count != 0 &&
             m_photo != nil
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "PickPhoto" {
-            m_picker = segue.destinationViewController as? MulImgPicker
-            m_picker!.m_delegate = self
-            m_picker!.m_maxCount = 1
-        }
     }
 }
 

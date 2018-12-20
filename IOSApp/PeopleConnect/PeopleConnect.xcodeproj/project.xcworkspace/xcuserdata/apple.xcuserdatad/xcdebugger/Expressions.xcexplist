@@ -93,6 +93,14 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "ImgPicker.init(nibName : String?, bundle : NSBundle?) -&gt; ImgPicker:View+ImagePicker.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.m_imgTable">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ContactsData.moveContactOutTag(UInt64, tagID : UInt8) -&gt; ():Contact.swift">
       </ContextState>
       <ContextState
@@ -257,6 +265,9 @@
                value = "contactsData">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "MulImgPicker.viewDidLoad() -&gt; ():View+ImagePicker.swift">
       </ContextState>
       <ContextState
          contextName = "MessegesView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Messeges.swift">
