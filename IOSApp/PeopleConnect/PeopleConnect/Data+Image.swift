@@ -25,3 +25,10 @@ func compressImage(srcImage:UIImage)->NSData {
     return UIImagePNGRepresentation(newImg)!
 }
 
+func resizeImage(srcImage:UIImage, newSize:CGSize)->UIImage {
+    UIGraphicsBeginImageContext(newSize);
+    srcImage.drawInRect(CGRectMake(0, 0, newSize.width, newSize.height))
+    let newImg = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImg
+}

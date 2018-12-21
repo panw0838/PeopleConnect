@@ -9,6 +9,10 @@
 import UIKit
 import Photos
 
+protocol PhotoClipperDelegate {
+    func didClippedPickImage(img:UIImage)
+}
+
 class SingleImgView:UIViewController, UIScrollViewDelegate {
     
     @IBOutlet weak var m_scrView: UIScrollView!
@@ -16,6 +20,7 @@ class SingleImgView:UIViewController, UIScrollViewDelegate {
     var m_imgView = UIImageView()
     var m_asset:PHAsset? = nil
     var m_image:UIImage? = nil
+    var m_delegate:PhotoClipperDelegate? = nil
     
     init (asset:PHAsset) {
         super.init(nibName: "SingleImg", bundle: NSBundle(forClass: ImgPicker.classForCoder()))
@@ -27,31 +32,20 @@ class SingleImgView:UIViewController, UIScrollViewDelegate {
     }
     
     @IBAction func clipPhoto(sender: AnyObject) {
-        let offset = m_scrView.contentOffset
-        //图片缩放比例
-        var zoom = m_imgView.frame.size.width / m_image!.size.width;
-        //视网膜屏幕倍数相关
-        zoom = zoom / UIScreen.mainScreen().scale;
-        
-        let width = m_scrView.frame.size.width
-        let height = m_scrView.frame.size.height
-        /*
-        if m_imgView.frame.size.height < _scrollView.frame.size.height) {//太胖了,取中间部分
-            offset = CGPointMake(offset.x + (width - _imageView.frame.size.height)/2.0, 0);
-            width = height = _imageView.frame.size.height;
-        }
-        */
-        let rec = CGRectMake(offset.x/zoom, offset.y/zoom, width/zoom, height/zoom);
-        
-        let imageRef = CGImageCreateWithImageInRect(m_image?.CGImage,rec)
-        let newImg = UIImage(CGImage: imageRef!)
+        let width = CGRectGetWidth(UIScreen.mainScreen().bounds)
+        let height = CGRectGetHeight(UIScreen.mainScreen().bounds)
+        let space = (height - width) / 2
+        let size = m_scrView.frame.size.width
+        let x = m_scrView.contentOffset.x
+        let y = m_scrView.contentOffset.y + space
+        let scale = (m_scrView.maximumZoomScale / m_scrView.zoomScale)
+        let rect = CGRectMake(x*scale, y*scale, size*scale, size*scale)
 
-        /*
-        if (_ovalClip) {
-            image = [image ovalClip];
-        }
-        */
-        //self.m_delegate?.didClippedPickImage(image)
+        let imageRef = CGImageCreateWithImageInRect(m_image?.CGImage, rect)
+        let newImg = UIImage(CGImage: imageRef!)
+        let finalImg = resizeImage(newImg, newSize: CGSizeMake(50, 50))
+
+        self.m_delegate?.didClippedPickImage(finalImg)
     }
     
     @IBAction func cancel(sender: AnyObject) {
@@ -69,13 +63,16 @@ class SingleImgView:UIViewController, UIScrollViewDelegate {
         
         let scale = UIScreen.mainScreen().scale
         let width = CGRectGetWidth(UIScreen.mainScreen().bounds)
-        let height = CGRectGetHeight(UIScreen.mainScreen().bounds) - CGRectGetHeight((navigationController?.navigationBar.bounds)!)
+        let height = CGRectGetHeight(UIScreen.mainScreen().bounds)// - naviHeight
         let tarSize = CGSizeMake(width*scale*scale, height*scale*scale)
         let space = (height - width) / 2
         
         m_imgView.frame = CGRectZero
+        //m_scrView.frame = CGRectMake(0, naviHeight, width, height)
         m_scrView.addSubview(m_imgView)
-        m_scrView.contentInset = UIEdgeInsets(top: space, left: 0, bottom: space, right: 0)
+        let naviHeight = CGRectGetHeight((navigationController?.navigationBar.bounds)!)
+        let statusHeight = UIApplication.sharedApplication().statusBarFrame.height
+        m_scrView.contentInset = UIEdgeInsets(top: space-naviHeight-statusHeight, left: 0, bottom: space, right: 0)
         
         PHCachingImageManager().requestImageForAsset(m_asset!, targetSize: tarSize, contentMode: .AspectFit, options: nil, resultHandler: {(result:UIImage?, info:[NSObject:AnyObject]?)->Void in
             self.m_imgView.image = result

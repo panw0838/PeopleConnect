@@ -184,7 +184,7 @@ class LogView: BaseLogRegView {
     }
 }
 
-class RegView: BaseLogRegView, ImgPickerDelegate, UINavigationControllerDelegate {
+class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDelegate {
     @IBOutlet weak var m_nickNameBtn: UIButton!
     @IBOutlet weak var m_regBtn: UIButton!
     @IBOutlet weak var m_photoBtn: UIButton!
@@ -194,8 +194,6 @@ class RegView: BaseLogRegView, ImgPickerDelegate, UINavigationControllerDelegate
     var m_picker = ImgPicker()
     
     @IBAction func pickPhoto() {
-        //self.performSegueWithIdentifier("PickPhoto", sender: nil)
-        //self.presentViewController(m_picker!, animated: true, completion: nil)
         let navi = UINavigationController(rootViewController: m_picker)
         navi.delegate = self
         self.presentViewController(navi, animated: true, completion: nil)
@@ -269,18 +267,13 @@ class RegView: BaseLogRegView, ImgPickerDelegate, UINavigationControllerDelegate
         m_passBtn.layer.cornerRadius = 10
         m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
         m_regBtn.enabled = false
-        m_picker.m_delegate = self
+        m_picker.m_cliperDelegate = self
         m_picker.m_maxCount = 1
     }
     
-    func didFinishedPickImage(imgs: Array<PHAsset>) {
-        let asset = imgs[0]
-        
-        PHCachingImageManager().requestImageForAsset(asset, targetSize: CGSizeMake(80, 80), contentMode: .AspectFill, options: nil, resultHandler: {(result:UIImage?, _: [NSObject:AnyObject]?)->Void in
-            self.m_photoBtn.setImage(result!, forState: .Normal)
-            self.m_photo = UIImagePNGRepresentation(result!)
-            })
-        
+    func didClippedPickImage(img: UIImage) {
+        self.m_photoBtn.setImage(img, forState: .Normal)
+        self.m_photo = UIImagePNGRepresentation(img)
         m_picker.dismissViewControllerAnimated(true, completion: nil)
     }
 

@@ -50,6 +50,17 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "SingleImgView.init(asset : PHAsset) -&gt; SingleImgView:View+SingleImage.swift">
+      </ContextState>
+      <ContextState
+         contextName = "SingleImgView.viewWillAppear(Bool) -&gt; ():View+SingleImage.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_scrView.frame">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():ContactsView.swift">
       </ContextState>
       <ContextState
@@ -68,6 +79,17 @@
       </ContextState>
       <ContextState
          contextName = "__85-[UIImageView(AFNetworking) setImageWithURLRequest:placeholderImage:success:failure:]_block_invoke46:UIImageView+AFNetworking.m">
+      </ContextState>
+      <ContextState
+         contextName = "SingleImgView.clipPhoto(AnyObject) -&gt; ():View+SingleImage.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_scrView.contentOffset">
+            </PersistentString>
+            <PersistentString
+               value = "UIScreen.mainScreen().bounds">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "(httpAddComment(Post, to : UInt64, pub : UInt8, re : UInt16, cmt : String) -&gt; ()).(closure #1):Requests+Post.swift">

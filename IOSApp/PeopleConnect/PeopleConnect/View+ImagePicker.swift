@@ -30,7 +30,8 @@ class ImgPicker:
     var m_imgMgr = PHCachingImageManager()
     var m_imgs:Array<PHAsset>? = nil
     var m_selected = Array<PHAsset>()
-    var m_delegate:ImgPickerDelegate? = nil
+    var m_pickerDelegate:ImgPickerDelegate? = nil
+    var m_cliperDelegate:PhotoClipperDelegate? = nil
     var m_singleView:SingleImgView? = nil
     
     @IBOutlet weak var m_imgTable: UICollectionView!
@@ -58,7 +59,7 @@ class ImgPicker:
     }
     
     @IBAction func imgPicked(sender: AnyObject) {
-        self.m_delegate?.didFinishedPickImage(self.m_selected)
+        self.m_pickerDelegate?.didFinishedPickImage(self.m_selected)
     }
     
     @IBAction func cancel(sender: AnyObject) {
@@ -68,6 +69,7 @@ class ImgPicker:
     func showClipView(asset:PHAsset) {
         let clipView = SingleImgView(asset: asset)
         let navi = UINavigationController(rootViewController: clipView)
+        clipView.m_delegate = m_cliperDelegate
         self.presentViewController(navi, animated: true, completion: nil)
     }
     

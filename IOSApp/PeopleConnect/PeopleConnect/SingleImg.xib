@@ -22,10 +22,10 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstItem="hAN-C1-mmA" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="0og-uP-95z"/>
-                <constraint firstAttribute="bottom" secondItem="hAN-C1-mmA" secondAttribute="bottom" id="0xb-Lr-Cap"/>
-                <constraint firstAttribute="trailing" secondItem="hAN-C1-mmA" secondAttribute="trailing" id="5D3-dB-Pa1"/>
-                <constraint firstItem="hAN-C1-mmA" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="emU-wP-2NI"/>
+                <constraint firstItem="hAN-C1-mmA" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="3OC-f0-KWD"/>
+                <constraint firstAttribute="trailing" secondItem="hAN-C1-mmA" secondAttribute="trailing" id="Chg-cq-bEB"/>
+                <constraint firstItem="hAN-C1-mmA" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="XDd-h0-lhs"/>
+                <constraint firstAttribute="bottom" secondItem="hAN-C1-mmA" secondAttribute="bottom" id="Xma-6J-Owc"/>
             </constraints>
         </view>
     </objects>
