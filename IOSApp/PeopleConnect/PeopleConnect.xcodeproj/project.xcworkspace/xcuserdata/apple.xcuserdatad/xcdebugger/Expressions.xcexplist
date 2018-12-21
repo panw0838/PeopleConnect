@@ -31,9 +31,6 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ContactsData.loadContacts([ContactInfo], userTags : [TagInfo]) -&gt; ():Contact.swift">
-      </ContextState>
-      <ContextState
          contextName = "MulImgPicker.collectionView(UICollectionView, shouldSelectItemAtIndexPath : NSIndexPath) -&gt; Bool:View+ImagePicker.swift">
          <PersistentStrings>
             <PersistentString
@@ -42,7 +39,21 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "ContactsData.loadContacts([ContactInfo], userTags : [TagInfo]) -&gt; ():Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "SingleImgView.(viewDidLoad(SingleImgView) -&gt; () -&gt; ()).(closure #1):View+SingleImage.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.m_imgView.frame">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():ContactsView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ImgPicker.collectionView(UICollectionView, cellForItemAtIndexPath : NSIndexPath) -&gt; UICollectionViewCell:View+ImagePicker.swift">
       </ContextState>
       <ContextState
          contextName = "LoginView.(login(LoginView) -&gt; (AnyObject) -&gt; ()).(closure #1):LoginView.swift">
@@ -226,6 +237,20 @@
          contextName = "Post.setupGeometry(CGFloat) -&gt; ():Data+Post.swift">
       </ContextState>
       <ContextState
+         contextName = "SingleImgView.viewForZoomingInScrollView(UIScrollView) -&gt; UIView?:View+SingleImage.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_scrView.frame">
+            </PersistentString>
+            <PersistentString
+               value = "m_imgView.frame">
+            </PersistentString>
+            <PersistentString
+               value = "m_scrView.contentSize">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "MessegeData.PopConversation(UInt64) -&gt; Conversation?:Messege.swift">
       </ContextState>
       <ContextState
@@ -259,15 +284,15 @@
          contextName = "TCPClient.logon() -&gt; ():Observer.swift">
       </ContextState>
       <ContextState
+         contextName = "MulImgPicker.viewDidLoad() -&gt; ():View+ImagePicker.swift">
+      </ContextState>
+      <ContextState
          contextName = "ContactsView.updateTags() -&gt; ():ContactsView.swift">
          <PersistentStrings>
             <PersistentString
                value = "contactsData">
             </PersistentString>
          </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "MulImgPicker.viewDidLoad() -&gt; ():View+ImagePicker.swift">
       </ContextState>
       <ContextState
          contextName = "MessegesView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Messeges.swift">
@@ -367,10 +392,10 @@
                value = "self.frame">
             </PersistentString>
             <PersistentString
-               value = "m_post!.m_width">
+               value = "m_post">
             </PersistentString>
             <PersistentString
-               value = "m_post">
+               value = "m_post!.m_width">
             </PersistentString>
             <PersistentString
                value = "m_post?.m_contentHeight">

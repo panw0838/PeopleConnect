@@ -191,13 +191,12 @@ class RegView: BaseLogRegView, ImgPickerDelegate, UINavigationControllerDelegate
     
     var m_photo:NSData? = nil
     var m_nickName:String = ""
-    var m_picker:ImgPicker? = nil
+    var m_picker = ImgPicker()
     
     @IBAction func pickPhoto() {
         //self.performSegueWithIdentifier("PickPhoto", sender: nil)
         //self.presentViewController(m_picker!, animated: true, completion: nil)
-        
-        let navi = UINavigationController(rootViewController: m_picker!)
+        let navi = UINavigationController(rootViewController: m_picker)
         navi.delegate = self
         self.presentViewController(navi, animated: true, completion: nil)
     }
@@ -270,8 +269,8 @@ class RegView: BaseLogRegView, ImgPickerDelegate, UINavigationControllerDelegate
         m_passBtn.layer.cornerRadius = 10
         m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
         m_regBtn.enabled = false
-        m_picker = ImgPicker()
-        m_picker?.m_delegate = self
+        m_picker.m_delegate = self
+        m_picker.m_maxCount = 1
     }
     
     func didFinishedPickImage(imgs: Array<PHAsset>) {
@@ -282,7 +281,7 @@ class RegView: BaseLogRegView, ImgPickerDelegate, UINavigationControllerDelegate
             self.m_photo = UIImagePNGRepresentation(result!)
             })
         
-        m_picker!.dismissViewControllerAnimated(true, completion: nil)
+        m_picker.dismissViewControllerAnimated(true, completion: nil)
     }
 
     override func updateNextButton() {

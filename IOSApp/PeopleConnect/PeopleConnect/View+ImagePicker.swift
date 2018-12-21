@@ -38,10 +38,6 @@ class ImgPicker:
     init () {
         super.init(nibName: "ImgPicker", bundle: NSBundle(forClass: ImgPicker.classForCoder()))
     }
-    
-    //override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
-    //    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-    //}
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -67,6 +63,12 @@ class ImgPicker:
     
     @IBAction func cancel(sender: AnyObject) {
         self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func showClipView(asset:PHAsset) {
+        let clipView = SingleImgView(asset: asset)
+        let navi = UINavigationController(rootViewController: clipView)
+        self.presentViewController(navi, animated: true, completion: nil)
     }
     
     func searchAsset(collections:PHFetchResult, items:NSMutableArray, options:PHFetchOptions) {
@@ -172,7 +174,8 @@ class ImgPicker:
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let cell = collectionView.cellForItemAtIndexPath(indexPath) as! ImgCell
         if m_maxCount == 1 {
-            self.performSegueWithIdentifier("ClipPhoto", sender: nil)
+            // clip photo
+            showClipView(cell.m_asset!)
         }
         else {
             cell.m_mark.hidden = false

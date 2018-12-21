@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		18E08D2521CCEB56007AACB4 /* YMSSinglePhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5130732C1D1B8D9000C98705 /* YMSSinglePhotoViewController.m */; };
 		22F307111EA9DDFE00D27109 /* YangMingShan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EFA1F6A1E927DAE00FD8984 /* YangMingShan.framework */; };
 		22F307121EA9DDFE00D27109 /* YangMingShan.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3EFA1F6A1E927DAE00FD8984 /* YangMingShan.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3EFA1F6E1E927DAE00FD8984 /* YangMingShan.h in Headers */ = {isa = PBXBuildFile; fileRef = 3EFA1F6C1E927DAE00FD8984 /* YangMingShan.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -33,7 +34,6 @@
 		3EFA1FDA1E92844B00FD8984 /* YMSAlbumPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 513073231D1B8D9000C98705 /* YMSAlbumPickerViewController.m */; };
 		3EFA1FDB1E92844B00FD8984 /* YMSCameraCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 513073261D1B8D9000C98705 /* YMSCameraCell.m */; };
 		3EFA1FDC1E92844B00FD8984 /* YMSPhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 513073291D1B8D9000C98705 /* YMSPhotoCell.m */; };
-		3EFA1FDD1E92844B00FD8984 /* YMSSinglePhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5130732C1D1B8D9000C98705 /* YMSSinglePhotoViewController.m */; };
 		3EFA1FDE1E92845300FD8984 /* YMSPhotoPickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 513073401D1B8DC000C98705 /* YMSPhotoPickerViewController.xib */; };
 		3EFA1FDF1E92845300FD8984 /* YMSAlbumCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 513073211D1B8D9000C98705 /* YMSAlbumCell.xib */; };
 		3EFA1FE01E92845300FD8984 /* YMSAlbumPickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 513073241D1B8D9000C98705 /* YMSAlbumPickerViewController.xib */; };
@@ -626,6 +626,7 @@
 			files = (
 				3EFA1FD41E92844B00FD8984 /* UIViewController+YMSPhotoHelper.m in Sources */,
 				3EFA1FD51E92844B00FD8984 /* UIScrollView+YMSAdditions.m in Sources */,
+				18E08D2521CCEB56007AACB4 /* YMSSinglePhotoViewController.m in Sources */,
 				3EFA1FD61E92844B00FD8984 /* UITableViewCell+YMSConfig.m in Sources */,
 				3EFA1FD71E92844B00FD8984 /* YMSPhotoPickerTheme.m in Sources */,
 				3EFA1FD81E92844B00FD8984 /* YMSPhotoPickerViewController.m in Sources */,
@@ -634,7 +635,6 @@
 				3EFA1FDA1E92844B00FD8984 /* YMSAlbumPickerViewController.m in Sources */,
 				3EFA1FDB1E92844B00FD8984 /* YMSCameraCell.m in Sources */,
 				3EFA1FDC1E92844B00FD8984 /* YMSPhotoCell.m in Sources */,
-				3EFA1FDD1E92844B00FD8984 /* YMSSinglePhotoViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
