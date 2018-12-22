@@ -32,13 +32,15 @@
 		18DB28B321A5B9590024092C /* CocoaAsyncSocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18DB28A921A5B9120024092C /* CocoaAsyncSocket.framework */; };
 		18DB28B421A5B9590024092C /* CocoaAsyncSocket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 18DB28A921A5B9120024092C /* CocoaAsyncSocket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		18DB28BE21A5B9CC0024092C /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB28BD21A5B9CC0024092C /* Observer.swift */; };
-		18DB28C021A6CCE60024092C /* Requests+User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB28BF21A6CCE60024092C /* Requests+User.swift */; };
+		18DB28C021A6CCE60024092C /* Requests+Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB28BF21A6CCE60024092C /* Requests+Log.swift */; };
 		18DEBF2E21C50AD5004E88DD /* CountryCode in Resources */ = {isa = PBXBuildFile; fileRef = 18DEBF2D21C50AD5004E88DD /* CountryCode */; };
 		18DEBF3021C512EB004E88DD /* Data+CellNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DEBF2F21C512EB004E88DD /* Data+CellNumber.swift */; };
 		18DEBF3221C5F0D7004E88DD /* Data+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DEBF3121C5F0D7004E88DD /* Data+Image.swift */; };
 		18E08D2021CBA120007AACB4 /* ImgPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18E08D1F21CBA120007AACB4 /* ImgPicker.xib */; };
 		18E08D2221CBBFA5007AACB4 /* ImgCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18E08D2121CBBFA5007AACB4 /* ImgCell.xib */; };
 		18E08D2421CBFD71007AACB4 /* SingleImg.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18E08D2321CBFD71007AACB4 /* SingleImg.xib */; };
+		18E08D2721CE573A007AACB4 /* Data+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E08D2621CE573A007AACB4 /* Data+Cache.swift */; };
+		18E08D2921CE7798007AACB4 /* View+Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E08D2821CE7798007AACB4 /* View+Loading.swift */; };
 		18E13ED521BD630B006FCE28 /* Widgets in Resources */ = {isa = PBXBuildFile; fileRef = 18E13ED421BD630B006FCE28 /* Widgets */; };
 		18E8CB80219331A400E29383 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8CB7F219331A400E29383 /* AppDelegate.swift */; };
 		18E8CB89219331A400E29383 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18E8CB88219331A400E29383 /* Assets.xcassets */; };
@@ -193,7 +195,7 @@
 		18DB289B21A3AF750024092C /* Requests+Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Tag.swift"; sourceTree = "<group>"; };
 		18DB28A221A5B9120024092C /* CocoaAsyncSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CocoaAsyncSocket.xcodeproj; path = "../CocoaAsyncSocket-master/CocoaAsyncSocket.xcodeproj"; sourceTree = "<group>"; };
 		18DB28BD21A5B9CC0024092C /* Observer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
-		18DB28BF21A6CCE60024092C /* Requests+User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+User.swift"; sourceTree = "<group>"; };
+		18DB28BF21A6CCE60024092C /* Requests+Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Log.swift"; sourceTree = "<group>"; };
 		18DB28C121A6D76A0024092C /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		18DEBF2D21C50AD5004E88DD /* CountryCode */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CountryCode; sourceTree = "<group>"; };
 		18DEBF2F21C512EB004E88DD /* Data+CellNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+CellNumber.swift"; sourceTree = "<group>"; };
@@ -201,6 +203,8 @@
 		18E08D1F21CBA120007AACB4 /* ImgPicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImgPicker.xib; sourceTree = "<group>"; };
 		18E08D2121CBBFA5007AACB4 /* ImgCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImgCell.xib; sourceTree = "<group>"; };
 		18E08D2321CBFD71007AACB4 /* SingleImg.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SingleImg.xib; sourceTree = "<group>"; };
+		18E08D2621CE573A007AACB4 /* Data+Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Cache.swift"; sourceTree = "<group>"; };
+		18E08D2821CE7798007AACB4 /* View+Loading.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Loading.swift"; sourceTree = "<group>"; };
 		18E13ED421BD630B006FCE28 /* Widgets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Widgets; sourceTree = "<group>"; };
 		18E8CB7C219331A400E29383 /* PeopleConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeopleConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E8CB7F219331A400E29383 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -311,7 +315,8 @@
 				18DB289321A145410024092C /* Requests+Msg.swift */,
 				18DB289921A3A8BA0024092C /* Requests+Contact.swift */,
 				18DB289B21A3AF750024092C /* Requests+Tag.swift */,
-				18DB28BF21A6CCE60024092C /* Requests+User.swift */,
+				18DB28BF21A6CCE60024092C /* Requests+Log.swift */,
+				18E08D2621CE573A007AACB4 /* Data+Cache.swift */,
 				18DEBF2F21C512EB004E88DD /* Data+CellNumber.swift */,
 				18DEBF3121C5F0D7004E88DD /* Data+Image.swift */,
 				18AE420B219AE3AD0008B792 /* Data+User.swift */,
@@ -319,6 +324,7 @@
 				18DB289521A1C2C30024092C /* Data+Messege.swift */,
 				18D3A8E42198061100EB3289 /* Data+Contact.swift */,
 				18FF5DD821C14BF9008DB746 /* View+Settings.swift */,
+				18E08D2821CE7798007AACB4 /* View+Loading.swift */,
 				18AE4209219AC4170008B792 /* View+Login.swift */,
 				18DB289721A1CD200024092C /* View+Conversation.swift */,
 				18D3A8DE2197F3CD00EB3289 /* View+Messages.swift */,
@@ -593,13 +599,15 @@
 				18AE420A219AC4170008B792 /* View+Login.swift in Sources */,
 				18DB289C21A3AF750024092C /* Requests+Tag.swift in Sources */,
 				18D3A8DF2197F3CD00EB3289 /* View+Messages.swift in Sources */,
+				18E08D2921CE7798007AACB4 /* View+Loading.swift in Sources */,
 				18E8CBB02193441500E29383 /* Requests.swift in Sources */,
-				18DB28C021A6CCE60024092C /* Requests+User.swift in Sources */,
+				18DB28C021A6CCE60024092C /* Requests+Log.swift in Sources */,
 				18DB289621A1C2C30024092C /* Data+Messege.swift in Sources */,
 				1854304721AD78A4004973E6 /* View+CreatePost.swift in Sources */,
 				18DEBF3021C512EB004E88DD /* Data+CellNumber.swift in Sources */,
 				18DB289421A145410024092C /* Requests+Msg.swift in Sources */,
 				18DB287A219D85BF0024092C /* View+MoveMembers.swift in Sources */,
+				18E08D2721CE573A007AACB4 /* Data+Cache.swift in Sources */,
 				18AE420C219AE3AD0008B792 /* Data+User.swift in Sources */,
 				18DEBF3221C5F0D7004E88DD /* Data+Image.swift in Sources */,
 				18E8CB80219331A400E29383 /* AppDelegate.swift in Sources */,

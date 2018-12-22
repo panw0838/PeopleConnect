@@ -106,7 +106,7 @@ class BaseLogRegView: UITableViewController {
     }
 }
 
-class LogView: BaseLogRegView {
+class LogView: BaseLogRegView, LogDelegate {
     @IBOutlet weak var m_logSwitchBtn: UIButton!
     @IBOutlet weak var m_getCodeBtn: UIButton!
     @IBOutlet weak var m_passLabel: UILabel!
@@ -115,7 +115,8 @@ class LogView: BaseLogRegView {
     
     var m_usePassword = true
     var m_enableColor:UIColor? = nil
-    
+    var m_father:LoginView? = nil
+
     override func viewDidLoad() {
         super.viewDidLoad()
         m_cellBtn.layer.cornerRadius = 10
@@ -181,8 +182,20 @@ class LogView: BaseLogRegView {
         }
     }
     
+    func logFail(msg:String?) {
+        // show error
+        m_father?.m_loading?.stopLoading()
+        m_father?.showError(msg)
+    }
+    
+    func logSuccess() {
+        // do syncs
+        //m_father?.m_loading?.stopLoading()
+        //m_father!.performSegueWithIdentifier("ShowMainMenu", sender: nil)
+    }
+    
     @IBAction func log() {
-        httpLogon(m_countryCode, cellNumber: m_cellNumber, password: m_password)
+        httpLogon(m_countryCode, cell: m_cellNumber, pass: m_password, delegate: self)
     }
     
     override func updateNextButton() {
@@ -191,7 +204,7 @@ class LogView: BaseLogRegView {
     }
 }
 
-class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDelegate {
+class RegView: BaseLogRegView, LogDelegate, PhotoClipperDelegate, UINavigationControllerDelegate {
     @IBOutlet weak var m_nickNameBtn: UIButton!
     @IBOutlet weak var m_regBtn: UIButton!
     @IBOutlet weak var m_photoBtn: UIButton!
@@ -200,9 +213,22 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
     var m_nickName:String = ""
     var m_picker = ImgPicker(maxCount: 1)
     var m_enableColor:UIColor? = nil
+    var m_father:LoginView? = nil
     
+    func logFail(msg:String?) {
+        // show error
+        m_father?.m_loading?.stopLoading()
+        m_father?.showError(msg)
+    }
+    
+    func logSuccess() {
+        m_father?.m_loading?.stopLoading()
+        m_father!.performSegueWithIdentifier("ShowMainMenu", sender: nil)
+    }
+
     @IBAction func reg(sender: AnyObject) {
-        httpRegistry(m_countryCode, cellNumber: m_cellNumber, password: m_password, photo: m_photo!)
+        httpRegistry(m_countryCode, cell: m_cellNumber, pass: m_password, photo: m_photo!, delegate: self)
+        m_father?.m_loading?.startLoading()
     }
     
     @IBAction func pickPhoto() {
@@ -289,6 +315,7 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
         self.m_photoBtn.setImage(img, forState: .Normal)
         self.m_photo = UIImagePNGRepresentation(img)
         m_picker.dismissViewControllerAnimated(true, completion: nil)
+        updateNextButton()
     }
 
     override func updateNextButton() {
@@ -301,11 +328,13 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
     }
 }
 
-class LoginView: UIViewController, LogonRequestCallback {
+class LoginView: UIViewController, LogDelegate {
 
     @IBOutlet weak var m_logRegSwitch: UISegmentedControl!
     @IBOutlet weak var m_logView: UIView!
     @IBOutlet weak var m_regView: UIView!
+    
+    var m_loading:LoadingAlert? = nil
     
     @IBAction func switchLogReg(sender: AnyObject) {
         if m_logRegSwitch.selectedSegmentIndex == 0 {
@@ -318,27 +347,51 @@ class LoginView: UIViewController, LogonRequestCallback {
         }
     }
     
-    func LogonUpdateUI() {
+    func logFail(msg:String?) {
+        
+    }
+    
+    func logSuccess() {
         self.performSegueWithIdentifier("ShowMainMenu", sender: nil)
+    }
+    
+    func showError(errMsg:String?) {
+        let err = errMsg == nil ? "未知错误" : errMsg
+        let alert = UIAlertController(title: err, message: "", preferredStyle: .Alert)
+        let okAction = UIAlertAction(title: "确定", style: .Default, handler: nil)
+
+        alert.addAction(okAction)
+        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        logonCallbacks.append(self)
         m_logView.hidden = false
         m_regView.hidden = true
+        m_loading = LoadingAlert(parent: self.view)
+        
+        for child in self.childViewControllers {
+            let logView = child as? LogView
+            if logView != nil {
+                logView?.m_father = self
+            }
+            let regView = child as? RegView
+            if regView != nil {
+                regView?.m_father = self
+            }
+        }
     }
 
     @IBAction func login1(sender: AnyObject) {
-        httpLogon(0, cellNumber: "123456", password: "123456")
+        m_loading?.startLoading()
+        httpLogon(86, cell: "13700000000", pass: "qqqqqqqq", delegate: self)
     }
     
     @IBAction func login2(sender: AnyObject) {
-        httpLogon(0, cellNumber: "123457", password: "123456")
-
+        httpLogon(86, cell: "13700000001", pass: "qqqqqqqq", delegate: self)
     }
     
     @IBAction func login3(sender: AnyObject) {
-        httpLogon(0, cellNumber: "123458", password: "123456")
+        httpLogon(86, cell: "13700000002", pass: "qqqqqqqq", delegate: self)
     }
 }

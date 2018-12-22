@@ -13,6 +13,7 @@ struct ContactInfo {
     var flag: UInt64
     var name: String
     var ip: String
+    var photo: NSData? = nil
     
     init(id:UInt64, f:UInt64, n:String) {
         user = id
@@ -47,6 +48,21 @@ struct ContactInfo {
         }
         
         return tagIDs
+    }
+    
+    mutating func getPhoto()->NSData? {
+        if photo != nil {
+            return photo
+        }
+        photo = getContactPhoto(user)
+        return photo
+    }
+    
+    mutating func setPhoto(data:NSData, update:Bool) {
+        photo = data
+        if update {
+            setContactPhoto(user, photo: data)
+        }
     }
 }
 
@@ -311,14 +327,12 @@ class ContactsData {
         if contact.isBlacklist() {
             m_blacklist.addMember(contact)
         }
+        else if contact.isUndefine() {
+            m_undefine.addMember(contact)
+        }
         else {
-            if contact.isUndefine() {
-                m_undefine.addMember(contact)
-            }
-            else {
-                for tag in m_tags {
-                    tag.addMember(contact)
-                }
+            for tag in m_tags {
+                tag.addMember(contact)
             }
         }
         m_contacts[contact.user] = contact

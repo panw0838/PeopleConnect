@@ -22,10 +22,6 @@ struct LoginInfo {
     var pass:String
 }
 
-protocol LogonRequestCallback {
-    func LogonUpdateUI()->Void
-}
-
 protocol ContactRequestCallback {
     func ContactUpdateUI()->Void
 }
@@ -45,7 +41,6 @@ protocol SearchContactCallback {
 let http: HttpService = HttpService()
 
 var searchCallbacks:Array<SearchContactCallback> = Array<SearchContactCallback>()
-var logonCallbacks:Array<LogonRequestCallback> = Array<LogonRequestCallback>()
 var contactCallbacks:Array<ContactRequestCallback> = Array<ContactRequestCallback>()
 var messegeCallbacks:Array<MessegeRequestCallback> = Array<MessegeRequestCallback>()
 var postCallbacks:Array<PostRequestCallback> = Array<PostRequestCallback>()
