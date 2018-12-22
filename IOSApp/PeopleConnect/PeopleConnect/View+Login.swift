@@ -109,10 +109,12 @@ class BaseLogRegView: UITableViewController {
 class LogView: BaseLogRegView {
     @IBOutlet weak var m_logSwitchBtn: UIButton!
     @IBOutlet weak var m_getCodeBtn: UIButton!
+    @IBOutlet weak var m_passLabel: UILabel!
     
     @IBOutlet weak var m_logBtn: UIButton!
     
     var m_usePassword = true
+    var m_enableColor:UIColor? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -122,6 +124,8 @@ class LogView: BaseLogRegView {
         m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
         m_getCodeBtn.hidden = true
         m_logBtn.enabled = false
+        m_enableColor = m_logBtn.backgroundColor
+        m_logBtn.backgroundColor = UIColor.grayColor()
     }
     
     func passwordChanged(sender:UITextField) {
@@ -167,11 +171,13 @@ class LogView: BaseLogRegView {
             m_passBtn.setTitle("请输入密码", forState: .Normal)
             m_getCodeBtn.hidden = true
             m_logSwitchBtn.setTitle("验证码登陆", forState: .Normal)
+            m_passLabel.text = "验证码"
         }
         else {
             m_passBtn.setTitle("请输入验证码", forState: .Normal)
             m_getCodeBtn.hidden = false
             m_logSwitchBtn.setTitle("密码登陆", forState: .Normal)
+            m_passLabel.text = "密码"
         }
     }
     
@@ -181,6 +187,7 @@ class LogView: BaseLogRegView {
     
     override func updateNextButton() {
         m_logBtn.enabled = m_cellNumber.characters.count != 0 && m_password.characters.count != 0
+        m_logBtn.backgroundColor = m_logBtn.enabled ? m_enableColor : UIColor.grayColor()
     }
 }
 
@@ -192,6 +199,11 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
     var m_photo:NSData? = nil
     var m_nickName:String = ""
     var m_picker = ImgPicker(maxCount: 1)
+    var m_enableColor:UIColor? = nil
+    
+    @IBAction func reg(sender: AnyObject) {
+        httpRegistry(m_countryCode, cellNumber: m_cellNumber, password: m_password, photo: m_photo!)
+    }
     
     @IBAction func pickPhoto() {
         let navi = UINavigationController(rootViewController: m_picker)
@@ -214,7 +226,7 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
         let okAction = UIAlertAction(title: "确定", style: .Default,
             handler: { action in
                 self.m_password = (alert.textFields?.first?.text)!
-                self.m_passBtn.setTitle("********", forState: .Normal)
+                self.m_passBtn.setTitle(self.m_password, forState: .Normal)
                 self.updateNextButton()
         })
         alert.addTextFieldWithConfigurationHandler {
@@ -243,8 +255,8 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
         let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Default,
             handler: { action in
-                let nickName = (alert.textFields?.first?.text)!
-                self.m_nickNameBtn.setTitle(nickName, forState: .Normal)
+                self.m_nickName = (alert.textFields?.first?.text)!
+                self.m_nickNameBtn.setTitle(self.m_nickName, forState: .Normal)
                 self.updateNextButton()
         })
         alert.addTextFieldWithConfigurationHandler {
@@ -269,6 +281,8 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
         m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
         m_regBtn.enabled = false
         m_picker.m_cliperDelegate = self
+        m_enableColor = m_regBtn.backgroundColor
+        m_regBtn.backgroundColor = UIColor.grayColor()
     }
     
     func didClippedPickImage(img: UIImage) {
@@ -283,6 +297,7 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
             m_password.characters.count != 0 &&
             m_nickName.characters.count != 0 &&
             m_photo != nil
+        m_regBtn.backgroundColor = m_regBtn.enabled ? m_enableColor : UIColor.grayColor()
     }
 }
 
@@ -313,17 +328,7 @@ class LoginView: UIViewController, LogonRequestCallback {
         m_logView.hidden = false
         m_regView.hidden = true
     }
-    
-    @IBAction func registry(sender: AnyObject) {
-        var cell = 123456
 
-        let cellNumber:String = String(cell)
-        let password: String = "123456"
-        httpRegistry(cellNumber, password: password)
-        
-        cell++
-    }
-    
     @IBAction func login1(sender: AnyObject) {
         httpLogon(0, cellNumber: "123456", password: "123456")
     }

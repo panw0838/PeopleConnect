@@ -7,13 +7,22 @@
 //
 
 import Foundation
+import AFNetworking
 import UIKit
 
-func httpRegistry(cellNumber:String, password:String) {
+func httpRegistry(countryCode:Int, cellNumber:String, password:String, photo:NSData) {
     let deviceID:String = (UIDevice.currentDevice().identifierForVendor?.UUIDString)!
-    let params: Dictionary = ["cell":cellNumber, "code":"0838", "pass":password, "device":deviceID]
+    let params: Dictionary = [
+        "cell":cellNumber,
+        "code":NSNumber(integer: countryCode),
+        "pass":password,
+        "device":deviceID]
 
-    http.postRequest("registry", params: params,
+    http.postDataRequest("registry", params: params,
+        constructingBodyWithBlock: { (formData: AFMultipartFormData) -> Void in
+            formData.appendPartWithFileData(photo, name:"", fileName:"", mimeType: "image/jpeg")
+        },
+        progress: nil,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
             if (html.hasPrefix("Error")) {
