@@ -41,8 +41,9 @@ func AddContactPreCheck(from uint64, to uint64, flag uint64, name string) error 
 	return nil
 }
 
+// todo, build search tree
 func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
-	cellKey := getCellKey(key)
+	cellKey := getCellKey(0, key)
 	exists, err := redis.Int64(c.Do("EXISTS", cellKey))
 	if err != nil {
 		return 0, err

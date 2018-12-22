@@ -33,12 +33,12 @@ func getAccountID(account string) (uint64, error) {
 	return uint64(userID), nil
 }
 
-func getCellKey(cellNumber string) string {
-	return "cell:" + cellNumber
+func getCellKey(contryCode int, cellNumber string) string {
+	return "cell:" + strconv.FormatInt(int64(contryCode), 10) + "_" + cellNumber
 }
 
 func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
-	cellKey := getCellKey(info.CellNumber)
+	cellKey := getCellKey(info.CountryCode, info.CellNumber)
 	exists, err := redis.Int64(c.Do("EXISTS", cellKey))
 	if err != nil {
 		return 0, err
@@ -86,8 +86,8 @@ func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 	return newID, nil
 }
 
-func dbLogon(loginInfo LoginInfo, c redis.Conn) (uint64, error) {
-	cellKey := getCellKey(loginInfo.CellNumber)
+func dbLogon(info LoginInfo, c redis.Conn) (uint64, error) {
+	cellKey := getCellKey(info.CountryCode, info.CellNumber)
 	exists, err := redis.Int64(c.Do("EXISTS", cellKey))
 	if err != nil {
 		return 0, err
@@ -111,8 +111,8 @@ func dbLogon(loginInfo LoginInfo, c redis.Conn) (uint64, error) {
 		return 0, err
 	}
 
-	if strings.Compare(password, loginInfo.Password) == 0 {
-		_ = DbSetUserInfoField(accountKey, IPField, loginInfo.IPAddress, c)
+	if strings.Compare(password, info.Password) == 0 {
+		_ = DbSetUserInfoField(accountKey, DeviceField, info.Device, c)
 		return userID, nil
 	} else {
 		return 0, fmt.Errorf("password not correct")

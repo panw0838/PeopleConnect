@@ -96,44 +96,49 @@ func getPhoto(uID uint64, form *multipart.Form) error {
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(share.MaxUploadSize)
 	if err != nil {
-		fmt.Fprintf(w, "Error: file too big")
+		share.WriteError(w, 1)
 		return
 	}
 
 	var input RegistryInfo
 	err = getFormInput(r.MultipartForm, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: read input")
+		share.WriteError(w, 1)
+		return
+	}
+
+	if input.CountryCode == 0 {
+		share.WriteError(w, 2)
 		return
 	}
 
 	if len(input.CellNumber) == 0 {
-		fmt.Fprintf(w, "Error: invalid cell number")
+		share.WriteError(w, 3)
 		return
 	}
 
 	lenPass := len(input.Password)
 	if lenPass < 8 || lenPass > 16 {
-		fmt.Fprintf(w, "Error: invalid password")
+		share.WriteError(w, 4)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
 
 	uID, err := dbRegistry(input, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
 	err = getPhoto(uID, r.MultipartForm)
 	if err != nil {
-		fmt.Fprintf(w, "Error: process file %v", err)
+		share.WriteError(w, 5)
 		return
 	}
 
@@ -141,19 +146,19 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	response.UserID = uID
 	data, err := json.Marshal(&response)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
-	fmt.Fprintf(w, "%s", data)
+	share.WriteError(w, 0)
+	w.Write(data)
 }
 
 type LoginInfo struct {
-	CellNumber string `json:"cell"`
-	CellCode   string `json:"code,omitempty"`
-	Password   string `json:"pass,omitempty"`
-	Device     string `json:"device"`
-	IPAddress  string
+	CountryCode int    `json:"code"`
+	CellNumber  string `json:"cell"`
+	Password    string `json:"pass"`
+	Device      string `json:"device"`
 }
 
 type LoginResponse struct {
@@ -163,13 +168,12 @@ type LoginResponse struct {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var loginInfo LoginInfo
-	err := share.ReadInput(r, &loginInfo)
+	var info LoginInfo
+	err := share.ReadInput(r, &info)
 	if err != nil {
 		fmt.Fprintf(w, "Error: json read error")
 		return
 	}
-	loginInfo.IPAddress = r.RemoteAddr
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
@@ -178,7 +182,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	userID, err := dbLogon(loginInfo, c)
+	userID, err := dbLogon(info, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return

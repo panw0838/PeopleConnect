@@ -90,3 +90,8 @@ func GetRequestKey(user1 uint64, user2 uint64) string {
 		strconv.FormatUint(user1, 10) + ":" +
 		strconv.FormatUint(user2, 10)
 }
+
+func WriteError(w http.ResponseWriter, err uint8) {
+	var output = []byte{err}
+	w.Write(output)
+}
