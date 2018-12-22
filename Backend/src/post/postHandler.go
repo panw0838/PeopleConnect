@@ -18,8 +18,6 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-const maxUploadSize = 20 * 1024 * 1024
-
 func getAttachmentName(userID uint64, postID uint32, idx int) string {
 	return strconv.FormatUint(userID, 10) + "_" +
 		strconv.FormatUint(uint64(postID), 10) + "_" +
@@ -128,7 +126,7 @@ type NewPostReturn struct {
 }
 
 func NewPostHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(maxUploadSize)
+	err := r.ParseMultipartForm(share.MaxUploadSize)
 	if err != nil {
 		fmt.Fprintf(w, "Error: file too big")
 		return

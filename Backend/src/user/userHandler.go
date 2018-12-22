@@ -3,8 +3,15 @@ package user
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"mime"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 	"share"
+	"strconv"
+	"strings"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -14,25 +21,100 @@ type AccountInfo struct {
 }
 
 type RegistryInfo struct {
-	CellNumber string `json:"cell"`
-	CellCode   string `json:"code,omitempty"`
-	Password   string `json:"pass,omitempty"`
-	Device     string `json:"device"`
-	IPAddress  string
+	CountryCode int    `json:"code"`
+	CellNumber  string `json:"cell"`
+	Password    string `json:"pass,omitempty"`
+	Device      string `json:"device"`
+	IPAddress   string
+}
+
+func getFormInput(form *multipart.Form, param *RegistryInfo) error {
+	for k, v := range form.Value {
+		if strings.Compare(k, "code") == 0 {
+			value, err := strconv.Atoi(v[0])
+			if err != nil {
+				return err
+			}
+			param.CountryCode = value
+		} else if strings.Compare(k, "cell") == 0 {
+			param.CellNumber = v[0]
+		} else if strings.Compare(k, "pass") == 0 {
+			param.Password = v[0]
+		} else if strings.Compare(k, "device") == 0 {
+			param.Device = v[0]
+		}
+	}
+
+	return nil
+}
+
+func getPhoto(uID uint64, form *multipart.Form) error {
+	//获取 multi-part/form中的文件数据
+	for _, v := range form.File {
+		for i := 0; i < len(v); i++ {
+			fmt.Println("fileName   :", v[i].Filename)
+			fmt.Println("part-header:", v[i].Header)
+			f, err := v[i].Open()
+			if err != nil {
+				return err
+			}
+			fileData, err := ioutil.ReadAll(f)
+			if err != nil {
+				return err
+			}
+
+			fileType := http.DetectContentType(fileData)
+			if fileType != "image/jpeg" &&
+				fileType != "image/jpg" &&
+				fileType != "image/gif" &&
+				fileType != "image/png" {
+				return fmt.Errorf("invalid file type")
+			}
+
+			fileEndings, err := mime.ExtensionsByType(fileType)
+			if err != nil {
+				return err
+			}
+
+			fileName := strconv.FormatUint(uID, 10) + fileEndings[0]
+			filePath := filepath.Join("photos", fileName)
+			fmt.Printf("FileType: %s, Path: %s\n", fileType, filePath)
+
+			newFile, err := os.Create(filePath)
+			if err != nil {
+				return err
+			}
+			defer newFile.Close()
+			if _, err := newFile.Write(fileData); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	var registryInfo RegistryInfo
-	err := share.ReadInput(r, &registryInfo)
+	err := r.ParseMultipartForm(share.MaxUploadSize)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error")
+		fmt.Fprintf(w, "Error: file too big")
 		return
 	}
 
-	registryInfo.IPAddress = r.RemoteAddr
+	var input RegistryInfo
+	err = getFormInput(r.MultipartForm, &input)
+	if err != nil {
+		fmt.Fprintf(w, "Error: read input")
+		return
+	}
 
-	if len(registryInfo.CellNumber) == 0 {
-		fmt.Fprintf(w, "Error: null cell number")
+	if len(input.CellNumber) == 0 {
+		fmt.Fprintf(w, "Error: invalid cell number")
+		return
+	}
+
+	lenPass := len(input.Password)
+	if lenPass < 8 || lenPass > 16 {
+		fmt.Fprintf(w, "Error: invalid password")
 		return
 	}
 
@@ -43,14 +125,20 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	userID, err := dbRegistry(registryInfo, c)
+	uID, err := dbRegistry(input, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
 
+	err = getPhoto(uID, r.MultipartForm)
+	if err != nil {
+		fmt.Fprintf(w, "Error: process file %v", err)
+		return
+	}
+
 	var response AccountInfo
-	response.UserID = userID
+	response.UserID = uID
 	data, err := json.Marshal(&response)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)

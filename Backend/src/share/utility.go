@@ -16,6 +16,8 @@ const MAX_TIME uint64 = 0xffffffffffffffff
 
 const ContactDB = "127.0.0.1:6379"
 
+const MaxUploadSize = 20 * 1024 * 1024
+
 func GetUint64(reply interface{}, err error) (uint64, error) {
 	str, err := redis.String(reply, err)
 	if err != nil {
