@@ -33,11 +33,13 @@ class ImgPicker:
     var m_pickerDelegate:ImgPickerDelegate? = nil
     var m_cliperDelegate:PhotoClipperDelegate? = nil
     var m_singleView:SingleImgView? = nil
+    var m_doneBtn:UIBarButtonItem? = nil
     
     @IBOutlet weak var m_imgTable: UICollectionView!
     
-    init () {
+    init (maxCount:Int) {
         super.init(nibName: "ImgPicker", bundle: NSBundle(forClass: ImgPicker.classForCoder()))
+        m_maxCount = maxCount
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -54,8 +56,10 @@ class ImgPicker:
         let cancelBtn = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: Selector("cancel:"))
         self.navigationItem.leftBarButtonItem = cancelBtn
         
-        let doneBtn = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: Selector("imgPicked:"))
-        self.navigationItem.rightBarButtonItem = doneBtn
+        if m_maxCount > 1 {
+            m_doneBtn = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: Selector("imgPicked:"))
+            self.navigationItem.rightBarButtonItem = m_doneBtn
+        }
     }
     
     @IBAction func imgPicked(sender: AnyObject) {
@@ -68,9 +72,8 @@ class ImgPicker:
     
     func showClipView(asset:PHAsset) {
         let clipView = SingleImgView(asset: asset)
-        let navi = UINavigationController(rootViewController: clipView)
         clipView.m_delegate = m_cliperDelegate
-        self.presentViewController(navi, animated: true, completion: nil)
+        self.navigationController?.pushViewController(clipView, animated: true)
     }
     
     func searchAsset(collections:PHFetchResult, items:NSMutableArray, options:PHFetchOptions) {
@@ -166,10 +169,12 @@ class ImgPicker:
             for var i=idx!; i<m_selected.count; i++ {
                 let k = m_imgs?.indexOf(m_selected[i])
                 let c = collectionView.cellForItemAtIndexPath(NSIndexPath(forRow: k!, inSection: 0)) as? ImgCell
-                if c != nil {
-                    c!.m_mark.text = String(i+1)
-                }
-            }   
+                c?.m_mark.text = String(i+1)
+            }
+        }
+        
+        if m_selected.count == 0 {
+            m_doneBtn?.enabled = false
         }
     }
     
@@ -183,6 +188,10 @@ class ImgPicker:
             cell.m_mark.hidden = false
             m_selected.append(cell.m_asset!)
             cell.m_mark.text = String(m_selected.count)
+        }
+        
+        if m_selected.count > 0 {
+            m_doneBtn?.enabled = true
         }
     }
 }

@@ -43,13 +43,14 @@ class SingleImgView:UIViewController, UIScrollViewDelegate {
 
         let imageRef = CGImageCreateWithImageInRect(m_image?.CGImage, rect)
         let newImg = UIImage(CGImage: imageRef!)
-        let finalImg = resizeImage(newImg, newSize: CGSizeMake(50, 50))
+        let finalImg = resizeImage(newImg, newSize: CGSizeMake(80, 80))
 
         self.m_delegate?.didClippedPickImage(finalImg)
     }
     
     @IBAction func cancel(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        //self.dismissViewControllerAnimated(true, completion: nil)
+        self.navigationController?.popViewControllerAnimated(true)
     }
     
     override func viewDidLoad() {
@@ -72,7 +73,18 @@ class SingleImgView:UIViewController, UIScrollViewDelegate {
         m_scrView.addSubview(m_imgView)
         let naviHeight = CGRectGetHeight((navigationController?.navigationBar.bounds)!)
         let statusHeight = UIApplication.sharedApplication().statusBarFrame.height
-        m_scrView.contentInset = UIEdgeInsets(top: space-naviHeight-statusHeight, left: 0, bottom: space, right: 0)
+        let topInset = naviHeight+statusHeight
+        m_scrView.contentInset = UIEdgeInsets(top: space-topInset, left: 0, bottom: space, right: 0)
+        
+        let topAlpha = UIView(frame: CGRectMake(0, topInset, width, space-topInset))
+        topAlpha.backgroundColor = UIColor.grayColor()
+        topAlpha.alpha = 0.5
+        self.view.addSubview(topAlpha)
+        
+        let butAlpha = UIView(frame: CGRectMake(0, height-space, width, space))
+        butAlpha.backgroundColor = UIColor.grayColor()
+        butAlpha.alpha = 0.5
+        self.view.addSubview(butAlpha)
         
         PHCachingImageManager().requestImageForAsset(m_asset!, targetSize: tarSize, contentMode: .AspectFit, options: nil, resultHandler: {(result:UIImage?, info:[NSObject:AnyObject]?)->Void in
             self.m_imgView.image = result

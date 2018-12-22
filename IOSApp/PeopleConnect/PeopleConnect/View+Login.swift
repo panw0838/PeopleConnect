@@ -191,7 +191,7 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
     
     var m_photo:NSData? = nil
     var m_nickName:String = ""
-    var m_picker = ImgPicker()
+    var m_picker = ImgPicker(maxCount: 1)
     
     @IBAction func pickPhoto() {
         let navi = UINavigationController(rootViewController: m_picker)
@@ -265,10 +265,10 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
         m_countryBtn.layer.cornerRadius = 10
         m_cellBtn.layer.cornerRadius = 10
         m_passBtn.layer.cornerRadius = 10
+        m_photoBtn.layer.cornerRadius = 10
         m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
         m_regBtn.enabled = false
         m_picker.m_cliperDelegate = self
-        m_picker.m_maxCount = 1
     }
     
     func didClippedPickImage(img: UIImage) {

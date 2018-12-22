@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Photos
 
 protocol RemoveAttDelegate {
     func removeAtt(idx:Int)
@@ -97,7 +98,7 @@ class PostGroups:UITableViewCell, UICollectionViewDataSource, UICollectionViewDe
     }
 }
 
-class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, RemoveAttDelegate {
+class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollectionViewDelegate, ImgPickerDelegate, UINavigationControllerDelegate, RemoveAttDelegate {
     
     @IBOutlet weak var m_attachments: UICollectionView!
     @IBOutlet weak var m_desc: UITextField!
@@ -120,12 +121,12 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
         navigationController?.popViewControllerAnimated(true)
     }
     
-    var m_picker = UIImagePickerController()
+    var m_picker = ImgPicker(maxCount: 8)
     var m_atts = Array<UIImage>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        m_picker.delegate = self
+        m_picker.m_pickerDelegate = self
         m_postTags.allowsSelection = true
         m_postTags.allowsMultipleSelection = true
         m_postGroups.allowsSelection = true
@@ -144,16 +145,25 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
         m_attachments.reloadData()
     }
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
-        for (idx, img) in m_atts.enumerate() {
-            if img == image {
-                m_atts.removeAtIndex(idx)
-                break
-            }
+    func didFinishedPickImage(imgs: Array<PHAsset>) {
+        let imgMgr = PHImageManager()
+        let options = PHImageRequestOptions()
+        
+        options.deliveryMode = .HighQualityFormat
+        options.networkAccessAllowed = true
+        options.resizeMode = .Exact
+        options.synchronous = true
+        
+        m_atts.removeAll()
+        
+        for asset in imgs {
+            let tarSize = CGSizeMake(1024*4, 1024*4)
+            imgMgr.requestImageForAsset(asset, targetSize: tarSize, contentMode: .AspectFill, options: options, resultHandler: {(img:UIImage?, info:[NSObject:AnyObject]?)->Void in
+                self.m_atts.append(img!)
+                })
         }
-        m_atts.append(image)
+        
         m_attachments.reloadData()
-        //navigationController?.popViewControllerAnimated(true)
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -186,8 +196,9 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
             
         }
         else {
-            m_picker.sourceType = .SavedPhotosAlbum
-            self.presentViewController(m_picker, animated: true) {() -> Void in}
+            let navi = UINavigationController(rootViewController: m_picker)
+            navi.delegate = self
+            self.presentViewController(navi, animated: true, completion: nil)
         }
     }
 
