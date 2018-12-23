@@ -24,12 +24,9 @@ func httpRegistry(code:Int, cell:String, pass:String, photo:NSData, passed:(()->
         },
         progress: nil,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let data = response as! NSData
-            var errCode:UInt8 = 0
-            data.getBytes(&errCode, length: sizeof(UInt8))
-            if errCode == 0 {
-                let regData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
-                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(regData, options: .MutableContainers)
+            let regData = processErrorCode(response as! NSData, failed: failed)
+            if regData != nil {
+                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(regData!, options: .MutableContainers)
                 if (jsonObj != nil) {
                     let dict: NSDictionary = jsonObj as! NSDictionary
                     userInfo.userID = (UInt64)((dict["user"]?.unsignedLongLongValue)!)
@@ -39,10 +36,6 @@ func httpRegistry(code:Int, cell:String, pass:String, photo:NSData, passed:(()->
                     contactsData.m_contacts[newContact.user] = newContact
                 }
                 passed?()
-            }
-            else {
-                let errMsg = httpErrMsg[errCode]
-                failed?(errMsg)
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -61,12 +54,9 @@ func httpLogon(code:Int, cell:String, pass:String, passed:(()->Void)?, failed:((
 
     http.postRequest("login", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let data = response as! NSData
-            var errCode:UInt8 = 0
-            data.getBytes(&errCode, length: sizeof(UInt8))
-            if errCode == 0 {
-                let logData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
-                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(logData, options: .MutableContainers)
+            let logData = processErrorCode(response as! NSData, failed: failed)
+            if logData != nil {
+                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(logData!, options: .MutableContainers)
                 if (jsonObj != nil) {
                     let dict: NSDictionary = jsonObj as! NSDictionary
                     userInfo.userID = (UInt64)((dict["user"]?.unsignedLongLongValue)!)
@@ -75,9 +65,6 @@ func httpLogon(code:Int, cell:String, pass:String, passed:(()->Void)?, failed:((
                     contactsData.m_contacts[newContact.user] = newContact
                 }
                 passed?()
-            }
-            else {
-                failed?(httpErrMsg[errCode])
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in

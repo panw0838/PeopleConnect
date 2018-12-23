@@ -47,6 +47,18 @@ var searchCallbacks:Array<SearchContactCallback> = Array<SearchContactCallback>(
 var messegeCallbacks:Array<MessegeRequestCallback> = Array<MessegeRequestCallback>()
 var postCallbacks:Array<PostRequestCallback> = Array<PostRequestCallback>()
 
+func processErrorCode(data:NSData, failed:((String?)->Void)?)->NSData? {
+    var errCode:UInt8 = 0
+    data.getBytes(&errCode, length: sizeof(UInt8))
+    if errCode == 0 {
+        return data.subdataWithRange(NSRange(location: 1, length: data.length-1))
+    }
+    else {
+        failed?(httpErrMsg[errCode])
+        return nil
+    }
+}
+
 func splitData(srcData:NSData)->Array<NSData> {
     var lens = Array<UInt32>()
     var datas = Array<NSData>()

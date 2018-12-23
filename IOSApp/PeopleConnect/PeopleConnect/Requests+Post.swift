@@ -91,12 +91,9 @@ func httpGetSnapshots(files:Array<String>) {
     let params: Dictionary = ["files":fileParam]
     http.postRequest("previews", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let data = response as! NSData
-            var errCode:UInt8 = 0
-            data.getBytes(&errCode, length: sizeof(UInt8))
-            if errCode == 0 {
-                let previewsData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
-                let subDatas = splitData(previewsData)
+            let previewsData = processErrorCode(response as! NSData, failed: nil)
+            if previewsData != nil {
+                let subDatas = splitData(previewsData!)
                 for (i, file) in files.enumerate() {
                     let image = UIImage(data: subDatas[i])
                     previews[file] = image
@@ -123,12 +120,9 @@ func httpAddComment(post:Post, to:UInt64, pub:UInt8, cmt:String) {
         "cmt":cmt]
     http.postRequest("comment", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let data = response as! NSData
-            var errCode:UInt8 = 0
-            data.getBytes(&errCode, length: sizeof(UInt8))
-            if errCode == 0 {
-                let subData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
-                if let json = try? NSJSONSerialization.JSONObjectWithData(subData, options: .MutableContainers) as! [String:AnyObject] {
+            let subData = processErrorCode(response as! NSData, failed: nil)
+            if subData != nil {
+                if let json = try? NSJSONSerialization.JSONObjectWithData(subData!, options: .MutableContainers) as! [String:AnyObject] {
                     if let cmtObjs = json["cmts"] as? [AnyObject] {
                         for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
                             if let comment = CommentInfo(json: cmtObj) {
@@ -167,12 +161,9 @@ func httpDelComment(post:Post, cmt:CommentInfo, pub:UInt8) {
         "last":NSNumber(unsignedLongLong: (post.m_comments.count == 0 ? 0 : (post.m_comments.last?.id)!))]
     http.postRequest("delcmt", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let data = response as! NSData
-            var errCode:UInt8 = 0
-            data.getBytes(&errCode, length: sizeof(UInt8))
-            if errCode == 0 {
-                let subData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
-                if let json = try? NSJSONSerialization.JSONObjectWithData(subData, options: .MutableContainers) as! [String:AnyObject] {
+            let subData = processErrorCode(response as! NSData, failed: nil)
+            if subData != nil {
+                if let json = try? NSJSONSerialization.JSONObjectWithData(subData!, options: .MutableContainers) as! [String:AnyObject] {
                     if let cmtObjs = json["cmts"] as? [AnyObject] {
                         for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
                             if let comment = CommentInfo(json: cmtObj) {

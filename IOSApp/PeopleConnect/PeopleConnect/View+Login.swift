@@ -194,13 +194,13 @@ class LogView: BaseLogRegView {
         switch m_logStage {
         case 0:
             m_logStage++
-            httpGetContacts(logSuccess, fail: logFail)
+            httpGetContacts(logSuccess, failed: logFail)
             break
         case 1:
             m_logStage++
             let ids = contactsData.getMissingPhotos()
             if ids.count > 0 {
-                httpGetPhotos(ids, success: logSuccess, fail: logFail)
+                httpGetPhotos(ids, passed: logSuccess, failed: logFail)
             }
             else {
                 logSuccess()

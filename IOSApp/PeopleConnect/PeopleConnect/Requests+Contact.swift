@@ -8,16 +8,13 @@
 
 import Foundation
 
-func httpGetContacts(success: (()->Void)?, fail: ((err:String?)->Void)?) {
+func httpGetContacts(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("contacts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let data = response as! NSData
-            var errCode:UInt8 = 0
-            data.getBytes(&errCode, length: sizeof(UInt8))
-            if errCode == 0 {
-                let conData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
-                if let json = try? NSJSONSerialization.JSONObjectWithData(conData, options: .MutableContainers) as! [String:AnyObject] {
+            let conData = processErrorCode(response as! NSData, failed: failed)
+            if conData != nil {
+                if let json = try? NSJSONSerialization.JSONObjectWithData(conData!, options: .MutableContainers) as! [String:AnyObject] {
                     var contacts:Array<ContactInfo> = Array<ContactInfo>()
                     var userTags:Array<TagInfo> = Array<TagInfo>()
                     
@@ -38,42 +35,34 @@ func httpGetContacts(success: (()->Void)?, fail: ((err:String?)->Void)?) {
                     }
                     
                     contactsData.loadContacts(contacts, userTags: userTags)
-                    success?()
+                    passed?()
                 }
-            }
-            else {
-                fail?(err: httpErrMsg[errCode])
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-            fail?(err: "请求失败")
+            failed?(err: "请求失败")
         }
     )
 }
 
-func httpGetPhotos(cIDs:Array<UInt64>, success: (()->Void)?, fail: ((err:String?)->Void)?) {
+func httpGetPhotos(cIDs:Array<UInt64>, passed: (()->Void)?, failed: ((err:String?)->Void)?) {
     let contacts:NSMutableArray = http.getIDArrayParam(cIDs)
     let params:Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
         "cids":contacts]
     http.postRequest("photos", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let data = response as! NSData
-            var errCode:UInt8 = 0
-            data.getBytes(&errCode, length: sizeof(UInt8))
-            if errCode == 0 {
-                let photosData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
-                let subDatas = splitData(photosData)
+            let photosData = processErrorCode(response as! NSData, failed: failed)
+            if photosData != nil {
+                let subDatas = splitData(photosData!)
                 for (i, cID) in cIDs.enumerate() {
                     contactsData.setPhoto(cID, data: subDatas[i], update: true)
                 }
-            }
-            else {
-                fail?(err: httpErrMsg[errCode])
+                passed?()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-            fail?(err: "请求失败")
+            failed?(err: "请求失败")
         }
     )
 }

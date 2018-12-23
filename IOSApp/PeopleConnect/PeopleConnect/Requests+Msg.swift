@@ -12,12 +12,9 @@ func httpSyncRequests(passed:(()->Void)?, failed:((String?)->Void)?) {
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("syncrequests", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let data = response as! NSData
-            var errCode:UInt8 = 0
-            data.getBytes(&errCode, length: sizeof(UInt8))
-            if errCode == 0 {
-                let reqData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
-                if let json = try? NSJSONSerialization.JSONObjectWithData(reqData, options: .MutableContainers) as! [String:AnyObject] {
+            let reqData = processErrorCode(response as! NSData, failed: failed)
+            if reqData != nil {
+                if let json = try? NSJSONSerialization.JSONObjectWithData(reqData!, options: .MutableContainers) as! [String:AnyObject] {
                     if let requestObjs = json["requests"] as? [AnyObject] {
                         for case let requestObj in (requestObjs as? [[String:AnyObject]])! {
                             if let request = RequestInfo(json: requestObj) {
@@ -30,9 +27,6 @@ func httpSyncRequests(passed:(()->Void)?, failed:((String?)->Void)?) {
                     }
                 }
                 passed?()
-            }
-            else {
-                failed?(httpErrMsg[errCode])
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -73,12 +67,9 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
         "sync":NSNumber(unsignedLongLong: 0)]
     http.postRequest("syncmessege", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let data = response as! NSData
-            var errCode:UInt8 = 0
-            data.getBytes(&errCode, length: sizeof(UInt8))
-            if errCode == 0 {
-                let msgData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
-                if let json = try? NSJSONSerialization.JSONObjectWithData(msgData, options: .MutableContainers) as! [String:AnyObject] {
+            let msgData = processErrorCode(response as! NSData, failed: failed)
+            if msgData != nil {
+                if let json = try? NSJSONSerialization.JSONObjectWithData(msgData!, options: .MutableContainers) as! [String:AnyObject] {
                     if let messObjs = json["mess"] as? [AnyObject] {
                         for case let messObj in (messObjs as? [[String:AnyObject]])! {
                             if let messege = MessegeInfo(json: messObj) {
@@ -93,9 +84,6 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
                     print("fff")
                 }
                 passed?()
-            }
-            else {
-                failed?(httpErrMsg[errCode])
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
