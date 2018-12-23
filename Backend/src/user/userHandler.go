@@ -23,6 +23,7 @@ type AccountInfo struct {
 type RegistryInfo struct {
 	CountryCode int    `json:"code"`
 	CellNumber  string `json:"cell"`
+	UserName    string `json:"name"`
 	Password    string `json:"pass,omitempty"`
 	Device      string `json:"device"`
 	IPAddress   string
@@ -171,27 +172,27 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var info LoginInfo
 	err := share.ReadInput(r, &info)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error")
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
 
 	userID, err := dbLogon(info, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
 	accountKey := GetAccountKey(userID)
 	name, err := DbGetUserInfoField(accountKey, NameField, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
@@ -201,10 +202,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	data, err := json.Marshal(&feedback)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
 	fmt.Printf("%d %s\n", userID, r.RemoteAddr)
-	fmt.Fprintf(w, "%s", data)
+	share.WriteError(w, 0)
+	w.Write(data)
 }

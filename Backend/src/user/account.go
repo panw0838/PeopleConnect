@@ -63,7 +63,7 @@ func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 		CellFiled, info.CellNumber,
 		MailField, "",
 		QQField, "",
-		NameField, info.CellNumber,
+		NameField, info.UserName,
 		DeviceField, info.Device,
 		ConfigField, 0,
 		PassField, info.Password,

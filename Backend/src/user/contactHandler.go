@@ -1,11 +1,15 @@
 package user
 
 import (
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
 	"share"
+	"strconv"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -16,22 +20,16 @@ type GetContactsReturn struct {
 }
 
 func GetContactsHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Error: read request")
-		return
-	}
-
 	var account AccountInfo
-	err = json.Unmarshal(body, &account)
+	err := share.ReadInput(r, &account)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error %s", body)
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: connect db error")
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
@@ -40,25 +38,87 @@ func GetContactsHandler(w http.ResponseWriter, r *http.Request) {
 
 	contacts, err := dbGetContacts(account.UserID, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	response.Contacts = contacts
 
 	tags, err := dbGetTags(account.UserID, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	response.Tags = tags
 
 	data, err := json.Marshal(&response)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
-	fmt.Fprintf(w, "%s", data)
+	share.WriteError(w, 0)
+	w.Write(data)
+}
+
+type GetPhotosInput struct {
+	CIDs []uint64 `json:"cids"`
+}
+
+func GetPhotosHandler(w http.ResponseWriter, r *http.Request) {
+	var input GetPhotosInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	numIDs := len(input.CIDs)
+	if numIDs == 0 || numIDs > 100 {
+		share.WriteError(w, 1)
+		return
+	}
+
+	var lens []int
+	var datas [][]byte
+
+	for _, cID := range input.CIDs {
+		path := filepath.Join("photos", strconv.FormatUint(cID, 10)+".png")
+		file, err := os.Open(path)
+		if err != nil {
+			share.WriteError(w, 1)
+			return
+		}
+		defer file.Close()
+
+		data, err := ioutil.ReadAll(file)
+		if err != nil {
+			share.WriteError(w, 1)
+			return
+		}
+
+		len := len(data)
+
+		if len == 0 {
+			share.WriteError(w, 1)
+			return
+		} else {
+			lens = append(lens, len)
+			datas = append(datas, data)
+		}
+	}
+
+	share.WriteError(w, 0)
+	w.Write([]byte{byte(numIDs)})
+
+	for _, len := range lens {
+		var bufU32 = make([]byte, 4)
+		binary.LittleEndian.PutUint32(bufU32, uint32(len))
+		w.Write(bufU32)
+	}
+
+	for _, data := range datas {
+		w.Write(data)
+	}
 }
 
 type SearchContactInput struct {

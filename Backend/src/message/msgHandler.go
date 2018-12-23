@@ -65,13 +65,13 @@ func SyncMessegeHandler(w http.ResponseWriter, r *http.Request) {
 	var input MessegeSyncInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: read input")
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
@@ -79,7 +79,7 @@ func SyncMessegeHandler(w http.ResponseWriter, r *http.Request) {
 	var output MessegeSyncReturn
 	newSyncID, messages, err := dbGetMessages(input, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	output.Messages = messages
@@ -87,11 +87,12 @@ func SyncMessegeHandler(w http.ResponseWriter, r *http.Request) {
 
 	data, err := json.Marshal(&output)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json write error")
+		share.WriteError(w, 1)
 		return
 	}
 
-	fmt.Fprintf(w, "%s", data)
+	share.WriteError(w, 0)
+	w.Write(data)
 }
 
 type RequestContactInput struct {
@@ -161,20 +162,20 @@ func SyncRequestsHandler(w http.ResponseWriter, r *http.Request) {
 	var input SyncRequestsInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: read input")
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
 
 	requests, err := dbSyncRequests(input.User, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
@@ -182,9 +183,10 @@ func SyncRequestsHandler(w http.ResponseWriter, r *http.Request) {
 	response.Requests = requests
 	data, err := json.Marshal(&response)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error %s", data)
+		share.WriteError(w, 1)
 		return
 	}
 
-	fmt.Fprintf(w, "%s", data)
+	share.WriteError(w, 0)
+	w.Write(data)
 }

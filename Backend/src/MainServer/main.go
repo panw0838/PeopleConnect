@@ -43,6 +43,7 @@ func main() {
 	http.HandleFunc("/remtag", user.RemTagHandler)
 
 	http.HandleFunc("/contacts", user.GetContactsHandler)
+	http.HandleFunc("/photos", user.GetPhotosHandler)
 	http.HandleFunc("/searchcontact", user.SearchContactHandler)
 	http.HandleFunc("/addcontact", user.AddContactHandler)
 	http.HandleFunc("/remcontact", user.RemContactHandler)
