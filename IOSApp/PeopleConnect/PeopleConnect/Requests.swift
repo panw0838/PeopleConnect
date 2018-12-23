@@ -22,10 +22,6 @@ struct LoginInfo {
     var pass:String
 }
 
-protocol ContactRequestCallback {
-    func ContactUpdateUI()->Void
-}
-
 protocol MessegeRequestCallback {
     func MessegeUpdateUI()->Void
 }
@@ -38,10 +34,16 @@ protocol SearchContactCallback {
     func SearchUpdateUI(uid:UInt64)->Void
 }
 
+let httpErrMsg:Dictionary<UInt8, String> = [
+    1:"服务器错误",
+    2:"国家码错误",
+    3:"手机号错误",
+    4:"密码错误",
+    5:"头像错误"]
+
 let http: HttpService = HttpService()
 
 var searchCallbacks:Array<SearchContactCallback> = Array<SearchContactCallback>()
-var contactCallbacks:Array<ContactRequestCallback> = Array<ContactRequestCallback>()
 var messegeCallbacks:Array<MessegeRequestCallback> = Array<MessegeRequestCallback>()
 var postCallbacks:Array<PostRequestCallback> = Array<PostRequestCallback>()
 
@@ -79,7 +81,7 @@ class HttpService {
         let policy: AFSecurityPolicy = AFSecurityPolicy(pinningMode: AFSSLPinningMode.PublicKey, withPinnedCertificates: cerSet)
         
         policy.allowInvalidCertificates = true
-        policy.validatesDomainName = true
+        policy.validatesDomainName = true 
         
         afManager.securityPolicy = policy
     }
@@ -112,7 +114,15 @@ class HttpService {
         afManager.requestSerializer = AFJSONRequestSerializer()
         afManager.responseSerializer = AFHTTPResponseSerializer()
         afManager.requestSerializer.timeoutInterval = 20
-        afManager.responseSerializer.acceptableContentTypes = Set<String>(["text/plain", "multipart/form-data", "application/json", "text/html", "image/jpeg", "image/png", "application/octet-stream", "text/json"])
+        afManager.responseSerializer.acceptableContentTypes = Set<String>([
+            "text/plain",
+            "multipart/form-data",
+            "application/json",
+            "text/html",
+            "image/jpeg",
+            "image/png",
+            "application/octet-stream",
+            "text/json"])
         afManager.POST(url, parameters: params, headers: nil, constructingBodyWithBlock: block, progress: nil, success: success, failure: fail)
     }
     

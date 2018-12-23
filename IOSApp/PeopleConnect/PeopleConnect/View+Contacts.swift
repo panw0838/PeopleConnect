@@ -23,7 +23,7 @@ class SubTagHeader: UICollectionReusableView {
 
 class ContactsView: UIViewController,
     UICollectionViewDataSource, UICollectionViewDelegate,
-    ContactRequestCallback, SearchContactCallback {
+    ContactDataDelegate, SearchContactCallback {
     
     @IBOutlet weak var m_tabsBar: UISegmentedControl!
     @IBOutlet weak var m_contacts: UICollectionView!
@@ -38,7 +38,7 @@ class ContactsView: UIViewController,
         m_createSubTag.enabled = (m_curTag < 4)
     }
     
-    func ContactUpdateUI() {
+    func ContactDataUpdate() {
         self.m_contacts.reloadData()
     }
     
@@ -122,8 +122,10 @@ class ContactsView: UIViewController,
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ContactCell", forIndexPath: indexPath) as! ContactCell
         let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
-        cell.m_image.image = UIImage(named: "default_profile")
-        cell.m_name.text = contactsData.m_contacts[subTag.m_members[indexPath.row]]?.name
+        let contact = contactsData.m_contacts[subTag.m_members[indexPath.row]]
+        let photo = contactsData.getPhoto(contact!.user)
+        cell.m_image.image = (photo == nil ? UIImage(named: "default_profile") : UIImage(data: photo!))
+        cell.m_name.text = contact?.name
         return cell
     }
     
@@ -176,7 +178,7 @@ class ContactsView: UIViewController,
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        contactCallbacks.append(self)
+        contactsData.m_delegates.append(self)
     }
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

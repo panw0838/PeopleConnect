@@ -64,6 +64,7 @@ class ImgPicker:
     
     @IBAction func imgPicked(sender: AnyObject) {
         self.m_pickerDelegate?.didFinishedPickImage(self.m_selected)
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     @IBAction func cancel(sender: AnyObject) {

@@ -8,16 +8,16 @@
 
 import Foundation
 
-func httpGetContacts() {
+func httpGetContacts(success: (()->Void)?, fail: ((err:String?)->Void)?) {
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("contacts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-            if (html.hasPrefix("Error")) {
-                print("%s", html)
-            }
-            else {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers) as! [String:AnyObject] {
+            let data = response as! NSData
+            var errCode:UInt8 = 0
+            data.getBytes(&errCode, length: sizeof(UInt8))
+            if errCode == 0 {
+                let conData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
+                if let json = try? NSJSONSerialization.JSONObjectWithData(conData, options: .MutableContainers) as! [String:AnyObject] {
                     var contacts:Array<ContactInfo> = Array<ContactInfo>()
                     var userTags:Array<TagInfo> = Array<TagInfo>()
                     
@@ -36,21 +36,55 @@ func httpGetContacts() {
                             }
                         }
                     }
-                    httpSyncMessege()
+                    
                     contactsData.loadContacts(contacts, userTags: userTags)
-                    for callback in contactCallbacks {
-                        callback.ContactUpdateUI()
-                    }
+                    success?()
                 }
+            }
+            else {
+                fail?(err: httpErrMsg[errCode])
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-            print("请求失败")
-    })
+            fail?(err: "请求失败")
+        }
+    )
+}
+
+func httpGetPhotos(cIDs:Array<UInt64>, success: (()->Void)?, fail: ((err:String?)->Void)?) {
+    let contacts:NSMutableArray = http.getIDArrayParam(cIDs)
+    let params:Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "cids":contacts]
+    http.postRequest("photos", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let data = response as! NSData
+            var errCode:UInt8 = 0
+            data.getBytes(&errCode, length: sizeof(UInt8))
+            if errCode == 0 {
+                let photosData = data.subdataWithRange(NSRange(location: 1, length: data.length-1))
+                let subDatas = splitData(photosData)
+                for (i, cID) in cIDs.enumerate() {
+                    contactsData.setPhoto(cID, data: subDatas[i], update: true)
+                }
+            }
+            else {
+                fail?(err: httpErrMsg[errCode])
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            fail?(err: "请求失败")
+        }
+    )
 }
 
 func httpRequestContact(contact:UInt64, flag:UInt64, name:String, messege:String) {
-    let params: Dictionary = ["from":NSNumber(unsignedLongLong: userInfo.userID), "to":NSNumber(unsignedLongLong: contact), "name":name, "flag":NSNumber(unsignedLongLong: flag), "mess":messege]
+    let params: Dictionary = [
+        "from":NSNumber(unsignedLongLong: userInfo.userID),
+        "to":NSNumber(unsignedLongLong: contact),
+        "name":name,
+        "flag":NSNumber(unsignedLongLong: flag),
+        "mess":messege]
     http.postRequest("requestcontact", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
@@ -62,11 +96,16 @@ func httpRequestContact(contact:UInt64, flag:UInt64, name:String, messege:String
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
             print("请求失败")
-    })
+        }
+    )
 }
 
 func httpAddContact(contact:UInt64, flag:UInt64, name:String) {
-    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "contact":NSNumber(unsignedLongLong: contact), "name":name, "flag":NSNumber(unsignedLongLong: flag)]
+    let params: Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "contact":NSNumber(unsignedLongLong: contact),
+        "name":name,
+        "flag":NSNumber(unsignedLongLong: flag)]
     http.postRequest("addcontact", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
@@ -75,9 +114,6 @@ func httpAddContact(contact:UInt64, flag:UInt64, name:String) {
             }
             else {
                 contactsData.addContact(ContactInfo(id: contact, f: flag, n: name))
-                for callback in contactCallbacks {
-                    callback.ContactUpdateUI()
-                }
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -86,7 +122,9 @@ func httpAddContact(contact:UInt64, flag:UInt64, name:String) {
 }
 
 func httpRemContact(contact:UInt64) {
-    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "contact":NSNumber(unsignedLongLong: contact)]
+    let params: Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "contact":NSNumber(unsignedLongLong: contact)]
     http.postRequest("remcontact", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
@@ -95,9 +133,6 @@ func httpRemContact(contact:UInt64) {
             }
             else {
                 contactsData.remContact(contact)
-                for callback in contactCallbacks {
-                    callback.ContactUpdateUI()
-                }
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -108,7 +143,11 @@ func httpRemContact(contact:UInt64) {
 func httpMoveContacts(tagID:UInt8, addMembers:Array<UInt64>, remMembers:Array<UInt64>) {
     let adds:NSMutableArray = http.getIDArrayParam(addMembers)
     let rems:NSMutableArray = http.getIDArrayParam(remMembers)
-    let params:Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "tag":NSNumber(unsignedChar: tagID), "add":adds, "rem":rems]
+    let params:Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "tag":NSNumber(unsignedChar: tagID),
+        "add":adds,
+        "rem":rems]
     http.postRequest("updatetagmember", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
@@ -116,15 +155,8 @@ func httpMoveContacts(tagID:UInt8, addMembers:Array<UInt64>, remMembers:Array<UI
                 print("%s", html)
             }
             else {
-                for member in addMembers {
-                    contactsData.moveContactInTag(member, tagID: tagID)
-                }
-                for member in remMembers {
-                    contactsData.moveContactOutTag(member, tagID: tagID)
-                }
-                for callback in contactCallbacks {
-                    callback.ContactUpdateUI()
-                }
+                contactsData.moveContactsInTag(addMembers, tagID: tagID)
+                contactsData.moveContactsOutTag(remMembers, tagID: tagID)
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in

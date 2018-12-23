@@ -99,9 +99,11 @@ class PostHeader: UITableViewHeaderFooterView {
         m_post = post
         var buttom:CGFloat = 0.0
         let contact = contactsData.getContact((m_post?.m_info.user)!)
+        let photo = contactsData.getPhoto(contact!.user)
         
-        m_profile.image = UIImage(named: "default_profile")
+        m_profile.image = (photo == nil ? UIImage(named: "default_profile") : UIImage(data: photo!))
         m_profile.frame = CGRectMake(0, 0, 40, 40)
+        m_profile.layer.cornerRadius = 10
         buttom = 40.0
         
         m_name.text = contact?.name

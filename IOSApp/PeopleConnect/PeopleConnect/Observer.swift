@@ -100,7 +100,7 @@ class TCPClient:NSObject, GCDAsyncSocketDelegate {
             print("messege ack")
             break
         case Notify_Syc:
-            httpSyncMessege()
+            httpSyncMessege(nil, failed: nil)
             break
         default:
             break

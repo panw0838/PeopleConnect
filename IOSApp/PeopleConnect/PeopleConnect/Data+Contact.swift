@@ -8,12 +8,15 @@
 
 import Foundation
 
+protocol ContactDataDelegate {
+    func ContactDataUpdate()->Void
+}
+
 struct ContactInfo {
     var user: UInt64
     var flag: UInt64
     var name: String
     var ip: String
-    var photo: NSData? = nil
     
     init(id:UInt64, f:UInt64, n:String) {
         user = id
@@ -48,21 +51,6 @@ struct ContactInfo {
         }
         
         return tagIDs
-    }
-    
-    mutating func getPhoto()->NSData? {
-        if photo != nil {
-            return photo
-        }
-        photo = getContactPhoto(user)
-        return photo
-    }
-    
-    mutating func setPhoto(data:NSData, update:Bool) {
-        photo = data
-        if update {
-            setContactPhoto(user, photo: data)
-        }
     }
 }
 
@@ -222,16 +210,18 @@ class ContactsData {
     var m_possible = Tag(id: 0xff, father: 0, name: "可能认识的人")
     var m_stranger = Tag(id: 0xff, father: 0, name: "附近的陌生人")
     var m_tags: Array<Tag> = Array<Tag>()
-    var m_contacts:Dictionary<UInt64, ContactInfo> = Dictionary<UInt64, ContactInfo>()
+    var m_contacts = Dictionary<UInt64, ContactInfo>()
+    var m_photos = Dictionary<UInt64, NSData>()
+    var m_delegates = Array<ContactDataDelegate>()
 
     init() {
         m_contacts.removeAll()
-        initKnownTags()
-    }
-    
-    func initKnownTags() {
+        
         m_tags.removeAll()
+        
         m_blacklist.m_members.removeAll()
+        m_undefine.m_members.removeAll()
+
         // system tags
         m_tags.append(Tag(id: 2, father: 0, name: "家人"))
         m_tags.append(Tag(id: 3, father: 0, name: "同学"))
@@ -249,6 +239,31 @@ class ContactsData {
         }
         tags.append(m_undefine)
         return tags
+    }
+    
+    func getPhoto(cID:UInt64)->NSData? {
+        if m_photos[cID] != nil {
+            return m_photos[cID]
+        }
+        m_photos[cID] = getContactPhoto(cID)
+        return m_photos[cID]
+    }
+    
+    func setPhoto(cID:UInt64, data:NSData, update:Bool) {
+        m_photos[cID] = data
+        if update {
+            setContactPhoto(cID, photo: data)
+        }
+    }
+    
+    func getMissingPhotos()->Array<UInt64> {
+        var ids = Array<UInt64>()
+        for (_, contact) in m_contacts.enumerate() {
+            if getPhoto(contact.0) == nil {
+                ids.append(contact.0)
+            }
+        }
+        return ids
     }
     
     func numMainTags()->Int {
@@ -288,6 +303,10 @@ class ContactsData {
     func addSubTag(newTag: Tag) {
         let fatherTag: Tag = m_tags[Int(newTag.m_fatherID) - 2]
         fatherTag.addSubTag(newTag)
+        
+        for delegate in m_delegates {
+            delegate.ContactDataUpdate()
+        }
     }
     
     func getTag(tagID: UInt8)->Tag? {
@@ -321,6 +340,10 @@ class ContactsData {
                 }
             }
         }
+        
+        for delegate in m_delegates {
+            delegate.ContactDataUpdate()
+        }
     }
     
     func addContact(contact:ContactInfo) {
@@ -336,16 +359,28 @@ class ContactsData {
             }
         }
         m_contacts[contact.user] = contact
+        
+        for delegate in m_delegates {
+            delegate.ContactDataUpdate()
+        }
     }
     
     func addPossible(contact:ContactInfo) {
         m_possible.m_members.append(contact.user)
         m_contacts[contact.user] = contact
+        
+        for delegate in m_delegates {
+            delegate.ContactDataUpdate()
+        }
     }
     
     func addStranger(contact:ContactInfo) {
         m_stranger.m_members.append(contact.user)
         m_contacts[contact.user] = contact
+        
+        for delegate in m_delegates {
+            delegate.ContactDataUpdate()
+        }
     }
     
     func remContact(contactID:UInt64) {
@@ -354,34 +389,50 @@ class ContactsData {
             tag.remMember(contactID)
         }
         m_contacts.removeValueForKey(contactID)
+        
+        for delegate in m_delegates {
+            delegate.ContactDataUpdate()
+        }
     }
     
     func getContact(contactID:UInt64)->ContactInfo? {
         return m_contacts[contactID]
     }
     
-    func moveContactInTag(contactID:UInt64, tagID:UInt8) {
-        var contact = m_contacts[contactID]!
-        let tag = getTag(tagID)!
-        tag.m_father?.remMember(contactID)
-        if contact.isUndefine() {
-            m_undefine.remMember(contactID)
+    func moveContactsInTag(cIDs:Array<UInt64>, tagID:UInt8) {
+        for cID in cIDs {
+            var contact = m_contacts[cID]!
+            let tag = getTag(tagID)!
+            tag.m_father?.remMember(cID)
+            if contact.isUndefine() {
+                m_undefine.remMember(cID)
+            }
+            contact.flag |= (tag.m_bit | tag.m_fatherBit)
+            tag.addMember(contact)
+            m_contacts[cID] = contact
         }
-        contact.flag |= (tag.m_bit | tag.m_fatherBit)
-        tag.addMember(contact)
-        m_contacts[contactID] = contact
+        
+        for delegate in m_delegates {
+            delegate.ContactDataUpdate()
+        }
     }
     
-    func moveContactOutTag(contactID:UInt64, tagID:UInt8) {
-        var contact = m_contacts[contactID]!
-        let tag = getTag(tagID)!
-        tag.remMember(contactID)
-        contact.flag &= ~(tag.m_bit | tag.m_subBits)
-        tag.m_father?.addMember(contact)
-        if contact.isUndefine() {
-            m_undefine.addMember(contact)
+    func moveContactsOutTag(cIDs:Array<UInt64>, tagID:UInt8) {
+        for cID in cIDs {
+            var contact = m_contacts[cID]!
+            let tag = getTag(tagID)!
+            tag.remMember(cID)
+            contact.flag &= ~(tag.m_bit | tag.m_subBits)
+            tag.m_father?.addMember(contact)
+            if contact.isUndefine() {
+                m_undefine.addMember(contact)
+            }
+            m_contacts[cID] = contact
         }
-        m_contacts[contactID] = contact
+        
+        for delegate in m_delegates {
+            delegate.ContactDataUpdate()
+        }
     }
     
     func loadContacts(contacts:Array<ContactInfo>, userTags:Array<TagInfo>) {

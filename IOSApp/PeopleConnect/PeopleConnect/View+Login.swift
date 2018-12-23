@@ -106,7 +106,7 @@ class BaseLogRegView: UITableViewController {
     }
 }
 
-class LogView: BaseLogRegView, LogDelegate {
+class LogView: BaseLogRegView {
     @IBOutlet weak var m_logSwitchBtn: UIButton!
     @IBOutlet weak var m_getCodeBtn: UIButton!
     @IBOutlet weak var m_passLabel: UILabel!
@@ -181,21 +181,51 @@ class LogView: BaseLogRegView, LogDelegate {
             m_passLabel.text = "密码"
         }
     }
-    
+
     func logFail(msg:String?) {
         // show error
+        m_logStage = 0
         m_father?.m_loading?.stopLoading()
         m_father?.showError(msg)
     }
     
+    var m_logStage = 0
     func logSuccess() {
-        // do syncs
-        //m_father?.m_loading?.stopLoading()
-        //m_father!.performSegueWithIdentifier("ShowMainMenu", sender: nil)
+        switch m_logStage {
+        case 0:
+            m_logStage++
+            httpGetContacts(logSuccess, fail: logFail)
+            break
+        case 1:
+            m_logStage++
+            let ids = contactsData.getMissingPhotos()
+            if ids.count > 0 {
+                httpGetPhotos(ids, success: logSuccess, fail: logFail)
+            }
+            else {
+                logSuccess()
+            }
+            break
+        case 2:
+            m_logStage++
+            httpSyncMessege(logSuccess, failed: logFail)
+            break
+        case 3:
+            m_logStage++
+            httpSyncRequests(logSuccess, failed: logFail)
+            break
+        default:
+            tcp.start("192.168.0.104", port: 8888)
+            tcp.logon()
+            m_father?.m_loading?.stopLoading()
+            m_father?.performSegueWithIdentifier("ShowMainMenu", sender: nil)
+            break
+        }
     }
-    
+
     @IBAction func log() {
-        httpLogon(m_countryCode, cell: m_cellNumber, pass: m_password, delegate: self)
+        httpLogon(m_countryCode, cell: m_cellNumber, pass: m_password, passed: logSuccess, failed: logFail)
+        m_father?.m_loading?.startLoading()
     }
     
     override func updateNextButton() {
@@ -204,7 +234,7 @@ class LogView: BaseLogRegView, LogDelegate {
     }
 }
 
-class RegView: BaseLogRegView, LogDelegate, PhotoClipperDelegate, UINavigationControllerDelegate {
+class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDelegate {
     @IBOutlet weak var m_nickNameBtn: UIButton!
     @IBOutlet weak var m_regBtn: UIButton!
     @IBOutlet weak var m_photoBtn: UIButton!
@@ -215,19 +245,17 @@ class RegView: BaseLogRegView, LogDelegate, PhotoClipperDelegate, UINavigationCo
     var m_enableColor:UIColor? = nil
     var m_father:LoginView? = nil
     
-    func logFail(msg:String?) {
-        // show error
-        m_father?.m_loading?.stopLoading()
-        m_father?.showError(msg)
-    }
-    
-    func logSuccess() {
-        m_father?.m_loading?.stopLoading()
-        m_father!.performSegueWithIdentifier("ShowMainMenu", sender: nil)
-    }
-
     @IBAction func reg(sender: AnyObject) {
-        httpRegistry(m_countryCode, cell: m_cellNumber, pass: m_password, photo: m_photo!, delegate: self)
+        httpRegistry(m_countryCode, cell: m_cellNumber, pass: m_password, photo: m_photo!,
+            passed: { ()->Void in
+                self.m_father?.m_loading?.stopLoading()
+                self.m_father!.performSegueWithIdentifier("ShowMainMenu", sender: nil)
+            },
+            failed: { (errMsg:String?)->Void in
+                self.m_father?.m_loading?.stopLoading()
+                self.m_father?.showError(errMsg)
+            }
+        )
         m_father?.m_loading?.startLoading()
     }
     
@@ -328,7 +356,7 @@ class RegView: BaseLogRegView, LogDelegate, PhotoClipperDelegate, UINavigationCo
     }
 }
 
-class LoginView: UIViewController, LogDelegate {
+class LoginView: UIViewController {
 
     @IBOutlet weak var m_logRegSwitch: UISegmentedControl!
     @IBOutlet weak var m_logView: UIView!
@@ -346,9 +374,9 @@ class LoginView: UIViewController, LogDelegate {
             m_regView.hidden = false
         }
     }
-    
+
     func logFail(msg:String?) {
-        
+
     }
     
     func logSuccess() {
@@ -384,14 +412,14 @@ class LoginView: UIViewController, LogDelegate {
 
     @IBAction func login1(sender: AnyObject) {
         m_loading?.startLoading()
-        httpLogon(86, cell: "13700000000", pass: "qqqqqqqq", delegate: self)
+        httpLogon(86, cell: "13700000000", pass: "qqqqqqqq", passed: logSuccess, failed: logFail)
     }
     
     @IBAction func login2(sender: AnyObject) {
-        httpLogon(86, cell: "13700000001", pass: "qqqqqqqq", delegate: self)
+        httpLogon(86, cell: "13700000001", pass: "qqqqqqqq", passed: logSuccess, failed: logFail)
     }
     
     @IBAction func login3(sender: AnyObject) {
-        httpLogon(86, cell: "13700000002", pass: "qqqqqqqq", delegate: self)
+        httpLogon(86, cell: "13700000002", pass: "qqqqqqqq", passed: logSuccess, failed: logFail)
     }
 }

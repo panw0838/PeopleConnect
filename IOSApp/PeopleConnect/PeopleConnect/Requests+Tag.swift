@@ -22,9 +22,6 @@ func httpAddTag(father:UInt8, name:String) {
                     let dict: NSDictionary = jsonObj as! NSDictionary
                     let tagID: UInt8 = (UInt8)((dict["tag"]?.integerValue)!)
                     contactsData.addSubTag(Tag(id: tagID, father: father, name: name))
-                    for callback in contactCallbacks {
-                        callback.ContactUpdateUI()
-                    }
                 }
             }
         },
@@ -43,9 +40,6 @@ func httpRemTag(tag:UInt8) {
             }
             else {
                 contactsData.remTag(tag)
-                for callback in contactCallbacks {
-                    callback.ContactUpdateUI()
-                }
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
