@@ -138,8 +138,13 @@ class Post {
     }
 }
 
+protocol PostDataDelegate {
+    func PostDataUpdated()->Void
+}
+
 class PostData {
     var m_posts = Array<Post>()
+    var m_delegate:PostDataDelegate? = nil
     
     func AddPost(info:PostInfo) {
         for post in m_posts {
@@ -148,6 +153,10 @@ class PostData {
             }
         }
         m_posts.append(Post(info: info))
+    }
+    
+    func Update() {
+        m_delegate?.PostDataUpdated()
     }
     
     func numOfPosts()->Int {
@@ -162,7 +171,13 @@ class PostData {
         var files = Array<String>()
         for post in m_posts {
             for key in post.m_imgKeys {
-                files.append(key)
+                let preview = getPostPreview(key)
+                if preview == nil {
+                    files.append(key)
+                }
+                else {
+                    previews[key] = UIImage(data: preview!)
+                }
             }
         }
         httpGetSnapshots(files)

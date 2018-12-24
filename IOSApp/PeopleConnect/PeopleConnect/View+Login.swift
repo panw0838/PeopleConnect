@@ -374,20 +374,12 @@ class LoginView: UIViewController {
             m_regView.hidden = false
         }
     }
-
-    func logFail(msg:String?) {
-
-    }
-    
-    func logSuccess() {
-        self.performSegueWithIdentifier("ShowMainMenu", sender: nil)
-    }
     
     func showError(errMsg:String?) {
         let err = errMsg == nil ? "未知错误" : errMsg
         let alert = UIAlertController(title: err, message: "", preferredStyle: .Alert)
         let okAction = UIAlertAction(title: "确定", style: .Default, handler: nil)
-
+        
         alert.addAction(okAction)
         self.presentViewController(alert, animated: true, completion: nil)
     }
@@ -410,16 +402,50 @@ class LoginView: UIViewController {
         }
     }
 
+    var _logStage = 0
+    func logSuccess() {
+        switch _logStage {
+        case 0:
+            _logStage++
+            httpGetContacts(logSuccess, failed: nil)
+            break
+        case 1:
+            _logStage++
+            let ids = contactsData.getMissingPhotos()
+            if ids.count > 0 {
+                httpGetPhotos(ids, passed: logSuccess, failed: nil)
+            }
+            else {
+                logSuccess()
+            }
+            break
+        case 2:
+            _logStage++
+            httpSyncMessege(logSuccess, failed: nil)
+            break
+        case 3:
+            _logStage++
+            httpSyncRequests(logSuccess, failed: nil)
+            break
+        default:
+            tcp.start("192.168.0.104", port: 8888)
+            tcp.logon()
+            m_loading?.stopLoading()
+            performSegueWithIdentifier("ShowMainMenu", sender: nil)
+            break
+        }
+    }
+    
     @IBAction func login1(sender: AnyObject) {
         m_loading?.startLoading()
-        httpLogon(86, cell: "13700000000", pass: "qqqqqqqq", passed: logSuccess, failed: logFail)
+        httpLogon(86, cell: "13700000000", pass: "qqqqqqqq", passed: logSuccess, failed: nil)
     }
     
     @IBAction func login2(sender: AnyObject) {
-        httpLogon(86, cell: "13700000001", pass: "qqqqqqqq", passed: logSuccess, failed: logFail)
+        httpLogon(86, cell: "13700000001", pass: "qqqqqqqq", passed: logSuccess, failed: nil)
     }
     
     @IBAction func login3(sender: AnyObject) {
-        httpLogon(86, cell: "13700000002", pass: "qqqqqqqq", passed: logSuccess, failed: logFail)
+        httpLogon(86, cell: "13700000002", pass: "qqqqqqqq", passed: logSuccess, failed: nil)
     }
 }

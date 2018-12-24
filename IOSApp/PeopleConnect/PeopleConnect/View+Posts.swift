@@ -12,7 +12,7 @@ class CommentCell: UITableViewCell {
     @IBOutlet weak var m_comment: UILabel!
 }
 
-class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, UITableViewDelegate {
+class PostsView: UIViewController, PostDataDelegate, UITableViewDataSource, UITableViewDelegate {
     
     @IBOutlet weak var m_tabs: UISegmentedControl!
     @IBOutlet weak var m_posts: UITableView!
@@ -24,13 +24,14 @@ class PostsView: UIViewController, PostRequestCallback, UITableViewDataSource, U
         //m_posts.registerNib(UINib(nibName: "PostHeader", bundle: nil), forHeaderFooterViewReuseIdentifier: "PostHeader")
         m_posts.registerClass(PostHeader.classForCoder(), forHeaderFooterViewReuseIdentifier: "PostHeader")
         
+        friendPosts.m_delegate = self
+        
         httpSyncPost()
-        postCallbacks.append(self)
         m_posts.estimatedRowHeight = 16
         m_posts.rowHeight = UITableViewAutomaticDimension
     }
     
-    func PostUpdateUI() {
+    func PostDataUpdated() {
         m_posts.reloadData()
     }
     

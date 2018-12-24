@@ -73,9 +73,7 @@ func httpSyncPost() {
                             }
                         }
                         friendPosts.getPreviews()
-                        for callback in postCallbacks {
-                            callback.PostUpdateUI()
-                        }
+                        friendPosts.Update()
                     }
                 }
             }
@@ -95,13 +93,11 @@ func httpGetSnapshots(files:Array<String>) {
             if previewsData != nil {
                 let subDatas = splitData(previewsData!)
                 for (i, file) in files.enumerate() {
-                    let image = UIImage(data: subDatas[i])
-                    previews[file] = image
-                }
-                for callback in postCallbacks {
-                    callback.PostUpdateUI()
+                    setPostPreview(file, data: subDatas[i])
+                    previews[file] = UIImage(data: subDatas[i])
                 }
             }
+            friendPosts.Update()
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
             print("请求失败")
@@ -139,9 +135,7 @@ func httpAddComment(post:Post, to:UInt64, pub:UInt8, cmt:String) {
                         post.m_comments.append(newComment)
                     }
                     
-                    for callback in postCallbacks {
-                        callback.PostUpdateUI()
-                    }
+                    friendPosts.Update()
                 }
             }
         },
@@ -178,9 +172,7 @@ func httpDelComment(post:Post, cmt:CommentInfo, pub:UInt8) {
                         }
                     }
                                         
-                    for callback in postCallbacks {
-                        callback.PostUpdateUI()
-                    }
+                    friendPosts.Update()
                 }
             }
         },

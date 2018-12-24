@@ -250,7 +250,7 @@
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="25" id="j3N-Zb-Mx1"/>
                                             </constraints>
-                                            <state key="normal" image="delete">
+                                            <state key="normal" image="group_delete">
                                                 <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
@@ -260,7 +260,7 @@
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eJT-TG-Nms">
                                             <rect key="frame" x="524" y="0.0" width="28" height="28"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                            <state key="normal" image="add">
+                                            <state key="normal" image="group_exchange">
                                                 <color key="titleColor" red="0.0" green="0.50196081399917603" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                             <connections>
@@ -1527,8 +1527,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="add" width="64" height="64"/>
-        <image name="delete" width="64" height="64"/>
+        <image name="group_delete" width="40" height="40"/>
+        <image name="group_exchange" width="40" height="40"/>
         <image name="photo" width="50" height="50"/>
         <image name="plus" width="512" height="512"/>
         <image name="remove" width="30" height="30"/>
