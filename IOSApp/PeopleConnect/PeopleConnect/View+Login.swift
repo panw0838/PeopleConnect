@@ -134,8 +134,10 @@ class LogView: BaseLogRegView {
             if photo != nil {
                 m_photo.image = UIImage(data: photo!)
             }
-            m_countryBtn.setTitle("+"+String(userInfo.countryCode), forState: .Normal)
-            m_cellBtn.setTitle(String(userInfo.cellNumber), forState: .Normal)
+            m_countryCode = userInfo.countryCode
+            m_countryBtn.setTitle("+"+String(m_countryCode), forState: .Normal)
+            m_cellNumber = userInfo.cellNumber
+            m_cellBtn.setTitle(m_cellNumber, forState: .Normal)
         }
     }
     

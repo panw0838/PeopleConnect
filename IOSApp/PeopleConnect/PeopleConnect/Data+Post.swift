@@ -133,7 +133,7 @@ class Post {
     
     func getHeight(width:CGFloat)->CGFloat {
         let articleHeight = (m_info.content.characters.count == 0 ? 0.0 : (getTextHeight(m_info.content, width: width, font: articleFont) + PostItemGapF))
-        let previewHeight = (m_imgUrls.count == 0 ? 0.0 : ((width - PostItemGapF) / 2 + PostItemGapF))
+        let previewHeight = (m_imgUrls.count == 0 ? 0.0 : ((width - PostItemGapF*2) / 3 + PostItemGapF))
         return articleHeight + previewHeight + 40 + PostItemGapF + 20 + PostItemGapF
     }
 }
@@ -180,6 +180,8 @@ class PostData {
                 }
             }
         }
-        httpGetSnapshots(files)
+        if files.count > 0 {
+            httpGetSnapshots(files)
+        }
     }
 }

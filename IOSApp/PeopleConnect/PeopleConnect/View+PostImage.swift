@@ -44,7 +44,7 @@ class ImgPreview: UIView {
     }
     
     func initSubviews() {
-        for i in 0...7 {
+        for i in 0...8 {
             let layout = PreviewLayout()
             let img = ImgCellView(frame: CGRectZero)
             img.m_index = i
@@ -105,48 +105,59 @@ class ImgPreview: UIView {
             break
         case 3:
             m_pattern[0] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 0, _scale: 2)
-            m_pattern[1] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 1)
-            m_pattern[2] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 0, _scale: 1)
+            m_pattern[1] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 2)
+            m_pattern[2] = PreviewLayout(_xNumBlk: 4, _yNumBlk: 0, _scale: 2)
             break
         case 4:
             m_pattern[0] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 0, _scale: 2)
-            m_pattern[1] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 1)
-            m_pattern[2] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 0, _scale: 1)
-            m_pattern[3] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 1, _scale: 1)
+            m_pattern[1] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 2)
+            m_pattern[2] = PreviewLayout(_xNumBlk: 4, _yNumBlk: 0, _scale: 1)
+            m_pattern[3] = PreviewLayout(_xNumBlk: 5, _yNumBlk: 0, _scale: 1)
             break
         case 5:
             m_pattern[0] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 0, _scale: 2)
-            m_pattern[1] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 1)
-            m_pattern[2] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 0, _scale: 1)
-            m_pattern[3] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 1, _scale: 1)
-            m_pattern[4] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 1, _scale: 1)
+            m_pattern[1] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 2)
+            m_pattern[2] = PreviewLayout(_xNumBlk: 4, _yNumBlk: 0, _scale: 1)
+            m_pattern[3] = PreviewLayout(_xNumBlk: 5, _yNumBlk: 0, _scale: 1)
+            m_pattern[4] = PreviewLayout(_xNumBlk: 4, _yNumBlk: 1, _scale: 1)
             break
         case 6:
-            m_pattern[0] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 0, _scale: 1)
-            m_pattern[1] = PreviewLayout(_xNumBlk: 1, _yNumBlk: 0, _scale: 1)
-            m_pattern[2] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 1)
-            m_pattern[3] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 0, _scale: 1)
-            m_pattern[4] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 1, _scale: 1)
-            m_pattern[5] = PreviewLayout(_xNumBlk: 1, _yNumBlk: 1, _scale: 1)
+            m_pattern[0] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 0, _scale: 2)
+            m_pattern[1] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 2)
+            m_pattern[2] = PreviewLayout(_xNumBlk: 4, _yNumBlk: 0, _scale: 1)
+            m_pattern[3] = PreviewLayout(_xNumBlk: 5, _yNumBlk: 0, _scale: 1)
+            m_pattern[4] = PreviewLayout(_xNumBlk: 4, _yNumBlk: 1, _scale: 1)
+            m_pattern[5] = PreviewLayout(_xNumBlk: 5, _yNumBlk: 1, _scale: 1)
             break
         case 7:
-            m_pattern[0] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 0, _scale: 1)
-            m_pattern[1] = PreviewLayout(_xNumBlk: 1, _yNumBlk: 0, _scale: 1)
-            m_pattern[2] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 1)
-            m_pattern[3] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 0, _scale: 1)
-            m_pattern[4] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 1, _scale: 1)
-            m_pattern[5] = PreviewLayout(_xNumBlk: 1, _yNumBlk: 1, _scale: 1)
-            m_pattern[6] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 1, _scale: 1)
+            m_pattern[0] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 0, _scale: 2)
+            m_pattern[1] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 1)
+            m_pattern[2] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 0, _scale: 1)
+            m_pattern[3] = PreviewLayout(_xNumBlk: 4, _yNumBlk: 0, _scale: 1)
+            m_pattern[4] = PreviewLayout(_xNumBlk: 5, _yNumBlk: 0, _scale: 1)
+            m_pattern[5] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 1, _scale: 1)
+            m_pattern[6] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 1, _scale: 1)
             break
         case 8:
-            m_pattern[0] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 0, _scale: 1)
-            m_pattern[1] = PreviewLayout(_xNumBlk: 1, _yNumBlk: 0, _scale: 1)
-            m_pattern[2] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 1)
-            m_pattern[3] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 0, _scale: 1)
-            m_pattern[4] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 1, _scale: 1)
-            m_pattern[5] = PreviewLayout(_xNumBlk: 1, _yNumBlk: 1, _scale: 1)
-            m_pattern[6] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 1, _scale: 1)
-            m_pattern[7] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 1, _scale: 1)
+            m_pattern[0] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 0, _scale: 2)
+            m_pattern[1] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 1)
+            m_pattern[2] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 0, _scale: 1)
+            m_pattern[3] = PreviewLayout(_xNumBlk: 4, _yNumBlk: 0, _scale: 1)
+            m_pattern[4] = PreviewLayout(_xNumBlk: 5, _yNumBlk: 0, _scale: 1)
+            m_pattern[5] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 1, _scale: 1)
+            m_pattern[6] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 1, _scale: 1)
+            m_pattern[7] = PreviewLayout(_xNumBlk: 4, _yNumBlk: 1, _scale: 1)
+            break
+        case 9:
+            m_pattern[0] = PreviewLayout(_xNumBlk: 0, _yNumBlk: 0, _scale: 2)
+            m_pattern[1] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 0, _scale: 1)
+            m_pattern[2] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 0, _scale: 1)
+            m_pattern[3] = PreviewLayout(_xNumBlk: 4, _yNumBlk: 0, _scale: 1)
+            m_pattern[4] = PreviewLayout(_xNumBlk: 5, _yNumBlk: 0, _scale: 1)
+            m_pattern[5] = PreviewLayout(_xNumBlk: 2, _yNumBlk: 1, _scale: 1)
+            m_pattern[6] = PreviewLayout(_xNumBlk: 3, _yNumBlk: 1, _scale: 1)
+            m_pattern[7] = PreviewLayout(_xNumBlk: 4, _yNumBlk: 1, _scale: 1)
+            m_pattern[8] = PreviewLayout(_xNumBlk: 5, _yNumBlk: 1, _scale: 1)
             break
         default:
             break
