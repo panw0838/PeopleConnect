@@ -1318,6 +1318,7 @@
                         <outlet property="m_logSwitchBtn" destination="rXm-sY-86I" id="vsj-Go-UyF"/>
                         <outlet property="m_passBtn" destination="lo8-7h-mdh" id="8io-iU-Qdq"/>
                         <outlet property="m_passLabel" destination="rjM-9a-Ie7" id="VRr-vg-f3J"/>
+                        <outlet property="m_photo" destination="bCM-W1-Bnc" id="bfE-Qh-bVc"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pzJ-uD-G3U" userLabel="First Responder" sceneMemberID="firstResponder"/>

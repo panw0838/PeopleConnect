@@ -73,3 +73,4 @@ func setPostPreview(file:String, data:NSData) {
     let path = getPostPreviewPath(file)
     data.writeToFile(path, atomically: true)
 }
+

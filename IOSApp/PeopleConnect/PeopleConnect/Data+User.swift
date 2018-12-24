@@ -14,46 +14,49 @@ struct GroupInfo {
 }
 
 struct UserInfo {
-    var userID : UInt64
-    var cellNumber : String
-    var mailAddr : String
-    var qqNumber : String
-    var account : String
+    var userID : UInt64 = 0
+    var countryCode: Int = 0
+    var cellNumber : String = ""
+    var mailAddr : String = ""
+    var qqNumber : String = ""
+    var account : String = ""
     
-    var userName : String
-    var password : String
-    var config : UInt64
-    var deviceID : String
-    var ipAddress : String
+    var userName : String = ""
+    var password : String = ""
+    var config : UInt64 = 0
+    var deviceID : String = ""
+    var ipAddress : String = ""
     
     var groups = Array<GroupInfo>()
-    
-    init () {
-        userID = 0
-        cellNumber = ""
-        mailAddr = ""
-        qqNumber = ""
-        account = ""
-        
-        userName = ""
-        password = ""
-        config = 0
-        deviceID = ""
-        ipAddress = ""
-    }
 }
 
 var userInfo:UserInfo = UserInfo()
 var userData = User()
 
 class User {
-    var m_default = NSUserDefaults.standardUserDefaults()
-    
-    func saveUserInfo() {
-        m_default.setObject(NSNumber(unsignedLongLong: userInfo.userID), forKey: "curUser")
+    func setCurUser() {
+        let user = NSUserDefaults()
+        user.setObject(NSNumber(unsignedLongLong: userInfo.userID), forKey: "user")
+        user.setObject(NSNumber(integer: userInfo.countryCode), forKey: "code")
+        user.setObject(userInfo.cellNumber, forKey: "cell")
+        user.setObject(userInfo.password, forKey: "pass")
     }
     
-    func loadUserInfo() {
-        
+    func getCurUser()->Bool {
+        let user = NSUserDefaults()
+        let uIDObj = user.objectForKey("user")
+        let codeObj = user.objectForKey("code")
+        let cellObj = user.objectForKey("cell")
+        let passObj = user.objectForKey("pass")
+        if uIDObj != nil && codeObj != nil && cellObj != nil && passObj != nil {
+            userInfo.userID = (uIDObj as! NSNumber).unsignedLongLongValue
+            userInfo.countryCode = (codeObj as! NSNumber).integerValue
+            userInfo.cellNumber = cellObj as! String
+            userInfo.password = passObj as! String
+            return true
+        }
+        else {
+            return false
+        }
     }
 }

@@ -110,6 +110,7 @@ class LogView: BaseLogRegView {
     @IBOutlet weak var m_logSwitchBtn: UIButton!
     @IBOutlet weak var m_getCodeBtn: UIButton!
     @IBOutlet weak var m_passLabel: UILabel!
+    @IBOutlet weak var m_photo: UIImageView!
     
     @IBOutlet weak var m_logBtn: UIButton!
     
@@ -127,6 +128,15 @@ class LogView: BaseLogRegView {
         m_logBtn.enabled = false
         m_enableColor = m_logBtn.backgroundColor
         m_logBtn.backgroundColor = UIColor.grayColor()
+        
+        if userData.getCurUser() {
+            let photo = getContactPhoto(userInfo.userID)
+            if photo != nil {
+                m_photo.image = UIImage(data: photo!)
+            }
+            m_countryBtn.setTitle("+"+String(userInfo.countryCode), forState: .Normal)
+            m_cellBtn.setTitle(String(userInfo.cellNumber), forState: .Normal)
+        }
     }
     
     func passwordChanged(sender:UITextField) {

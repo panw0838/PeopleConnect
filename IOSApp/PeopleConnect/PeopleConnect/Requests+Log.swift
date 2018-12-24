@@ -31,9 +31,13 @@ func httpRegistry(code:Int, cell:String, pass:String, photo:NSData, passed:(()->
                     let dict: NSDictionary = jsonObj as! NSDictionary
                     userInfo.userID = (UInt64)((dict["user"]?.unsignedLongLongValue)!)
                     userInfo.userName = dict["name"] as! String
+                    userInfo.countryCode = code
+                    userInfo.cellNumber = cell
+                    userInfo.password = pass
                     let newContact = ContactInfo(id: userInfo.userID, f: 0, n: userInfo.userName)
                     contactsData.setPhoto(newContact.user, data: photo, update: true)
                     contactsData.m_contacts[newContact.user] = newContact
+                    userData.setCurUser()
                 }
                 passed?()
             }
@@ -61,8 +65,12 @@ func httpLogon(code:Int, cell:String, pass:String, passed:(()->Void)?, failed:((
                     let dict: NSDictionary = jsonObj as! NSDictionary
                     userInfo.userID = (UInt64)((dict["user"]?.unsignedLongLongValue)!)
                     userInfo.userName = dict["name"] as! String
+                    userInfo.countryCode = code
+                    userInfo.cellNumber = cell
+                    userInfo.password = pass
                     let newContact = ContactInfo(id: userInfo.userID, f: 0, n: userInfo.userName)
                     contactsData.m_contacts[newContact.user] = newContact
+                    userData.setCurUser()
                 }
                 passed?()
             }
