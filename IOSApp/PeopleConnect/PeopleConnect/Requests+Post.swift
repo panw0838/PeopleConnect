@@ -122,6 +122,41 @@ func httpSyncContactPost(cID:UInt64) {
     )
 }
 
+func httpSyncNearbyPost() {
+    let params: Dictionary = [
+        "x":NSNumber(double: userInfo.x),
+        "y":NSNumber(double: userInfo.y)]
+    http.postRequest("syncnearbyposts", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let postsData = processErrorCode(response as! NSData, failed: nil)
+            if postsData != nil {
+                if let json = try? NSJSONSerialization.JSONObjectWithData(postsData!, options: .MutableContainers) as! [String:AnyObject] {
+                    if let postObjs = json["posts"] as? [AnyObject] {
+                        for case let postObj in (postObjs as? [[String:AnyObject]])! {
+                            if let post = PostInfo(json: postObj) {
+                                nearPosts.AddPost(post)
+                                // add comments
+                                if let cmtObjs = postObj["cmt"] as? [AnyObject] {
+                                    for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
+                                        if let cmt = CommentInfo(json: cmtObj) {
+                                            nearPosts.m_posts.last?.m_comments.append(cmt)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        nearPosts.getPreviews()
+                        nearPosts.Update()
+                    }
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+        }
+    )
+}
+
 func httpGetSnapshots(files:Array<String>, delegate:PostDataDelegate?) {
     let fileParam = http.getStringArrayParam(files)
     let params: Dictionary = ["files":fileParam]

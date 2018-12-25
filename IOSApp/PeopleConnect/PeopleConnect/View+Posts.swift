@@ -87,6 +87,14 @@ class PostsView: PostsTable, UITableViewDelegate {
     @IBOutlet weak var m_posts: UITableView!
     
     @IBAction func switchPosts(sender: AnyObject) {
+        let select = (sender as! UISegmentedControl).selectedSegmentIndex
+        if select == 0 {
+            setTable(m_posts, data: friendPosts, fullView: true)
+        }
+        else if select == 1 {
+            setTable(m_posts, data: nearPosts, fullView: true)
+        }
+        m_posts.reloadData()
     }
     
     override func viewDidLoad() {
@@ -94,6 +102,7 @@ class PostsView: PostsTable, UITableViewDelegate {
         super.viewDidLoad()
         setTable(m_posts, data: friendPosts, fullView: true)
         httpSyncPost()
+        httpSyncNearbyPost()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

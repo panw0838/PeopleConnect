@@ -8,7 +8,7 @@
 
 import Foundation
 
-let nameFont = UIFont.systemFontOfSize(17.0)
+let nameFont = UIFont.systemFontOfSize(15.0)
 let articleFont = UIFont.systemFontOfSize(13.0)
 let commentFont = UIFont.systemFontOfSize(13.0)
 let msgFont = UIFont.systemFontOfSize(13.0)
