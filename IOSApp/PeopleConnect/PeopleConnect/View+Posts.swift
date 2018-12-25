@@ -23,7 +23,8 @@ class PostsView: UIViewController, PostDataDelegate, UITableViewDataSource, UITa
     override func viewDidLoad() {
         //m_posts.registerNib(UINib(nibName: "PostHeader", bundle: nil), forHeaderFooterViewReuseIdentifier: "PostHeader")
         m_posts.registerClass(PostHeader.classForCoder(), forHeaderFooterViewReuseIdentifier: "PostHeader")
-        
+        m_posts.registerClass(PostFooter.classForCoder(), forHeaderFooterViewReuseIdentifier: "PostFooter")
+
         friendPosts.m_delegate = self
         
         httpSyncPost()
@@ -33,6 +34,13 @@ class PostsView: UIViewController, PostDataDelegate, UITableViewDataSource, UITa
     
     func PostDataUpdated() {
         m_posts.reloadData()
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "ShowContact" {
+            let to = segue.destinationViewController as! ContactView
+            to.m_contact = contactsData.m_contacts[ContactView.ContactID]!
+        }
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -55,8 +63,14 @@ class PostsView: UIViewController, PostDataDelegate, UITableViewDataSource, UITa
         let header = tableView.dequeueReusableHeaderFooterViewWithIdentifier("PostHeader") as! PostHeader
         let post = friendPosts.postAtIdx(section)
         header.m_father = self
-        header.reload(post, width:m_posts.contentSize.width)
+        header.reload(post, width:m_posts.contentSize.width, fullView: true)
         return header
+    }
+    
+    func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let footer =  tableView.dequeueReusableHeaderFooterViewWithIdentifier("PostFooter") as! PostFooter
+        footer.reload(m_posts.contentSize.width)
+        return footer
     }
 
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -67,7 +81,11 @@ class PostsView: UIViewController, PostDataDelegate, UITableViewDataSource, UITa
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         let post = friendPosts.postAtIdx(section)
-        return post.getHeight(m_posts.contentSize.width)
+        return post.getHeight(m_posts.contentSize.width, fullView: true)
+    }
+    
+    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return PostFooter.Height
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {

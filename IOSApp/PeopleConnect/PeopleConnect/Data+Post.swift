@@ -15,7 +15,7 @@ let PubLvl_Group:UInt8 = 1
 let PubLvl_Stranger:UInt8 = 2
 
 var friendPosts:PostData = PostData()
-var selfPosts:PostData = PostData()
+var contactPosts:PostData = PostData()
 var nearPosts:PostData = PostData()
 var previews = Dictionary<String, UIImage>()
 
@@ -131,10 +131,10 @@ class Post {
         }
     }
     
-    func getHeight(width:CGFloat)->CGFloat {
+    func getHeight(width:CGFloat, fullView: Bool)->CGFloat {
         let articleHeight = (m_info.content.characters.count == 0 ? 0.0 : (getTextHeight(m_info.content, width: width, font: articleFont) + PostItemGapF))
         let previewHeight = (m_imgUrls.count == 0 ? 0.0 : ((width - PostItemGapF*2) / 3 + PostItemGapF))
-        return articleHeight + previewHeight + 40 + PostItemGapF + 20 + PostItemGapF
+        return articleHeight + previewHeight + (fullView ? PostPhotoSize + PostItemGapF + PostBtnSize + PostItemGapF : PostItemGapF)
     }
 }
 
@@ -167,6 +167,10 @@ class PostData {
         return m_posts[i]
     }
     
+    func clear() {
+        m_posts.removeAll()
+    }
+    
     func getPreviews() {
         var files = Array<String>()
         for post in m_posts {
@@ -181,7 +185,7 @@ class PostData {
             }
         }
         if files.count > 0 {
-            httpGetSnapshots(files)
+            httpGetSnapshots(files, delegate: m_delegate)
         }
     }
 }

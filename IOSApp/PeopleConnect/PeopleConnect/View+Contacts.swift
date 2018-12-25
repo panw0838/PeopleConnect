@@ -47,12 +47,10 @@ class ContactsView: UIViewController,
             let error = UIAlertController(title: "查找失败", message: "", preferredStyle: .Alert)
             let okAction = UIAlertAction(title: "确定", style: .Default, handler: nil)
             error.addAction(okAction)
-            //holding.presentingViewController!.dismissViewControllerAnimated(false, completion: nil)
             presentViewController(error, animated: false, completion: nil)
         }
         else {
             m_selectContact = uid
-            //self.dismissViewControllerAnimated(false, completion: nil)
             performSegueWithIdentifier("ShowContact", sender: nil)
         }
     }
@@ -99,8 +97,7 @@ class ContactsView: UIViewController,
         let alert = UIAlertController(title: "搜索联系人", message: "", preferredStyle: UIAlertControllerStyle.Alert)
         let noAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default, handler: { action in
-                httpSearchContact((alert.textFields?.first?.text)!)
-                //self.presentViewController(holding, animated: false, completion: nil)
+            httpSearchContact((alert.textFields?.first?.text)!)
         })
         alert.addTextFieldWithConfigurationHandler { (textField: UITextField!) -> Void in
             textField.placeholder = "请输入手机号"

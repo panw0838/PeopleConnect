@@ -8,9 +8,29 @@
 
 import UIKit
 
+class PostFooter: UITableViewHeaderFooterView {
+    static let Height:CGFloat = 21.0
+    
+    var m_view:UIView = UIView()
+    
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
+        m_view.backgroundColor = UIColor.lightGrayColor()
+        self.addSubview(m_view)
+    }
+    
+    func reload(width:CGFloat) {
+        m_view.frame = CGRectMake(0, 10, width, 1)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 class PostHeader: UITableViewHeaderFooterView {
 
-    var m_profile    = UIImageView(frame: CGRectZero)
+    var m_photo      = UIImageView(frame: CGRectZero)
     var m_name       = UILabel(frame: CGRectZero)
     
     var m_showAllBtn = UIButton(frame: CGRectZero)
@@ -22,11 +42,10 @@ class PostHeader: UITableViewHeaderFooterView {
     var m_commentBtn = UIButton(frame: CGRectZero)
     
     var m_post:Post? = nil
-    var m_father:PostsView? = nil
+    var m_father:UIViewController? = nil
     
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        initSubviews()
+        fatalError("init(coder:) has not been implemented")
     }
     
     override init(reuseIdentifier: String?) {
@@ -34,11 +53,21 @@ class PostHeader: UITableViewHeaderFooterView {
         initSubviews()
     }
     
+    func clickContact() {
+        ContactView.ContactID = (m_post?.m_info.user)!
+        httpSyncContactPost((m_post?.m_info.user)!)
+        m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
+    }
+    
     func initSubviews() {
-        m_profile.contentMode = .ScaleAspectFill;
-        m_profile.userInteractionEnabled = true;
-        m_profile.layer.masksToBounds = true;
-        self.addSubview(m_profile)
+        let tap = UITapGestureRecognizer(target: self, action: Selector("clickContact"))
+
+        m_photo.contentMode = .ScaleAspectFill;
+        m_photo.userInteractionEnabled = true;
+        m_photo.layer.masksToBounds = true;
+        m_photo.layer.cornerRadius = 10
+        m_photo.addGestureRecognizer(tap)
+        self.addSubview(m_photo)
         
         m_name.textColor = linkTextColor
         m_name.font = nameFont
@@ -54,6 +83,7 @@ class PostHeader: UITableViewHeaderFooterView {
         
         m_article.lineBreakMode = .ByWordWrapping
         m_article.numberOfLines = 0
+        m_article.font = articleFont
         self.addSubview(m_article)
         
         self.addSubview(m_previews)
@@ -95,19 +125,25 @@ class PostHeader: UITableViewHeaderFooterView {
     @IBAction func actLike(sender: AnyObject) {
     }
 
-    func reload(post:Post, width:CGFloat) {
+    func reload(post:Post, width:CGFloat, fullView:Bool) {
         m_post = post
         var buttom:CGFloat = 0.0
-        let contact = contactsData.getContact((m_post?.m_info.user)!)
-        let photo = contactsData.getPhoto(contact!.user)
         
-        m_profile.image = (photo == nil ? UIImage(named: "default_profile") : UIImage(data: photo!))
-        m_profile.frame = CGRectMake(0, 0, 40, 40)
-        m_profile.layer.cornerRadius = 10
-        buttom = 40.0
-        
-        m_name.text = contact?.name
-        m_name.frame = CGRectMake(45, 0, 100, 20)
+        if fullView {
+            let contact = contactsData.getContact((m_post?.m_info.user)!)
+            let photo = contactsData.getPhoto(contact!.user)
+            
+            m_photo.image = (photo == nil ? UIImage(named: "default_profile") : UIImage(data: photo!))
+            m_photo.frame = CGRectMake(0, 0, PostPhotoSize, PostPhotoSize)
+            buttom = 40.0
+            
+            m_name.text = contact?.name
+            m_name.frame = CGRectMake(45, 0, width, 20)
+        }
+        else {
+            m_photo.hidden = true
+            m_name.hidden = true
+        }
         
         if m_post?.m_info.content.characters.count > 0 {
             let height = getTextHeight(post.m_info.content, width: width, font: articleFont)
@@ -132,7 +168,13 @@ class PostHeader: UITableViewHeaderFooterView {
             m_previews.hidden = true
         }
         
-        m_commentBtn.frame = CGRectMake(self.frame.width - 30, buttom + PostItemGapF, 20, 20)
-        m_liktBtn.frame = CGRectMake(self.frame.width - 80, buttom + PostItemGapF, 20, 20)
+        if fullView {
+            m_commentBtn.frame = CGRectMake(self.frame.width - PostPhotoSize, buttom + PostItemGapF, PostBtnSize, PostBtnSize)
+            m_liktBtn.frame = CGRectMake(self.frame.width - PostPhotoSize - 50, buttom + PostItemGapF, PostBtnSize, PostBtnSize)
+        }
+        else {
+            m_commentBtn.hidden = true
+            m_liktBtn.hidden = true
+        }
     }
 }
