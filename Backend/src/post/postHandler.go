@@ -239,17 +239,57 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", bytes)
 }
 
+type SyncContactPostsInput struct {
+	User    uint64 `json:"uid"`
+	Contact uint64 `json:"cid"`
+}
+
+func SyncContactPostsHandler(w http.ResponseWriter, r *http.Request) {
+	var input SyncContactPostsInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+	defer c.Close()
+
+	var response SyncPostReturn
+
+	if input.User == input.Contact {
+		response.Posts, err = dbGetSelfPosts(input.User, 0, share.MAX_TIME, c)
+	} else {
+		response.Posts, err = dbGetUserPosts(input.User, input.Contact, 0, share.MAX_TIME, c)
+	}
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	bytes, err := json.Marshal(response)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	share.WriteError(w, 0)
+	w.Write(bytes)
+}
+
 type GetPreviewsInput struct {
 	Files []string `json:"files"`
 }
 
 func GetPreviewsHandler(w http.ResponseWriter, r *http.Request) {
 	var input GetPreviewsInput
-	var header = []byte{byte(0)}
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		header[0] = 1
-		w.Write(header)
+		share.WriteError(w, 1)
 		return
 	}
 
@@ -263,8 +303,7 @@ func GetPreviewsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Sscanf(file, "%d_%d_%s", &cID, &pID, &fName)
 		data, err := getSnapshot(cID, pID, fName)
 		if err != nil {
-			header[0] = 2
-			w.Write(header)
+			share.WriteError(w, 1)
 			return
 		}
 
@@ -276,8 +315,8 @@ func GetPreviewsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	header = append(header, byte(len(lens)))
-	w.Write(header)
+	share.WriteError(w, 0)
+	w.Write([]byte{byte(len(lens))})
 
 	for _, len := range lens {
 		var bufU32 = make([]byte, 4)
