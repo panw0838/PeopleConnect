@@ -6,7 +6,6 @@ import (
 	"message"
 	"net/http"
 	"post"
-	"share"
 	"strings"
 	"user"
 )
@@ -31,7 +30,6 @@ func syncHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	share.GetGeoID(32.165, 89.156)
 	user.InitRelationCash()
 
 	http.HandleFunc("/sync", syncHandler)
@@ -58,6 +56,7 @@ func main() {
 	http.HandleFunc("/delpost", post.DelPostHandler)
 	http.HandleFunc("/syncposts", post.SyncPostsHandler)
 	http.HandleFunc("/synccontactposts", post.SyncContactPostsHandler)
+	http.HandleFunc("/syncnearbyposts", post.SyncNearbyPostsHandler)
 	http.HandleFunc("/previews", post.GetPreviewsHandler)
 	http.HandleFunc("/comment", post.NewCommentHandler)
 	http.HandleFunc("/delcmt", post.DelCmtHandler)

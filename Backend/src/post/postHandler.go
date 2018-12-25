@@ -281,6 +281,45 @@ func SyncContactPostsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(bytes)
 }
 
+type SyncNearbyPostsInput struct {
+	User uint64  `json:"user"`
+	X    float64 `json:"x"`
+	Y    float64 `json:"y"`
+}
+
+func SyncNearbyPostsHandler(w http.ResponseWriter, r *http.Request) {
+	var input SyncNearbyPostsInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+	defer c.Close()
+
+	var response SyncPostReturn
+
+	response.Posts, err = dbGetNearbyPublish(input, 0, share.MAX_TIME, c)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	bytes, err := json.Marshal(response)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	share.WriteError(w, 0)
+	w.Write(bytes)
+}
+
 type GetPreviewsInput struct {
 	Files []string `json:"files"`
 }

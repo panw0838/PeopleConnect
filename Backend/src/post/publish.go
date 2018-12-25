@@ -3,6 +3,7 @@ package post
 import (
 	"encoding/json"
 	"fmt"
+	"share"
 	"strconv"
 	"user"
 
@@ -17,8 +18,8 @@ func getGPubKey(gID int) string {
 	return "gposts:" + strconv.FormatUint(uint64(gID), 10)
 }
 
-func getSPubKey() string {
-	return ""
+func getNearKey(geoID uint64) string {
+	return "near_post:" + strconv.FormatUint(geoID, 10)
 }
 
 func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
@@ -116,5 +117,55 @@ func dbGetPublish(uID uint64, pubLvl uint8, key string, from uint64, to uint64, 
 		}
 	}
 
+	return results, nil
+}
+
+func dbGetNearbyPublish(input SyncNearbyPostsInput, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
+	var results []PostData
+	geoID := share.GetGeoID(input.X, input.Y)
+	for pos := geoID - 3; pos <= geoID+3; pos++ {
+		nearKey := getNearKey(pos)
+		publishes, err := redis.Strings(c.Do("ZRANGEBYSCORE", nearKey, from, to))
+		if err != nil {
+			return nil, err
+		}
+
+		for _, publish := range publishes {
+			var cID uint64
+			var pID uint64
+			fmt.Sscanf(publish, "%d:%d", &cID, &pID)
+			postKey := getPostKey(cID)
+			values, err := redis.Values(c.Do("ZRANGEBYSCORE", postKey, pID, pID))
+			for _, value := range values {
+				data, err := redis.Bytes(value, err)
+				if err != nil {
+					return nil, err
+				}
+
+				var post PostData
+				err = json.Unmarshal(data, &post)
+				if err != nil {
+					return nil, err
+				}
+
+				post.Owner = cID
+				canSee, err := canSeePost(PubLvl_Stranger, input.User, cID, post.Flag, c)
+				if err != nil {
+					return nil, err
+				}
+
+				if canSee {
+					// get comments
+					cmtsKey := getCommentKey(cID, post.ID)
+					comments, err := dbGetComments(cmtsKey, PubLvl_Stranger, input.User, 0, c)
+					if err != nil {
+						return nil, err
+					}
+					post.Comments = comments
+					results = append(results, post)
+				}
+			}
+		}
+	}
 	return results, nil
 }
