@@ -54,7 +54,7 @@ func GetGeoID(x float64, y float64) uint64 {
 	var resultX uint64 = 0
 	var _x float64 = x + 90
 	var midX float64 = 90.0
-	steps := 20
+	steps := 17
 	for i := 0; i < steps; i++ {
 		if _x > midX {
 			resultX |= 0x1
