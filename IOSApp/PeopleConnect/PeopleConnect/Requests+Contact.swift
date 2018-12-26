@@ -8,7 +8,7 @@
 
 import Foundation
 
-func httpGetContacts(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
+func httpGetFriends(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("contacts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in

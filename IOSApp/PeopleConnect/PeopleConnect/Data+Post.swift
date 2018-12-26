@@ -171,6 +171,34 @@ class PostData {
         m_posts.removeAll()
     }
     
+    func getContacts() {
+        var contactIDs = Set<UInt64>()
+        var photoIDs = Set<UInt64>()
+        for post in m_posts {
+            let postOwner = contactsData.m_contacts[post.m_info.user]
+            if postOwner == nil {
+                contactIDs.insert(post.m_info.user)
+                photoIDs.insert(post.m_info.user)
+            }
+            else if getContactPhoto(post.m_info.user) == nil {
+                photoIDs.insert(post.m_info.user)
+            }
+            
+            for comment in post.m_comments {
+                let cmtOwner = contactsData.m_contacts[comment.from]
+                if cmtOwner == nil {
+                    contactIDs.insert(comment.from)
+                }
+            }
+        }
+        if contactIDs.count > 0 {
+            httpGetPostsUsers(Array<UInt64>(contactIDs), post: self)
+        }
+        if photoIDs.count > 0 {
+            httpGetPostsPhotos(Array<UInt64>(photoIDs), post:self)
+        }
+    }
+    
     func getPreviews() {
         var files = Array<String>()
         for post in m_posts {
@@ -185,7 +213,7 @@ class PostData {
             }
         }
         if files.count > 0 {
-            httpGetSnapshots(files, delegate: m_delegate)
+            httpGetSnapshots(files, post: self)
         }
     }
 }

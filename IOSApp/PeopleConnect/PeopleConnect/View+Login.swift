@@ -206,7 +206,7 @@ class LogView: BaseLogRegView {
         switch m_logStage {
         case 0:
             m_logStage++
-            httpGetContacts(logSuccess, failed: logFail)
+            httpGetFriends(logSuccess, failed: logFail)
             break
         case 1:
             m_logStage++
@@ -419,7 +419,7 @@ class LoginView: UIViewController {
         switch _logStage {
         case 0:
             _logStage++
-            httpGetContacts(logSuccess, failed: nil)
+            httpGetFriends(logSuccess, failed: nil)
             break
         case 1:
             _logStage++

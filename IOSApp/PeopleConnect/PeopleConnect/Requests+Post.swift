@@ -13,6 +13,51 @@ func getFileUrl(cID:UInt64, pID:UInt64, fileName:String)->String {
     return String(cID) + "/" + String(pID) + "/" + fileName
 }
 
+func httpGetPostsUsers(cIDs:Array<UInt64>, post:PostData) {
+    let params:Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "cids":http.getUInt64ArrayParam(cIDs)]
+    http.postRequest("postsusers", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let conData = processErrorCode(response as! NSData, failed: nil)
+            if conData != nil {
+                if let json = try? NSJSONSerialization.JSONObjectWithData(conData!, options: .MutableContainers) as! [String:AnyObject] {
+                    if let contactObjs = json["users"] as? [AnyObject] {
+                        for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
+                            if let contact = ContactInfo(json: contactObj) {
+                                contactsData.m_contacts[contact.user] = contact
+                            }
+                        }
+                        post.Update()
+                    }
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+        }
+    )
+}
+
+func httpGetPostsPhotos(cIDs:Array<UInt64>, post:PostData) {
+    let params:Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "cids":http.getUInt64ArrayParam(cIDs)]
+    http.postRequest("photos", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let photosData = processErrorCode(response as! NSData, failed: nil)
+            if photosData != nil {
+                let subDatas = splitData(photosData!)
+                for (i, cID) in cIDs.enumerate() {
+                    contactsData.setPhoto(cID, data: subDatas[i], update: true)
+                }
+                post.Update()
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+        }
+    )
+}
+
 func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>, groups:Array<UInt32>, nearby:Bool) {
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
@@ -148,6 +193,7 @@ func httpSyncNearbyPost() {
                                 }
                             }
                         }
+                        nearPosts.getContacts()
                         nearPosts.getPreviews()
                         nearPosts.Update()
                     }
@@ -160,7 +206,7 @@ func httpSyncNearbyPost() {
     )
 }
 
-func httpGetSnapshots(files:Array<String>, delegate:PostDataDelegate?) {
+func httpGetSnapshots(files:Array<String>, post:PostData) {
     let fileParam = http.getStringArrayParam(files)
     let params: Dictionary = ["files":fileParam]
     http.postRequest("previews", params: params,
@@ -172,8 +218,8 @@ func httpGetSnapshots(files:Array<String>, delegate:PostDataDelegate?) {
                     setPostPreview(file, data: subDatas[i])
                     previews[file] = UIImage(data: subDatas[i])
                 }
+                post.Update()
             }
-            delegate?.PostDataUpdated()
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
             print("请求失败")
