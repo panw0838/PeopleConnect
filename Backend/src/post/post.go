@@ -122,7 +122,7 @@ func dbGetUserPosts(uID uint64, cID uint64, from uint64, to uint64, c redis.Conn
 			}
 		}
 		// check stranger posts
-		if !canSee && isStranger && PostForStranger(post.Flag) {
+		if !canSee && isStranger && post.Nearby {
 			canSee = true
 		}
 
