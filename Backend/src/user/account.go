@@ -20,6 +20,8 @@ const DeviceField = "device"
 const ConfigField = "config"
 const PassField = "pass"
 const IPField = "ip"
+const XFiled = "x"
+const YFiled = "y"
 
 func GetAccountKey(userID uint64) string {
 	return "user:" + strconv.FormatUint(userID, 10)
@@ -127,6 +129,35 @@ func DbGetUserInfoField(accountKey string, filed string, c redis.Conn) (string, 
 	}
 
 	return value, nil
+}
+
+func dbGetUserName(uID uint64, c redis.Conn) (string, error) {
+	userKey := GetAccountKey(uID)
+	values, err := redis.Values(c.Do("HMGET", userKey, NameField))
+	name, err := redis.String(values[0], err)
+	if err != nil {
+		return "", err
+	} else {
+		return name, nil
+	}
+}
+
+func dbSetUserPosition(uID uint64, x float64, y float64, c redis.Conn) error {
+	userKey := GetAccountKey(uID)
+	_, err := c.Do("HMSET", userKey, XFiled, x, YFiled, y)
+	return err
+}
+
+func dbGetUserPosition(uID uint64, c redis.Conn) (float64, float64, error) {
+	userKey := GetAccountKey(uID)
+	values, err := redis.Values(c.Do("HMGET", userKey, XFiled, YFiled))
+	x, err := redis.Float64(values[0], err)
+	y, err := redis.Float64(values[1], err)
+	if err != nil {
+		return 0, 0, err
+	} else {
+		return x, y, nil
+	}
 }
 
 func DbSetUserInfoField(accountKey string, filed string, value string, c redis.Conn) error {

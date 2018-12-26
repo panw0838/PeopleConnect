@@ -60,6 +60,89 @@ func GetContactsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
+type GetNearUsersInput struct {
+	UID uint64  `json:"user"`
+	X   float64 `json:"x"`
+	Y   float64 `json:"y"`
+}
+
+type GetNearUsersReturn struct {
+	Users []NearUser `json:"users"`
+}
+
+func GetNearUsersHandler(w http.ResponseWriter, r *http.Request) {
+	var input GetNearUsersInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	if input.X == 0 && input.Y == 0 {
+		share.WriteError(w, 1)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+	defer c.Close()
+
+	var response GetNearUsersReturn
+	response.Users, err = dbGetNearbyUsers(input, c)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	data, err := json.Marshal(&response)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	share.WriteError(w, 0)
+	w.Write(data)
+}
+
+type GetPossibleContactsReturn struct {
+	Users []PossibleContact `json:"users"`
+}
+
+func GetPossibleContactsHandler(w http.ResponseWriter, r *http.Request) {
+	var account AccountInfo
+	err := share.ReadInput(r, &account)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+	defer c.Close()
+
+	var response GetPossibleContactsReturn
+	response.Users, err = dbGetPossibleContacts(account.UserID, c)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	data, err := json.Marshal(&response)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	share.WriteError(w, 0)
+	w.Write(data)
+}
+
 type GetPhotosInput struct {
 	CIDs []uint64 `json:"cids"`
 }
