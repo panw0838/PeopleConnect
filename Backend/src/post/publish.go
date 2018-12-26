@@ -14,7 +14,7 @@ func getFPubKey(uID uint64) string {
 	return "fposts:" + strconv.FormatUint(uID, 10)
 }
 
-func getGPubKey(gID int) string {
+func getGPubKey(gID uint32) string {
 	return "gposts:" + strconv.FormatUint(uint64(gID), 10)
 }
 
@@ -61,7 +61,15 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 		}
 	}
 
-	// add to stranger timeline
+	// add to nearby timeline
+	if post.Nearby {
+		geoID := share.GetGeoID(post.X, post.Y)
+		nearKey := getNearKey(geoID)
+		_, err := c.Do("ZADD", nearKey, post.ID, publishStr)
+		if err != nil {
+			return err
+		}
+	}
 
 	// add to self timeline
 	fpostsKey := getFPubKey(uID)

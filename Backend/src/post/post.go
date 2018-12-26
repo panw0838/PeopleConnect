@@ -13,10 +13,11 @@ type PostData struct {
 	ID       uint64    `json:"id"`
 	Content  string    `json:"cont"`
 	Flag     uint64    `json:"flag"`
-	X        float32   `json:"x"`
-	Y        float32   `json:"y"`
+	X        float64   `json:"x"`
+	Y        float64   `json:"y"`
 	Files    []string  `json:"file,omitempty"`
-	Groups   []int     `json:"group,omitempty"`
+	Nearby   bool      `json:"near,omitempty"`
+	Groups   []uint32  `json:"group,omitempty"`
 	Comments []Comment `json:"cmt,omitempty"`
 }
 

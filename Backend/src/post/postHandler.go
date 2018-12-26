@@ -40,6 +40,24 @@ func getFormInput(form *multipart.Form, param *NewPostInput) error {
 			param.Flag = uint64(value)
 		} else if strings.Compare(k, "cont") == 0 {
 			param.Content = v[0]
+		} else if strings.Compare(k, "X") == 0 {
+			value, err := strconv.ParseFloat(v[0], 10)
+			if err != nil {
+				return err
+			}
+			param.X = value
+		} else if strings.Compare(k, "Y") == 0 {
+			value, err := strconv.ParseFloat(v[0], 10)
+			if err != nil {
+				return err
+			}
+			param.Y = value
+		} else if strings.Compare(k, "near") == 0 {
+			value, err := strconv.ParseBool(v[0])
+			if err != nil {
+				return err
+			}
+			param.Nearby = value
 		}
 	}
 
@@ -116,9 +134,10 @@ type NewPostInput struct {
 	User    uint64   `json:"user"`
 	Flag    uint64   `json:"flag"`
 	Content string   `json:"cont"`
-	X       float32  `json:"X"`
-	Y       float32  `json:"Y"`
-	Groups  []uint64 `json:"group,omitempty"`
+	X       float64  `json:"X"`
+	Y       float64  `json:"Y"`
+	Nearby  bool     `json:"near"`
+	Groups  []uint32 `json:"group"`
 }
 
 type NewPostReturn struct {
@@ -128,14 +147,14 @@ type NewPostReturn struct {
 func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(share.MaxUploadSize)
 	if err != nil {
-		fmt.Fprintf(w, "Error: file too big")
+		share.WriteError(w, 1)
 		return
 	}
 
 	var input NewPostInput
 	err = getFormInput(r.MultipartForm, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: read input")
+		share.WriteError(w, 1)
 		return
 	}
 	fmt.Printf("input %d %d\n", input.User, input.Flag)
@@ -143,29 +162,33 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	pID := share.GetTimeID(time.Now())
 	files, err := getFormFile(input.User, pID, r.MultipartForm)
 	if err != nil {
-		fmt.Fprintf(w, "Error: process file %v", err)
+		share.WriteError(w, 1)
 		removePostFiles(input.User, pID)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		removePostFiles(input.User, pID)
 		return
 	}
 	defer c.Close()
 
 	var postData PostData
+
 	postData.Content = input.Content
 	postData.Flag = input.Flag
 	postData.X = input.X
 	postData.Y = input.Y
 	postData.Files = files
 	postData.ID = pID
+	postData.Groups = input.Groups
+	postData.Nearby = input.Nearby
+
 	err = dbAddPost(input.User, postData, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		removePostFiles(input.User, pID)
 		return
 	}
@@ -173,7 +196,7 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	postData.Owner = input.User
 	err = dbPublishPost(input.User, postData, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
@@ -181,11 +204,12 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	response.Post = pID
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
-	fmt.Fprintf(w, "%s", bytes)
+	share.WriteError(w, 0)
+	w.Write(bytes)
 }
 
 func DelPostHandler(w http.ResponseWriter, r *http.Request) {
