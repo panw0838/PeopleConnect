@@ -60,6 +60,62 @@ func GetContactsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
+type GetPostsUsersInput struct {
+	UID  uint64   `json:"user"`
+	CIDs []uint64 `json:"cids"`
+}
+
+type PostUser struct {
+	UID  uint64 `json:"user"`
+	Name string `json:"name"`
+}
+
+type GetPostsUsersReturn struct {
+	Users []PostUser `json:"users"`
+}
+
+func GetPostsUsersHandler(w http.ResponseWriter, r *http.Request) {
+	var input GetPostsUsersInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+	defer c.Close()
+
+	var response GetPostsUsersReturn
+
+	for _, cID := range input.CIDs {
+		var user PostUser
+
+		name, err := dbGetUserName(cID, c)
+		if err != nil {
+			share.WriteError(w, 1)
+			return
+		}
+
+		user.UID = cID
+		user.Name = name
+
+		response.Users = append(response.Users, user)
+	}
+
+	data, err := json.Marshal(&response)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	share.WriteError(w, 0)
+	w.Write(data)
+}
+
 type GetNearUsersInput struct {
 	UID uint64  `json:"user"`
 	X   float64 `json:"x"`
