@@ -202,6 +202,14 @@
          contextName = "LoginView.login(AnyObject) -&gt; ():LoginView.swift">
       </ContextState>
       <ContextState
+         contextName = "httpSendPost(UInt64, desc : String, datas : [NSData], groups : [UInt32], nearby : Bool) -&gt; ():Requests+Post.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "userInfo">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "TagTable.numberOfSectionsInTableView(UITableView) -&gt; Int:View+CreatePost.swift">
          <PersistentStrings>
             <PersistentString

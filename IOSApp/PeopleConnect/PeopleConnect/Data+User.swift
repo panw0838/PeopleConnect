@@ -38,15 +38,20 @@ struct UserInfo {
 var userInfo:UserInfo = UserInfo()
 var userData = User()
 
+protocol UpdateLocationDelegate {
+    func UpdateLocationSuccess()->Void
+    func UpdateLocationFail()->Void
+}
+
 class User: NSObject, CLLocationManagerDelegate {
     
     let m_locMgr = CLLocationManager()
+    var m_delegate:UpdateLocationDelegate?
     
     override init() {
         super.init()
         m_locMgr.delegate = self
         m_locMgr.desiredAccuracy = 100
-        startLocate()
     }
 
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -54,14 +59,16 @@ class User: NSObject, CLLocationManagerDelegate {
         let coord = loc?.coordinate
         userInfo.x = (coord?.latitude)!
         userInfo.y = (coord?.longitude)!
-        m_locMgr.stopUpdatingLocation()
+        manager.stopUpdatingLocation()
+        m_delegate?.UpdateLocationSuccess()
     }
     
     func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
-        
+        m_delegate?.UpdateLocationFail()
     }
-    
-    func startLocate() {
+        
+    func startLocate(delegate:UpdateLocationDelegate?) {
+        m_delegate = delegate
         if m_locMgr.respondsToSelector(Selector("requestWhenInUseAuthorization")) {
             m_locMgr.requestWhenInUseAuthorization()
         }

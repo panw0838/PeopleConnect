@@ -98,7 +98,14 @@ class PostGroups:UITableViewCell, UICollectionViewDataSource, UICollectionViewDe
     }
 }
 
-class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollectionViewDelegate, ImgPickerDelegate, UINavigationControllerDelegate, RemoveAttDelegate {
+class CreatePostView:
+    UITableViewController,
+    UICollectionViewDataSource,
+    UICollectionViewDelegate,
+    ImgPickerDelegate,
+    UINavigationControllerDelegate,
+    RemoveAttDelegate,
+    UpdateLocationDelegate {
     
     @IBOutlet weak var m_attachments: UICollectionView!
     @IBOutlet weak var m_desc: UITextField!
@@ -109,23 +116,43 @@ class CreatePostView:UITableViewController, UICollectionViewDataSource, UICollec
     @IBOutlet weak var m_strangerSee: UISwitch!
     @IBOutlet weak var m_createPostBtn: UIBarButtonItem!
     
+    var m_loading:LoadingAlert? = nil
+    var m_picker = ImgPicker(maxCount: 9)
+    var m_atts = Array<UIImage>()
+    
+    func UpdateLocationSuccess() {
+        m_loading?.stopLoading()
+    }
+    
+    func UpdateLocationFail() {
+        m_loading?.stopLoading()
+        m_strangerSee.setOn(false, animated: true)
+    }
+
+    @IBAction func changeNearby(sender: AnyObject) {
+        if m_strangerSee.on {
+            userData.startLocate(self)
+            m_loading?.startLoading()
+        }
+    }
+    
     @IBAction func CreatePost(sender: AnyObject) {
-        let desc = m_desc.text
+        let desc = m_desc.text!
         let flag = m_postTagsCell.m_flag
+        let groups = Array(m_postGroupsCell.m_selectGroups)
+        let nearby = m_strangerSee.on
         var datas = Array<NSData>()
         for image in m_atts {
             let data = compressImage(image)
             datas.append(data)
         }
-        httpSendPost(flag, desc: desc!, datas: datas)
+        httpSendPost(flag, desc: desc, datas: datas, groups: groups, nearby: nearby)
         navigationController?.popViewControllerAnimated(true)
     }
     
-    var m_picker = ImgPicker(maxCount: 8)
-    var m_atts = Array<UIImage>()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        m_loading = LoadingAlert(parent: self.view)
         m_picker.m_pickerDelegate = self
         m_postTags.allowsSelection = true
         m_postTags.allowsMultipleSelection = true

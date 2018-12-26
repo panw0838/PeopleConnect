@@ -46,7 +46,7 @@ func httpGetContacts(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
 }
 
 func httpGetPhotos(cIDs:Array<UInt64>, passed: (()->Void)?, failed: ((err:String?)->Void)?) {
-    let contacts:NSMutableArray = http.getIDArrayParam(cIDs)
+    let contacts:NSMutableArray = http.getUInt64ArrayParam(cIDs)
     let params:Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
         "cids":contacts]
@@ -130,8 +130,8 @@ func httpRemContact(contact:UInt64) {
 }
 
 func httpMoveContacts(tagID:UInt8, addMembers:Array<UInt64>, remMembers:Array<UInt64>) {
-    let adds:NSMutableArray = http.getIDArrayParam(addMembers)
-    let rems:NSMutableArray = http.getIDArrayParam(remMembers)
+    let adds:NSMutableArray = http.getUInt64ArrayParam(addMembers)
+    let rems:NSMutableArray = http.getUInt64ArrayParam(remMembers)
     let params:Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
         "tag":NSNumber(unsignedChar: tagID),

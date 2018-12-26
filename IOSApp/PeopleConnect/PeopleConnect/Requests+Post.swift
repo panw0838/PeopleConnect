@@ -13,8 +13,15 @@ func getFileUrl(cID:UInt64, pID:UInt64, fileName:String)->String {
     return String(cID) + "/" + String(pID) + "/" + fileName
 }
 
-func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>) {
-    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "flag":NSNumber(unsignedLongLong: flag), "cont":desc]
+func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>, groups:Array<UInt32>, nearby:Bool) {
+    let params: Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "flag":NSNumber(unsignedLongLong: flag),
+        "cont":desc,
+        "X":NSNumber(double: userInfo.x),
+        "Y":NSNumber(double: userInfo.y),
+        "group":http.getUInt32ArrayParam(groups),
+        "near":NSNumber(bool: nearby)]
     http.postDataRequest("newpost", params: params,
         constructingBodyWithBlock: { (formData: AFMultipartFormData) -> Void in
             for (idx, data) in datas.enumerate() {
@@ -23,15 +30,11 @@ func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>) {
         },
         progress: nil,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-            if (html.hasPrefix("Error")) {
-                print("%s", html)
-            }
-            else {
-                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
-                if (jsonObj != nil) {
-                    let dict: NSDictionary = jsonObj as! NSDictionary
-                    let pID:UInt64 = (UInt64)((dict["post"]?.integerValue)!)
+            let retData = processErrorCode(response as! NSData, failed: nil)
+            if retData != nil {
+                if let json = try? NSJSONSerialization.JSONObjectWithData(retData!, options: .MutableContainers) {
+                    let dict: NSDictionary = json as! NSDictionary
+                    let pID = (UInt64)((dict["post"]?.unsignedLongLongValue)!)
                     print("%d", pID)
                 }
             }

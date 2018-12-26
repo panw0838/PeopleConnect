@@ -8,6 +8,12 @@
 
 import Foundation
 
+let BitOne:       UInt64 = 0x1
+let BlacklistBit: UInt64 = 0x100000000
+let UndefineBit:  UInt64 = 0x200000000
+let UserTagMask:  UInt64 = 0xFFFFFFFF
+let RelateTagMask: UInt64 = (UserTagMask | 0x3E00000000)
+
 protocol ContactDataDelegate {
     func ContactDataUpdate()->Void
 }
@@ -36,22 +42,6 @@ struct ContactInfo {
     func isContact()->Bool {
         return ((flag & RelateTagMask) != 0) && !isBlacklist()
     }
-    
-    func getTagIDs()->Array<UInt8> {
-        var tagIDs = Array<UInt8>()
-        var tagBits = (flag & TagMask)
-        var tagID:UInt8 = 0
-        
-        while tagBits != 0 {
-            if (tagBits & BitOne) != 0 {
-                tagIDs.append(tagID)
-            }
-            tagBits >>= 1
-            tagID += 1
-        }
-        
-        return tagIDs
-    }
 }
 
 extension ContactInfo {
@@ -69,17 +59,6 @@ extension ContactInfo {
         self.ip = ""
     }
 }
-
-let BitOne: UInt64 = 0x1
-let BlacklistBit: UInt64 = 0x1
-let UndefineBit: UInt64 = 0x2
-let SystemTagStart: UInt64 = 0x1
-let SystemTagEnd: UInt64 = 0x20
-let DefineTagStart: UInt64 = 0x100000000
-let DefineTagEnd: UInt64 = 0x8000000000000000
-let DefineTagMask: UInt64 = 0xFFFFFFFF00000000
-let RelateTagMask: UInt64 = (DefineTagMask | 0x3E)
-let TagMask:UInt64 = 0x3F
 
 struct TagInfo {
     var tagID: UInt8
@@ -138,7 +117,7 @@ class Tag {
     
     func canBeDelete()->Bool {
         return (m_tagID != 0xff)
-            && ((m_bit & DefineTagMask) != 0)
+            && ((m_bit & UserTagMask) != 0)
             && (m_members.count == 0)
             && (m_subTags.count == 0)
     }
@@ -205,8 +184,8 @@ class Tag {
 var contactsData:ContactsData = ContactsData()
 
 class ContactsData {
-    var m_blacklist = Tag(id: 0, father: 0, name: "黑名单")
-    var m_undefine = Tag(id: 1, father: 0, name: "联系人")
+    var m_blacklist = Tag(id: 0x20, father: 0, name: "黑名单")
+    var m_undefine = Tag(id: 0x21, father: 0, name: "联系人")
     var m_possible = Tag(id: 0xff, father: 0, name: "可能认识的人")
     var m_stranger = Tag(id: 0xff, father: 0, name: "附近的陌生人")
     var m_tags: Array<Tag> = Array<Tag>()
@@ -223,10 +202,10 @@ class ContactsData {
         m_undefine.m_members.removeAll()
 
         // system tags
-        m_tags.append(Tag(id: 2, father: 0, name: "家人"))
-        m_tags.append(Tag(id: 3, father: 0, name: "同学"))
-        m_tags.append(Tag(id: 4, father: 0, name: "同事"))
-        m_tags.append(Tag(id: 5, father: 0, name: "朋友"))
+        m_tags.append(Tag(id: 0x22, father: 0, name: "家人"))
+        m_tags.append(Tag(id: 0x23, father: 0, name: "同学"))
+        m_tags.append(Tag(id: 0x24, father: 0, name: "同事"))
+        m_tags.append(Tag(id: 0x25, father: 0, name: "朋友"))
     }
     
     func getPostTags()->Array<Tag> {

@@ -81,10 +81,17 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
     }
 }
 
-class PostsView: PostsTable, UITableViewDelegate {
+class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
     
     @IBOutlet weak var m_tabs: UISegmentedControl!
     @IBOutlet weak var m_posts: UITableView!
+    
+    func UpdateLocationSuccess() {
+        httpSyncNearbyPost()
+    }
+    
+    func UpdateLocationFail() {
+    }
     
     @IBAction func switchPosts(sender: AnyObject) {
         let select = (sender as! UISegmentedControl).selectedSegmentIndex
@@ -93,6 +100,9 @@ class PostsView: PostsTable, UITableViewDelegate {
         }
         else if select == 1 {
             setTable(m_posts, data: nearPosts, fullView: true)
+            if userInfo.x == 0 && userInfo.y == 0 {
+                userData.startLocate(self)
+            }
         }
         m_posts.reloadData()
     }
@@ -102,7 +112,6 @@ class PostsView: PostsTable, UITableViewDelegate {
         super.viewDidLoad()
         setTable(m_posts, data: friendPosts, fullView: true)
         httpSyncPost()
-        httpSyncNearbyPost()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
