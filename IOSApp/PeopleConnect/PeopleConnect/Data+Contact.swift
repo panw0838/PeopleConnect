@@ -13,22 +13,25 @@ let BlacklistBit: UInt64 = 0x100000000
 let UndefineBit:  UInt64 = 0x200000000
 let UserTagMask:  UInt64 = 0xFFFFFFFF
 let RelateTagMask: UInt64 = (UserTagMask | 0x3E00000000)
+let GroupMask:    UInt64  = (UserTagMask | 0x3C00000000)
 
 protocol ContactDataDelegate {
     func ContactDataUpdate()->Void
 }
 
 struct ContactInfo {
-    var user: UInt64
-    var flag: UInt64
-    var name: String
-    var ip: String
+    var user: UInt64 = 0
+    var flag: UInt64 = 0
+    var name: String = ""
+    var ip: String = ""
+    var x: Double = 0
+    var y: Double = 0
+    var numConn: UInt32 = 0
     
     init(id:UInt64, f:UInt64, n:String) {
         user = id
         flag = f
         name = n
-        ip = ""
     }
     
     func isBlacklist()->Bool {
@@ -48,15 +51,23 @@ extension ContactInfo {
     init?(json: [String: AnyObject]) {
         guard
             let user = json["user"] as? NSNumber,
-            let flag = json["flag"] as? NSNumber,
             let name = json["name"] as? String
         else {
             return nil
         }
         self.user = UInt64(user.unsignedLongLongValue)
-        self.flag = UInt64(flag.unsignedLongLongValue)
         self.name = name
-        self.ip = ""
+        
+        let flag = json["flag"] as? NSNumber
+        self.flag = (flag != nil ? UInt64(flag!.unsignedLongLongValue) : 0)
+        
+        let x = json["x"] as? NSNumber
+        self.x = (x != nil ? Double(x!.doubleValue) : 0)
+        let y = json["y"] as? NSNumber
+        self.y = (y != nil ? Double(y!.doubleValue) : 0)
+        
+        let numConn = json["conn"] as? NSNumber
+        self.numConn = (numConn != nil ? UInt32(numConn!.unsignedIntValue) : 0)
     }
 }
 
@@ -103,7 +114,7 @@ class Tag {
         m_fatherID = father
         m_tagName = name
 
-        if id != 0xff {
+        if (id & 0x80) == 0 {
             m_bit = (BitOne << UInt64(id))
             m_fatherBit = (father == 0 ? 0 : (BitOne << UInt64(father)))
         }
@@ -116,14 +127,15 @@ class Tag {
     }
     
     func canBeDelete()->Bool {
-        return (m_tagID != 0xff)
-            && ((m_bit & UserTagMask) != 0)
-            && (m_members.count == 0)
-            && (m_subTags.count == 0)
+        return ((m_bit & UserTagMask) != 0) && (m_members.count == 0)
     }
     
     func canBeEdit()->Bool {
-        return (m_tagID != 0xff) && (m_bit & UndefineBit) == 0
+        return (m_bit & GroupMask) != 0
+    }
+    
+    func isStrangerTag()->Bool {
+        return (m_bit == 0)
     }
     
     func addMember(contact: ContactInfo) {
@@ -186,7 +198,7 @@ var contactsData:ContactsData = ContactsData()
 class ContactsData {
     var m_blacklist = Tag(id: 0x20, father: 0, name: "黑名单")
     var m_undefine = Tag(id: 0x21, father: 0, name: "联系人")
-    var m_possible = Tag(id: 0xff, father: 0, name: "可能认识的人")
+    var m_possible = Tag(id: 0xfe, father: 0, name: "可能认识的人")
     var m_stranger = Tag(id: 0xff, father: 0, name: "附近的陌生人")
     var m_tags: Array<Tag> = Array<Tag>()
     var m_contacts = Dictionary<UInt64, ContactInfo>()
@@ -206,6 +218,12 @@ class ContactsData {
         m_tags.append(Tag(id: 0x23, father: 0, name: "同学"))
         m_tags.append(Tag(id: 0x24, father: 0, name: "同事"))
         m_tags.append(Tag(id: 0x25, father: 0, name: "朋友"))
+    }
+    
+    func updateDelegates() {
+        for delegate in contactsData.m_delegates {
+            delegate.ContactDataUpdate()
+        }
     }
     
     func getPostTags()->Array<Tag> {
@@ -282,10 +300,6 @@ class ContactsData {
     func addSubTag(newTag: Tag) {
         let fatherTag: Tag = m_tags[Int(newTag.m_fatherID) - 2]
         fatherTag.addSubTag(newTag)
-        
-        for delegate in m_delegates {
-            delegate.ContactDataUpdate()
-        }
     }
     
     func getTag(tagID: UInt8)->Tag? {
@@ -319,10 +333,6 @@ class ContactsData {
                 }
             }
         }
-        
-        for delegate in m_delegates {
-            delegate.ContactDataUpdate()
-        }
     }
     
     func addContact(contact:ContactInfo) {
@@ -338,28 +348,16 @@ class ContactsData {
             }
         }
         m_contacts[contact.user] = contact
-        
-        for delegate in m_delegates {
-            delegate.ContactDataUpdate()
-        }
     }
     
     func addPossible(contact:ContactInfo) {
         m_possible.m_members.append(contact.user)
         m_contacts[contact.user] = contact
-        
-        for delegate in m_delegates {
-            delegate.ContactDataUpdate()
-        }
     }
     
     func addStranger(contact:ContactInfo) {
         m_stranger.m_members.append(contact.user)
         m_contacts[contact.user] = contact
-        
-        for delegate in m_delegates {
-            delegate.ContactDataUpdate()
-        }
     }
     
     func remContact(contactID:UInt64) {
@@ -368,10 +366,6 @@ class ContactsData {
             tag.remMember(contactID)
         }
         m_contacts.removeValueForKey(contactID)
-        
-        for delegate in m_delegates {
-            delegate.ContactDataUpdate()
-        }
     }
     
     func getContact(contactID:UInt64)->ContactInfo? {
@@ -390,10 +384,6 @@ class ContactsData {
             tag.addMember(contact)
             m_contacts[cID] = contact
         }
-        
-        for delegate in m_delegates {
-            delegate.ContactDataUpdate()
-        }
     }
     
     func moveContactsOutTag(cIDs:Array<UInt64>, tagID:UInt8) {
@@ -407,10 +397,6 @@ class ContactsData {
                 m_undefine.addMember(contact)
             }
             m_contacts[cID] = contact
-        }
-        
-        for delegate in m_delegates {
-            delegate.ContactDataUpdate()
         }
     }
     

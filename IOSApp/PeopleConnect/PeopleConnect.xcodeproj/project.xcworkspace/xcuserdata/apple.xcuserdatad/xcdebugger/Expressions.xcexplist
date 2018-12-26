@@ -109,6 +109,9 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "Tag.isStrangerTag() -&gt; Bool:Data+Contact.swift">
+      </ContextState>
+      <ContextState
          contextName = "PostCell.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:View+Posts.swift">
       </ContextState>
       <ContextState
@@ -116,6 +119,14 @@
       </ContextState>
       <ContextState
          contextName = "CommentInfo.init(json : [String : AnyObject]) -&gt; CommentInfo?:Data+Post.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsView.collectionView(UICollectionView, viewForSupplementaryElementOfKind : String, atIndexPath : NSIndexPath) -&gt; UICollectionReusableView:View+Contacts.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "header.m_refreshBtn.hidden">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "PostsView.tableView(UITableView, viewForHeaderInSection : Int) -&gt; UIView?:View+Posts.swift">

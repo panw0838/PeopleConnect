@@ -248,7 +248,7 @@
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hei-wG-uwr">
                                             <rect key="frame" x="8" y="2" width="25" height="25"/>
                                             <constraints>
-                                                <constraint firstAttribute="width" constant="25" id="j3N-Zb-Mx1"/>
+                                                <constraint firstAttribute="width" constant="25" id="LGW-ra-L3R"/>
                                             </constraints>
                                             <state key="normal" image="group_delete">
                                                 <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -267,24 +267,39 @@
                                                 <segue destination="lPv-pN-7D4" kind="show" identifier="ShowMoveMember" id="4BV-da-MvE"/>
                                             </connections>
                                         </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e0D-Gf-hVy">
+                                            <rect key="frame" x="524" y="1" width="28" height="28"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            <state key="normal" image="group_refresh">
+                                                <color key="titleColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="RefreshTag:" destination="aTw-ZE-vUS" eventType="touchUpInside" id="WMO-lB-zcc"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                     <constraints>
-                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="leading" secondItem="hei-wG-uwr" secondAttribute="trailing" constant="54" id="1xy-aK-wR6"/>
-                                        <constraint firstItem="hei-wG-uwr" firstAttribute="centerY" secondItem="Zx7-TD-WF6" secondAttribute="centerY" id="AFb-YZ-E0C"/>
-                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="leading" secondItem="QQq-HM-s7V" secondAttribute="trailing" constant="50" id="L7W-mg-ZBB"/>
-                                        <constraint firstItem="hei-wG-uwr" firstAttribute="leading" secondItem="Zx7-TD-WF6" secondAttribute="leadingMargin" id="OTr-0d-yST"/>
-                                        <constraint firstItem="hei-wG-uwr" firstAttribute="centerY" secondItem="QQq-HM-s7V" secondAttribute="centerY" id="RTM-Kd-2b9"/>
-                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="trailing" secondItem="Zx7-TD-WF6" secondAttribute="trailingMargin" id="iie-ry-rZE"/>
-                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="centerY" secondItem="hei-wG-uwr" secondAttribute="centerY" id="oxv-RW-WqX"/>
-                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="topMargin" constant="-4" id="tVh-S9-0bK"/>
-                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="centerX" secondItem="Zx7-TD-WF6" secondAttribute="centerX" id="vfO-Kl-vfI"/>
-                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="top" id="xwB-5c-3AN"/>
-                                        <constraint firstItem="hei-wG-uwr" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="topMargin" constant="-6" id="xxT-zi-9Sd"/>
+                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="leading" secondItem="hei-wG-uwr" secondAttribute="trailing" constant="54" id="5RX-M5-kn3"/>
+                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="topMargin" constant="-7" id="Ijw-x1-2be"/>
+                                        <constraint firstItem="hei-wG-uwr" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="topMargin" constant="-6" id="NFG-aV-akt"/>
+                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="leading" secondItem="QQq-HM-s7V" secondAttribute="trailing" constant="50" id="TUf-BN-eMm"/>
+                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="topMargin" constant="-4" id="XKo-NJ-eYx"/>
+                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="leading" secondItem="eJT-TG-Nms" secondAttribute="leading" id="YLf-R0-thw"/>
+                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="centerX" secondItem="Zx7-TD-WF6" secondAttribute="centerX" id="aOC-Jc-p1W"/>
+                                        <constraint firstItem="hei-wG-uwr" firstAttribute="centerY" secondItem="eJT-TG-Nms" secondAttribute="centerY" id="cUP-2P-0cZ"/>
+                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="centerY" secondItem="QQq-HM-s7V" secondAttribute="centerY" id="dsZ-sX-x1y"/>
+                                        <constraint firstItem="hei-wG-uwr" firstAttribute="leading" secondItem="Zx7-TD-WF6" secondAttribute="leadingMargin" id="edF-03-4QU"/>
+                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="trailing" secondItem="e0D-Gf-hVy" secondAttribute="trailing" id="i5x-wu-zce"/>
+                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="centerY" secondItem="Zx7-TD-WF6" secondAttribute="centerY" id="jhD-OX-zOH"/>
+                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="centerY" secondItem="hei-wG-uwr" secondAttribute="centerY" id="pp3-xO-g5M"/>
+                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="trailing" secondItem="Zx7-TD-WF6" secondAttribute="trailingMargin" id="v8T-dx-ETN"/>
+                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="top" id="x5k-11-KFf"/>
                                     </constraints>
                                     <connections>
                                         <outlet property="m_delBtn" destination="hei-wG-uwr" id="ySI-Wq-F94"/>
                                         <outlet property="m_editBtn" destination="eJT-TG-Nms" id="UFG-5l-nHi"/>
+                                        <outlet property="m_refreshBtn" destination="e0D-Gf-hVy" id="YsR-D3-Uuv"/>
                                         <outlet property="m_tagName" destination="QQq-HM-s7V" id="4bS-9I-P64"/>
                                     </connections>
                                 </collectionReusableView>
@@ -1574,6 +1589,7 @@
     <resources>
         <image name="group_delete" width="40" height="40"/>
         <image name="group_exchange" width="40" height="40"/>
+        <image name="group_refresh" width="25" height="25"/>
         <image name="photo" width="50" height="50"/>
         <image name="plus" width="512" height="512"/>
         <image name="remove" width="30" height="30"/>
@@ -1585,7 +1601,7 @@
         <image name="tab_msg_hi" width="25" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="QHO-f2-RCa"/>
-        <segue reference="ZaN-YB-4fP"/>
+        <segue reference="BOu-Ex-kTg"/>
+        <segue reference="pWd-Ma-Nx5"/>
     </inferredMetricsTieBreakers>
 </document>

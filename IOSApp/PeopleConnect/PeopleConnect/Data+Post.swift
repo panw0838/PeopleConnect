@@ -31,10 +31,10 @@ struct PostInfo {
 extension PostInfo {
     init?(json: [String: AnyObject]) {
         guard
-        let user = json["user"] as? NSNumber,
-        let id = json["id"] as? NSNumber,
-        let flag = json["flag"] as? NSNumber,
-        let content = json["cont"] as? String
+            let user = json["user"] as? NSNumber,
+            let id = json["id"] as? NSNumber,
+            let flag = json["flag"] as? NSNumber,
+            let content = json["cont"] as? String
         else {
             return nil
         }

@@ -18,12 +18,17 @@ class SubTagHeader: UICollectionReusableView {
     @IBOutlet weak var m_tagName: UILabel!
     @IBOutlet weak var m_delBtn: UIButton!
     @IBOutlet weak var m_editBtn: UIButton!
+    @IBOutlet weak var m_refreshBtn: UIButton!
     var m_tagID:UInt8 = 0
 }
 
-class ContactsView: UIViewController,
-    UICollectionViewDataSource, UICollectionViewDelegate,
-    ContactDataDelegate, SearchContactCallback {
+class ContactsView:
+    UIViewController,
+    UICollectionViewDataSource,
+    UICollectionViewDelegate,
+    ContactDataDelegate,
+    SearchContactCallback,
+    UpdateLocationDelegate{
     
     @IBOutlet weak var m_tabsBar: UISegmentedControl!
     @IBOutlet weak var m_contacts: UICollectionView!
@@ -93,6 +98,23 @@ class ContactsView: UIViewController,
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
+    func UpdateLocationSuccess() {
+        httpGetNearbyUsers()
+    }
+    
+    func UpdateLocationFail() {
+    }
+    
+    @IBAction func RefreshTag(sender: AnyObject) {
+        let header = sender.superview as! SubTagHeader
+        if header.m_tagID == 0xfe {
+            httpGetPossibleContacts()
+        }
+        else if header.m_tagID == 0xff {
+            userData.startLocate(self)
+        }
+    }
+    
     @IBAction func SearchContact(sender: AnyObject) {
         let alert = UIAlertController(title: "搜索联系人", message: "", preferredStyle: UIAlertControllerStyle.Alert)
         let noAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
@@ -134,6 +156,7 @@ class ContactsView: UIViewController,
             header.m_tagName.text = subTag.m_tagName
             header.m_editBtn.hidden = !subTag.canBeEdit()
             header.m_delBtn.hidden = !subTag.canBeDelete()
+            header.m_refreshBtn.hidden = !subTag.isStrangerTag()
             header.m_tagID = subTag.m_tagID
             return header
         }

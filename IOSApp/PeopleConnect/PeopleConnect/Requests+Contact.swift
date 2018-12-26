@@ -45,6 +45,69 @@ func httpGetContacts(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
     )
 }
 
+func httpGetNearbyUsers() {
+    contactsData.m_stranger.clear()
+    let params: Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "x":NSNumber(double: userInfo.x),
+        "y":NSNumber(double: userInfo.y)]
+    http.postRequest("nearusers", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let usersData = processErrorCode(response as! NSData, failed: nil)
+            if usersData != nil {
+                if let json = try? NSJSONSerialization.JSONObjectWithData(usersData!, options: .MutableContainers) as! [String:AnyObject] {
+                    if let contactObjs = json["users"] as? [AnyObject] {
+                        for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
+                            if let contact = ContactInfo(json: contactObj) {
+                                contactsData.m_stranger.m_members.append(contact.user)
+                                contactsData.m_contacts[contact.user] = contact
+                            }
+                        }
+                        
+                        let photoList = getPhotoMissingList(contactsData.m_stranger.m_members)
+                        if photoList.count > 0 {
+                            httpGetPhotos(photoList, passed: nil, failed: nil)
+                        }
+                    }
+                    contactsData.updateDelegates()
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+        }
+    )
+}
+
+func httpGetPossibleContacts() {
+    contactsData.m_possible.clear()
+    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
+    http.postRequest("possiblecontacts", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let usersData = processErrorCode(response as! NSData, failed: nil)
+            if usersData != nil {
+                if let json = try? NSJSONSerialization.JSONObjectWithData(usersData!, options: .MutableContainers) as! [String:AnyObject] {
+                    if let usersObjs = json["users"] as? [AnyObject] {
+                        for case let userObj in (usersObjs as? [[String:AnyObject]])! {
+                            if let contact = ContactInfo(json: userObj) {
+                                contactsData.m_possible.m_members.append(contact.user)
+                                contactsData.m_contacts[contact.user] = contact
+                            }
+                        }
+                        
+                        let photoList = getPhotoMissingList(contactsData.m_possible.m_members)
+                        if photoList.count > 0 {
+                            httpGetPhotos(photoList, passed: nil, failed: nil)
+                        }
+                    }
+                    contactsData.updateDelegates()
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+        }
+    )
+}
+
 func httpGetPhotos(cIDs:Array<UInt64>, passed: (()->Void)?, failed: ((err:String?)->Void)?) {
     let contacts:NSMutableArray = http.getUInt64ArrayParam(cIDs)
     let params:Dictionary = [
@@ -58,6 +121,7 @@ func httpGetPhotos(cIDs:Array<UInt64>, passed: (()->Void)?, failed: ((err:String
                 for (i, cID) in cIDs.enumerate() {
                     contactsData.setPhoto(cID, data: subDatas[i], update: true)
                 }
+                contactsData.updateDelegates()
                 passed?()
             }
         },
@@ -103,6 +167,7 @@ func httpAddContact(contact:UInt64, flag:UInt64, name:String) {
             }
             else {
                 contactsData.addContact(ContactInfo(id: contact, f: flag, n: name))
+                contactsData.updateDelegates()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -122,6 +187,7 @@ func httpRemContact(contact:UInt64) {
             }
             else {
                 contactsData.remContact(contact)
+                contactsData.updateDelegates()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -146,6 +212,7 @@ func httpMoveContacts(tagID:UInt8, addMembers:Array<UInt64>, remMembers:Array<UI
             else {
                 contactsData.moveContactsInTag(addMembers, tagID: tagID)
                 contactsData.moveContactsOutTag(remMembers, tagID: tagID)
+                contactsData.updateDelegates()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in

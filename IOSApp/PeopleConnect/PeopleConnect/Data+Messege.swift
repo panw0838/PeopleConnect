@@ -22,8 +22,8 @@ extension RequestInfo {
             let from = json["from"] as? NSNumber,
             let name = json["name"] as? String,
             let messege = json["mess"] as? String
-            else {
-                return nil
+        else {
+            return nil
         }
         self.from = UInt64(from.unsignedLongLongValue)
         self.name = name
@@ -52,8 +52,8 @@ extension MessegeInfo {
             let from = json["from"] as? NSNumber,
             let time = json["time"] as? NSNumber,
             let data = json["cont"] as? String
-            else {
-                return nil
+        else {
+            return nil
         }
         self.from = UInt64(from.unsignedLongLongValue)
         self.time = UInt64(time.unsignedLongLongValue)

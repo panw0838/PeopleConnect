@@ -42,6 +42,16 @@ func setContactPhoto(cID:UInt64, photo:NSData) {
     photo.writeToFile(path, atomically: true)
 }
 
+func getPhotoMissingList(cIDs:Array<UInt64>)->Array<UInt64> {
+    var ids = Array<UInt64>()
+    for cID in cIDs {
+        if getContactPhoto(cID) == nil {
+            ids.append(cID)
+        }
+    }
+    return ids
+}
+
 func getPostPreviewPath(file:String)->String {
     let cacheDir = NSSearchPathForDirectoriesInDomains(.CachesDirectory, .UserDomainMask, true)[0]
     return cacheDir + "/preview/" + file

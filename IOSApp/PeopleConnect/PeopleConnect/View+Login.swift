@@ -454,10 +454,10 @@ class LoginView: UIViewController {
     }
     
     @IBAction func login2(sender: AnyObject) {
-        httpLogon(86, cell: "13700000001", pass: "qqqqqqqq", passed: logSuccess, failed: nil)
+        httpLogon(86, cell: "13700000002", pass: "qqqqqqqq", passed: logSuccess, failed: nil)
     }
     
     @IBAction func login3(sender: AnyObject) {
-        httpLogon(86, cell: "13700000002", pass: "qqqqqqqq", passed: logSuccess, failed: nil)
+        httpLogon(86, cell: "13700000003", pass: "qqqqqqqq", passed: logSuccess, failed: nil)
     }
 }
