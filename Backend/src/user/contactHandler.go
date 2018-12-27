@@ -70,11 +70,11 @@ type PostUser struct {
 	Name string `json:"name"`
 }
 
-type GetPostsUsersReturn struct {
+type GetUsersReturn struct {
 	Users []PostUser `json:"users"`
 }
 
-func GetPostsUsersHandler(w http.ResponseWriter, r *http.Request) {
+func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	var input GetPostsUsersInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
@@ -89,7 +89,7 @@ func GetPostsUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	var response GetPostsUsersReturn
+	var response GetUsersReturn
 
 	for _, cID := range input.CIDs {
 		var user PostUser

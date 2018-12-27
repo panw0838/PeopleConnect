@@ -10,26 +10,30 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
+const MSG_STR uint8 = 0
+const MSG_REQ uint8 = 1
+const MSG_PIC uint8 = 2
+const MSG_VID uint8 = 3
+
 type Message struct {
 	From    uint64 `json:"from"`
+	Name    string `json:"name,omitempty"`
 	Time    uint64 `json:"time"`
 	Content string `json:"cont"`
+	Type    uint8  `json:"type"`
 }
 
 func getMsgKey(userID uint64) string {
 	return "msg:" + strconv.FormatUint(userID, 10)
 }
 
-func dbAddMessege(input SendMsgInput, c redis.Conn) error {
-	var msg Message
-	msg.From = input.From
+func dbAddMessege(to uint64, msg Message, c redis.Conn) error {
 	msg.Time = share.GetTimeID(time.Now())
-	msg.Content = input.Msg
 	data, err := json.Marshal(msg)
 	if err != nil {
 		return err
 	}
-	msgKey := getMsgKey(input.To)
+	msgKey := getMsgKey(to)
 	_, err = c.Do("ZADD", msgKey, msg.Time, data)
 	if err != nil {
 		return err
@@ -98,6 +102,19 @@ func dbAddRequest(input RequestContactInput, c redis.Conn) error {
 	if err != nil {
 		return err
 	}
+
+	// add to message notification
+	var msg Message
+	msg.From = input.From
+	msg.Content = input.Message
+	msg.Type = MSG_REQ
+	msg.Name = input.Name
+
+	err = dbAddMessege(input.To, msg, c)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -14,40 +14,47 @@ type SendMsgInput struct {
 	From uint64 `json:"from"`
 	To   uint64 `json:"to"`
 	Msg  string `json:"msg"`
+	Type uint8  `json:"type"`
 }
 
 func SendMsgHandler(w http.ResponseWriter, r *http.Request) {
 	var input SendMsgInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error")
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
 
 	friend, err := user.IsFriend(input.From, input.To, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	if !friend {
-		fmt.Fprintf(w, "Error: not friend")
+		share.WriteError(w, 1)
 		return
 	}
 
-	err = dbAddMessege(input, c)
+	var msg Message
+
+	msg.From = input.From
+	msg.Content = input.Msg
+	msg.Type = input.Type
+
+	err = dbAddMessege(input.To, msg, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
-	fmt.Fprintf(w, "Success")
+	share.WriteError(w, 0)
 }
 
 type MessegeSyncInput struct {
