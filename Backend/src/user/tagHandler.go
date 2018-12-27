@@ -150,25 +150,25 @@ type UpdateTagMemberInput struct {
 func UpdateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "Error: read request")
+		share.WriteError(w, 1)
 		return
 	}
 
 	var input UpdateTagMemberInput
 	err = json.Unmarshal(body, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error %s", body)
+		share.WriteError(w, 1)
 		return
 	}
 
 	if !isValidMainTag(input.Tag) && !isUserTag(input.Tag) {
-		fmt.Fprintf(w, "Error: Invalid tag")
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
@@ -177,44 +177,44 @@ func UpdateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 	if isUserTag(input.Tag) {
 		exists, err := dbUserTagExists(input.User, input.Tag, c)
 		if err != nil {
-			fmt.Fprintf(w, "Error: %v", err)
+			share.WriteError(w, 1)
 			return
 		}
 		if !exists {
-			fmt.Fprintf(w, "Error: Invalid tag")
+			share.WriteError(w, 1)
 			return
 		}
 	}
 
 	addBits, err := getTagAndFatherBits(input.User, input.Tag, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
 	for _, member := range input.Add {
 		err := dbEnableBits(input.User, member, addBits, c)
 		if err != nil {
-			fmt.Fprintf(w, "Error: %v", err)
+			share.WriteError(w, 1)
 			return
 		}
 	}
 
 	remBits, err := getTagAndSonsBits(input.User, input.Tag, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
 	for _, member := range input.Rem {
 		err := dbDisableBits(input.User, member, remBits, c)
 		if err != nil {
-			fmt.Fprintf(w, "Error: %v", err)
+			share.WriteError(w, 1)
 			return
 		}
 	}
 
-	fmt.Fprintf(w, "Success")
+	share.WriteError(w, 0)
 }
 
 func updateTagNameHandler(w http.ResponseWriter, r *http.Request) {

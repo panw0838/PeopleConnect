@@ -1,7 +1,6 @@
 package post
 
 import (
-	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -382,9 +381,7 @@ func GetPreviewsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte{byte(len(lens))})
 
 	for _, len := range lens {
-		var bufU32 = make([]byte, 4)
-		binary.LittleEndian.PutUint32(bufU32, uint32(len))
-		w.Write(bufU32)
+		share.WriteU32(w, uint32(len))
 	}
 
 	for _, data := range datas {

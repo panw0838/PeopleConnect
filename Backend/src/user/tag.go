@@ -5,7 +5,7 @@ const ZERO_64 uint64 = 0x0
 
 // system tab bits
 const BLK_BIT uint64 = ONE_64 << 32
-const UND_BIT uint64 = ONE_64 << 33
+const UDF_BIT uint64 = ONE_64 << 33
 const FML_BIT uint64 = ONE_64 << 34
 const CLM_BIT uint64 = ONE_64 << 35
 const CWK_BIT uint64 = ONE_64 << 36

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"encoding/json"
 	"fmt"
 	"share"
 	"strconv"
@@ -22,23 +23,6 @@ type ContactInfo struct {
 
 func GetContactsKey(user uint64) string {
 	return "contacts:" + strconv.FormatUint(user, 10)
-}
-
-func AddContactPreCheck(from uint64, to uint64, flag uint64, name string) error {
-	if from == to {
-		return fmt.Errorf("can't request self")
-	}
-
-	nameLen := len(name)
-	if nameLen == 0 || nameLen > int(NAME_SIZE) {
-		return fmt.Errorf("invalid contact name")
-	}
-
-	if flag == 0 || flag&BLK_BIT != 0 {
-		return fmt.Errorf("invalid group")
-	}
-
-	return nil
 }
 
 // todo, build search tree
@@ -71,15 +55,28 @@ func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
 	return contactID, nil
 }
 
-func dbAddContact(user1 uint64, user2 uint64, flag uint64, name string, c redis.Conn) error {
+type RequestInfo struct {
+	From uint64 `json:"from"`
+	Name string `json:"name"`
+	Msg  string `json:"msg"`
+}
+
+func dbAddContact(user1 uint64, user2 uint64, name string, c redis.Conn) error {
 	ClearCashRelation(user1, user2)
-	requestKey := share.GetRequestKey(user2, user1)
-	values, err := redis.Values(c.Do("HMGET", requestKey, FlagField, NameField))
+
+	requestsKey := share.GetRequestsKey(user2)
+
+	values, err := redis.Values(c.Do("ZRANGE", requestsKey, user1, user1))
+	if len(values) != 1 {
+		return fmt.Errorf("no request info")
+	}
+	data, err := redis.Bytes(values[0], err)
 	if err != nil {
 		return err
 	}
-	otherFlag, err := share.GetUint64(values[0], err)
-	otherName, err := redis.String(values[1], err)
+
+	var request RequestInfo
+	err = json.Unmarshal(data, &request)
 	if err != nil {
 		return err
 	}
@@ -89,39 +86,33 @@ func dbAddContact(user1 uint64, user2 uint64, flag uint64, name string, c redis.
 		return err
 	}
 
-	relateKey := GetRelationKey(user1, user2)
-	_, err = c.Do("HMSET", relateKey,
-		FlagField, flag,
+	user1RelateKey := GetRelationKey(user1, user2)
+	_, err = c.Do("HMSET", user1RelateKey,
+		FlagField, UDF_BIT,
 		NameField, name)
 	if err != nil {
 		return err
 	}
-	otherRelateKey := GetRelationKey(user2, user1)
-	_, err = c.Do("HMSET", otherRelateKey,
-		FlagField, otherFlag,
-		NameField, otherName)
+	user2RelateKey := GetRelationKey(user2, user1)
+	_, err = c.Do("HMSET", user2RelateKey,
+		FlagField, UDF_BIT,
+		NameField, request.Name)
 	if err != nil {
 		return err
 	}
 
-	contactsKey := GetContactsKey(user1)
-	_, err = c.Do("SADD", contactsKey, user2)
+	user1ContactsKey := GetContactsKey(user1)
+	_, err = c.Do("SADD", user1ContactsKey, user2)
 	if err != nil {
 		return err
 	}
-	otherContactsKey := GetContactsKey(user2)
-	_, err = c.Do("SADD", otherContactsKey, user1)
-	if err != nil {
-		return err
-	}
-
-	_, err = c.Do("DEL", requestKey)
+	user2ContactsKey := GetContactsKey(user2)
+	_, err = c.Do("SADD", user2ContactsKey, user1)
 	if err != nil {
 		return err
 	}
 
-	requestsKey := share.GetRequestsKey(user2)
-	_, err = c.Do("SREM", requestsKey, user1)
+	_, err = c.Do("ZREMRANGEBYSCORE", requestsKey, user1, user1)
 	if err != nil {
 		return err
 	}

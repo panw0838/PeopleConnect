@@ -1,6 +1,7 @@
 package share
 
 import (
+	"encoding/binary"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -12,7 +13,8 @@ import (
 
 const ONE_64 uint64 = 0x1
 const ZERO_64 uint64 = 0x0
-const MAX_TIME uint64 = 0xffffffffffffffff
+const MAX_U64 uint64 = 0xffffffffffffffff
+const MAX_TIME uint64 = MAX_U64
 
 const ContactDB = "127.0.0.1:6379"
 
@@ -85,13 +87,18 @@ func GetRequestsKey(user uint64) string {
 	return "requests:" + strconv.FormatUint(user, 10)
 }
 
-func GetRequestKey(user1 uint64, user2 uint64) string {
-	return "request:" +
-		strconv.FormatUint(user1, 10) + ":" +
-		strconv.FormatUint(user2, 10)
+func WriteU16(w http.ResponseWriter, value uint16) {
+	var bufU16 = make([]byte, 2)
+	binary.LittleEndian.PutUint16(bufU16, value)
+	w.Write(bufU16)
 }
 
-func WriteError(w http.ResponseWriter, err uint8) {
-	var output = []byte{err}
-	w.Write(output)
+func WriteU32(w http.ResponseWriter, value uint32) {
+	var bufU32 = make([]byte, 4)
+	binary.LittleEndian.PutUint32(bufU32, value)
+	w.Write(bufU32)
+}
+
+func WriteError(w http.ResponseWriter, err uint16) {
+	WriteU16(w, err)
 }

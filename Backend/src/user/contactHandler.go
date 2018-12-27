@@ -1,7 +1,6 @@
 package user
 
 import (
-	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -250,9 +249,7 @@ func GetPhotosHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte{byte(numIDs)})
 
 	for _, len := range lens {
-		var bufU32 = make([]byte, 4)
-		binary.LittleEndian.PutUint32(bufU32, uint32(len))
-		w.Write(bufU32)
+		share.WriteU32(w, uint32(len))
 	}
 
 	for _, data := range datas {
@@ -320,7 +317,6 @@ func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
 type AddContactInput struct {
 	User    uint64 `json:"user"`
 	Contact uint64 `json:"contact"`
-	Flag    uint64 `json:"flag"`
 	Name    string `json:"name"`
 }
 
@@ -328,40 +324,35 @@ func AddContactHandler(w http.ResponseWriter, r *http.Request) {
 	var input AddContactInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error")
+		share.WriteError(w, 1)
 		return
 	}
 
-	err = AddContactPreCheck(input.User, input.Contact, input.Flag, input.Name)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+	if input.User == input.Contact {
+		share.WriteError(w, 1)
+		return
+	}
+
+	nameLen := len(input.Name)
+	if nameLen == 0 || nameLen > int(NAME_SIZE) {
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: connect db error")
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
 
-	requestKey := share.GetRequestKey(input.Contact, input.User)
-	exists, err := redis.Int64(c.Do("EXISTS", requestKey))
+	err = dbAddContact(input.User, input.Contact, input.Name, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
-	if exists == 0 {
-		fmt.Fprintf(w, "Error: request not exist")
+		share.WriteError(w, 1)
 		return
 	}
 
-	err = dbAddContact(input.User, input.Contact, input.Flag, input.Name, c)
-	if err != nil {
-		fmt.Fprintf(w, "Error, %v", err)
-	}
-
-	fmt.Fprintf(w, "Success")
+	share.WriteError(w, 0)
 }
 
 type RemContactInput struct {
@@ -373,15 +364,15 @@ func RemContactHandler(w http.ResponseWriter, r *http.Request) {
 	var input RemContactInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error")
+		share.WriteError(w, 1)
 		return
 	}
 
 	err = dbRemoveContact(input.User, input.Contact)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
-	fmt.Fprintf(w, "Success")
+	share.WriteError(w, 0)
 }

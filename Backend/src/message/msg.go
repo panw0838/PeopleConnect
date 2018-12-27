@@ -77,30 +77,30 @@ func dbGetMessages(input MessegeSyncInput, c redis.Conn) (uint64, []Message, err
 	return newSync, messages, nil
 }
 
-func dbAddRequest(input RequestContactInput, c redis.Conn) error {
-	_, err := c.Do("MULTI")
-	if err != nil {
-		return err
-	}
-
-	requestKey := share.GetRequestKey(input.From, input.To)
-	_, err = c.Do("HMSET", requestKey,
-		user.FlagField, input.Flag,
-		user.NameField, input.Name,
-		user.MessField, input.Message)
-	if err != nil {
-		return err
-	}
-
+func dbAddRequest(input RequestContactInput, c redis.Conn) uint16 {
 	requestsKey := share.GetRequestsKey(input.To)
-	_, err = c.Do("SADD", requestsKey, input.From)
+	values, err := redis.Values(c.Do("ZRANGEBYSCORE", requestsKey, input.From, input.From))
 	if err != nil {
-		return err
+		return 1
+	}
+	if len(values) != 0 {
+		return 1
 	}
 
-	_, err = c.Do("EXEC")
+	var info user.RequestInfo
+
+	info.From = input.From
+	info.Name = input.Name
+	info.Msg = input.Message
+
+	data, err := json.Marshal(info)
 	if err != nil {
-		return err
+		return 1
+	}
+
+	_, err = c.Do("ZADD", requestsKey, input.From, data)
+	if err != nil {
+		return 1
 	}
 
 	// add to message notification
@@ -112,13 +112,13 @@ func dbAddRequest(input RequestContactInput, c redis.Conn) error {
 
 	err = dbAddMessege(input.To, msg, c)
 	if err != nil {
-		return err
+		return 1
 	}
 
-	return nil
+	return 0
 }
 
-func dbSyncRequests(uID uint64, c redis.Conn) ([]Request, error) {
+func dbSyncRequests(uID uint64, c redis.Conn) ([]user.RequestInfo, error) {
 	requestsKey := share.GetRequestsKey(uID)
 	numRequests, err := redis.Uint64(c.Do("SCARD", requestsKey))
 	if err != nil {
@@ -128,30 +128,19 @@ func dbSyncRequests(uID uint64, c redis.Conn) ([]Request, error) {
 		return nil, nil
 	}
 
-	var requests []Request
-	rawDatas, err := redis.Values(c.Do("SMEMBERS", requestsKey))
-	for _, rawData := range rawDatas {
-		var request Request
-		from, err := share.GetUint64(rawData, err)
+	var requests []user.RequestInfo
+	values, err := redis.Values(c.Do("ZRANGE", requestsKey, 0, share.MAX_U64))
+	for _, value := range values {
+		data, err := redis.Bytes(value, err)
 		if err != nil {
 			return nil, err
 		}
-		request.From = from
 
-		fromAccountKey := user.GetAccountKey(from)
-		name, err := user.DbGetUserInfoField(fromAccountKey, user.NameField, c)
+		var request user.RequestInfo
+		err = json.Unmarshal(data, &request)
 		if err != nil {
 			return nil, err
 		}
-		request.Name = name
-
-		requestKey := share.GetRequestKey(from, uID)
-		values, err := redis.Values(c.Do("HMGET", requestKey, user.MessField))
-		messege, err := redis.String(values[0], err)
-		if err != nil {
-			return nil, err
-		}
-		request.Mess = messege
 
 		requests = append(requests, request)
 	}
