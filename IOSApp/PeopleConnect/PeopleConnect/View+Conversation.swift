@@ -13,7 +13,7 @@ class MsgCell: UITableViewCell {
     var m_message = UIButton(frame: CGRectZero)
     var m_time    = UILabel(frame: CGRectZero)
     
-    var m_info:MessegeInfo? = nil
+    var m_info:MsgInfo? = nil
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -37,7 +37,7 @@ class MsgCell: UITableViewCell {
         addSubview(m_time)
     }
     
-    func reload(msg:MessegeInfo, width:CGFloat) {
+    func reload(msg:MsgInfo, width:CGFloat) {
         let pad:CGFloat = 8
         let pSize:CGFloat = 40
         let textGap:CGFloat = 20

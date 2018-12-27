@@ -49,6 +49,12 @@ func processErrorCode(data:NSData, failed:((String?)->Void)?)->NSData? {
     }
 }
 
+func getErrorCode(data:NSData)->UInt8 {
+    var errCode:UInt8 = 0
+    data.getBytes(&errCode, length: sizeof(UInt8))
+    return errCode
+}
+
 func splitData(srcData:NSData)->Array<NSData> {
     var lens = Array<UInt32>()
     var datas = Array<NSData>()

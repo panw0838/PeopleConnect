@@ -15,6 +15,7 @@ class MessegeCell: UITableViewCell {
     @IBOutlet weak var m_messege: UILabel!
     @IBOutlet weak var m_acceptBtn: UIButton!
     @IBOutlet weak var m_rejectBtn: UIButton!
+    @IBOutlet weak var m_time: UILabel!
     
     var m_uid:UInt64 = 0
     
@@ -50,14 +51,27 @@ class MessegesView: UITableViewController, MsgDelegate {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("MessegeCell") as! MessegeCell
         let conversation = msgData.m_conversations[indexPath.row]
-        cell.m_messege.text = (conversation.lastMessege() == nil ? "" : conversation.lastMessege())
+        let lastMsg = conversation.m_messeges.last!
+        
+        cell.m_messege.text = lastMsg.data
         cell.m_name.text = conversation.m_contact!.name
         cell.m_uid = conversation.m_contact!.user
-        cell.m_profile.image = UIImage(named: "default_profile")
-        if conversation.m_contact?.flag != 0 {
+        cell.m_profile.image = getPhoto(cell.m_uid)
+        cell.m_profile.layer.cornerRadius = 10
+        cell.m_acceptBtn.layer.cornerRadius = 10
+        cell.m_rejectBtn.layer.cornerRadius = 10
+        
+        if lastMsg.type == .Request {
+            cell.m_acceptBtn.hidden = false
+            cell.m_rejectBtn.hidden = false
+            cell.m_time.hidden = true
+        }
+        else {
             cell.m_acceptBtn.hidden = true
             cell.m_rejectBtn.hidden = true
+            cell.m_time.hidden = false
         }
+        
         return cell
     }
     

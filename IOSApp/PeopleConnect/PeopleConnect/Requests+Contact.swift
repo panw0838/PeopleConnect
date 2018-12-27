@@ -131,28 +131,6 @@ func httpGetPhotos(cIDs:Array<UInt64>, passed: (()->Void)?, failed: ((err:String
     )
 }
 
-func httpRequestContact(contact:UInt64, flag:UInt64, name:String, messege:String) {
-    let params: Dictionary = [
-        "from":NSNumber(unsignedLongLong: userInfo.userID),
-        "to":NSNumber(unsignedLongLong: contact),
-        "name":name,
-        "flag":NSNumber(unsignedLongLong: flag),
-        "mess":messege]
-    http.postRequest("requestcontact", params: params,
-        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-            if (html.hasPrefix("Error")) {
-                print("%s", html)
-            }
-            else {
-            }
-        },
-        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-            print("请求失败")
-        }
-    )
-}
-
 func httpAddContact(contact:UInt64, flag:UInt64, name:String) {
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),

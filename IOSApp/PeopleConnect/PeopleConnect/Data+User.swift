@@ -77,15 +77,26 @@ class User: NSObject, CLLocationManagerDelegate {
     
     func setCurUser() {
         let user = NSUserDefaults()
+        let oldUserObj = user.objectForKey("user")
+        
+        if oldUserObj != nil {
+            let oldUID = (oldUserObj as! NSNumber).unsignedLongLongValue
+            if userInfo.userID != oldUID {
+                user.removeObjectForKey("msgSyncID")
+                user.removeObjectForKey("msgs")
+            }
+        }
+        
         user.setObject(NSNumber(unsignedLongLong: userInfo.userID), forKey: "user")
         user.setObject(NSNumber(integer: userInfo.countryCode), forKey: "code")
         user.setObject(userInfo.cellNumber, forKey: "cell")
         user.setObject(userInfo.password, forKey: "pass")
     }
     
-    func setMsgSyncID() {
+    func setMsgSyncID(syncID:UInt64) {
         let user = NSUserDefaults()
-        user.setObject(NSNumber(unsignedLongLong: userInfo.msgSyncID), forKey: "msg")
+        userInfo.msgSyncID = syncID
+        user.setObject(NSNumber(unsignedLongLong: syncID), forKey: "msg")
     }
     
     func getCurUser()->Bool {
@@ -94,13 +105,14 @@ class User: NSObject, CLLocationManagerDelegate {
         let codeObj = user.objectForKey("code")
         let cellObj = user.objectForKey("cell")
         let passObj = user.objectForKey("pass")
+        
         if uIDObj != nil && codeObj != nil && cellObj != nil && passObj != nil {
             userInfo.userID = (uIDObj as! NSNumber).unsignedLongLongValue
             userInfo.countryCode = (codeObj as! NSNumber).integerValue
             userInfo.cellNumber = cellObj as! String
             userInfo.password = passObj as! String
             
-            let msgSyncObj = user.objectForKey("msg")
+            let msgSyncObj = user.objectForKey("msgSyncID")
             if msgSyncObj != nil {
                 userInfo.msgSyncID = (msgSyncObj as! NSNumber).unsignedLongLongValue
             }
