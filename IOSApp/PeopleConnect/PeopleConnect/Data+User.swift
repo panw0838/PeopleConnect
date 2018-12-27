@@ -83,7 +83,6 @@ class User: NSObject, CLLocationManagerDelegate {
             let oldUID = (oldUserObj as! NSNumber).unsignedLongLongValue
             if userInfo.userID != oldUID {
                 user.removeObjectForKey("msgSyncID")
-                user.removeObjectForKey("msgs")
             }
         }
         
@@ -96,7 +95,7 @@ class User: NSObject, CLLocationManagerDelegate {
     func setMsgSyncID(syncID:UInt64) {
         let user = NSUserDefaults()
         userInfo.msgSyncID = syncID
-        user.setObject(NSNumber(unsignedLongLong: syncID), forKey: "msg")
+        user.setObject(NSNumber(unsignedLongLong: syncID), forKey: "msgSyncID")
     }
     
     func getCurUser()->Bool {

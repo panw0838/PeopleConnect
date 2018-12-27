@@ -63,7 +63,7 @@ extension MsgInfo {
         self.data = data
         self.type = MessegeType(rawValue: type.integerValue)!
         
-        let name = json["cont"] as? String
+        let name = json["name"] as? String
         if name != nil {
             self.name = name!
         }
@@ -148,6 +148,10 @@ class MsgData {
         let savedData = NSKeyedUnarchiver.unarchiveObjectWithFile(path) as? [MsgInfoCoder]
         if savedData != nil {
             m_rawData = savedData!
+            for coder in m_rawData {
+                let info = coder.m_info
+                AddNewMsg(info.from, newMsg: info)
+            }
         }
     }
     
@@ -161,9 +165,9 @@ class MsgData {
         if !fileMgr.fileExistsAtPath(folder) {
             do {
                 try fileMgr.createDirectoryAtPath(folder, withIntermediateDirectories: true, attributes: nil)
-                NSKeyedArchiver.archiveRootObject(m_rawData, toFile: path)
             } catch {}
         }
+        NSKeyedArchiver.archiveRootObject(m_rawData, toFile: path)
     }
     
     func UpdateDelegates() {

@@ -109,7 +109,7 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
                         msgData.saveMsgToCache()
                         msgData.UpdateDelegates()
                     }
-                    let newSyncID:UInt64 = (UInt64)((json["sync"]?.integerValue)!)
+                    let newSyncID = (UInt64)((json["sync"]?.unsignedLongLongValue)!)
                     userData.setMsgSyncID(newSyncID)
                 }
                 passed?()
