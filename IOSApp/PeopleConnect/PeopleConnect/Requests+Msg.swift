@@ -8,12 +8,11 @@
 
 import Foundation
 
-func httpRequestContact(contact:UInt64, flag:UInt64, name:String, messege:String) {
+func httpRequestContact(contact:UInt64, name:String, messege:String) {
     let params: Dictionary = [
         "from":NSNumber(unsignedLongLong: userInfo.userID),
         "to":NSNumber(unsignedLongLong: contact),
         "name":name,
-        "flag":NSNumber(unsignedLongLong: flag),
         "mess":messege]
     http.postRequest("requestcontact", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
@@ -38,13 +37,7 @@ func httpSyncRequests(passed:(()->Void)?, failed:((String?)->Void)?) {
                         var photoIDs = Array<UInt64>()
                         for case let requestObj in (requestObjs as? [[String:AnyObject]])! {
                             if let request = RequestInfo(json: requestObj) {
-                                var msg = MsgInfo()
-                                msg.from = request.from
-                                msg.name = request.name
-                                msg.type = .Request
-                                msg.data = request.messege
-                                msg.time = 0
-                                msgData.AddNewMsg(msg.from, newMsg: msg)
+                                // todo, add requests ui
                                 if contactsData.getPhoto(request.from) == nil {
                                     photoIDs.append(request.from)
                                 }
@@ -53,7 +46,6 @@ func httpSyncRequests(passed:(()->Void)?, failed:((String?)->Void)?) {
                         if photoIDs.count > 0 {
                             httpGetMsgsPhotos(photoIDs)
                         }
-                        msgData.UpdateDelegates()
                     }
                 }
                 passed?()
@@ -80,8 +72,7 @@ func httpSendMessege(to:UInt64, messege:String) {
                 selfMessege.data = messege
                 selfMessege.type = .String
                 msgData.AddNewMsg(to, newMsg: selfMessege)
-                msgData.m_rawData.append(MsgInfoCoder(info: selfMessege))
-                msgData.saveMsgToCache()
+                msgData.m_rawData.append(selfMessege)
                 msgData.UpdateDelegates()
             }
         },
@@ -103,10 +94,9 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
                         for case let messObj in (messObjs as? [[String:AnyObject]])! {
                             if let msg = MsgInfo(json: messObj) {
                                 msgData.AddNewMsg(msg.from, newMsg: msg)
-                                msgData.m_rawData.append(MsgInfoCoder(info: msg))
+                                msgData.m_rawData.append(msg)
                             }
                         }
-                        msgData.saveMsgToCache()
                         msgData.UpdateDelegates()
                     }
                     let newSyncID = (UInt64)((json["sync"]?.unsignedLongLongValue)!)

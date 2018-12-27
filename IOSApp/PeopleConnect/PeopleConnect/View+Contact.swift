@@ -58,7 +58,7 @@ class ContactView: PostsTable, UITableViewDelegate {
         let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
             handler: { action in
-                httpRequestContact(self.m_contact.user, flag: 2, name: self.m_contact.name, messege: self.m_messege)
+                httpRequestContact(self.m_contact.user, name: self.m_contact.name, messege: self.m_messege)
         })
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in

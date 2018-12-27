@@ -81,6 +81,7 @@ class MsgInfoCoder:NSObject, NSCoding {
         super.init()
         guard
             let from = aDecoder.decodeObjectForKey("from") as? NSNumber,
+            let name = aDecoder.decodeObjectForKey("name") as? String,
             let time = aDecoder.decodeObjectForKey("time") as? NSNumber,
             let data = aDecoder.decodeObjectForKey("cont") as? String,
             let type = aDecoder.decodeObjectForKey("type") as? NSNumber
@@ -88,6 +89,7 @@ class MsgInfoCoder:NSObject, NSCoding {
             return nil
         }
         m_info.from = UInt64(from.unsignedLongLongValue)
+        m_info.name = name
         m_info.time = UInt64(time.unsignedLongLongValue)
         m_info.data = data
         m_info.type = MessegeType(rawValue: type.integerValue)!
@@ -95,6 +97,7 @@ class MsgInfoCoder:NSObject, NSCoding {
     
     func encodeWithCoder(aCoder: NSCoder) {
         aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.from), forKey: "from")
+        aCoder.encodeObject(m_info.name, forKey: "name")
         aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.time), forKey: "time")
         aCoder.encodeObject(m_info.data, forKey: "cont")
         aCoder.encodeObject(NSNumber(integer: m_info.type.rawValue), forKey: "type")
@@ -138,7 +141,7 @@ protocol MsgDelegate {
 class MsgData {
     var m_conversations:Array<Conversation> = Array<Conversation>()
     var m_delegates = Array<MsgDelegate>()
-    var m_rawData = Array<MsgInfoCoder>()
+    var m_rawData = Array<MsgInfo>()
     
     func loadMsgFromCache() {
         let docDir = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
@@ -147,9 +150,9 @@ class MsgData {
         
         let savedData = NSKeyedUnarchiver.unarchiveObjectWithFile(path) as? [MsgInfoCoder]
         if savedData != nil {
-            m_rawData = savedData!
-            for coder in m_rawData {
+            for coder in savedData! {
                 let info = coder.m_info
+                m_rawData.append(info)
                 AddNewMsg(info.from, newMsg: info)
             }
         }
@@ -167,7 +170,14 @@ class MsgData {
                 try fileMgr.createDirectoryAtPath(folder, withIntermediateDirectories: true, attributes: nil)
             } catch {}
         }
-        NSKeyedArchiver.archiveRootObject(m_rawData, toFile: path)
+        
+        var saveData = Array<MsgInfoCoder>()
+        
+        for rawData in m_rawData {
+            saveData.append(MsgInfoCoder(info: rawData))
+        }
+
+        NSKeyedArchiver.archiveRootObject(saveData, toFile: path)
     }
     
     func UpdateDelegates() {

@@ -26,7 +26,7 @@ protocol SearchContactCallback {
     func SearchUpdateUI(uid:UInt64)->Void
 }
 
-let httpErrMsg:Dictionary<UInt8, String> = [
+let httpErrMsg:Dictionary<UInt16, String> = [
     1:"服务器错误",
     2:"国家码错误",
     3:"手机号错误",
@@ -38,10 +38,10 @@ let http: HttpService = HttpService()
 var searchCallbacks:Array<SearchContactCallback> = Array<SearchContactCallback>()
 
 func processErrorCode(data:NSData, failed:((String?)->Void)?)->NSData? {
-    var errCode:UInt8 = 0
-    data.getBytes(&errCode, length: sizeof(UInt8))
+    var errCode:UInt16 = 0
+    data.getBytes(&errCode, length: sizeof(UInt16))
     if errCode == 0 {
-        return data.subdataWithRange(NSRange(location: 1, length: data.length-1))
+        return data.subdataWithRange(NSRange(location: 2, length: data.length-2))
     }
     else {
         failed?(httpErrMsg[errCode])
@@ -49,9 +49,9 @@ func processErrorCode(data:NSData, failed:((String?)->Void)?)->NSData? {
     }
 }
 
-func getErrorCode(data:NSData)->UInt8 {
-    var errCode:UInt8 = 0
-    data.getBytes(&errCode, length: sizeof(UInt8))
+func getErrorCode(data:NSData)->UInt16 {
+    var errCode:UInt16 = 0
+    data.getBytes(&errCode, length: sizeof(UInt16))
     return errCode
 }
 

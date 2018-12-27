@@ -139,11 +139,7 @@ func httpAddContact(contact:UInt64, flag:UInt64, name:String) {
         "flag":NSNumber(unsignedLongLong: flag)]
     http.postRequest("addcontact", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-            if (html.hasPrefix("Error")) {
-                print("%s", html)
-            }
-            else {
+            if getErrorCode(response as! NSData) == 0 {
                 contactsData.addContact(ContactInfo(id: contact, f: flag, n: name))
                 contactsData.updateDelegates()
             }
@@ -159,11 +155,7 @@ func httpRemContact(contact:UInt64) {
         "contact":NSNumber(unsignedLongLong: contact)]
     http.postRequest("remcontact", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-            if (html.hasPrefix("Error")) {
-                print("%s", html)
-            }
-            else {
+            if getErrorCode(response as! NSData) == 0 {
                 contactsData.remContact(contact)
                 contactsData.updateDelegates()
             }
@@ -183,11 +175,7 @@ func httpMoveContacts(tagID:UInt8, addMembers:Array<UInt64>, remMembers:Array<UI
         "rem":rems]
     http.postRequest("updatetagmember", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-            if (html.hasPrefix("Error")) {
-                print("%s", html)
-            }
-            else {
+            if getErrorCode(response as! NSData) == 0 {
                 contactsData.moveContactsInTag(addMembers, tagID: tagID)
                 contactsData.moveContactsOutTag(remMembers, tagID: tagID)
                 contactsData.updateDelegates()
