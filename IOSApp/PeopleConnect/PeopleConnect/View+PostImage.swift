@@ -50,6 +50,7 @@ class ImgPreview: UIView {
             img.m_index = i
             img.clipsToBounds = true
             img.contentMode = .ScaleAspectFill
+            img.layer.cornerRadius = 10
             m_preImgs.append(img)
             m_pattern.append(layout)
             self.addSubview(img)

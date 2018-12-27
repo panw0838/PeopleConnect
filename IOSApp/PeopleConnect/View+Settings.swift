@@ -50,6 +50,15 @@ func getAttrTextHeight(text:NSMutableAttributedString, width:CGFloat, font:UIFon
     return CGFloat((numLines-1) * linespace + baseHeight + (numLines == 2 ? 2 : 0))
 }
 
+func getPhoto(cID:UInt64)->UIImage {
+    var photo = UIImage(named: "default_profile")
+    let data = contactsData.getPhoto(cID)
+    if data != nil {
+        photo = UIImage(data: data!)
+    }
+    return photo!
+}
+
 extension UIImage {
     static func resizableImage(name:String)->UIImage {
         let img = UIImage(named: name)

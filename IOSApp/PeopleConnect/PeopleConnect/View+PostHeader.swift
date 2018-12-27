@@ -131,13 +131,8 @@ class PostHeader: UITableViewHeaderFooterView {
         
         if fullView {
             let contact = contactsData.getContact((m_post?.m_info.user)!)
-            var photo:NSData? = nil
             
-            if contact != nil {
-                photo = contactsData.getPhoto(contact!.user)
-            }
-            
-            m_photo.image = (photo == nil ? UIImage(named: "default_profile") : UIImage(data: photo!))
+            m_photo.image = getPhoto((m_post?.m_info.user)!)
             m_photo.frame = CGRectMake(0, 0, PostPhotoSize, PostPhotoSize)
             buttom = 40.0
             

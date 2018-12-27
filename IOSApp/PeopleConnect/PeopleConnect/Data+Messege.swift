@@ -8,7 +8,7 @@
 
 import Foundation
 
-var messegeData:MessegeData = MessegeData()
+var msgData = MsgData()
 
 struct RequestInfo {
     var from:UInt64 = 0
@@ -91,8 +91,19 @@ class Conversation {
     }
 }
 
-class MessegeData {
+protocol MsgDelegate {
+    func MsgUpdated()
+}
+
+class MsgData {
     var m_conversations:Array<Conversation> = Array<Conversation>()
+    var m_delegates = Array<MsgDelegate>()
+    
+    func UpdateDelegates() {
+        for delegate in m_delegates {
+            delegate.MsgUpdated()
+        }
+    }
     
     func GetConversation(id:UInt64)->Conversation? {
         for conversation in m_conversations {

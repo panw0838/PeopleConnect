@@ -142,8 +142,8 @@ class ContactsView:
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ContactCell", forIndexPath: indexPath) as! ContactCell
         let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
         let contact = contactsData.m_contacts[subTag.m_members[indexPath.row]]
-        let photo = contactsData.getPhoto(contact!.user)
-        cell.m_image.image = (photo == nil ? UIImage(named: "default_profile") : UIImage(data: photo!))
+        cell.m_image.image = getPhoto(contact!.user)
+        cell.m_image.layer.cornerRadius = 10
         cell.m_name.text = contact?.name
         return cell
     }
@@ -210,10 +210,11 @@ class ContactsView:
         if segue.identifier == "ShowContact" {
             let to = segue.destinationViewController as! ContactView
             to.m_contact = contactsData.m_contacts[self.m_selectContact]!
+            httpSyncContactPost(self.m_selectContact)
         }
         if segue.identifier == "StartConversation" {
             let to = segue.destinationViewController as! ConversationView
-            to.m_conversastion = messegeData.GetConversation(self.m_selectContact)
+            to.m_conversastion = msgData.GetConversation(self.m_selectContact)
         }
     }
 }

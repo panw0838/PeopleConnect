@@ -26,6 +26,7 @@ class ContactView: PostsTable, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setTable(m_posts, data: contactPosts, fullView: false)
+        m_profile.layer.cornerRadius = 10
     }
 
     override func viewWillAppear(animated: Bool) {

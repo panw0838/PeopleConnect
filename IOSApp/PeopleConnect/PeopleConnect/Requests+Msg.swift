@@ -18,12 +18,10 @@ func httpSyncRequests(passed:(()->Void)?, failed:((String?)->Void)?) {
                     if let requestObjs = json["requests"] as? [AnyObject] {
                         for case let requestObj in (requestObjs as? [[String:AnyObject]])! {
                             if let request = RequestInfo(json: requestObj) {
-                                messegeData.AddNewRequest(request)
+                                msgData.AddNewRequest(request)
                             }
                         }
-                    }
-                    for callback in messegeCallbacks {
-                        callback.MessegeUpdateUI()
+                        msgData.UpdateDelegates()
                     }
                 }
                 passed?()
@@ -49,11 +47,8 @@ func httpSendMessege(to:UInt64, messege:String) {
                 selfMessege.time = 0
                 selfMessege.data = messege
                 selfMessege.type = .String
-                messegeData.AddNewMessege(to, newMessege: selfMessege)
-                
-                for callback in messegeCallbacks {
-                    callback.MessegeUpdateUI()
-                }
+                msgData.AddNewMessege(to, newMessege: selfMessege)
+                msgData.UpdateDelegates()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -67,18 +62,16 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
         "sync":NSNumber(unsignedLongLong: 0)]
     http.postRequest("syncmessege", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let msgData = processErrorCode(response as! NSData, failed: failed)
-            if msgData != nil {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(msgData!, options: .MutableContainers) as! [String:AnyObject] {
+            let msgJson = processErrorCode(response as! NSData, failed: failed)
+            if msgJson != nil {
+                if let json = try? NSJSONSerialization.JSONObjectWithData(msgJson!, options: .MutableContainers) as! [String:AnyObject] {
                     if let messObjs = json["mess"] as? [AnyObject] {
                         for case let messObj in (messObjs as? [[String:AnyObject]])! {
-                            if let messege = MessegeInfo(json: messObj) {
-                                messegeData.AddNewMessege(messege.from, newMessege: messege)
+                            if let msg = MessegeInfo(json: messObj) {
+                                msgData.AddNewMessege(msg.from, newMessege: msg)
                             }
                         }
-                        for callback in messegeCallbacks {
-                            callback.MessegeUpdateUI()
-                        }
+                        msgData.UpdateDelegates()
                     }
                     let newSyncID:UInt64 = (UInt64)((json["sync"]?.integerValue)!)
                     print("fff")

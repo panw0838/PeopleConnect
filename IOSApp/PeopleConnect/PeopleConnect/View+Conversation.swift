@@ -72,7 +72,7 @@ class MsgCell: UITableViewCell {
     }
 }
 
-class ConversationView: UIViewController, UITableViewDataSource, UITableViewDelegate, MessegeRequestCallback {
+class ConversationView: UIViewController, UITableViewDataSource, UITableViewDelegate, MsgDelegate {
     
     var m_conversastion:Conversation? = nil
     
@@ -86,16 +86,16 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         }
     }
     
-    func MessegeUpdateUI() {
+    func MsgUpdated() {
         self.m_messegesTable.reloadData()
-        let lastMsg = messegeData.m_conversations.count - 1
+        let lastMsg = msgData.m_conversations.count - 1
         let lastIdx = NSIndexPath(forRow: lastMsg, inSection: 0)
         self.m_messegesTable.scrollToRowAtIndexPath(lastIdx, atScrollPosition: .Bottom, animated: true)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        messegeCallbacks.append(self)
+        msgData.m_delegates.append(self)
         m_messegesTable.registerClass(MsgCell.classForCoder(), forCellReuseIdentifier: "MsgCell")
     }
     

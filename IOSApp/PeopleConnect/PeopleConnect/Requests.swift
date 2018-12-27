@@ -22,10 +22,6 @@ struct LoginInfo {
     var pass:String
 }
 
-protocol MessegeRequestCallback {
-    func MessegeUpdateUI()->Void
-}
-
 protocol SearchContactCallback {
     func SearchUpdateUI(uid:UInt64)->Void
 }
@@ -40,7 +36,6 @@ let httpErrMsg:Dictionary<UInt8, String> = [
 let http: HttpService = HttpService()
 
 var searchCallbacks:Array<SearchContactCallback> = Array<SearchContactCallback>()
-var messegeCallbacks:Array<MessegeRequestCallback> = Array<MessegeRequestCallback>()
 
 func processErrorCode(data:NSData, failed:((String?)->Void)?)->NSData? {
     var errCode:UInt8 = 0

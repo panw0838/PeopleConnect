@@ -26,17 +26,17 @@ class MessegeCell: UITableViewCell {
     }
 }
 
-class MessegesView: UITableViewController, MessegeRequestCallback {
+class MessegesView: UITableViewController, MsgDelegate {
     
     var m_selected:Int = 0
     
-    func MessegeUpdateUI() {
+    func MsgUpdated() {
         self.tableView.reloadData()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        messegeCallbacks.append(self)
+        msgData.m_delegates.append(self)
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -44,12 +44,12 @@ class MessegesView: UITableViewController, MessegeRequestCallback {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return messegeData.m_conversations.count
+        return msgData.m_conversations.count
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("MessegeCell") as! MessegeCell
-        let conversation = messegeData.m_conversations[indexPath.row]
+        let conversation = msgData.m_conversations[indexPath.row]
         cell.m_messege.text = (conversation.lastMessege() == nil ? "" : conversation.lastMessege())
         cell.m_name.text = conversation.m_contact!.name
         cell.m_uid = conversation.m_contact!.user
@@ -68,7 +68,7 @@ class MessegesView: UITableViewController, MessegeRequestCallback {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "ShowConversation" {
             let to = segue.destinationViewController as! ConversationView
-            to.m_conversastion = messegeData.m_conversations[m_selected]
+            to.m_conversastion = msgData.m_conversations[m_selected]
         }
     }
 }
