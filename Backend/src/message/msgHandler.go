@@ -148,7 +148,7 @@ type SyncRequestsInput struct {
 }
 
 type SyncRequestsReturn struct {
-	Requests []user.RequestInfo `json:"requests"`
+	Requests []RequestInfo `json:"requests"`
 }
 
 func SyncRequestsHandler(w http.ResponseWriter, r *http.Request) {

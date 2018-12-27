@@ -46,10 +46,10 @@ func main() {
 	http.HandleFunc("/possiblecontacts", user.GetPossibleContactsHandler)
 	http.HandleFunc("/photos", user.GetPhotosHandler)
 	http.HandleFunc("/searchcontact", user.SearchContactHandler)
-	http.HandleFunc("/addcontact", user.AddContactHandler)
-	http.HandleFunc("/remcontact", user.RemContactHandler)
 	http.HandleFunc("/updatetagmember", user.UpdateTagMemberHandler)
 
+	http.HandleFunc("/addcontact", message.AddContactHandler)
+	http.HandleFunc("/remcontact", message.RemContactHandler)
 	http.HandleFunc("/syncmessege", message.SyncMessegeHandler)
 	http.HandleFunc("/requestcontact", message.RequestContactHandler)
 	http.HandleFunc("/syncrequests", message.SyncRequestsHandler)

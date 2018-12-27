@@ -10,14 +10,17 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-const MSG_STR uint8 = 0
-const MSG_REQ uint8 = 1
-const MSG_PIC uint8 = 2
-const MSG_VID uint8 = 3
+// messages
+const MSG_STR uint8 = 0x00
+const MSG_PIC uint8 = 0x01
+const MSG_VID uint8 = 0x02
+
+// notifications
+const NTF_REQ uint8 = 0x10
+const NTF_ADD uint8 = 0x11
 
 type Message struct {
 	From    uint64 `json:"from"`
-	Name    string `json:"name,omitempty"`
 	Time    uint64 `json:"time"`
 	Content string `json:"cont"`
 	Type    uint8  `json:"type"`
@@ -87,7 +90,7 @@ func dbAddRequest(input RequestContactInput, c redis.Conn) uint16 {
 		return 1
 	}
 
-	var info user.RequestInfo
+	var info RequestInfo
 
 	info.From = input.From
 	info.Name = input.Name
@@ -107,8 +110,7 @@ func dbAddRequest(input RequestContactInput, c redis.Conn) uint16 {
 	var msg Message
 	msg.From = input.From
 	msg.Content = input.Message
-	msg.Type = MSG_REQ
-	msg.Name = input.Name
+	msg.Type = NTF_REQ
 
 	err = dbAddMessege(input.To, msg, c)
 	if err != nil {
@@ -118,17 +120,9 @@ func dbAddRequest(input RequestContactInput, c redis.Conn) uint16 {
 	return 0
 }
 
-func dbSyncRequests(uID uint64, c redis.Conn) ([]user.RequestInfo, error) {
+func dbSyncRequests(uID uint64, c redis.Conn) ([]RequestInfo, error) {
 	requestsKey := share.GetRequestsKey(uID)
-	numRequests, err := redis.Uint64(c.Do("SCARD", requestsKey))
-	if err != nil {
-		return nil, err
-	}
-	if numRequests == 0 {
-		return nil, nil
-	}
-
-	var requests []user.RequestInfo
+	var requests []RequestInfo
 	values, err := redis.Values(c.Do("ZRANGE", requestsKey, 0, share.MAX_U64))
 	for _, value := range values {
 		data, err := redis.Bytes(value, err)
@@ -136,8 +130,13 @@ func dbSyncRequests(uID uint64, c redis.Conn) ([]user.RequestInfo, error) {
 			return nil, err
 		}
 
-		var request user.RequestInfo
+		var request RequestInfo
 		err = json.Unmarshal(data, &request)
+		if err != nil {
+			return nil, err
+		}
+		// replace note name to user name
+		request.Name, err = user.DbGetUserName(request.From, c)
 		if err != nil {
 			return nil, err
 		}

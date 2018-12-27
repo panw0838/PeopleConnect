@@ -1,7 +1,6 @@
 package user
 
 import (
-	"encoding/json"
 	"fmt"
 	"share"
 	"strconv"
@@ -53,108 +52,6 @@ func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
 		return 0, fmt.Errorf("account not exists")
 	}
 	return contactID, nil
-}
-
-type RequestInfo struct {
-	From uint64 `json:"from"`
-	Name string `json:"name"`
-	Msg  string `json:"msg"`
-}
-
-func dbAddContact(user1 uint64, user2 uint64, name string, c redis.Conn) error {
-	ClearCashRelation(user1, user2)
-
-	requestsKey := share.GetRequestsKey(user2)
-
-	values, err := redis.Values(c.Do("ZRANGE", requestsKey, user1, user1))
-	if len(values) != 1 {
-		return fmt.Errorf("no request info")
-	}
-	data, err := redis.Bytes(values[0], err)
-	if err != nil {
-		return err
-	}
-
-	var request RequestInfo
-	err = json.Unmarshal(data, &request)
-	if err != nil {
-		return err
-	}
-
-	_, err = c.Do("MULTI")
-	if err != nil {
-		return err
-	}
-
-	user1RelateKey := GetRelationKey(user1, user2)
-	_, err = c.Do("HMSET", user1RelateKey,
-		FlagField, UDF_BIT,
-		NameField, name)
-	if err != nil {
-		return err
-	}
-	user2RelateKey := GetRelationKey(user2, user1)
-	_, err = c.Do("HMSET", user2RelateKey,
-		FlagField, UDF_BIT,
-		NameField, request.Name)
-	if err != nil {
-		return err
-	}
-
-	user1ContactsKey := GetContactsKey(user1)
-	_, err = c.Do("SADD", user1ContactsKey, user2)
-	if err != nil {
-		return err
-	}
-	user2ContactsKey := GetContactsKey(user2)
-	_, err = c.Do("SADD", user2ContactsKey, user1)
-	if err != nil {
-		return err
-	}
-
-	_, err = c.Do("ZREMRANGEBYSCORE", requestsKey, user1, user1)
-	if err != nil {
-		return err
-	}
-
-	_, err = c.Do("EXEC")
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func dbRemoveContact(user1 uint64, user2 uint64) error {
-	ClearCashRelation(user1, user2)
-	c, err := redis.Dial("tcp", share.ContactDB)
-	if err != nil {
-		return err
-	}
-	defer c.Close()
-
-	_, err = c.Do("MULTI")
-	if err != nil {
-		return err
-	} else {
-		relateKey := GetRelationKey(user1, user2)
-		_, err = c.Do("DEL", relateKey)
-		if err != nil {
-			return err
-		}
-
-		contactsKey := GetContactsKey(user1)
-		_, err = c.Do("SREM", contactsKey, user2)
-		if err != nil {
-			return err
-		}
-
-		_, err = c.Do("EXEC")
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 func dbGetContacts(userID uint64, c redis.Conn) ([]ContactInfo, error) {

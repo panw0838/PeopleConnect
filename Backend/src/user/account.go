@@ -131,7 +131,7 @@ func DbGetUserInfoField(accountKey string, filed string, c redis.Conn) (string, 
 	return value, nil
 }
 
-func dbGetUserName(uID uint64, c redis.Conn) (string, error) {
+func DbGetUserName(uID uint64, c redis.Conn) (string, error) {
 	userKey := GetAccountKey(uID)
 	values, err := redis.Values(c.Do("HMGET", userKey, NameField))
 	name, err := redis.String(values[0], err)

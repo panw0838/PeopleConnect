@@ -53,7 +53,7 @@ func dbGetNearbyUsers(input GetNearUsersInput, c redis.Conn) ([]NearUser, error)
 			if isStranger {
 				var user NearUser
 				user.UID = cID
-				user.Name, err = dbGetUserName(cID, c)
+				user.Name, err = DbGetUserName(cID, c)
 				if err != nil {
 					return nil, err
 				}
@@ -148,7 +148,7 @@ func dbGetPossibleContacts(uID uint64, c redis.Conn) ([]PossibleContact, error) 
 				return nil, err
 			}
 			contact.UID = cID
-			name, err := dbGetUserName(cID, c)
+			name, err := DbGetUserName(cID, c)
 			if err != nil {
 				return nil, err
 			}

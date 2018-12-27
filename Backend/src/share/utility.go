@@ -13,7 +13,7 @@ import (
 
 const ONE_64 uint64 = 0x1
 const ZERO_64 uint64 = 0x0
-const MAX_U64 uint64 = 0xffffffffffffffff
+const MAX_U64 uint64 = 0x7fffffffffffffff
 const MAX_TIME uint64 = MAX_U64
 
 const ContactDB = "127.0.0.1:6379"
