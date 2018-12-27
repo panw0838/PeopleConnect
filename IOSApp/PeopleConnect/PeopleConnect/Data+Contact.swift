@@ -350,22 +350,16 @@ class ContactsData {
         m_contacts[contact.user] = contact
     }
     
-    func addPossible(contact:ContactInfo) {
-        m_possible.m_members.append(contact.user)
-        m_contacts[contact.user] = contact
-    }
-    
-    func addStranger(contact:ContactInfo) {
-        m_stranger.m_members.append(contact.user)
-        m_contacts[contact.user] = contact
-    }
-    
     func remContact(contactID:UInt64) {
         m_undefine.remMember(contactID)
         for tag in m_tags {
             tag.remMember(contactID)
         }
-        m_contacts.removeValueForKey(contactID)
+        var info = m_contacts[contactID]
+        if info != nil {
+            info?.flag = 0
+            m_contacts[contactID] = info
+        }
     }
     
     func getContact(contactID:UInt64)->ContactInfo? {

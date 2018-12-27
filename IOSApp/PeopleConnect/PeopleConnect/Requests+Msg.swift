@@ -26,33 +26,41 @@ func httpRequestContact(contact:UInt64, name:String, messege:String) {
     )
 }
 
-func httpSyncRequests(passed:(()->Void)?, failed:((String?)->Void)?) {
+func httpSyncRequests() {
+    msgData.m_requests.removeAll()
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("syncrequests", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let reqData = processErrorCode(response as! NSData, failed: failed)
+            let reqData = processErrorCode(response as! NSData, failed: nil)
             if reqData != nil {
                 if let json = try? NSJSONSerialization.JSONObjectWithData(reqData!, options: .MutableContainers) as! [String:AnyObject] {
-                    if let requestObjs = json["requests"] as? [AnyObject] {
+                    if let reqObjs = json["requests"] as? [AnyObject] {
                         var photoIDs = Array<UInt64>()
-                        for case let requestObj in (requestObjs as? [[String:AnyObject]])! {
-                            if let request = RequestInfo(json: requestObj) {
-                                // todo, add requests ui
+                        for case let reqObj in (reqObjs as? [[String:AnyObject]])! {
+                            if let request = RequestInfo(json: reqObj) {
+                                let newContact = ContactInfo(id: request.from, f: 0, n: request.name)
+                                contactsData.m_contacts[request.from] = newContact
+                                msgData.m_requests.append(request)
                                 if contactsData.getPhoto(request.from) == nil {
                                     photoIDs.append(request.from)
                                 }
                             }
                         }
                         if photoIDs.count > 0 {
-                            httpGetMsgsPhotos(photoIDs)
+                            httpGetPhotos(photoIDs,
+                                passed: {()->Void in
+                                    msgData.UpdateRequestsDelegate()
+                                },
+                                failed: nil)
+                        }
+                        else {
+                            msgData.UpdateRequestsDelegate()
                         }
                     }
                 }
-                passed?()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-            failed?("请求失败")
     })
 }
 
@@ -61,7 +69,7 @@ func httpSendMessege(to:UInt64, messege:String) {
         "from":NSNumber(unsignedLongLong: userInfo.userID),
         "to":NSNumber(unsignedLongLong: to),
         "msg":messege,
-        "type":NSNumber(integer: MessegeType.String.rawValue)]
+        "type":NSNumber(integer: MessegeType.Msg_Str.rawValue)]
     http.postRequest("sendmessege", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if getErrorCode(response as! NSData) == 0 {
@@ -70,8 +78,8 @@ func httpSendMessege(to:UInt64, messege:String) {
                 selfMessege.from = userInfo.userID
                 selfMessege.time = 0
                 selfMessege.data = messege
-                selfMessege.type = .String
-                msgData.AddNewMsg(to, newMsg: selfMessege)
+                selfMessege.type = .Msg_Str
+                msgData.AddNewMsg(selfMessege)
                 msgData.m_rawData.append(selfMessege)
                 msgData.UpdateDelegates()
             }
@@ -93,7 +101,7 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
                     if let messObjs = json["mess"] as? [AnyObject] {
                         for case let messObj in (messObjs as? [[String:AnyObject]])! {
                             if let msg = MsgInfo(json: messObj) {
-                                msgData.AddNewMsg(msg.from, newMsg: msg)
+                                msgData.AddNewMsg(msg)
                                 msgData.m_rawData.append(msg)
                             }
                         }
@@ -111,23 +119,4 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
     )
 }
 
-func httpGetMsgsPhotos(cIDs:Array<UInt64>) {
-    let params:Dictionary = [
-        "user":NSNumber(unsignedLongLong: userInfo.userID),
-        "cids":http.getUInt64ArrayParam(cIDs)]
-    http.postRequest("photos", params: params,
-        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let photosData = processErrorCode(response as! NSData, failed: nil)
-            if photosData != nil {
-                let subDatas = splitData(photosData!)
-                for (i, cID) in cIDs.enumerate() {
-                    contactsData.setPhoto(cID, data: subDatas[i], update: true)
-                }
-                msgData.UpdateDelegates()
-            }
-        },
-        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-        }
-    )
-}
 

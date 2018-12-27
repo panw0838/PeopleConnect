@@ -21,7 +21,7 @@ extension RequestInfo {
         guard
             let from = json["from"] as? NSNumber,
             let name = json["name"] as? String,
-            let messege = json["mess"] as? String
+            let messege = json["msg"] as? String
         else {
             return nil
         }
@@ -32,20 +32,34 @@ extension RequestInfo {
 }
 
 enum MessegeType : Int {
-    case String  = 0
-    case Request = 1
-    case Picture = 2
-    case Video   = 3
-    case Link    = 4
-    case Voice   = 5
+    case Msg_Str = 0x00
+    case Msg_Pic = 0x01
+    case Msg_Vid = 0x02
+    case Msg_Voc = 0x03
+    case Msg_Lik = 0x04
+    
+    case Ntf_Req = 0x10
+    case Ntf_Add = 0x11
 }
+
+let GroupBit:UInt64 = 0x8000000000000000
 
 struct MsgInfo {
     var from:UInt64 = 0
     var time:UInt64 = 0
     var data:String = ""
-    var type:MessegeType = .String
-    var name = ""
+    var type:MessegeType = .Msg_Str
+    var group:UInt32 = 0
+    
+    func getConversationID()->UInt64 {
+        if type == .Ntf_Req {
+            return 0
+        }
+        if group != 0 {
+            return UInt64(group) + GroupBit
+        }
+        return from
+    }
 }
 
 extension MsgInfo {
@@ -62,11 +76,6 @@ extension MsgInfo {
         self.time = UInt64(time.unsignedLongLongValue)
         self.data = data
         self.type = MessegeType(rawValue: type.integerValue)!
-        
-        let name = json["name"] as? String
-        if name != nil {
-            self.name = name!
-        }
     }
 }
 
@@ -81,56 +90,55 @@ class MsgInfoCoder:NSObject, NSCoding {
         super.init()
         guard
             let from = aDecoder.decodeObjectForKey("from") as? NSNumber,
-            let name = aDecoder.decodeObjectForKey("name") as? String,
             let time = aDecoder.decodeObjectForKey("time") as? NSNumber,
             let data = aDecoder.decodeObjectForKey("cont") as? String,
-            let type = aDecoder.decodeObjectForKey("type") as? NSNumber
+            let type = aDecoder.decodeObjectForKey("type") as? NSNumber,
+            let group = aDecoder.decodeObjectForKey("group") as? NSNumber
         else {
             return nil
         }
         m_info.from = UInt64(from.unsignedLongLongValue)
-        m_info.name = name
         m_info.time = UInt64(time.unsignedLongLongValue)
         m_info.data = data
         m_info.type = MessegeType(rawValue: type.integerValue)!
+        m_info.group = UInt32(group.unsignedIntValue)
     }
     
     func encodeWithCoder(aCoder: NSCoder) {
         aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.from), forKey: "from")
-        aCoder.encodeObject(m_info.name, forKey: "name")
         aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.time), forKey: "time")
         aCoder.encodeObject(m_info.data, forKey: "cont")
         aCoder.encodeObject(NSNumber(integer: m_info.type.rawValue), forKey: "type")
+        aCoder.encodeObject(NSNumber(unsignedInt: m_info.group), forKey: "group")
     }
 }
 
 class Conversation {
     var m_id:UInt64 = 0
-    var m_contact:ContactInfo? = nil
-    var m_messeges:Array<MsgInfo> = Array<MsgInfo>()
+    var m_name:String = "未知对话"
+    var m_img:UIImage = UIImage(named: "default_profile")!
+    var m_messages:Array<MsgInfo> = Array<MsgInfo>()
     
-    init?(id:UInt64) {
+    init(id:UInt64) {
         m_id = id
-        let contact = contactsData.getContact(id)
-        if contact == nil {
-            return nil
+        
+        // new requests
+        if id == 0 {
+            m_name = "新的朋友"
+            m_img = UIImage(named: "messages_requests")!
         }
-        else {
-            m_contact = contact
-        }
     }
     
-    init(contact:ContactInfo) {
-        m_id = contact.user
-        m_contact = contact
+    init(gid:UInt32) {
+        m_id = UInt64(gid) + GroupBit
     }
     
-    func addMessege(newMessege:MsgInfo) {
-        m_messeges.append(newMessege)
+    func addMessage(newMessage:MsgInfo) {
+        m_messages.append(newMessage)
     }
     
-    func lastMessege()->String? {
-        return m_messeges.last?.data
+    func lastMessage()->String? {
+        return m_messages.last?.data
     }
 }
 
@@ -139,9 +147,16 @@ protocol MsgDelegate {
 }
 
 class MsgData {
-    var m_conversations:Array<Conversation> = Array<Conversation>()
+    var m_requests = Array<RequestInfo>()
+    var m_conversations = Array<Conversation>()
     var m_delegates = Array<MsgDelegate>()
+    var m_requestDelegate:MsgDelegate?
     var m_rawData = Array<MsgInfo>()
+    
+    init() {
+        // add system conversations
+        m_conversations.append(Conversation(id: 0))
+    }
     
     func loadMsgFromCache() {
         let docDir = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
@@ -153,7 +168,7 @@ class MsgData {
             for coder in savedData! {
                 let info = coder.m_info
                 m_rawData.append(info)
-                AddNewMsg(info.from, newMsg: info)
+                AddNewMsg(info)
             }
         }
     }
@@ -186,42 +201,33 @@ class MsgData {
         }
     }
     
-    func GetConversation(id:UInt64)->Conversation? {
+    func UpdateRequestsDelegate() {
+        m_requestDelegate?.MsgUpdated()
+    }
+    
+    func getConversation(uID:UInt64)->Conversation {
         for conversation in m_conversations {
-            if conversation.m_id == id {
+            if conversation.m_id == uID {
                 return conversation
             }
         }
-        let conversation = Conversation(id: id)
-        if conversation != nil {
-            m_conversations.append(conversation!)
-        }
-        return conversation
+        return Conversation(id: uID)
     }
     
-    func PopConversation(id:UInt64)->Conversation? {
+    func popConversation(id:UInt64)->Conversation {
         for (i, conversation) in m_conversations.enumerate() {
             if conversation.m_id == id {
                 m_conversations.removeAtIndex(i)
                 return conversation
             }
         }
-        return nil
+        return Conversation(id: id)
     }
     
-    func AddNewMsg(id:UInt64, newMsg:MsgInfo) {
-        if newMsg.type == .Request {
-            let newContact = ContactInfo(id: newMsg.from, f: 0, n: newMsg.name)
-            contactsData.m_contacts[newMsg.from] = newContact
-        }
-        
-        var conversation = PopConversation(id)
-        if conversation == nil {
-            conversation = Conversation(id: id)
-        }
-        if conversation != nil {
-            conversation?.addMessege(newMsg)
-            m_conversations.append(conversation!)
-        }
+    func AddNewMsg(newMsg:MsgInfo) {
+        let convID = newMsg.getConversationID()
+        let conversation = popConversation(convID)
+        conversation.addMessage(newMsg)
+        m_conversations.append(conversation)
     }
 }

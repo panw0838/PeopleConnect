@@ -13,24 +13,13 @@ class MessegeCell: UITableViewCell {
     @IBOutlet weak var m_profile: UIImageView!
     @IBOutlet weak var m_name: UILabel!
     @IBOutlet weak var m_messege: UILabel!
-    @IBOutlet weak var m_acceptBtn: UIButton!
-    @IBOutlet weak var m_rejectBtn: UIButton!
     @IBOutlet weak var m_time: UILabel!
     
-    var m_uid:UInt64 = 0
-    
-    @IBAction func AddContact(sender: AnyObject) {
-        httpAddContact(m_uid, flag: UndefineBit, name: self.m_name.text!)
-    }
-    @IBAction func RemRequest(sender: AnyObject) {
-        //httpRemRequest(m_uid)
-    }
+    var m_id:UInt64 = 0
 }
 
 class MessegesView: UITableViewController, MsgDelegate {
-    
-    var m_selected:Int = 0
-    
+
     func MsgUpdated() {
         self.tableView.reloadData()
     }
@@ -51,38 +40,33 @@ class MessegesView: UITableViewController, MsgDelegate {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("MessegeCell") as! MessegeCell
         let conversation = msgData.m_conversations[indexPath.row]
-        let lastMsg = conversation.m_messeges.last!
         
-        cell.m_messege.text = lastMsg.data
-        cell.m_name.text = conversation.m_contact!.name
-        cell.m_uid = conversation.m_contact!.user
-        cell.m_profile.image = getPhoto(cell.m_uid)
+        cell.m_messege.text = conversation.lastMessage()
+        cell.m_name.text = conversation.m_name
+        cell.m_id = conversation.m_id
+        cell.m_profile.image = conversation.m_img
         cell.m_profile.layer.cornerRadius = 10
-        cell.m_acceptBtn.layer.cornerRadius = 10
-        cell.m_rejectBtn.layer.cornerRadius = 10
-        
-        if lastMsg.type == .Request {
-            cell.m_acceptBtn.hidden = false
-            cell.m_rejectBtn.hidden = false
-            cell.m_time.hidden = true
-        }
-        else {
-            cell.m_acceptBtn.hidden = true
-            cell.m_rejectBtn.hidden = true
-            cell.m_time.hidden = false
-        }
         
         return cell
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        m_selected = indexPath.row
+        let conversation = msgData.m_conversations[indexPath.row]
+        if conversation.m_id == 0 {
+            self.performSegueWithIdentifier("ShowRequests", sender: self)
+        }
+        else {
+            self.performSegueWithIdentifier("ShowConversation", sender: conversation)
+        }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "ShowRequests" {
+            httpSyncRequests()
+        }
         if segue.identifier == "ShowConversation" {
             let to = segue.destinationViewController as! ConversationView
-            to.m_conversastion = msgData.m_conversations[m_selected]
+            to.m_conversastion = (sender as! Conversation)
         }
     }
 }

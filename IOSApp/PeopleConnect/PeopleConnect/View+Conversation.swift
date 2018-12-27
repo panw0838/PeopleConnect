@@ -104,11 +104,11 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return m_conversastion!.m_messeges.count
+        return m_conversastion!.m_messages.count
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let msg = m_conversastion?.m_messeges[indexPath.row]
+        let msg = m_conversastion?.m_messages[indexPath.row]
         let maxTextSize = CGSizeMake(m_messegesTable.contentSize.width - 40*2 - 8*4, CGFloat(MAXFLOAT))
         let textSize = getMsgSize((msg?.data)!, maxSize: maxTextSize, font: msgFont)
         let textHeight = textSize.height + 20 * 2
@@ -117,7 +117,7 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("MsgCell", forIndexPath: indexPath) as! MsgCell
-        let messege = m_conversastion!.m_messeges[indexPath.row]
+        let messege = m_conversastion!.m_messages[indexPath.row]
         cell.reload(messege, width: m_messegesTable.contentSize.width)
         return cell
     }
