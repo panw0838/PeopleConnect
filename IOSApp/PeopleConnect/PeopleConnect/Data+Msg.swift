@@ -137,7 +137,19 @@ class Conversation {
         m_messages.append(newMessage)
     }
     
+    func remMessage(uid:UInt64, time:UInt64) {
+        for (idx, msg) in m_messages.enumerate() {
+            if msg.from == uid && time == msg.time {
+                m_messages.removeAtIndex(idx)
+                break
+            }
+        }
+    }
+    
     func lastMessage()->String? {
+        if m_id == 0 {
+            return m_messages.count > 0 ? String(m_messages.count) + "个新好友申请" : "无新好友申请"
+        }
         return m_messages.last?.data
     }
 }
@@ -151,7 +163,6 @@ class MsgData {
     var m_conversations = Array<Conversation>()
     var m_delegates = Array<MsgDelegate>()
     var m_requestDelegate:MsgDelegate?
-    var m_rawData = Array<MsgInfo>()
     
     init() {
         // add system conversations
@@ -167,7 +178,6 @@ class MsgData {
         if savedData != nil {
             for coder in savedData! {
                 let info = coder.m_info
-                m_rawData.append(info)
                 AddNewMsg(info)
             }
         }
@@ -188,8 +198,10 @@ class MsgData {
         
         var saveData = Array<MsgInfoCoder>()
         
-        for rawData in m_rawData {
-            saveData.append(MsgInfoCoder(info: rawData))
+        for conversation in m_conversations {
+            for msgInfo in conversation.m_messages {
+                saveData.append(MsgInfoCoder(info: msgInfo))
+            }
         }
 
         NSKeyedArchiver.archiveRootObject(saveData, toFile: path)
@@ -229,5 +241,14 @@ class MsgData {
         let conversation = popConversation(convID)
         conversation.addMessage(newMsg)
         m_conversations.append(conversation)
+    }
+    
+    func remRequest(uid:UInt64) {
+        for (idx, req) in m_requests.enumerate() {
+            if req.from == uid {
+                m_requests.removeAtIndex(idx)
+                break
+            }
+        }
     }
 }

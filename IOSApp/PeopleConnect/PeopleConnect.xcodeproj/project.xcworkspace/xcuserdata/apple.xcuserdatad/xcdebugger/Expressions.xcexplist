@@ -58,6 +58,14 @@
          contextName = "(httpSyncContactPost(UInt64) -&gt; ()).(closure #1):Requests+Post.swift">
       </ContextState>
       <ContextState
+         contextName = "(httpDeclineRequest(UInt64) -&gt; ()).(closure #1):Requests+Msg.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "msgData">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ContactsView.updateTags() -&gt; ():ContactsView.swift">
          <PersistentStrings>
             <PersistentString
@@ -339,12 +347,7 @@
          contextName = "MessegeData.PopConversation(UInt64) -&gt; Conversation?:Messege.swift">
       </ContextState>
       <ContextState
-         contextName = "PostHeader.reload(Post, width : CGFloat) -&gt; ():View+PostHeader.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "m_post?.m_info.content">
-            </PersistentString>
-         </PersistentStrings>
+         contextName = "(httpSyncRequests(() -&gt; ()?, failed : (String?) -&gt; ()?) -&gt; ()).(closure #1):Requests+Msg.swift">
       </ContextState>
       <ContextState
          contextName = "(httpCommentPost(Post, re : UInt16, cmt : String) -&gt; ()).(closure #1):Requests+Post.swift">
@@ -366,7 +369,12 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "(httpSyncRequests(() -&gt; ()?, failed : (String?) -&gt; ()?) -&gt; ()).(closure #1):Requests+Msg.swift">
+         contextName = "PostHeader.reload(Post, width : CGFloat) -&gt; ():View+PostHeader.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_post?.m_info.content">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "(httpGetSnapshots([String]) -&gt; ()).(closure #1):Requests+Post.swift">
@@ -440,6 +448,9 @@
          contextName = "Tag.addMember(ContactInfo) -&gt; ():Contact.swift">
       </ContextState>
       <ContextState
+         contextName = "(httpSyncRequests() -&gt; ()).(closure #1):Requests+Msg.swift">
+      </ContextState>
+      <ContextState
          contextName = "MsgCell.reload(MessegeInfo, width : CGFloat) -&gt; ():View+Conversation.swift">
          <PersistentStrings>
             <PersistentString
@@ -479,10 +490,10 @@
                value = "self.frame">
             </PersistentString>
             <PersistentString
-               value = "m_post!.m_width">
+               value = "m_post">
             </PersistentString>
             <PersistentString
-               value = "m_post">
+               value = "m_post!.m_width">
             </PersistentString>
             <PersistentString
                value = "m_post?.m_contentHeight">

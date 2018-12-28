@@ -26,6 +26,23 @@ func httpRequestContact(contact:UInt64, name:String, messege:String) {
     )
 }
 
+func httpDeclineRequest(contact:UInt64) {
+    let params: Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "cid":NSNumber(unsignedLongLong: contact)]
+    http.postRequest("declinerequest", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            if getErrorCode(response as! NSData) == 0 {
+                msgData.remRequest(contact)
+                msgData.UpdateRequestsDelegate()
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+        }
+    )
+}
+
 func httpSyncRequests() {
     msgData.m_requests.removeAll()
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
@@ -80,7 +97,6 @@ func httpSendMessege(to:UInt64, messege:String) {
                 selfMessege.data = messege
                 selfMessege.type = .Msg_Str
                 msgData.AddNewMsg(selfMessege)
-                msgData.m_rawData.append(selfMessege)
                 msgData.UpdateDelegates()
             }
         },
@@ -102,7 +118,6 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
                         for case let messObj in (messObjs as? [[String:AnyObject]])! {
                             if let msg = MsgInfo(json: messObj) {
                                 msgData.AddNewMsg(msg)
-                                msgData.m_rawData.append(msg)
                             }
                         }
                         msgData.UpdateDelegates()

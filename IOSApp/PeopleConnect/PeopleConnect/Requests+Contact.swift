@@ -141,6 +141,9 @@ func httpAddContact(contact:UInt64, name:String) {
             if getErrorCode(response as! NSData) == 0 {
                 contactsData.addContact(ContactInfo(id: contact, f: UndefineBit, n: name))
                 contactsData.updateDelegates()
+
+                msgData.remRequest(contact)
+                msgData.UpdateRequestsDelegate()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in

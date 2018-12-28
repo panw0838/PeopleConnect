@@ -46,6 +46,7 @@ class MessegesView: UITableViewController, MsgDelegate {
         cell.m_id = conversation.m_id
         cell.m_profile.image = conversation.m_img
         cell.m_profile.layer.cornerRadius = 10
+        cell.m_time.hidden = (cell.m_id == 0)
         
         return cell
     }
@@ -62,6 +63,9 @@ class MessegesView: UITableViewController, MsgDelegate {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "ShowRequests" {
+            // clean notifications
+            let newReqConv = msgData.getConversation(0)
+            newReqConv.m_messages.removeAll()
             httpSyncRequests()
         }
         if segue.identifier == "ShowConversation" {

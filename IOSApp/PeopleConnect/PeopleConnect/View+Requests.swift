@@ -10,20 +10,57 @@ import Foundation
 import UIKit
 
 class RequestCell:UITableViewCell {
-    @IBOutlet weak var m_photo: UIImageView!
+    @IBOutlet weak var m_photoBtn: UIButton!
     @IBOutlet weak var m_name: UILabel!
     @IBOutlet weak var m_message: UILabel!
     @IBOutlet weak var m_acceptBtn: UIButton!
     @IBOutlet weak var m_rejectBtn: UIButton!
     
     var m_uid:UInt64 = 0
+    var m_father:UIViewController?
+    
+    @IBAction func showContact(sender:AnyObject) {
+        ContactView.ContactID = m_uid
+        httpSyncContactPost(m_uid)
+        m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
+    }
+    
+    func nameChanged(sender:UITextField) {
+        let alert:UIAlertController = self.m_father!.presentedViewController as! UIAlertController
+        let input:String = (alert.textFields?.first?.text)!
+        let okAction:UIAlertAction = alert.actions.last!
+        let nameSize = input.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
+        okAction.enabled = (nameSize > 0 && nameSize < 18)
+    }
     
     @IBAction func accept(sender:AnyObject) {
-        //httpAddContact(m_uid, name: "")
+        let alert = UIAlertController(title: "通过好友申请", message: "", preferredStyle: .Alert)
+        let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .Destructive,
+            handler: { action in
+                httpAddContact(self.m_uid, name: (alert.textFields?.first?.text)!)
+        })
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "好友备注"
+            textField.addTarget(self, action: Selector("nameChanged:"), forControlEvents: .EditingChanged)
+        }
+        okAction.enabled = false
+        alert.addAction(noAction)
+        alert.addAction(okAction)
+        m_father?.presentViewController(alert, animated: true, completion: nil)
     }
     
     @IBAction func reject(sender:AnyObject) {
-        // to do
+        let alert = UIAlertController(title: "拒绝好友申请", message: "", preferredStyle: .Alert)
+        let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .Destructive,
+            handler: { action in
+                httpDeclineRequest(self.m_uid)
+        })
+        alert.addAction(noAction)
+        alert.addAction(okAction)
+        m_father?.presentViewController(alert, animated: true, completion: nil)
     }
 }
 
@@ -54,8 +91,12 @@ class RequestsView:UIViewController, MsgDelegate, UITableViewDataSource, UITable
         let contact = contactsData.m_contacts[request.from]
         cell.m_uid = request.from
         cell.m_name.text = contact?.name
-        cell.m_photo.image = getPhoto(cell.m_uid)
+        cell.m_photoBtn.setImage(getPhoto(cell.m_uid), forState: .Normal)
         cell.m_message.text = request.messege
+        cell.m_father = self
+        cell.m_photoBtn.layer.cornerRadius = 10
+        cell.m_acceptBtn.layer.cornerRadius = 10
+        cell.m_rejectBtn.layer.cornerRadius = 10
         return cell
     }
 }
