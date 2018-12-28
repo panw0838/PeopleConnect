@@ -52,6 +52,7 @@ func main() {
 	http.HandleFunc("/remcontact", message.RemContactHandler)
 	http.HandleFunc("/syncmessege", message.SyncMessegeHandler)
 	http.HandleFunc("/requestcontact", message.RequestContactHandler)
+	http.HandleFunc("/declinerequest", message.DeclineRequestHandler)
 	http.HandleFunc("/syncrequests", message.SyncRequestsHandler)
 	http.HandleFunc("/sendmessege", message.SendMsgHandler)
 

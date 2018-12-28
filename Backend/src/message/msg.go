@@ -109,7 +109,6 @@ func dbAddRequest(input RequestContactInput, c redis.Conn) uint16 {
 	// add to message notification
 	var msg Message
 	msg.From = input.From
-	msg.Content = input.Message
 	msg.Type = NTF_REQ
 
 	err = dbAddMessege(input.To, msg, c)
@@ -120,10 +119,19 @@ func dbAddRequest(input RequestContactInput, c redis.Conn) uint16 {
 	return 0
 }
 
+func dbRemRequest(input DeclienRequestInput, c redis.Conn) uint16 {
+	requestsKey := share.GetRequestsKey(input.UID)
+	_, err := c.Do("ZREMRANGEBYSCORE", requestsKey, input.CID, input.CID)
+	if err != nil {
+		return 1
+	}
+	return 0
+}
+
 func dbSyncRequests(uID uint64, c redis.Conn) ([]RequestInfo, error) {
 	requestsKey := share.GetRequestsKey(uID)
 	var requests []RequestInfo
-	values, err := redis.Values(c.Do("ZRANGE", requestsKey, 0, share.MAX_U64))
+	values, err := redis.Values(c.Do("ZRANGE", requestsKey, 0, -1))
 	for _, value := range values {
 		data, err := redis.Bytes(value, err)
 		if err != nil {

@@ -143,6 +143,40 @@ func RequestContactHandler(w http.ResponseWriter, r *http.Request) {
 	share.WriteError(w, 0)
 }
 
+type DeclienRequestInput struct {
+	UID uint64 `json:"uid"`
+	CID uint64 `json:"cid"`
+}
+
+func DeclineRequestHandler(w http.ResponseWriter, r *http.Request) {
+	var input DeclienRequestInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	if input.UID == input.CID {
+		share.WriteError(w, 1)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+	defer c.Close()
+
+	errCode := dbRemRequest(input, c)
+	if errCode != 0 {
+		share.WriteError(w, errCode)
+		return
+	}
+
+	share.WriteError(w, 0)
+}
+
 type SyncRequestsInput struct {
 	User uint64 `json:"user"`
 }
