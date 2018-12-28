@@ -63,10 +63,15 @@ class MessegesView: UITableViewController, MsgDelegate {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "ShowRequests" {
-            // clean notifications
             let newReqConv = msgData.getConversation(0)
+            
+            // sync new requests
+            if newReqConv.m_messages.count > 0 {
+                httpSyncRequests(nil, failed: nil)
+            }
+            
+            // clean notifications
             newReqConv.m_messages.removeAll()
-            httpSyncRequests()
         }
         if segue.identifier == "ShowConversation" {
             let to = segue.destinationViewController as! ConversationView

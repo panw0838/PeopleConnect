@@ -43,12 +43,12 @@ func httpDeclineRequest(contact:UInt64) {
     )
 }
 
-func httpSyncRequests() {
+func httpSyncRequests(passed:(()->Void)?, failed:((String?)->Void)?) {
     msgData.m_requests.removeAll()
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("syncrequests", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let reqData = processErrorCode(response as! NSData, failed: nil)
+            let reqData = processErrorCode(response as! NSData, failed: failed)
             if reqData != nil {
                 if let json = try? NSJSONSerialization.JSONObjectWithData(reqData!, options: .MutableContainers) as! [String:AnyObject] {
                     if let reqObjs = json["requests"] as? [AnyObject] {
@@ -75,9 +75,11 @@ func httpSyncRequests() {
                         }
                     }
                 }
+                passed?()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            failed?("请求失败")
     })
 }
 

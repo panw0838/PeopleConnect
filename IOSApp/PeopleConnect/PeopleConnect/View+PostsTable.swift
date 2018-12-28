@@ -85,7 +85,7 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
     
     @IBOutlet weak var m_tabs: UISegmentedControl!
     @IBOutlet weak var m_posts: UITableView!
-    
+
     func UpdateLocationSuccess() {
         httpSyncNearbyPost()
     }
@@ -108,7 +108,6 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
     }
     
     override func viewDidLoad() {
-        //m_posts.registerNib(UINib(nibName: "PostHeader", bundle: nil), forHeaderFooterViewReuseIdentifier: "PostHeader")
         super.viewDidLoad()
         setTable(m_posts, data: friendPosts, fullView: true)
         httpSyncPost()

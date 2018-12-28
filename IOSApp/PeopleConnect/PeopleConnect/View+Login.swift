@@ -223,6 +223,10 @@ class LogView: BaseLogRegView {
             msgData.loadMsgFromCache()
             httpSyncMessege(logSuccess, failed: logFail)
             break
+        case 3:
+            m_logStage++
+            httpSyncRequests(logSuccess, failed:logFail)
+            break
         default:
             tcp.start("192.168.0.104", port: 8888)
             tcp.logon()
@@ -432,6 +436,10 @@ class LoginView: UIViewController {
             _logStage++
             msgData.loadMsgFromCache()
             httpSyncMessege(logSuccess, failed: nil)
+            break
+        case 3:
+            _logStage++
+            httpSyncRequests(logSuccess, failed:nil)
             break
         default:
             tcp.start("192.168.0.104", port: 8888)

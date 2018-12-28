@@ -8,8 +8,16 @@
 
 import UIKit
 
+var gImgFullview = ImgFullview(frame: UIScreen.mainScreen().bounds)
+
 class ImgCellView: UIImageView {
     var m_index = 0
+    var m_father:ImgPreview?
+    var m_fullView:ImgFullview?
+    
+    func tap() {
+        gImgFullview.show((m_father?.m_post)!, index: m_index, sender: self)
+    }
 }
 
 struct PreviewLayout {
@@ -47,10 +55,14 @@ class ImgPreview: UIView {
         for i in 0...8 {
             let layout = PreviewLayout()
             let img = ImgCellView(frame: CGRectZero)
+            let tap = UITapGestureRecognizer(target: img, action: Selector("tap"))
             img.m_index = i
+            img.m_father = self
             img.clipsToBounds = true
             img.contentMode = .ScaleAspectFill
             img.layer.cornerRadius = 10
+            img.userInteractionEnabled = true
+            img.addGestureRecognizer(tap)
             m_preImgs.append(img)
             m_pattern.append(layout)
             self.addSubview(img)

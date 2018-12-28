@@ -150,7 +150,16 @@ class Conversation {
         if m_id == 0 {
             return m_messages.count > 0 ? String(m_messages.count) + "个新好友申请" : "无新好友申请"
         }
-        return m_messages.last?.data
+        let lastIdx = m_messages.count - 1
+        return getMessage(lastIdx)
+    }
+    
+    func getMessage(idx:Int)->String {
+        let msgInfo = m_messages[idx]
+        if msgInfo.type == .Ntf_Add {
+            return m_name + "已添加你为好友，你们可以对话了"
+        }
+        return msgInfo.data
     }
 }
 
@@ -241,6 +250,16 @@ class MsgData {
         let conversation = popConversation(convID)
         conversation.addMessage(newMsg)
         m_conversations.append(conversation)
+        
+        // process notifications
+        if newMsg.type == .Ntf_Add {
+            var contact = contactsData.m_contacts[newMsg.from]
+            if contact?.flag == 0 {
+                contact?.flag = UndefineBit
+                contactsData.m_contacts[newMsg.from] = contact
+                contactsData.updateDelegates()
+            }
+        }
     }
     
     func remRequest(uid:UInt64) {
