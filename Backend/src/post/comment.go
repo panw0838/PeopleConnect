@@ -27,7 +27,7 @@ func getCommentKey(uID uint64, pID uint64) string {
 	return "cmt:" + strconv.FormatUint(uID, 10) + ":" + strconv.FormatUint(pID, 10)
 }
 
-func dbGetComments(cmtKey string, pubLvl uint8, uID uint64, from uint64, c redis.Conn) ([]Comment, error) {
+func dbGetComments(cmtKey string, uID uint64, src uint32, from uint64, c redis.Conn) ([]Comment, error) {
 	values, err := redis.Values(c.Do("ZRANGEBYSCORE", cmtKey, from, share.MAX_TIME))
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func dbGetComments(cmtKey string, pubLvl uint8, uID uint64, from uint64, c redis
 		if err != nil {
 			return nil, err
 		}
-		canSee, err := canSeeComment(uID, pubLvl, comment.From, comment.To, c)
+		canSee, err := canSeeComment(uID, src, comment.From, comment.To, c)
 		if err != nil {
 			return nil, err
 		}
@@ -68,7 +68,7 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, []Comment, error) {
 	}
 
 	cmtKey := getCommentKey(input.PostOwner, input.PostID)
-	comments, err := dbGetComments(cmtKey, input.PubLvl, input.UID, input.LastCmt+1, c)
+	comments, err := dbGetComments(cmtKey, input.UID, input.Source, input.LastCmt+1, c)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -83,7 +83,7 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, []Comment, error) {
 
 func dbDelComment(input DelCmtInput, c redis.Conn) ([]Comment, error) {
 	cmtKey := getCommentKey(input.PostOwner, input.PostID)
-	comments, err := dbGetComments(cmtKey, input.PubLvl, input.UID, input.LastCmt+1, c)
+	comments, err := dbGetComments(cmtKey, input.UID, input.Source, input.LastCmt+1, c)
 	if err != nil {
 		return nil, err
 	}

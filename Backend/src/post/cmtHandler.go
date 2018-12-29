@@ -8,12 +8,14 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
+// source indicates where post come from
+// it can be group id or friend posts or/and stranger posts
 type AddCmtInput struct {
 	UID       uint64 `json:"uid"`
 	To        uint64 `json:"to"`
-	PubLvl    uint8  `json:"pub"`
 	PostOwner uint64 `json:"oid"`
 	PostID    uint64 `json:"pid"`
+	Source    uint32 `json:"src"`
 	LastCmt   uint64 `json:"last"`
 	Msg       string `json:"cmt"`
 }
@@ -25,26 +27,22 @@ type CommentResponse struct {
 
 func NewCommentHandler(w http.ResponseWriter, r *http.Request) {
 	var input AddCmtInput
-	var header = []byte{byte(0)}
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		header[0] = 1
-		w.Write(header)
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		header[0] = 2
-		w.Write(header)
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
 
 	cmtID, comments, err := dbAddComment(input, c)
 	if err != nil {
-		header[0] = 3
-		w.Write(header)
+		share.WriteError(w, 1)
 		return
 	}
 
@@ -53,21 +51,20 @@ func NewCommentHandler(w http.ResponseWriter, r *http.Request) {
 	response.Comments = comments
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		header[0] = 4
-		w.Write(header)
+		share.WriteError(w, 1)
 		return
 	}
 
-	w.Write(header)
+	share.WriteError(w, 0)
 	w.Write(bytes)
 }
 
 type DelCmtInput struct {
 	UID       uint64 `json:"uid"`
 	CmtID     uint64 `json:"cid"`
-	PubLvl    uint8  `json:"pub"`
 	PostOwner uint64 `json:"oid"`
 	PostID    uint64 `json:"pid"`
+	Source    uint32 `json:"src"`
 	LastCmt   uint64 `json:"last"`
 }
 
@@ -77,26 +74,22 @@ type DelCmtResponse struct {
 
 func DelCmtHandler(w http.ResponseWriter, r *http.Request) {
 	var input DelCmtInput
-	var header = []byte{byte(0)}
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		header[0] = 1
-		w.Write(header)
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		header[0] = 2
-		w.Write(header)
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
 
 	comments, err := dbDelComment(input, c)
 	if err != nil {
-		header[0] = 2
-		w.Write(header)
+		share.WriteError(w, 1)
 		return
 	}
 
@@ -104,12 +97,11 @@ func DelCmtHandler(w http.ResponseWriter, r *http.Request) {
 	response.Comments = comments
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		header[0] = 4
-		w.Write(header)
+		share.WriteError(w, 1)
 		return
 	}
 
-	w.Write(header)
+	share.WriteError(w, 0)
 	w.Write(bytes)
 }
 
@@ -125,7 +117,7 @@ type UpdateCmtReturn struct {
 
 type UpdateCommentsInput struct {
 	User     uint64          `json:"user"`
-	PubLvl   uint8           `json:"pub"`
+	Source   uint32          `json:"src"`
 	Comments []UpdateCmtInfo `json:"cmts"`
 }
 
@@ -155,7 +147,7 @@ func UpdateCommentsHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, cmtInput := range input.Comments {
 		cmtKey := getCommentKey(cmtInput.Owner, cmtInput.Post)
-		comments, err := dbGetComments(cmtKey, input.PubLvl, input.User, cmtInput.Start, c)
+		comments, err := dbGetComments(cmtKey, input.User, input.Source, cmtInput.Start, c)
 		if err != nil {
 			header[0] = 3
 			w.Write(header)

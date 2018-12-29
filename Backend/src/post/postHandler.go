@@ -238,13 +238,11 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	now := share.GetTimeID(time.Now())
-	key := getFPubKey(input.User)
 	var from uint64 = 0
 	if input.PostID != 0 {
 		from = input.PostID + 1
 	}
-	posts, err := dbGetPublish(input.User, PubLvl_Friend, key, from, now, c)
+	posts, err := dbGetFriendPublish(input.User, from, share.MAX_TIME, c)
 	if err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return

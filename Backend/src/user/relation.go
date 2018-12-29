@@ -9,8 +9,6 @@ import (
 )
 
 const RelationCashSize uint64 = 0x4000000
-const RelationMask uint64 = 0xffffffff0000003f
-const ContactMask uint64 = 0xffffffff0000003e
 
 var cash []Relation
 
@@ -76,7 +74,7 @@ func ClearCashRelation(user1 uint64, user2 uint64) {
 }
 
 func IsFriendFlag(flag1 uint64, flag2 uint64) bool {
-	return ((flag1 & ContactMask) != 0) && ((flag2 & ContactMask) != 0) && ((flag1 & BLK_BIT) == 0) && ((flag2 & BLK_BIT) == 0)
+	return ((flag1 & UDF_BIT) != 0) && ((flag2 & UDF_BIT) != 0) && ((flag1 & BLK_BIT) == 0) && ((flag2 & BLK_BIT) == 0)
 }
 
 func IsFriend(user1 uint64, user2 uint64, c redis.Conn) (bool, error) {
@@ -93,7 +91,8 @@ func IsFriend(user1 uint64, user2 uint64, c redis.Conn) (bool, error) {
 }
 
 func IsStrangerFlag(flag1 uint64, flag2 uint64) bool {
-	return ((flag1 & RelationMask) == 0) && ((flag2 & RelationMask) == 0)
+	strangerMask := (BLK_BIT | UDF_BIT)
+	return ((flag1 & strangerMask) == 0) && ((flag2 & strangerMask) == 0)
 }
 
 func IsStranger(uID uint64, cID uint64, c redis.Conn) (bool, error) {

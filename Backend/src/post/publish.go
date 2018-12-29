@@ -19,31 +19,31 @@ func getGPubKey(gID uint32) string {
 }
 
 func getNearKey(geoID uint64) string {
-	return "near_post:" + strconv.FormatUint(geoID, 10)
+	return "nposts:" + strconv.FormatUint(geoID, 10)
 }
 
 func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 	publishStr := fmt.Sprintf("%d:%d", uID, post.ID)
 
-	contactsKey := user.GetContactsKey(uID)
-	contacts, err := redis.Strings(c.Do("SMEMBERS", contactsKey))
-	if err != nil {
-		return err
-	}
-
 	// add to friends timeline
-	if PostForFriend(post.Flag) {
+	if (post.Flag & user.FriendMask) != 0 {
+		contactsKey := user.GetContactsKey(uID)
+		contacts, err := redis.Strings(c.Do("SMEMBERS", contactsKey))
+		if err != nil {
+			return err
+		}
+
 		for _, contact := range contacts {
 			cID, err := strconv.ParseUint(contact, 10, 64)
 			if err != nil {
 				return err
 			}
-			fpostsKey := getFPubKey(cID)
 			canSee, err := friendPost(cID, uID, post.Flag, c)
 			if err != nil {
 				return err
 			}
 			if canSee {
+				fpostsKey := getFPubKey(cID)
 				_, err := c.Do("ZADD", fpostsKey, post.ID, publishStr)
 				if err != nil {
 					return err
@@ -73,7 +73,7 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 
 	// add to self timeline
 	fpostsKey := getFPubKey(uID)
-	_, err = c.Do("ZADD", fpostsKey, post.ID, publishStr)
+	_, err := c.Do("ZADD", fpostsKey, post.ID, publishStr)
 	if err != nil {
 		return err
 	}
@@ -81,7 +81,8 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 	return nil
 }
 
-func dbGetPublish(uID uint64, pubLvl uint8, key string, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
+func dbGetFriendPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
+	key := getFPubKey(uID)
 	publishes, err := redis.Strings(c.Do("ZRANGEBYSCORE", key, from, to))
 	if err != nil {
 		return nil, err
@@ -105,23 +106,14 @@ func dbGetPublish(uID uint64, pubLvl uint8, key string, from uint64, to uint64, 
 			if err != nil {
 				return nil, err
 			}
-
 			post.Owner = cID
-			canSee, err := canSeePost(pubLvl, uID, cID, post.Flag, c)
+			// get friends comments
+			cmtsKey := getCommentKey(cID, post.ID)
+			post.Comments, err = dbGetComments(cmtsKey, uID, FriendGroup, 0, c)
 			if err != nil {
 				return nil, err
 			}
-
-			if canSee {
-				// get comments
-				cmtsKey := getCommentKey(cID, post.ID)
-				comments, err := dbGetComments(cmtsKey, pubLvl, uID, 0, c)
-				if err != nil {
-					return nil, err
-				}
-				post.Comments = comments
-				results = append(results, post)
-			}
+			results = append(results, post)
 		}
 	}
 
@@ -157,15 +149,21 @@ func dbGetNearbyPublish(input SyncNearbyPostsInput, from uint64, to uint64, c re
 				}
 
 				post.Owner = cID
-				canSee, err := canSeePost(PubLvl_Stranger, input.User, cID, post.Flag, c)
-				if err != nil {
-					return nil, err
+
+				var canSee = true
+
+				if input.User != cID {
+					isStranger, err := user.IsStranger(input.User, cID, c)
+					if err != nil {
+						return nil, err
+					}
+					canSee = isStranger
 				}
 
 				if canSee {
-					// get comments
+					// get strangers comments
 					cmtsKey := getCommentKey(cID, post.ID)
-					comments, err := dbGetComments(cmtsKey, PubLvl_Stranger, input.User, 0, c)
+					comments, err := dbGetComments(cmtsKey, input.User, StrangerGroup, 0, c)
 					if err != nil {
 						return nil, err
 					}
@@ -175,5 +173,57 @@ func dbGetNearbyPublish(input SyncNearbyPostsInput, from uint64, to uint64, c re
 			}
 		}
 	}
+	return results, nil
+}
+
+func dbGetGroupPublish(uID uint64, gID uint32, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
+	key := getGPubKey(gID)
+	publishes, err := redis.Strings(c.Do("ZRANGEBYSCORE", key, from, to))
+	if err != nil {
+		return nil, err
+	}
+
+	var results []PostData
+	for _, publish := range publishes {
+		var cID uint64
+		var pID uint64
+		fmt.Sscanf(publish, "%d:%d", &cID, &pID)
+		postKey := getPostKey(cID)
+		values, err := redis.Values(c.Do("ZRANGEBYSCORE", postKey, pID, pID))
+		for _, value := range values {
+			data, err := redis.Bytes(value, err)
+			if err != nil {
+				return nil, err
+			}
+
+			var post PostData
+			err = json.Unmarshal(data, &post)
+			if err != nil {
+				return nil, err
+			}
+
+			post.Owner = cID
+
+			var canSee = true
+			if uID != cID {
+				isBlacklist, err := user.IsBlacklist(uID, cID, c)
+				if err != nil {
+					return nil, err
+				}
+				canSee = !isBlacklist
+			}
+
+			if canSee {
+				// get group comments
+				cmtsKey := getCommentKey(cID, post.ID)
+				post.Comments, err = dbGetComments(cmtsKey, uID, gID, 0, c)
+				if err != nil {
+					return nil, err
+				}
+				results = append(results, post)
+			}
+		}
+	}
+
 	return results, nil
 }

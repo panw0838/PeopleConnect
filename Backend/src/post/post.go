@@ -61,7 +61,7 @@ func dbGetSelfPosts(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostDat
 
 		post.Owner = uID
 		cmtsKey := getCommentKey(uID, post.ID)
-		comments, err := dbGetComments(cmtsKey, PubLvl_Self, uID, 0, c)
+		comments, err := dbGetComments(cmtsKey, uID, SelfGroup, 0, c)
 		if err != nil {
 			return nil, err
 		}
@@ -85,7 +85,7 @@ func dbGetUserPosts(uID uint64, cID uint64, from uint64, to uint64, c redis.Conn
 	isFriend := user.IsFriendFlag(uFlag, cFlag)
 	isStranger := user.IsStrangerFlag(uFlag, cFlag)
 
-	groups, err := dbGetGroups(uID, c)
+	groups, err := dbGetUserGroups(uID, c)
 	if err != nil {
 		return nil, err
 	}
@@ -112,10 +112,10 @@ func dbGetUserPosts(uID uint64, cID uint64, from uint64, to uint64, c redis.Conn
 		var canSee = false
 
 		// check friend posts
-		if isFriend && friendPostFlag(cFlag, post.Flag) {
+		if isFriend && PostForFriend(cFlag, post.Flag) {
 			canSee = true
 		}
-		// check public posts
+		// check group posts
 		if !canSee && len(groups) > 0 && len(post.Groups) > 0 {
 			if inSameGroup(groups, post.Groups) {
 				canSee = true

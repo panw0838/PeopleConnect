@@ -11,19 +11,20 @@ const CLM_BIT uint64 = ONE_64 << 35
 const CWK_BIT uint64 = ONE_64 << 36
 const FRD_BIT uint64 = ONE_64 << 37
 
-const SYSTEM_TAG_START uint8 = 0
-const SYSTEM_TAG_END uint8 = 5
-const SYSTEM_TAG_VALID_START uint8 = 2
+const SYSTEM_TAG_BITS uint64 = 0x3E00000000
+
+const SYSTEM_TAG_START uint8 = 32
+const SYSTEM_TAG_END uint8 = 37
+const SYSTEM_TAG_VALID_START uint8 = 33
 
 // user define tag id
 // from 32 - 63, 32 tags in total
 const USER_TAG_START uint8 = 0
 const USER_TAG_END uint8 = 31
 const MAX_USER_TAGS uint64 = 32
+const USER_TAG_BITS uint64 = 0xFFFFFFFF
 
-// user control bits
-const ADD_CONFIRM uint64 = ONE_64 << 30
-const NO_SEARCH uint64 = ONE_64 << 31
+const FriendMask uint64 = (SYSTEM_TAG_BITS | USER_TAG_BITS)
 
 type TagInfo struct {
 	TagID    uint8  `json:"id"`
