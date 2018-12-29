@@ -40,6 +40,27 @@ func dbAddPost(uID uint64, data PostData, c redis.Conn) error {
 	return nil
 }
 
+func dbGetPost(oID uint64, pID uint64, c redis.Conn) (PostData, error) {
+	var post PostData
+	postKey := getPostKey(oID)
+	values, err := redis.Values(c.Do("ZRANGEBYSCORE", postKey, pID, pID))
+	if err != nil {
+		return post, err
+	}
+	data, err := redis.Bytes(values[0], err)
+	if err != nil {
+		return post, err
+	}
+
+	err = json.Unmarshal(data, &post)
+	if err != nil {
+		return post, err
+	}
+
+	post.Owner = oID
+	return post, nil
+}
+
 func dbGetSelfPosts(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
 	postsKey := getPostKey(uID)
 	values, err := redis.Values(c.Do("ZRANGEBYSCORE", postsKey, from, to))

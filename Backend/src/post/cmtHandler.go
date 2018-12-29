@@ -15,14 +15,11 @@ type AddCmtInput struct {
 	To        uint64 `json:"to"`
 	PostOwner uint64 `json:"oid"`
 	PostID    uint64 `json:"pid"`
-	Source    uint32 `json:"src"`
-	LastCmt   uint64 `json:"last"`
 	Msg       string `json:"cmt"`
 }
 
 type CommentResponse struct {
-	CmtID    uint64    `json:"cid"`
-	Comments []Comment `json:"cmts"`
+	CmtID uint64 `json:"cid"`
 }
 
 func NewCommentHandler(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +37,7 @@ func NewCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	cmtID, comments, err := dbAddComment(input, c)
+	cmtID, err := dbAddComment(input, c)
 	if err != nil {
 		share.WriteError(w, 1)
 		return
@@ -48,7 +45,6 @@ func NewCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response CommentResponse
 	response.CmtID = cmtID
-	response.Comments = comments
 	bytes, err := json.Marshal(response)
 	if err != nil {
 		share.WriteError(w, 1)
@@ -64,12 +60,6 @@ type DelCmtInput struct {
 	CmtID     uint64 `json:"cid"`
 	PostOwner uint64 `json:"oid"`
 	PostID    uint64 `json:"pid"`
-	Source    uint32 `json:"src"`
-	LastCmt   uint64 `json:"last"`
-}
-
-type DelCmtResponse struct {
-	Comments []Comment `json:"cmts"`
 }
 
 func DelCmtHandler(w http.ResponseWriter, r *http.Request) {
@@ -87,22 +77,13 @@ func DelCmtHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	comments, err := dbDelComment(input, c)
-	if err != nil {
-		share.WriteError(w, 1)
-		return
-	}
-
-	var response CommentResponse
-	response.Comments = comments
-	bytes, err := json.Marshal(response)
+	err = dbDelComment(input, c)
 	if err != nil {
 		share.WriteError(w, 1)
 		return
 	}
 
 	share.WriteError(w, 0)
-	w.Write(bytes)
 }
 
 type UpdateCmtInfo struct {

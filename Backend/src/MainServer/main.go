@@ -61,6 +61,7 @@ func main() {
 	http.HandleFunc("/syncposts", post.SyncPostsHandler)
 	http.HandleFunc("/synccontactposts", post.SyncContactPostsHandler)
 	http.HandleFunc("/syncnearbyposts", post.SyncNearbyPostsHandler)
+	http.HandleFunc("/syncgroupposts", post.SyncGroupPublishHandler)
 	http.HandleFunc("/previews", post.GetPreviewsHandler)
 	http.HandleFunc("/comment", post.NewCommentHandler)
 	http.HandleFunc("/delcmt", post.DelCmtHandler)

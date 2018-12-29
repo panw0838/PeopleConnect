@@ -227,13 +227,13 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 	var input SyncPostInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
@@ -244,7 +244,7 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	posts, err := dbGetFriendPublish(input.User, from, share.MAX_TIME, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
@@ -253,11 +253,12 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
-	fmt.Fprintf(w, "%s", bytes)
+	share.WriteError(w, 0)
+	w.Write(bytes)
 }
 
 type SyncContactPostsInput struct {
@@ -326,6 +327,44 @@ func SyncNearbyPostsHandler(w http.ResponseWriter, r *http.Request) {
 	var response SyncPostReturn
 
 	response.Posts, err = dbGetNearbyPublish(input, 0, share.MAX_TIME, c)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	bytes, err := json.Marshal(response)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	share.WriteError(w, 0)
+	w.Write(bytes)
+}
+
+type SyncGroupPublishInput struct {
+	User  uint64 `json:"uid"`
+	Group uint32 `json:"gid"`
+}
+
+func SyncGroupPublishHandler(w http.ResponseWriter, r *http.Request) {
+	var input SyncGroupPublishInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+	defer c.Close()
+
+	var response SyncPostReturn
+
+	response.Posts, err = dbGetGroupPublish(input.User, input.Group, 0, share.MAX_TIME, c)
 	if err != nil {
 		share.WriteError(w, 1)
 		return

@@ -1,7 +1,6 @@
 package post
 
 import (
-	"encoding/json"
 	"fmt"
 	"share"
 	"strconv"
@@ -90,31 +89,20 @@ func dbGetFriendPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]Pos
 
 	var results []PostData
 	for _, publish := range publishes {
-		var cID uint64
+		var oID uint64
 		var pID uint64
-		fmt.Sscanf(publish, "%d:%d", &cID, &pID)
-		postKey := getPostKey(cID)
-		values, err := redis.Values(c.Do("ZRANGEBYSCORE", postKey, pID, pID))
-		for _, value := range values {
-			data, err := redis.Bytes(value, err)
-			if err != nil {
-				return nil, err
-			}
-
-			var post PostData
-			err = json.Unmarshal(data, &post)
-			if err != nil {
-				return nil, err
-			}
-			post.Owner = cID
-			// get friends comments
-			cmtsKey := getCommentKey(cID, post.ID)
-			post.Comments, err = dbGetComments(cmtsKey, uID, FriendGroup, 0, c)
-			if err != nil {
-				return nil, err
-			}
-			results = append(results, post)
+		fmt.Sscanf(publish, "%d:%d", &oID, &pID)
+		post, err := dbGetPost(oID, pID, c)
+		if err != nil {
+			return nil, err
 		}
+		// get friends comments
+		cmtsKey := getCommentKey(oID, post.ID)
+		post.Comments, err = dbGetComments(cmtsKey, uID, FriendGroup, 0, c)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, post)
 	}
 
 	return results, nil
@@ -131,45 +119,31 @@ func dbGetNearbyPublish(input SyncNearbyPostsInput, from uint64, to uint64, c re
 		}
 
 		for _, publish := range publishes {
-			var cID uint64
+			var oID uint64
 			var pID uint64
-			fmt.Sscanf(publish, "%d:%d", &cID, &pID)
-			postKey := getPostKey(cID)
-			values, err := redis.Values(c.Do("ZRANGEBYSCORE", postKey, pID, pID))
-			for _, value := range values {
-				data, err := redis.Bytes(value, err)
+			fmt.Sscanf(publish, "%d:%d", &oID, &pID)
+			post, err := dbGetPost(oID, pID, c)
+			if err != nil {
+				return nil, err
+			}
+
+			var canSee = true
+			if input.User != oID {
+				isStranger, err := user.IsStranger(input.User, oID, c)
 				if err != nil {
 					return nil, err
 				}
+				canSee = isStranger
+			}
 
-				var post PostData
-				err = json.Unmarshal(data, &post)
+			if canSee {
+				// get strangers comments
+				cmtsKey := getCommentKey(oID, post.ID)
+				post.Comments, err = dbGetComments(cmtsKey, input.User, StrangerGroup, 0, c)
 				if err != nil {
 					return nil, err
 				}
-
-				post.Owner = cID
-
-				var canSee = true
-
-				if input.User != cID {
-					isStranger, err := user.IsStranger(input.User, cID, c)
-					if err != nil {
-						return nil, err
-					}
-					canSee = isStranger
-				}
-
-				if canSee {
-					// get strangers comments
-					cmtsKey := getCommentKey(cID, post.ID)
-					comments, err := dbGetComments(cmtsKey, input.User, StrangerGroup, 0, c)
-					if err != nil {
-						return nil, err
-					}
-					post.Comments = comments
-					results = append(results, post)
-				}
+				results = append(results, post)
 			}
 		}
 	}
@@ -185,43 +159,31 @@ func dbGetGroupPublish(uID uint64, gID uint32, from uint64, to uint64, c redis.C
 
 	var results []PostData
 	for _, publish := range publishes {
-		var cID uint64
+		var oID uint64
 		var pID uint64
-		fmt.Sscanf(publish, "%d:%d", &cID, &pID)
-		postKey := getPostKey(cID)
-		values, err := redis.Values(c.Do("ZRANGEBYSCORE", postKey, pID, pID))
-		for _, value := range values {
-			data, err := redis.Bytes(value, err)
+		fmt.Sscanf(publish, "%d:%d", &oID, &pID)
+		post, err := dbGetPost(oID, pID, c)
+		if err != nil {
+			return nil, err
+		}
+
+		var canSee = true
+		if uID != oID {
+			isBlacklist, err := user.IsBlacklist(uID, oID, c)
 			if err != nil {
 				return nil, err
 			}
+			canSee = !isBlacklist
+		}
 
-			var post PostData
-			err = json.Unmarshal(data, &post)
+		if canSee {
+			// get group comments
+			cmtsKey := getCommentKey(oID, post.ID)
+			post.Comments, err = dbGetComments(cmtsKey, uID, gID, 0, c)
 			if err != nil {
 				return nil, err
 			}
-
-			post.Owner = cID
-
-			var canSee = true
-			if uID != cID {
-				isBlacklist, err := user.IsBlacklist(uID, cID, c)
-				if err != nil {
-					return nil, err
-				}
-				canSee = !isBlacklist
-			}
-
-			if canSee {
-				// get group comments
-				cmtsKey := getCommentKey(cID, post.ID)
-				post.Comments, err = dbGetComments(cmtsKey, uID, gID, 0, c)
-				if err != nil {
-					return nil, err
-				}
-				results = append(results, post)
-			}
+			results = append(results, post)
 		}
 	}
 

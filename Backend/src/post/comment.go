@@ -56,7 +56,7 @@ func dbGetComments(cmtKey string, uID uint64, src uint32, from uint64, c redis.C
 	return results, nil
 }
 
-func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, []Comment, error) {
+func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, error) {
 	var comment Comment
 	comment.From = input.UID
 	comment.To = input.To
@@ -64,54 +64,45 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, []Comment, error) {
 	comment.ID = share.GetTimeID(time.Now())
 	bytes, err := json.Marshal(comment)
 	if err != nil {
-		return 0, nil, err
+		return 0, err
 	}
 
 	cmtKey := getCommentKey(input.PostOwner, input.PostID)
-	comments, err := dbGetComments(cmtKey, input.UID, input.Source, input.LastCmt+1, c)
-	if err != nil {
-		return 0, nil, err
-	}
-
 	_, err = c.Do("ZADD", cmtKey, comment.ID, bytes)
 	if err != nil {
-		return 0, nil, err
+		return 0, err
 	}
 
-	return comment.ID, comments, nil
+	return comment.ID, nil
 }
 
-func dbDelComment(input DelCmtInput, c redis.Conn) ([]Comment, error) {
+func dbDelComment(input DelCmtInput, c redis.Conn) error {
 	cmtKey := getCommentKey(input.PostOwner, input.PostID)
-	comments, err := dbGetComments(cmtKey, input.UID, input.Source, input.LastCmt+1, c)
-	if err != nil {
-		return nil, err
-	}
 
 	values, err := redis.Values(c.Do("ZRANGEBYSCORE", cmtKey, input.CmtID, input.CmtID))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	for _, value := range values {
 		cmtData, err := redis.Bytes(value, err)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		var comment Comment
 		err = json.Unmarshal(cmtData, &comment)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		if comment.From == input.UID {
 			_, err = c.Do("ZREM", cmtKey, value)
 			if err != nil {
-				return nil, err
+				return err
 			}
 		} else {
-			return nil, fmt.Errorf("Fail delete")
+			return fmt.Errorf("Fail delete")
 		}
 	}
 
-	return comments, nil
+	return nil
 }
