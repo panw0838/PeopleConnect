@@ -106,8 +106,27 @@ func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>, groups:Array<UI
     )
 }
 
-func httpDeletePost() {
-    
+func httpDeletePost(post:Post) {
+    let params: Dictionary = [
+        "uid":NSNumber(unsignedLongLong: userInfo.userID),
+        "pid":NSNumber(unsignedLongLong: post.m_info.id)]
+    http.postRequest("delpost", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let errCode = getErrorCode(response as! NSData)
+            if errCode == 0 {
+                for (idx, p) in (post.m_father?.m_posts.enumerate())! {
+                    if p.m_info.id == post.m_info.id && p.m_info.user == post.m_info.user {
+                        post.m_father?.m_posts.removeAtIndex(idx)
+                        post.m_father?.Update()
+                        break
+                    }
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+        }
+    )
 }
 
 func httpSyncPost() {

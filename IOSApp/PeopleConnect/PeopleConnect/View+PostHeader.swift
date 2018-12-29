@@ -40,6 +40,7 @@ class PostHeader: UITableViewHeaderFooterView {
     
     var m_liktBtn    = UIButton(frame: CGRectZero)
     var m_commentBtn = UIButton(frame: CGRectZero)
+    var m_deleteBtn  = UIButton(frame: CGRectZero)
     
     var m_post:Post? = nil
     var m_father:UIViewController? = nil
@@ -59,13 +60,13 @@ class PostHeader: UITableViewHeaderFooterView {
     }
     
     func initSubviews() {
-        let tap = UITapGestureRecognizer(target: self, action: Selector("clickContact"))
+        let tapPhoto = UITapGestureRecognizer(target: self, action: Selector("clickContact"))
 
         m_photo.contentMode = .ScaleAspectFill;
         m_photo.userInteractionEnabled = true;
         m_photo.layer.masksToBounds = true;
         m_photo.layer.cornerRadius = 10
-        m_photo.addGestureRecognizer(tap)
+        m_photo.addGestureRecognizer(tapPhoto)
         self.addSubview(m_photo)
         
         m_name.textColor = linkTextColor
@@ -87,12 +88,16 @@ class PostHeader: UITableViewHeaderFooterView {
         
         self.addSubview(m_previews)
         
-        m_liktBtn.setImage(UIImage(named: "comment_like"), forState: .Normal)
+        m_liktBtn.setImage(UIImage(named: "post_like"), forState: .Normal)
         self.addSubview(m_liktBtn)
         
-        m_commentBtn.setImage(UIImage(named: "comment_cmt"), forState: .Normal)
+        m_commentBtn.setImage(UIImage(named: "post_cmt"), forState: .Normal)
         m_commentBtn.addTarget(self, action: Selector("actComment:"), forControlEvents: .TouchDown)
         self.addSubview(m_commentBtn)
+        
+        m_deleteBtn.setImage(UIImage(named: "post_delete"), forState: .Normal)
+        m_deleteBtn.addTarget(self, action: Selector("deletePost:"), forControlEvents: .TouchDown)
+        self.addSubview(m_deleteBtn)
     }
     
     func commentChanged(sender:UITextField) {
@@ -123,9 +128,22 @@ class PostHeader: UITableViewHeaderFooterView {
     
     @IBAction func actLike(sender: AnyObject) {
     }
+    
+    @IBAction func deletePost(sender: AnyObject) {
+        let alert = UIAlertController(title: "删除动态", message: self.m_post?.m_info.content, preferredStyle: .Alert)
+        let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .Destructive,
+            handler: { action in
+                httpDeletePost(self.m_post!)
+        })
+        alert.addAction(cancelAction)
+        alert.addAction(okAction)
+        self.m_father!.presentViewController(alert, animated: true, completion: nil)
+    }
 
     func reload(post:Post, width:CGFloat, fullView:Bool) {
         m_post = post
+        let selfPost = (m_post?.m_father?.m_sorce == 0)
         var buttom:CGFloat = 0.0
         
         if fullView {
@@ -167,12 +185,17 @@ class PostHeader: UITableViewHeaderFooterView {
         }
         
         if fullView {
+            m_commentBtn.hidden = false
             m_commentBtn.frame = CGRectMake(self.frame.width - PostPhotoSize, buttom + PostItemGapF, PostBtnSize, PostBtnSize)
+            m_liktBtn.hidden = false
             m_liktBtn.frame = CGRectMake(self.frame.width - PostPhotoSize - 50, buttom + PostItemGapF, PostBtnSize, PostBtnSize)
+            m_deleteBtn.hidden = !selfPost
+            m_deleteBtn.frame = CGRectMake(self.frame.width - PostPhotoSize - 100, buttom + PostItemGapF, PostBtnSize, PostBtnSize)
         }
         else {
             m_commentBtn.hidden = true
             m_liktBtn.hidden = true
+            m_deleteBtn.hidden = true
         }
     }
 }

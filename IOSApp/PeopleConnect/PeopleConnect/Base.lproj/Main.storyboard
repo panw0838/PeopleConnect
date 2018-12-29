@@ -214,18 +214,6 @@
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hei-wG-uwr">
-                                            <rect key="frame" x="8" y="2" width="25" height="25"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="25" id="LGW-ra-L3R"/>
-                                            </constraints>
-                                            <state key="normal" image="group_delete">
-                                                <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                            </state>
-                                            <connections>
-                                                <action selector="DelSubTag:" destination="aTw-ZE-vUS" eventType="touchDown" id="Tus-rn-iZl"/>
-                                            </connections>
-                                        </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eJT-TG-Nms">
                                             <rect key="frame" x="524" y="0.0" width="28" height="28"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -246,24 +234,36 @@
                                                 <action selector="RefreshTag:" destination="aTw-ZE-vUS" eventType="touchUpInside" id="WMO-lB-zcc"/>
                                             </connections>
                                         </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hei-wG-uwr">
+                                            <rect key="frame" x="8" y="1" width="28" height="28"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="28" id="G4k-yp-MMH"/>
+                                            </constraints>
+                                            <state key="normal" image="group_delete">
+                                                <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="DelSubTag:" destination="aTw-ZE-vUS" eventType="touchDown" id="Tus-rn-iZl"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                     <constraints>
-                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="leading" secondItem="hei-wG-uwr" secondAttribute="trailing" constant="54" id="5RX-M5-kn3"/>
-                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="topMargin" constant="-7" id="Ijw-x1-2be"/>
-                                        <constraint firstItem="hei-wG-uwr" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="topMargin" constant="-6" id="NFG-aV-akt"/>
-                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="leading" secondItem="QQq-HM-s7V" secondAttribute="trailing" constant="50" id="TUf-BN-eMm"/>
-                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="topMargin" constant="-4" id="XKo-NJ-eYx"/>
-                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="leading" secondItem="eJT-TG-Nms" secondAttribute="leading" id="YLf-R0-thw"/>
-                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="centerX" secondItem="Zx7-TD-WF6" secondAttribute="centerX" id="aOC-Jc-p1W"/>
-                                        <constraint firstItem="hei-wG-uwr" firstAttribute="centerY" secondItem="eJT-TG-Nms" secondAttribute="centerY" id="cUP-2P-0cZ"/>
-                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="centerY" secondItem="QQq-HM-s7V" secondAttribute="centerY" id="dsZ-sX-x1y"/>
-                                        <constraint firstItem="hei-wG-uwr" firstAttribute="leading" secondItem="Zx7-TD-WF6" secondAttribute="leadingMargin" id="edF-03-4QU"/>
-                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="trailing" secondItem="e0D-Gf-hVy" secondAttribute="trailing" id="i5x-wu-zce"/>
-                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="centerY" secondItem="Zx7-TD-WF6" secondAttribute="centerY" id="jhD-OX-zOH"/>
-                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="centerY" secondItem="hei-wG-uwr" secondAttribute="centerY" id="pp3-xO-g5M"/>
-                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="trailing" secondItem="Zx7-TD-WF6" secondAttribute="trailingMargin" id="v8T-dx-ETN"/>
-                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="top" id="x5k-11-KFf"/>
+                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="top" secondItem="hei-wG-uwr" secondAttribute="top" id="0Ko-4Q-0Rf"/>
+                                        <constraint firstItem="hei-wG-uwr" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="topMargin" constant="-7" id="221-Be-PGW"/>
+                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="leading" secondItem="QQq-HM-s7V" secondAttribute="trailing" constant="50" id="F1g-aw-7Ro"/>
+                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="trailing" secondItem="Zx7-TD-WF6" secondAttribute="trailingMargin" id="FsK-g8-VF3"/>
+                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="centerY" secondItem="QQq-HM-s7V" secondAttribute="centerY" id="GcA-Or-zk8"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="eJT-TG-Nms" secondAttribute="bottom" constant="-6" id="Spl-Zj-CP7"/>
+                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="centerX" secondItem="Zx7-TD-WF6" secondAttribute="centerX" id="Wo1-RT-GLH"/>
+                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="centerY" secondItem="Zx7-TD-WF6" secondAttribute="centerY" id="ZLX-Z6-dHB"/>
+                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="leading" secondItem="hei-wG-uwr" secondAttribute="trailing" constant="51" id="eBi-gr-S9k"/>
+                                        <constraint firstItem="hei-wG-uwr" firstAttribute="leading" secondItem="Zx7-TD-WF6" secondAttribute="leadingMargin" id="gBY-WR-rPW"/>
+                                        <constraint firstItem="e0D-Gf-hVy" firstAttribute="bottom" secondItem="hei-wG-uwr" secondAttribute="bottom" id="gcZ-mJ-fwU"/>
+                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="trailing" secondItem="e0D-Gf-hVy" secondAttribute="trailing" id="m9Y-Zn-6xL"/>
+                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="leading" secondItem="e0D-Gf-hVy" secondAttribute="leading" id="pmg-Ce-ITH"/>
+                                        <constraint firstItem="QQq-HM-s7V" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="topMargin" constant="-4" id="q0j-kG-eyB"/>
+                                        <constraint firstItem="eJT-TG-Nms" firstAttribute="top" secondItem="Zx7-TD-WF6" secondAttribute="top" id="s56-fZ-bSq"/>
                                     </constraints>
                                     <connections>
                                         <outlet property="m_delBtn" destination="hei-wG-uwr" id="ySI-Wq-F94"/>
@@ -1693,8 +1693,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="group_delete" width="40" height="40"/>
-        <image name="group_exchange" width="40" height="40"/>
+        <image name="group_delete" width="48" height="48"/>
+        <image name="group_exchange" width="20" height="20"/>
         <image name="group_refresh" width="24" height="24"/>
         <image name="photo" width="50" height="50"/>
         <image name="plus" width="512" height="512"/>
@@ -1707,7 +1707,7 @@
         <image name="tab_msg_hi" width="25" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ZaN-YB-4fP"/>
         <segue reference="pWd-Ma-Nx5"/>
+        <segue reference="BOu-Ex-kTg"/>
     </inferredMetricsTieBreakers>
 </document>
