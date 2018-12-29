@@ -41,25 +41,39 @@ func dbAddPost(uID uint64, data PostData, c redis.Conn) error {
 	return nil
 }
 
-func dbGetPost(oID uint64, pID uint64, c redis.Conn) (PostData, error) {
+func dbDelPost(uID uint64, pID uint64, c redis.Conn) error {
+	postKey := getPostKey(uID)
+	cmtKey := getCommentKey(uID, pID)
+	_, err := c.Do("DEL", cmtKey)
+	if err != nil {
+		return err
+	}
+	_, err = c.Do("ZREMRANGEBYSCORE", postKey, pID, pID)
+	return err
+}
+
+func dbGetPost(oID uint64, pID uint64, c redis.Conn) (bool, PostData, error) {
 	var post PostData
 	postKey := getPostKey(oID)
 	values, err := redis.Values(c.Do("ZRANGEBYSCORE", postKey, pID, pID))
 	if err != nil {
-		return post, err
+		return false, post, err
+	}
+	if len(values) == 0 {
+		return false, post, nil
 	}
 	data, err := redis.Bytes(values[0], err)
 	if err != nil {
-		return post, err
+		return false, post, err
 	}
 
 	err = json.Unmarshal(data, &post)
 	if err != nil {
-		return post, err
+		return false, post, err
 	}
 
 	post.Owner = oID
-	return post, nil
+	return true, post, nil
 }
 
 func dbGetSelfPosts(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData, error) {

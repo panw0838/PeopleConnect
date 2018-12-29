@@ -85,16 +85,18 @@ func dbGetFriendPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]Pos
 		var oID uint64
 		var pID uint64
 		fmt.Sscanf(publish, "%d:%d", &oID, &pID)
-		post, err := dbGetPost(oID, pID, c)
+		success, post, err := dbGetPost(oID, pID, c)
 		if err != nil {
 			return nil, err
 		}
-		// get friends comments
-		post.Comments, err = dbGetComments(oID, post.ID, uID, FriendGroup, 0, c)
-		if err != nil {
-			return nil, err
+		if success {
+			// get friends comments
+			post.Comments, err = dbGetComments(oID, post.ID, uID, FriendGroup, 0, c)
+			if err != nil {
+				return nil, err
+			}
+			results = append(results, post)
 		}
-		results = append(results, post)
 	}
 
 	return results, nil
@@ -127,17 +129,18 @@ func dbGetNearbyPublish(input SyncNearbyPostsInput, from uint64, to uint64, c re
 				continue
 			}
 
-			post, err := dbGetPost(oID, pID, c)
+			success, post, err := dbGetPost(oID, pID, c)
 			if err != nil {
 				return nil, err
 			}
-
-			// get strangers comments
-			post.Comments, err = dbGetComments(oID, post.ID, input.User, StrangerGroup, 0, c)
-			if err != nil {
-				return nil, err
+			if success {
+				// get strangers comments
+				post.Comments, err = dbGetComments(oID, post.ID, input.User, StrangerGroup, 0, c)
+				if err != nil {
+					return nil, err
+				}
+				results = append(results, post)
 			}
-			results = append(results, post)
 		}
 	}
 	return results, nil
@@ -168,17 +171,18 @@ func dbGetGroupPublish(uID uint64, gID uint32, from uint64, to uint64, c redis.C
 			continue
 		}
 
-		post, err := dbGetPost(oID, pID, c)
+		success, post, err := dbGetPost(oID, pID, c)
 		if err != nil {
 			return nil, err
 		}
-
-		// get group comments
-		post.Comments, err = dbGetComments(oID, post.ID, uID, gID, 0, c)
-		if err != nil {
-			return nil, err
+		if success {
+			// get group comments
+			post.Comments, err = dbGetComments(oID, post.ID, uID, gID, 0, c)
+			if err != nil {
+				return nil, err
+			}
+			results = append(results, post)
 		}
-		results = append(results, post)
 	}
 
 	return results, nil

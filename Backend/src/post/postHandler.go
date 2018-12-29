@@ -211,7 +211,33 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(bytes)
 }
 
+type DelPostInput struct {
+	User uint64 `json:"uid"`
+	Post uint64 `json:"pid"`
+}
+
 func DelPostHandler(w http.ResponseWriter, r *http.Request) {
+	var input DelPostInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+	defer c.Close()
+
+	err = dbDelPost(input.User, input.Post, c)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	share.WriteError(w, 0)
 }
 
 type SyncPostInput struct {
