@@ -10,13 +10,16 @@ import Foundation
 import UIKit
 import AFNetworking
 
+let SlfPosts:UInt32 = 0
 let UsrPosts:UInt32 = 0
 let FriPosts:UInt32 = 1
 let StrPosts:UInt32 = 2
 
+var selfPosts    = PostData(src: SlfPosts)
 var friendPosts  = PostData(src: FriPosts)
 var nearPosts    = PostData(src: StrPosts)
-var contactPosts = PostData(src: UsrPosts)
+var groupsPosts   = Dictionary<UInt32, PostData>()
+var contactsPosts = Dictionary<UInt64, PostData>()
 
 var previews = Dictionary<String, UIImage>()
 

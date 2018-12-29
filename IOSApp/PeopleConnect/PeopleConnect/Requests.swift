@@ -55,6 +55,11 @@ func getErrorCode(data:NSData)->UInt16 {
     return errCode
 }
 
+func getJson(data:NSData)->[String:AnyObject]? {
+    let json = try? NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as! [String:AnyObject]
+    return json
+}
+
 func splitData(srcData:NSData)->Array<NSData> {
     var lens = Array<UInt32>()
     var datas = Array<NSData>()

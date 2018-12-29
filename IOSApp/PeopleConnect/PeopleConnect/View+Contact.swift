@@ -24,22 +24,40 @@ class ContactView: PostsTable, UITableViewDelegate {
     var m_messege:String = ""
     var m_nameGood:Bool = false
     var m_messegeGood:Bool = false
+    var m_preDelegate:PostDataDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        m_contact = contactsData.m_contacts[ContactView.ContactID]!
-        httpSyncContactPost(ContactView.ContactID)
-        setTable(m_posts, data: contactPosts, fullView: false)
         m_profile.layer.cornerRadius = 10
         m_reqBtn.layer.cornerRadius = 10
         m_reqBtn.hidden = !ContactView.ShowReqBtn
-    }
 
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
+        m_contact = contactsData.m_contacts[ContactView.ContactID]!
+        
         m_name.text = m_contact.name
         m_profile.image = UIImage(data: getContactPhoto(m_contact.user)!)
+
+        var postData:PostData?
+        
+        if m_contact.user == userInfo.userID {
+            postData = selfPosts
+        }
+        else {
+            if contactsPosts[m_contact.user] == nil {
+                contactsPosts[m_contact.user] = PostData(src: UsrPosts)
+                httpSyncContactPost(ContactView.ContactID)
+            }
+            postData = contactsPosts[m_contact.user]
+        }
+
+        m_preDelegate = postData?.m_delegate
+        setTable(m_posts, data: postData!, fullView: false)
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        m_data?.m_delegate = m_preDelegate
     }
     
     func requestNameChanged(sender:UITextField) {

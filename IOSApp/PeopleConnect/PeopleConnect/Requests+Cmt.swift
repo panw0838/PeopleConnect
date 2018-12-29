@@ -15,21 +15,12 @@ func httpAddComment(post:Post, to:UInt64, cmt:String) {
         "to":NSNumber(unsignedLongLong: to),
         "oid":NSNumber(unsignedLongLong: post.m_info.user),
         "pid":NSNumber(unsignedLongLong: post.m_info.id),
-        "src":NSNumber(unsignedInt: post.m_father!.m_sorce),
-        "last":NSNumber(unsignedLongLong: (post.m_comments.count == 0 ? 0 : (post.m_comments.last?.id)!)),
         "cmt":cmt]
     http.postRequest("comment", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let subData = processErrorCode(response as! NSData, failed: nil)
             if subData != nil {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(subData!, options: .MutableContainers) as! [String:AnyObject] {
-                    if let cmtObjs = json["cmts"] as? [AnyObject] {
-                        for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
-                            if let comment = CommentInfo(json: cmtObj) {
-                                post.m_comments.append(comment)
-                            }
-                        }
-                    }
+                if let json = getJson(subData!) {
                     if let id = json["cid"] as? NSNumber {
                         var newComment = CommentInfo()
                         newComment.from = userInfo.userID
@@ -37,9 +28,8 @@ func httpAddComment(post:Post, to:UInt64, cmt:String) {
                         newComment.id   = id.unsignedLongLongValue
                         newComment.cmt  = cmt
                         post.m_comments.append(newComment)
+                        post.m_father?.Update()
                     }
-                    
-                    friendPosts.Update()
                 }
             }
         },
@@ -54,30 +44,19 @@ func httpDelComment(post:Post, cmt:CommentInfo) {
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "cid":NSNumber(unsignedLongLong: cmt.id),
         "oid":NSNumber(unsignedLongLong: post.m_info.user),
-        "pid":NSNumber(unsignedLongLong: post.m_info.id),
-        "src":NSNumber(unsignedInt: post.m_father!.m_sorce),
-        "last":NSNumber(unsignedLongLong: (post.m_comments.count == 0 ? 0 : (post.m_comments.last?.id)!))]
+        "pid":NSNumber(unsignedLongLong: post.m_info.id)]
     http.postRequest("delcmt", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let subData = processErrorCode(response as! NSData, failed: nil)
-            if subData != nil {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(subData!, options: .MutableContainers) as! [String:AnyObject] {
-                    if let cmtObjs = json["cmts"] as? [AnyObject] {
-                        for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
-                            if let comment = CommentInfo(json: cmtObj) {
-                                post.m_comments.append(comment)
-                            }
-                        }
+            let err = getErrorCode(response as! NSData)
+            if err == 0 {
+                for (idx, comment) in post.m_comments.enumerate() {
+                    if comment.id == cmt.id && comment.from == cmt.from {
+                        post.m_comments.removeAtIndex(idx)
+                        break
                     }
-                    
-                    for (idx, comment) in post.m_comments.enumerate() {
-                        if comment.id == cmt.id && comment.from == cmt.from {
-                            post.m_comments.removeAtIndex(idx)
-                        }
-                    }
-                    
-                    friendPosts.Update()
                 }
+                
+                post.m_father?.Update()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in

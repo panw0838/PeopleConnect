@@ -40,7 +40,7 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return m_data!.postAtIdx(section).m_comments.count
+        return m_fullView ? m_data!.postAtIdx(section).m_comments.count : 0
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -96,9 +96,12 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
     @IBAction func switchPosts(sender: AnyObject) {
         let select = (sender as! UISegmentedControl).selectedSegmentIndex
         if select == 0 {
-            setTable(m_posts, data: friendPosts, fullView: true)
+            setTable(m_posts, data: selfPosts, fullView: true)
         }
         else if select == 1 {
+            setTable(m_posts, data: friendPosts, fullView: true)
+        }
+        else if select == 2 {
             setTable(m_posts, data: nearPosts, fullView: true)
             if userInfo.x == 0 && userInfo.y == 0 {
                 userData.startLocate(self)
@@ -111,6 +114,7 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
         super.viewDidLoad()
         setTable(m_posts, data: friendPosts, fullView: true)
         httpSyncPost()
+        httpSyncContactPost(userInfo.userID)
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {

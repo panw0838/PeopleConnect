@@ -58,6 +58,22 @@ func httpGetPostsPhotos(cIDs:Array<UInt64>, post:PostData) {
     )
 }
 
+func addPost(data:PostData, postObjs:[AnyObject]) {
+    for case let postObj in (postObjs as? [[String:AnyObject]])! {
+        if let post = PostInfo(json: postObj) {
+            data.AddPost(post)
+            // add comments
+            if let cmtObjs = postObj["cmt"] as? [AnyObject] {
+                for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
+                    if let cmt = CommentInfo(json: cmtObj) {
+                        data.m_posts.last?.m_comments.append(cmt)
+                    }
+                }
+            }
+        }
+    }
+}
+
 func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>, groups:Array<UInt32>, nearby:Bool) {
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
@@ -100,26 +116,11 @@ func httpSyncPost() {
         "post":NSNumber(unsignedLongLong: 0)]
     http.postRequest("syncposts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-            if (html.hasPrefix("Error")) {
-                print("%s", html)
-            }
-            else {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers) as! [String:AnyObject] {
+            let postsData = processErrorCode(response as! NSData, failed: nil)
+            if postsData != nil {
+                if let json = getJson(postsData!) {
                     if let postObjs = json["posts"] as? [AnyObject] {
-                        for case let postObj in (postObjs as? [[String:AnyObject]])! {
-                            if let post = PostInfo(json: postObj) {
-                                friendPosts.AddPost(post)
-                                // add comments
-                                if let cmtObjs = postObj["cmt"] as? [AnyObject] {
-                                    for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
-                                        if let cmt = CommentInfo(json: cmtObj) {
-                                            friendPosts.m_posts.last?.m_comments.append(cmt)
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        addPost(friendPosts, postObjs: postObjs)
                         friendPosts.getPreviews()
                         friendPosts.Update()
                     }
@@ -133,33 +134,30 @@ func httpSyncPost() {
 }
 
 func httpSyncContactPost(cID:UInt64) {
+    var postData:PostData?
+    
+    if cID == userInfo.userID {
+        postData = selfPosts
+    }
+    else {
+        postData = contactsPosts[cID]
+    }
+    
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "cid":NSNumber(unsignedLongLong: cID)]
     
-    contactPosts.clear()
+    postData!.clear()
 
     http.postRequest("synccontactposts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let postsData = processErrorCode(response as! NSData, failed: nil)
             if postsData != nil {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(postsData!, options: .MutableContainers) as! [String:AnyObject] {
+                if let json = getJson(postsData!) {
                     if let postObjs = json["posts"] as? [AnyObject] {
-                        for case let postObj in (postObjs as? [[String:AnyObject]])! {
-                            if let post = PostInfo(json: postObj) {
-                                contactPosts.AddPost(post)
-                                // add comments
-                                if let cmtObjs = postObj["cmt"] as? [AnyObject] {
-                                    for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
-                                        if let cmt = CommentInfo(json: cmtObj) {
-                                            contactPosts.m_posts.last?.m_comments.append(cmt)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        contactPosts.getPreviews()
-                        contactPosts.Update()
+                        addPost(postData!, postObjs: postObjs)
+                        postData!.getPreviews()
+                        postData!.Update()
                     }
                 }
             }
@@ -178,21 +176,9 @@ func httpSyncNearbyPost() {
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let postsData = processErrorCode(response as! NSData, failed: nil)
             if postsData != nil {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(postsData!, options: .MutableContainers) as! [String:AnyObject] {
+                if let json = getJson(postsData!) {
                     if let postObjs = json["posts"] as? [AnyObject] {
-                        for case let postObj in (postObjs as? [[String:AnyObject]])! {
-                            if let post = PostInfo(json: postObj) {
-                                nearPosts.AddPost(post)
-                                // add comments
-                                if let cmtObjs = postObj["cmt"] as? [AnyObject] {
-                                    for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
-                                        if let cmt = CommentInfo(json: cmtObj) {
-                                            nearPosts.m_posts.last?.m_comments.append(cmt)
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        addPost(nearPosts, postObjs: postObjs)
                         nearPosts.getContacts()
                         nearPosts.getPreviews()
                         nearPosts.Update()
@@ -205,6 +191,31 @@ func httpSyncNearbyPost() {
         }
     )
 }
+
+func httpSyncGroupPost(gID:UInt32) {
+    let params: Dictionary = [
+        "uid":NSNumber(unsignedLongLong: userInfo.userID),
+        "gid":NSNumber(unsignedInt: gID)]
+    http.postRequest("syncgroupposts", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let postsData = processErrorCode(response as! NSData, failed: nil)
+            if postsData != nil {
+                if let json = getJson(postsData!) {
+                    if let postObjs = json["posts"] as? [AnyObject] {
+                        addPost(groupsPosts[gID]!, postObjs: postObjs)
+                        groupsPosts[gID]!.getContacts()
+                        groupsPosts[gID]!.getPreviews()
+                        groupsPosts[gID]!.Update()
+                    }
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+        }
+    )
+}
+
 
 func httpGetSnapshots(files:Array<String>, post:PostData) {
     let fileParam = http.getStringArrayParam(files)
