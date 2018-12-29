@@ -10,13 +10,14 @@ import Foundation
 import UIKit
 import AFNetworking
 
-let PubLvl_Friend:UInt8 = 0
-let PubLvl_Group:UInt8 = 1
-let PubLvl_Stranger:UInt8 = 2
+let UsrPosts:UInt32 = 0
+let FriPosts:UInt32 = 1
+let StrPosts:UInt32 = 2
 
-var friendPosts:PostData = PostData()
-var contactPosts:PostData = PostData()
-var nearPosts:PostData = PostData()
+var friendPosts  = PostData(src: FriPosts)
+var nearPosts    = PostData(src: StrPosts)
+var contactPosts = PostData(src: UsrPosts)
+
 var previews = Dictionary<String, UIImage>()
 
 struct PostInfo {
@@ -25,7 +26,6 @@ struct PostInfo {
     var flag:UInt64 = 0
     var content:String = ""
     var files:Array<String> = Array<String>()
-    //var snaps:Array<AnyObject> = Array<AnyObject>()
 }
 
 extension PostInfo {
@@ -45,8 +45,6 @@ extension PostInfo {
         
         let files = json["file"] as? [String]
         self.files = (files == nil ? Array<String>() : files!)
-        //let snaps = json["image"] as? [AnyObject]
-        //self.snaps = snaps
     }
 }
 
@@ -62,10 +60,10 @@ struct CommentInfo {
         
         if from != to && to != 0 {
             let toName = contactsData.getContact(to)!.name
-            str = fromName + " 回 " + toName + "：" + cmt
+            str = fromName + " 回 " + toName + ":" + cmt
         }
         else {
-            str = fromName + "：" + cmt
+            str = fromName + ":" + cmt
         }
         
         return str
@@ -120,6 +118,7 @@ class Post {
     var m_comments = Array<CommentInfo>()
     var m_imgUrls  = Array<String>()
     var m_imgKeys  = Array<String>()
+    var m_father:PostData?
     
     init(info:PostInfo) {
         m_info = info
@@ -132,7 +131,8 @@ class Post {
     }
     
     func getHeight(width:CGFloat, fullView: Bool)->CGFloat {
-        let articleHeight = (m_info.content.characters.count == 0 ? 0.0 : (getTextHeight(m_info.content, width: width, font: articleFont) + PostItemGapF))
+        let articleHeight = (m_info.content.characters.count == 0 ? 0.0 :
+            (getTextHeight(m_info.content, width: width, font: articleFont) + PostItemGapF))
         let previewHeight = (m_imgUrls.count == 0 ? 0.0 : ((width - PostItemGapF*2) / 3 + PostItemGapF))
         return articleHeight + previewHeight + (fullView ? PostPhotoSize + PostItemGapF + PostBtnSize + PostItemGapF : PostItemGapF)
     }
@@ -143,8 +143,13 @@ protocol PostDataDelegate {
 }
 
 class PostData {
+    var m_sorce:UInt32 = 0
     var m_posts = Array<Post>()
     var m_delegate:PostDataDelegate? = nil
+    
+    init(src:UInt32) {
+        m_sorce = src
+    }
     
     func AddPost(info:PostInfo) {
         for post in m_posts {
@@ -152,7 +157,9 @@ class PostData {
                 return
             }
         }
-        m_posts.append(Post(info: info))
+        let post = Post(info: info)
+        post.m_father = self
+        m_posts.append(post)
     }
     
     func Update() {

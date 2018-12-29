@@ -9,13 +9,13 @@
 import Foundation
 import AFNetworking
 
-func httpAddComment(post:Post, to:UInt64, pub:UInt8, cmt:String) {
+func httpAddComment(post:Post, to:UInt64, cmt:String) {
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "to":NSNumber(unsignedLongLong: to),
-        "pub":NSNumber(unsignedChar: pub),
         "oid":NSNumber(unsignedLongLong: post.m_info.user),
         "pid":NSNumber(unsignedLongLong: post.m_info.id),
+        "src":NSNumber(unsignedInt: post.m_father!.m_sorce),
         "last":NSNumber(unsignedLongLong: (post.m_comments.count == 0 ? 0 : (post.m_comments.last?.id)!)),
         "cmt":cmt]
     http.postRequest("comment", params: params,
@@ -49,13 +49,13 @@ func httpAddComment(post:Post, to:UInt64, pub:UInt8, cmt:String) {
     )
 }
 
-func httpDelComment(post:Post, cmt:CommentInfo, pub:UInt8) {
+func httpDelComment(post:Post, cmt:CommentInfo) {
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "cid":NSNumber(unsignedLongLong: cmt.id),
-        "pub":NSNumber(unsignedChar: pub),
         "oid":NSNumber(unsignedLongLong: post.m_info.user),
         "pid":NSNumber(unsignedLongLong: post.m_info.id),
+        "src":NSNumber(unsignedInt: post.m_father!.m_sorce),
         "last":NSNumber(unsignedLongLong: (post.m_comments.count == 0 ? 0 : (post.m_comments.last?.id)!))]
     http.postRequest("delcmt", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in

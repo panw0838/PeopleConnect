@@ -124,7 +124,7 @@ class Conversation {
         
         // new requests
         if id == 0 {
-            m_name = "新的朋友"
+            m_name = "好友申请"
             m_img = UIImage(named: "messages_requests")!
         }
     }
@@ -148,7 +148,7 @@ class Conversation {
     
     func lastMessage()->String? {
         if m_id == 0 {
-            return m_messages.count > 0 ? String(m_messages.count) + "个新好友申请" : "无新好友申请"
+            return String(m_messages.count) + "个新申请"
         }
         let lastIdx = m_messages.count - 1
         return getMessage(lastIdx)

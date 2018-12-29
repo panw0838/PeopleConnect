@@ -113,13 +113,6 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
         httpSyncPost()
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "ShowContact" {
-            let to = segue.destinationViewController as! ContactView
-            to.m_contact = contactsData.m_contacts[ContactView.ContactID]!
-        }
-    }
-    
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let post = friendPosts.postAtIdx(indexPath.section)
         let comment = post.m_comments[indexPath.row]
@@ -128,7 +121,7 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
             let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
             let okAction = UIAlertAction(title: "确定", style: .Destructive,
                 handler: { action in
-                    httpDelComment(post, cmt: comment, pub: PubLvl_Friend)
+                    httpDelComment(post, cmt: comment)
             })
             alert.addAction(noAction)
             alert.addAction(okAction)
@@ -140,7 +133,7 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
             let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
             let okAction = UIAlertAction(title: "确定", style: .Default,
                 handler: { action in
-                    httpAddComment(post, to: (comment.from), pub: PubLvl_Friend, cmt: (alert.textFields?.first?.text)!)
+                    httpAddComment(post, to: (comment.from), cmt: (alert.textFields?.first?.text)!)
             })
             alert.addTextFieldWithConfigurationHandler {
                 (textField: UITextField!) -> Void in

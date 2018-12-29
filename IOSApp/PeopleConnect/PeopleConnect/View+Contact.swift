@@ -15,8 +15,10 @@ class ContactView: PostsTable, UITableViewDelegate {
     @IBOutlet weak var m_profile: UIImageView!
     @IBOutlet weak var m_background: UIImageView!
     @IBOutlet weak var m_posts: UITableView!
+    @IBOutlet weak var m_reqBtn: UIButton!
     
     static var ContactID:UInt64 = 0
+    static var ShowReqBtn:Bool = false
     
     var m_contact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
     var m_messege:String = ""
@@ -25,8 +27,13 @@ class ContactView: PostsTable, UITableViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        m_contact = contactsData.m_contacts[ContactView.ContactID]!
+        httpSyncContactPost(ContactView.ContactID)
         setTable(m_posts, data: contactPosts, fullView: false)
         m_profile.layer.cornerRadius = 10
+        m_reqBtn.layer.cornerRadius = 10
+        m_reqBtn.hidden = !ContactView.ShowReqBtn
     }
 
     override func viewWillAppear(animated: Bool) {

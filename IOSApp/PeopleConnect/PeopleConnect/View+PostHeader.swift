@@ -55,7 +55,6 @@ class PostHeader: UITableViewHeaderFooterView {
     
     func clickContact() {
         ContactView.ContactID = (m_post?.m_info.user)!
-        httpSyncContactPost((m_post?.m_info.user)!)
         m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
     }
     
@@ -100,8 +99,8 @@ class PostHeader: UITableViewHeaderFooterView {
         let alert:UIAlertController = self.m_father!.presentedViewController as! UIAlertController
         let input:String = (alert.textFields?.first?.text)!
         let okAction:UIAlertAction = alert.actions.last!
-        let nameSize = input.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
-        okAction.enabled = (nameSize > 0 && nameSize < 50)
+        let len = input.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
+        okAction.enabled = (len > 0 && len < 50)
     }
     
     @IBAction func actComment(sender: AnyObject) {
@@ -109,7 +108,7 @@ class PostHeader: UITableViewHeaderFooterView {
         let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Default,
             handler: { action in
-                httpAddComment(self.m_post!, to:0, pub: PubLvl_Friend, cmt: (alert.textFields?.first?.text)!)
+                httpAddComment(self.m_post!, to:0, cmt: (alert.textFields?.first?.text)!)
         })
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
@@ -134,10 +133,10 @@ class PostHeader: UITableViewHeaderFooterView {
             
             m_photo.image = getPhoto((m_post?.m_info.user)!)
             m_photo.frame = CGRectMake(0, 0, PostPhotoSize, PostPhotoSize)
-            buttom = 40.0
+            buttom = PostPhotoSize + PostItemGapF
             
             m_name.text = contact?.name
-            m_name.frame = CGRectMake(45, 0, width, 20)
+            m_name.frame = CGRectMake(PostPhotoSize + PostItemGapF, 0, width, 20)
         }
         else {
             m_photo.hidden = true

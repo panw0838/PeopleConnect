@@ -8,12 +8,14 @@
 
 import Foundation
 
-let BitOne:       UInt64 = 0x1
-let BlacklistBit: UInt64 = 0x100000000
-let UndefineBit:  UInt64 = 0x200000000
-let UserTagMask:  UInt64 = 0xFFFFFFFF
-let RelateTagMask: UInt64 = (UserTagMask | 0x3E00000000)
-let GroupMask:    UInt64  = (UserTagMask | 0x3C00000000)
+let BitOne:         UInt64 = 0x1
+let BlacklistBit:   UInt64 = 0x100000000
+let UndefineBit:    UInt64 = 0x200000000
+let UserTagMask:    UInt64 = 0xFFFFFFFF
+let RelateTagMask:  UInt64 = (UserTagMask | 0x3E00000000)
+let GroupMask:      UInt64 = (UserTagMask | 0x3C00000000)
+let PossibleTag:    UInt8  = 0xFE
+let StrangerTag:    UInt8  = 0xFF
 
 protocol ContactDataDelegate {
     func ContactDataUpdate()->Void
@@ -198,8 +200,8 @@ var contactsData:ContactsData = ContactsData()
 class ContactsData {
     var m_blacklist = Tag(id: 0x20, father: 0, name: "黑名单")
     var m_undefine = Tag(id: 0x21, father: 0, name: "联系人")
-    var m_possible = Tag(id: 0xfe, father: 0, name: "可能认识的人")
-    var m_stranger = Tag(id: 0xff, father: 0, name: "附近的陌生人")
+    var m_possible = Tag(id: PossibleTag, father: 0, name: "可能认识的人")
+    var m_stranger = Tag(id: StrangerTag, father: 0, name: "附近的陌生人")
     var m_tags: Array<Tag> = Array<Tag>()
     var m_contacts = Dictionary<UInt64, ContactInfo>()
     var m_photos = Dictionary<UInt64, NSData>()

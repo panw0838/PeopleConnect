@@ -55,7 +55,7 @@ class ContactsView:
             presentViewController(error, animated: false, completion: nil)
         }
         else {
-            m_selectContact = uid
+            ContactView.ContactID = uid
             performSegueWithIdentifier("ShowContact", sender: nil)
         }
     }
@@ -168,27 +168,36 @@ class ContactsView:
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
-        m_selectContact = subTag.m_members[indexPath.row]
+        let cID = subTag.m_members[indexPath.row]
         let name = contactsData.getContact(m_selectContact)?.name
         
-        let alert = UIAlertController(title: name, message: "", preferredStyle: .ActionSheet)
-        let noAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
-        let msgAction = UIAlertAction(title: "发信息", style: .Default, handler: { action in
-            self.performSegueWithIdentifier("StartConversation", sender: nil)    
-        })
-        let callAction = UIAlertAction(title: "打电话", style: .Default, handler: { action in
-            
-        })
-        let detailAction = UIAlertAction(title: "查看资料", style: .Default, handler: { action in
+        if subTag.isStrangerTag() {
+            ContactView.ContactID = cID
             self.performSegueWithIdentifier("ShowContact", sender: nil)
-        })
-        
-        alert.addAction(noAction)
-        alert.addAction(msgAction)
-        alert.addAction(callAction)
-        alert.addAction(detailAction)
-        
-        self.presentViewController(alert, animated: true, completion: nil)
+        }
+        else {
+            let alert = UIAlertController(title: name, message: "", preferredStyle: .ActionSheet)
+            let noAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
+            
+            let msgAction = UIAlertAction(title: "发信息", style: .Default, handler: { action in
+                self.performSegueWithIdentifier("StartConversation", sender: nil)
+            })
+            
+            let callAction = UIAlertAction(title: "打电话", style: .Default, handler: { action in
+            })
+            
+            let detailAction = UIAlertAction(title: "查看资料", style: .Default, handler: { action in
+                ContactView.ContactID = cID
+                self.performSegueWithIdentifier("ShowContact", sender: nil)
+            })
+            
+            alert.addAction(noAction)
+            alert.addAction(msgAction)
+            alert.addAction(callAction)
+            alert.addAction(detailAction)
+            
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
     }
     
     func tabBar(tabBar: UITabBar, didSelectItem item: UITabBarItem) {
@@ -206,11 +215,6 @@ class ContactsView:
             let from = sender?.superview as! SubTagHeader
             let to = segue.destinationViewController as! MoveMemberView
             to.m_tagID = from.m_tagID
-        }
-        if segue.identifier == "ShowContact" {
-            let to = segue.destinationViewController as! ContactView
-            to.m_contact = contactsData.m_contacts[self.m_selectContact]!
-            httpSyncContactPost(self.m_selectContact)
         }
         if segue.identifier == "StartConversation" {
             let to = segue.destinationViewController as! ConversationView

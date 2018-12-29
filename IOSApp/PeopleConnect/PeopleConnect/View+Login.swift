@@ -123,6 +123,7 @@ class LogView: BaseLogRegView {
         m_cellBtn.layer.cornerRadius = 10
         m_countryBtn.layer.cornerRadius = 10
         m_passBtn.layer.cornerRadius = 10
+        m_photo.layer.cornerRadius = 10
         m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
         m_getCodeBtn.hidden = true
         m_logBtn.enabled = false

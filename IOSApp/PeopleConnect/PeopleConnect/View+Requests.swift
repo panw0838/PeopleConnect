@@ -21,7 +21,6 @@ class RequestCell:UITableViewCell {
     
     @IBAction func showContact(sender:AnyObject) {
         ContactView.ContactID = m_uid
-        httpSyncContactPost(m_uid)
         m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
     }
     

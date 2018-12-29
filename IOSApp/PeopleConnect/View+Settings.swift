@@ -18,16 +18,16 @@ let msgFont = UIFont.systemFontOfSize(13.0)
 let hlTextColor = UIColor(red: 0.28, green: 0.35, blue: 0.54, alpha: 1.0)
 let linkTextColor = UIColor(red: 0.09, green: 0.49, blue: 0.99, alpha: 1.0)
 
-let PostPhotoSize:CGFloat = 40.0
-let PostBtnSize:CGFloat = 30.0
-let PostItemGapF:CGFloat = 5.0
+let PostPhotoSize:CGFloat = 45
+let PostBtnSize:CGFloat = 30
+let PostItemGapF:CGFloat = 5
 
 func getTextHeight(text:String, width:CGFloat, font:UIFont)->CGFloat {
     let maxSize = CGSizeMake(width, CGFloat(MAXFLOAT))
     let style = NSMutableParagraphStyle()
-    style.alignment = .Left
+    //style.alignment = .Left
     style.lineBreakMode = .ByWordWrapping
-    style.lineSpacing = 6
+    //style.lineSpacing = 6
 
     let dict = [NSFontAttributeName:font, NSParagraphStyleAttributeName:style]
     let size = text.boundingRectWithSize(maxSize, options: [.UsesLineFragmentOrigin], attributes: dict, context: nil)
