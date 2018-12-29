@@ -127,7 +127,7 @@ func dbGetPossibleContacts(uID uint64, c redis.Conn) ([]PossibleContact, error) 
 	}
 
 	var result []PossibleContact
-	values, err := redis.Values(c.Do("ZRANGE", uinonKey, 0, share.MAX_TIME, "WITHSCORES"))
+	values, err := redis.Values(c.Do("ZRANGE", uinonKey, 0, share.MAX_U64, "WITHSCORES"))
 	if err != nil {
 		return nil, err
 	}

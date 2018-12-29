@@ -1,6 +1,7 @@
 package post
 
 import (
+	"share"
 	"user"
 
 	"github.com/garyburd/redigo/redis"
@@ -73,7 +74,7 @@ func groupComment(uID uint64, gID uint32, from uint64, to uint64, c redis.Conn) 
 		return true, nil
 	}
 
-	groupKey := getGroupKey(gID)
+	groupKey := share.GetGroupKey(gID)
 
 	fromMember, err := redis.Int(c.Do("SISMEMBER", groupKey, from))
 	if err != nil {
@@ -94,6 +95,13 @@ func groupComment(uID uint64, gID uint32, from uint64, to uint64, c redis.Conn) 
 			return false, err
 		}
 		canSee = (toMember == 1)
+		if canSee {
+			fromBlack, err := user.IsBlacklist(uID, from, c)
+			if err != nil {
+				return false, err
+			}
+			canSee = !fromBlack
+		}
 	}
 
 	return canSee, nil

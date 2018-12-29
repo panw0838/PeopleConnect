@@ -127,8 +127,7 @@ func UpdateCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	var response UpdateCommentsReturn
 
 	for _, cmtInput := range input.Comments {
-		cmtKey := getCommentKey(cmtInput.Owner, cmtInput.Post)
-		comments, err := dbGetComments(cmtKey, input.User, input.Source, cmtInput.Start, c)
+		comments, err := dbGetComments(cmtInput.Owner, cmtInput.Post, input.User, input.Source, cmtInput.Start, c)
 		if err != nil {
 			header[0] = 3
 			w.Write(header)

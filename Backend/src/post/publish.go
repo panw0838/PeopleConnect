@@ -49,6 +49,13 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 				}
 			}
 		}
+
+		// add to self friend publish
+		selfKey := getFPubKey(uID)
+		_, err = c.Do("ZADD", selfKey, post.ID, publishStr)
+		if err != nil {
+			return err
+		}
 	}
 
 	// add to group timeline
@@ -68,13 +75,6 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 		if err != nil {
 			return err
 		}
-	}
-
-	// add to self timeline
-	fpostsKey := getFPubKey(uID)
-	_, err := c.Do("ZADD", fpostsKey, post.ID, publishStr)
-	if err != nil {
-		return err
 	}
 
 	return nil
@@ -97,8 +97,7 @@ func dbGetFriendPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]Pos
 			return nil, err
 		}
 		// get friends comments
-		cmtsKey := getCommentKey(oID, post.ID)
-		post.Comments, err = dbGetComments(cmtsKey, uID, FriendGroup, 0, c)
+		post.Comments, err = dbGetComments(oID, post.ID, uID, FriendGroup, 0, c)
 		if err != nil {
 			return nil, err
 		}
@@ -122,29 +121,28 @@ func dbGetNearbyPublish(input SyncNearbyPostsInput, from uint64, to uint64, c re
 			var oID uint64
 			var pID uint64
 			fmt.Sscanf(publish, "%d:%d", &oID, &pID)
-			post, err := dbGetPost(oID, pID, c)
-			if err != nil {
-				return nil, err
-			}
 
-			var canSee = true
 			if input.User != oID {
 				isStranger, err := user.IsStranger(input.User, oID, c)
 				if err != nil {
 					return nil, err
 				}
-				canSee = isStranger
+				if !isStranger {
+					continue
+				}
 			}
 
-			if canSee {
-				// get strangers comments
-				cmtsKey := getCommentKey(oID, post.ID)
-				post.Comments, err = dbGetComments(cmtsKey, input.User, StrangerGroup, 0, c)
-				if err != nil {
-					return nil, err
-				}
-				results = append(results, post)
+			post, err := dbGetPost(oID, pID, c)
+			if err != nil {
+				return nil, err
 			}
+
+			// get strangers comments
+			post.Comments, err = dbGetComments(oID, post.ID, input.User, StrangerGroup, 0, c)
+			if err != nil {
+				return nil, err
+			}
+			results = append(results, post)
 		}
 	}
 	return results, nil
@@ -162,29 +160,28 @@ func dbGetGroupPublish(uID uint64, gID uint32, from uint64, to uint64, c redis.C
 		var oID uint64
 		var pID uint64
 		fmt.Sscanf(publish, "%d:%d", &oID, &pID)
-		post, err := dbGetPost(oID, pID, c)
-		if err != nil {
-			return nil, err
-		}
 
-		var canSee = true
 		if uID != oID {
 			isBlacklist, err := user.IsBlacklist(uID, oID, c)
 			if err != nil {
 				return nil, err
 			}
-			canSee = !isBlacklist
+			if isBlacklist {
+				continue
+			}
 		}
 
-		if canSee {
-			// get group comments
-			cmtsKey := getCommentKey(oID, post.ID)
-			post.Comments, err = dbGetComments(cmtsKey, uID, gID, 0, c)
-			if err != nil {
-				return nil, err
-			}
-			results = append(results, post)
+		post, err := dbGetPost(oID, pID, c)
+		if err != nil {
+			return nil, err
 		}
+
+		// get group comments
+		post.Comments, err = dbGetComments(oID, post.ID, uID, gID, 0, c)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, post)
 	}
 
 	return results, nil

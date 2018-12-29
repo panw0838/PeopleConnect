@@ -1,23 +1,15 @@
 package post
 
 import (
-	"strconv"
+	"share"
 	"user"
 
 	"github.com/garyburd/redigo/redis"
 )
 
-func getGroupKey(gID uint32) string {
-	return "group:" + strconv.FormatUint(uint64(gID), 10)
-}
-
-func getUserGroupKey(uID uint64) string {
-	return "group:" + strconv.FormatUint(uID, 10)
-}
-
 // uID already checked
 func dbVisibleInGroup(gID uint32, uID uint64, cID uint64, c redis.Conn) (bool, error) {
-	groupKey := getGroupKey(gID)
+	groupKey := share.GetGroupKey(gID)
 
 	isMember, err := redis.Int(c.Do("SISMEMBER", groupKey, cID))
 	if err != nil {
@@ -37,7 +29,7 @@ func dbVisibleInGroup(gID uint32, uID uint64, cID uint64, c redis.Conn) (bool, e
 func dbGetUserGroups(uID uint64, c redis.Conn) ([]uint32, error) {
 	var result []uint32
 
-	groupKey := getUserGroupKey(uID)
+	groupKey := share.GetUserGroupKey(uID)
 	values, err := redis.Values(c.Do("SMEMBERS", groupKey))
 	if err != nil {
 		return nil, err

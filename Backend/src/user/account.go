@@ -22,6 +22,7 @@ const PassField = "pass"
 const IPField = "ip"
 const XFiled = "x"
 const YFiled = "y"
+const GroupsFiled = "groups"
 
 func GetAccountKey(userID uint64) string {
 	return "user:" + strconv.FormatUint(userID, 10)

@@ -27,7 +27,8 @@ func getCommentKey(uID uint64, pID uint64) string {
 	return "cmt:" + strconv.FormatUint(uID, 10) + ":" + strconv.FormatUint(pID, 10)
 }
 
-func dbGetComments(cmtKey string, uID uint64, src uint32, from uint64, c redis.Conn) ([]Comment, error) {
+func dbGetComments(oID uint64, pID uint64, uID uint64, src uint32, from uint64, c redis.Conn) ([]Comment, error) {
+	cmtKey := getCommentKey(oID, pID)
 	values, err := redis.Values(c.Do("ZRANGEBYSCORE", cmtKey, from, share.MAX_TIME))
 	if err != nil {
 		return nil, err

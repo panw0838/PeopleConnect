@@ -83,10 +83,6 @@ func GetGeoID(x float64, y float64) uint64 {
 	return (resultX | resultY)
 }
 
-func GetRequestsKey(user uint64) string {
-	return "requests:" + strconv.FormatUint(user, 10)
-}
-
 func WriteU16(w http.ResponseWriter, value uint16) {
 	var bufU16 = make([]byte, 2)
 	binary.LittleEndian.PutUint16(bufU16, value)
