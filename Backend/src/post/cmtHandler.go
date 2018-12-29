@@ -16,6 +16,7 @@ type AddCmtInput struct {
 	PostOwner uint64 `json:"oid"`
 	PostID    uint64 `json:"pid"`
 	Msg       string `json:"cmt"`
+	Group     uint32 `json:"src"`
 }
 
 type CommentResponse struct {

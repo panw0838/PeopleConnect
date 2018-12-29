@@ -37,7 +37,7 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 			if err != nil {
 				return err
 			}
-			canSee, err := friendPost(cID, uID, post.Flag, c)
+			canSee, err := canSeeFPost(cID, uID, post.Flag, c)
 			if err != nil {
 				return err
 			}
@@ -48,13 +48,6 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 					return err
 				}
 			}
-		}
-
-		// add to self friend publish
-		selfKey := getFPubKey(uID)
-		_, err = c.Do("ZADD", selfKey, post.ID, publishStr)
-		if err != nil {
-			return err
 		}
 	}
 
@@ -122,14 +115,16 @@ func dbGetNearbyPublish(input SyncNearbyPostsInput, from uint64, to uint64, c re
 			var pID uint64
 			fmt.Sscanf(publish, "%d:%d", &oID, &pID)
 
-			if input.User != oID {
-				isStranger, err := user.IsStranger(input.User, oID, c)
-				if err != nil {
-					return nil, err
-				}
-				if !isStranger {
-					continue
-				}
+			if input.User == oID {
+				continue
+			}
+
+			isStranger, err := user.IsStranger(input.User, oID, c)
+			if err != nil {
+				return nil, err
+			}
+			if !isStranger {
+				continue
 			}
 
 			post, err := dbGetPost(oID, pID, c)
@@ -161,14 +156,16 @@ func dbGetGroupPublish(uID uint64, gID uint32, from uint64, to uint64, c redis.C
 		var pID uint64
 		fmt.Sscanf(publish, "%d:%d", &oID, &pID)
 
-		if uID != oID {
-			isBlacklist, err := user.IsBlacklist(uID, oID, c)
-			if err != nil {
-				return nil, err
-			}
-			if isBlacklist {
-				continue
-			}
+		if uID == oID {
+			continue
+		}
+
+		isBlacklist, err := user.IsBlacklist(uID, oID, c)
+		if err != nil {
+			return nil, err
+		}
+		if isBlacklist {
+			continue
 		}
 
 		post, err := dbGetPost(oID, pID, c)

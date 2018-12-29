@@ -11,10 +11,11 @@ import (
 )
 
 type Comment struct {
-	From uint64 `json:"from"`
-	To   uint64 `json:"to"`
-	Msg  string `json:"msg"`
-	ID   uint64 `json:"id"`
+	From  uint64 `json:"from"`
+	To    uint64 `json:"to"`
+	Msg   string `json:"msg"`
+	ID    uint64 `json:"id"`
+	Group uint32 `json:"src"`
 }
 
 type CommentsData struct {
@@ -45,7 +46,8 @@ func dbGetComments(oID uint64, pID uint64, uID uint64, src uint32, from uint64, 
 		if err != nil {
 			return nil, err
 		}
-		canSee, err := canSeeComment(uID, src, comment.From, comment.To, c)
+
+		canSee, err := canSeeComment(uID, oID, src, comment, c)
 		if err != nil {
 			return nil, err
 		}
@@ -63,6 +65,7 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, error) {
 	comment.To = input.To
 	comment.Msg = input.Msg
 	comment.ID = share.GetTimeID(time.Now())
+	comment.Group = input.Group
 	bytes, err := json.Marshal(comment)
 	if err != nil {
 		return 0, err

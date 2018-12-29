@@ -1,21 +1,20 @@
 package post
 
 import (
-	"share"
 	"user"
 
 	"github.com/garyburd/redigo/redis"
 )
 
-const SelfGroup uint32 = 0
+const AllGroups uint32 = 0
 const FriendGroup uint32 = 1
 const StrangerGroup uint32 = 2
 
-func PostForFriend(uFlag uint64, pFlag uint64) bool {
+func PostVisibleForFriend(uFlag uint64, pFlag uint64) bool {
 	return ((uFlag & pFlag & user.FriendMask) != 0)
 }
 
-func friendPost(uID uint64, oID uint64, pFlag uint64, c redis.Conn) (bool, error) {
+func canSeeFPost(uID uint64, oID uint64, pFlag uint64, c redis.Conn) (bool, error) {
 	var canSee = true
 
 	if uID != oID {
@@ -23,24 +22,24 @@ func friendPost(uID uint64, oID uint64, pFlag uint64, c redis.Conn) (bool, error
 		if err != nil {
 			return false, err
 		}
-		canSee = PostForFriend(oFlag, pFlag)
+		canSee = PostVisibleForFriend(oFlag, pFlag)
 	}
 
 	return canSee, nil
 }
 
-func friendComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool, error) {
-	if uID == from || uID == to {
+func canSeeFCmt(uID uint64, cmt Comment, c redis.Conn) (bool, error) {
+	if uID == cmt.From || uID == cmt.To {
 		return true, nil
 	}
 
-	canSee, err := user.IsFriend(from, uID, c)
+	canSee, err := user.IsFriend(cmt.From, uID, c)
 	if err != nil {
 		return false, err
 	}
 
-	if canSee && to != 0 {
-		canSee, err = user.IsFriend(to, uID, c)
+	if canSee && cmt.To != 0 {
+		canSee, err = user.IsFriend(cmt.To, uID, c)
 		if err != nil {
 			return false, err
 		}
@@ -49,18 +48,18 @@ func friendComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool, erro
 	return canSee, nil
 }
 
-func strangerComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool, error) {
-	if uID == from || uID == to {
+func canSeeNCmt(uID uint64, cmt Comment, c redis.Conn) (bool, error) {
+	if uID == cmt.From || uID == cmt.To {
 		return true, nil
 	}
 
-	canSee, err := user.IsStranger(from, uID, c)
+	canSee, err := user.IsStranger(cmt.From, uID, c)
 	if err != nil {
 		return false, err
 	}
 
-	if canSee && to != 0 {
-		canSee, err = user.IsStranger(to, uID, c)
+	if canSee && cmt.To != 0 {
+		canSee, err = user.IsStranger(cmt.To, uID, c)
 		if err != nil {
 			return false, err
 		}
@@ -69,55 +68,43 @@ func strangerComment(uID uint64, from uint64, to uint64, c redis.Conn) (bool, er
 	return canSee, nil
 }
 
-func groupComment(uID uint64, gID uint32, from uint64, to uint64, c redis.Conn) (bool, error) {
-	if uID == from || uID == to {
+func canSeeGCmt(uID uint64, gID uint32, cmt Comment, c redis.Conn) (bool, error) {
+	if uID == cmt.From || uID == cmt.To {
 		return true, nil
 	}
 
-	groupKey := share.GetGroupKey(gID)
-
-	fromMember, err := redis.Int(c.Do("SISMEMBER", groupKey, from))
+	black, err := user.IsBlacklist(uID, cmt.From, c)
 	if err != nil {
 		return false, err
 	}
-	canSee := (fromMember == 1)
-	if canSee {
-		fromBlack, err := user.IsBlacklist(uID, from, c)
-		if err != nil {
-			return false, err
-		}
-		canSee = !fromBlack
-	}
+	canSee := !black
 
-	if canSee && to != 0 {
-		toMember, err := redis.Int(c.Do("SISMEMBER", groupKey, from))
+	if canSee && cmt.To != 0 {
+		black, err = user.IsBlacklist(uID, cmt.To, c)
 		if err != nil {
 			return false, err
 		}
-		canSee = (toMember == 1)
-		if canSee {
-			fromBlack, err := user.IsBlacklist(uID, from, c)
-			if err != nil {
-				return false, err
-			}
-			canSee = !fromBlack
-		}
+		canSee = !black
 	}
 
 	return canSee, nil
 }
 
-func canSeeComment(uID uint64, src uint32, from uint64, to uint64, c redis.Conn) (bool, error) {
-	if src == SelfGroup {
+func canSeeComment(uID uint64, oID uint64, src uint32, cmt Comment, c redis.Conn) (bool, error) {
+	if src == AllGroups || cmt.Group == AllGroups {
 		return true, nil
-	} else if src == FriendGroup {
-		// friends publish
-		return friendComment(uID, from, to, c)
-	} else if src == StrangerGroup {
-		// stranger publish
-		return strangerComment(uID, from, to, c)
+	} else if src != cmt.Group {
+		return false, nil
 	} else {
-		// group publish
-		return groupComment(uID, src, from, to, c)
+		if src == FriendGroup {
+			// friends publish
+			return canSeeFCmt(uID, cmt, c)
+		} else if src == StrangerGroup {
+			// stranger publish
+			return canSeeNCmt(uID, cmt, c)
+		} else {
+			// group publish
+			return canSeeGCmt(uID, src, cmt, c)
+		}
 	}
 }

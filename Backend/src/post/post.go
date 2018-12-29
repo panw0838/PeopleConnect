@@ -2,6 +2,7 @@ package post
 
 import (
 	"encoding/json"
+	"group"
 	"strconv"
 	"user"
 
@@ -81,7 +82,7 @@ func dbGetSelfPosts(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostDat
 		}
 
 		post.Owner = uID
-		comments, err := dbGetComments(uID, post.ID, uID, SelfGroup, 0, c)
+		comments, err := dbGetComments(uID, post.ID, uID, AllGroups, 0, c)
 		if err != nil {
 			return nil, err
 		}
@@ -105,11 +106,6 @@ func dbGetUserPosts(uID uint64, cID uint64, from uint64, to uint64, c redis.Conn
 	isFriend := user.IsFriendFlag(uFlag, cFlag)
 	isStranger := user.IsStrangerFlag(uFlag, cFlag)
 
-	groups, err := dbGetUserGroups(uID, c)
-	if err != nil {
-		return nil, err
-	}
-
 	postsKey := getPostKey(cID)
 	values, err := redis.Values(c.Do("ZRANGEBYSCORE", postsKey, from, to))
 	if err != nil {
@@ -132,18 +128,25 @@ func dbGetUserPosts(uID uint64, cID uint64, from uint64, to uint64, c redis.Conn
 		var canSee = false
 
 		// check friend posts
-		if isFriend && PostForFriend(cFlag, post.Flag) {
+		if isFriend && PostVisibleForFriend(cFlag, post.Flag) {
 			canSee = true
-		}
-		// check group posts
-		if !canSee && len(groups) > 0 && len(post.Groups) > 0 {
-			if inSameGroup(groups, post.Groups) {
-				canSee = true
-			}
 		}
 		// check stranger posts
 		if !canSee && isStranger && post.Nearby {
 			canSee = true
+		}
+		// check group posts
+		if !canSee && len(post.Groups) > 0 {
+			for _, gID := range post.Groups {
+				isMember, err := group.DbIsGroupMember(gID, uID, c)
+				if err != nil {
+					return results, err
+				}
+				if isMember {
+					canSee = true
+					break
+				}
+			}
 		}
 
 		// no comments for user posts
