@@ -47,7 +47,7 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCellWithIdentifier("CommentCell", forIndexPath: indexPath) as! CommentCell
         let post = m_data!.postAtIdx(indexPath.section)
         let comment = post.m_comments[indexPath.row]
-        cell.m_comment.attributedText = comment.getAttrString()
+        cell.m_comment.attributedText = comment.getAttrString(m_data?.m_sorce == 0)
         return cell
     }
     
@@ -68,7 +68,7 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let post = m_data!.postAtIdx(indexPath.section)
         let comment = post.m_comments[indexPath.row]
-        return getTextHeight(comment.getString(), width: m_table!.contentSize.width, font: commentFont)
+        return getTextHeight(comment.getString(m_data?.m_sorce == 0), width: m_table!.contentSize.width, font: commentFont)
     }
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -137,7 +137,8 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
             let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
             let okAction = UIAlertAction(title: "确定", style: .Default,
                 handler: { action in
-                    httpAddComment(post, to: (comment.from), cmt: (alert.textFields?.first?.text)!)
+                    let src = (self.m_data?.m_sorce != 0 ? (self.m_data?.m_sorce)! : comment.src)
+                    httpAddComment(post, to: (comment.from), src: src, cmt: (alert.textFields?.first?.text)!)
             })
             alert.addTextFieldWithConfigurationHandler {
                 (textField: UITextField!) -> Void in

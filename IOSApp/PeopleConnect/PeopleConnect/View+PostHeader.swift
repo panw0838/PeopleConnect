@@ -108,7 +108,7 @@ class PostHeader: UITableViewHeaderFooterView {
         let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Default,
             handler: { action in
-                httpAddComment(self.m_post!, to:0, cmt: (alert.textFields?.first?.text)!)
+                httpAddComment(self.m_post!, to:0, src: (self.m_post!.m_father?.m_sorce)!, cmt: (alert.textFields?.first?.text)!)
         })
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in

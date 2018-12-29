@@ -9,13 +9,14 @@
 import Foundation
 import AFNetworking
 
-func httpAddComment(post:Post, to:UInt64, cmt:String) {
+func httpAddComment(post:Post, to:UInt64, src:UInt32, cmt:String) {
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "to":NSNumber(unsignedLongLong: to),
         "oid":NSNumber(unsignedLongLong: post.m_info.user),
         "pid":NSNumber(unsignedLongLong: post.m_info.id),
-        "cmt":cmt]
+        "cmt":cmt,
+        "src":NSNumber(unsignedInt: src)]
     http.postRequest("comment", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let subData = processErrorCode(response as! NSData, failed: nil)
@@ -27,6 +28,7 @@ func httpAddComment(post:Post, to:UInt64, cmt:String) {
                         newComment.to   = to
                         newComment.id   = id.unsignedLongLongValue
                         newComment.cmt  = cmt
+                        newComment.src  = src
                         post.m_comments.append(newComment)
                         post.m_father?.Update()
                     }
