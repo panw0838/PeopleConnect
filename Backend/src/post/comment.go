@@ -106,6 +106,12 @@ func dbDelComment(input DelCmtInput, c redis.Conn) error {
 	return nil
 }
 
+func dbGetLike(uID uint64, oID uint64, pID uint64, c redis.Conn) (bool, error) {
+	likeKey := share.GetPostLikeKey(oID, pID)
+	like, err := redis.Int(c.Do("SISMEMBER", likeKey, uID))
+	return (like == 1), err
+}
+
 func dbGetLikes(oID uint64, pID uint64, c redis.Conn) ([]int64, error) {
 	likeKey := share.GetPostLikeKey(oID, pID)
 	members, err := redis.Int64s(c.Do("SMEMBERS", likeKey))

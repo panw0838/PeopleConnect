@@ -90,6 +90,10 @@ func dbGetFriendPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]Pos
 			return nil, err
 		}
 		if success {
+			post.Liked, err = dbGetLike(uID, oID, pID, c)
+			if err != nil {
+				return nil, err
+			}
 			// get friends comments
 			post.Comments, err = dbGetComments(oID, post.ID, uID, FriendGroup, 0, c)
 			if err != nil {
@@ -134,6 +138,10 @@ func dbGetNearbyPublish(input SyncNearbyPostsInput, from uint64, to uint64, c re
 				return nil, err
 			}
 			if success {
+				post.Liked, err = dbGetLike(input.User, oID, pID, c)
+				if err != nil {
+					return nil, err
+				}
 				// get strangers comments
 				post.Comments, err = dbGetComments(oID, post.ID, input.User, StrangerGroup, 0, c)
 				if err != nil {
@@ -176,6 +184,10 @@ func dbGetGroupPublish(uID uint64, gID uint32, from uint64, to uint64, c redis.C
 			return nil, err
 		}
 		if success {
+			post.Liked, err = dbGetLike(uID, oID, pID, c)
+			if err != nil {
+				return nil, err
+			}
 			// get group comments
 			post.Comments, err = dbGetComments(oID, post.ID, uID, gID, 0, c)
 			if err != nil {
