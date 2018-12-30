@@ -92,7 +92,7 @@ class ImgFullview:UIView, UIScrollViewDelegate {
     }
     
     func show(post:Post, index:Int, sender:UIImageView) {
-        let numPages = post.m_imgKeys.count
+        let numPages = post.numImages()
         
         m_pageCtrl?.currentPage = index
         m_pageCtrl?.numberOfPages = numPages
@@ -123,7 +123,7 @@ class ImgFullview:UIView, UIScrollViewDelegate {
             // 转换Frame
             let pageRect = CGRectMake(CGFloat(i)*self.frame.width, 0, self.frame.width, self.frame.height)
             sender.superview?.convertRect(sender.frame, toView: window)
-            pageView.reload(pageRect, image: UIImage(data: getPostPreview(post.m_imgKeys[i])!)!)
+            pageView.reload(pageRect, image: post.getPreview(i))
             
             if i == index {
                 UIView.animateWithDuration(0.3, animations: {()->Void in

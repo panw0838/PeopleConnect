@@ -52,6 +52,10 @@ func getPhotoMissingList(cIDs:Array<UInt64>)->Array<UInt64> {
     return ids
 }
 
+func getPreviewKey(info:PostInfo, i:Int)->String {
+    return String(info.user) + "_" + String(info.id) + "_" + info.files[i]
+}
+
 func getPostPreviewPath(file:String)->String {
     let cacheDir = NSSearchPathForDirectoriesInDomains(.CachesDirectory, .UserDomainMask, true)[0]
     return cacheDir + "/preview/" + file

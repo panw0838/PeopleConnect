@@ -173,7 +173,7 @@ class PostHeader: UITableViewHeaderFooterView {
             m_article.hidden = true
         }
         
-        if m_post?.m_imgUrls.count > 0 {
+        if m_post?.numImages() > 0 {
             let height = (width - PostItemGapF*2) / 3
             m_previews.hidden = false
             m_previews.frame = CGRectMake(0, buttom + PostItemGapF, width, height)

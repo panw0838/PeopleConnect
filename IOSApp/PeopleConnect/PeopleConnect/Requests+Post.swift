@@ -96,7 +96,18 @@ func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>, groups:Array<UI
                 if let json = try? NSJSONSerialization.JSONObjectWithData(retData!, options: .MutableContainers) {
                     let dict: NSDictionary = json as! NSDictionary
                     let pID = (UInt64)((dict["post"]?.unsignedLongLongValue)!)
-                    print("%d", pID)
+                    var postInfo = PostInfo()
+                    postInfo.user = userInfo.userID
+                    postInfo.id = pID
+                    postInfo.flag = flag
+                    postInfo.content = desc
+                    for (idx, data) in datas.enumerate() {
+                        postInfo.files.append(String(idx)+".png")
+                        let previewKey = getPreviewKey(postInfo, i: idx)
+                        previews[previewKey] = UIImage(data: data)
+                    }
+                    selfPosts.AddPost(postInfo)
+                    selfPosts.Update()
                 }
             }
         },

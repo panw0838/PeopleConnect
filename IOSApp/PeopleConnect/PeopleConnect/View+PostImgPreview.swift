@@ -71,11 +71,12 @@ class ImgPreview: UIView {
 
     func reload(post:Post) {
         m_post = post
-        if post.m_imgKeys.count == 0 {
+        let numImgs = post.numImages()
+        if numImgs == 0 {
             self.hidden = true
         }
         else {
-            initPreviewPattern(post.m_imgKeys.count)
+            initPreviewPattern(numImgs)
             
             for preImg in m_preImgs {
                 preImg.hidden = true
@@ -85,26 +86,26 @@ class ImgPreview: UIView {
             let blkSize = (self.frame.height - m_gap) / 2
             let step = blkSize + m_gap
             
-            for (idx, imgKey) in post.m_imgKeys.enumerate() {
-                let layout = m_pattern[idx]
+            for var i=0; i<numImgs; i++ {
+                let layout = m_pattern[i]
                 let size = (layout.scale == 1 ? blkSize : fullSize)
-                m_preImgs[idx].hidden = false
-                m_preImgs[idx].image = (previews[imgKey] == nil ? UIImage(named: "loading") : previews[imgKey])
-                m_preImgs[idx].frame = CGRectMake(CGFloat(layout.xNumBlk)*step, CGFloat(layout.yNumBlk)*step, size, size)
+                m_preImgs[i].hidden = false
+                m_preImgs[i].image = post.getPreview(i)
+                m_preImgs[i].frame = CGRectMake(CGFloat(layout.xNumBlk)*step, CGFloat(layout.yNumBlk)*step, size, size)
             }
         }
     }
     
     func getFullImg(idx:Int) {
-        http.getFile((m_post?.m_imgUrls[idx])!,
-            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+        //http.getFile((m_post?.m_imgUrls[idx])!,
+        //    success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
                 //let data = response as! NSData
                 //cell.m_preview.image = UIImage(data: data)
-            },
-            fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-                print("请求失败")
-            }
-        )
+        //    },
+        //    fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+        //        print("请求失败")
+        //    }
+        //)
     }
     
     func initPreviewPattern(numImgs:Int) {

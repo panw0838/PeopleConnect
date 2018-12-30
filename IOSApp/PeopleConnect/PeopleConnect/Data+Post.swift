@@ -131,24 +131,30 @@ class Post {
     var m_info:PostInfo = PostInfo()
     var m_likes = Array<UInt64>()
     var m_comments = Array<CommentInfo>()
-    var m_imgUrls  = Array<String>()
-    var m_imgKeys  = Array<String>()
     var m_father:PostData?
     
     init(info:PostInfo) {
         m_info = info
-        
-        for file in m_info.files {
-            let fileUrl = getFileUrl(info.user, pID: info.id, fileName: file)
-            m_imgUrls.append(fileUrl)
-            m_imgKeys.append(String(m_info.user) + "_" + String(m_info.id) + "_" + file)
-        }
+    }
+    
+    func numImages()->Int {
+        return m_info.files.count
+    }
+    
+    func previewExists(idx:Int)->Bool {
+        let key = getPreviewKey(m_info, i: idx)
+        return (previews[key] == nil)
+    }
+    
+    func getPreview(idx:Int)->UIImage {
+        let key = getPreviewKey(m_info, i: idx)
+        return (previews[key] == nil ? UIImage(named: "loading")! : previews[key]!)
     }
     
     func getHeight(width:CGFloat, fullView: Bool)->CGFloat {
         let articleHeight = (m_info.content.characters.count == 0 ? 0.0 :
             (getTextHeight(m_info.content, width: width, font: articleFont) + PostItemGapF))
-        let previewHeight = (m_imgUrls.count == 0 ? 0.0 : ((width - PostItemGapF*2) / 3 + PostItemGapF))
+        let previewHeight = (numImages() == 0 ? 0.0 : ((width - PostItemGapF*2) / 3 + PostItemGapF))
         return articleHeight + previewHeight + (fullView ? PostPhotoSize + PostItemGapF + PostBtnSize + PostItemGapF : PostItemGapF)
     }
 }
@@ -224,7 +230,8 @@ class PostData {
     func getPreviews() {
         var files = Array<String>()
         for post in m_posts {
-            for key in post.m_imgKeys {
+            for var i=0; i<post.numImages(); i++ {
+                let key = getPreviewKey(post.m_info, i: i)
                 let preview = getPostPreview(key)
                 if preview == nil {
                     files.append(key)
