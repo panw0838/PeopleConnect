@@ -16,6 +16,7 @@
 		1860EFC321D4BC0B00402460 /* Requests+Cmt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1860EFC221D4BC0B00402460 /* Requests+Cmt.swift */; };
 		1860EFC521D53ED600402460 /* View+Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1860EFC421D53ED600402460 /* View+Requests.swift */; };
 		1897D00B21D5DD1800E4A02A /* View+PostImgFullview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1897D00A21D5DD1800E4A02A /* View+PostImgFullview.swift */; };
+		1897D00D21D888E200E4A02A /* Data+Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1897D00C21D888E200E4A02A /* Data+Utility.swift */; };
 		18AE41F62199E2680008B792 /* server.cer in Resources */ = {isa = PBXBuildFile; fileRef = 18AE41F52199E2680008B792 /* server.cer */; };
 		18AE420A219AC4170008B792 /* View+Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE4209219AC4170008B792 /* View+Login.swift */; };
 		18AE420C219AE3AD0008B792 /* Data+User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE420B219AE3AD0008B792 /* Data+User.swift */; };
@@ -184,6 +185,7 @@
 		1860EFC221D4BC0B00402460 /* Requests+Cmt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Cmt.swift"; sourceTree = "<group>"; };
 		1860EFC421D53ED600402460 /* View+Requests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Requests.swift"; sourceTree = "<group>"; };
 		1897D00A21D5DD1800E4A02A /* View+PostImgFullview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+PostImgFullview.swift"; sourceTree = "<group>"; };
+		1897D00C21D888E200E4A02A /* Data+Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Utility.swift"; sourceTree = "<group>"; };
 		18AE41F52199E2680008B792 /* server.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = server.cer; sourceTree = "<group>"; };
 		18AE4209219AC4170008B792 /* View+Login.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Login.swift"; sourceTree = "<group>"; };
 		18AE420B219AE3AD0008B792 /* Data+User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+User.swift"; sourceTree = "<group>"; };
@@ -323,6 +325,7 @@
 				18DB289921A3A8BA0024092C /* Requests+Contact.swift */,
 				18DB289B21A3AF750024092C /* Requests+Tag.swift */,
 				18DB28BF21A6CCE60024092C /* Requests+Log.swift */,
+				1897D00C21D888E200E4A02A /* Data+Utility.swift */,
 				18E08D2621CE573A007AACB4 /* Data+Cache.swift */,
 				18DEBF2F21C512EB004E88DD /* Data+CellNumber.swift */,
 				18DEBF3121C5F0D7004E88DD /* Data+Image.swift */,
@@ -611,6 +614,7 @@
 				18E08D2921CE7798007AACB4 /* View+Loading.swift in Sources */,
 				1860EFC321D4BC0B00402460 /* Requests+Cmt.swift in Sources */,
 				18E8CBB02193441500E29383 /* Requests.swift in Sources */,
+				1897D00D21D888E200E4A02A /* Data+Utility.swift in Sources */,
 				1897D00B21D5DD1800E4A02A /* View+PostImgFullview.swift in Sources */,
 				18DB28C021A6CCE60024092C /* Requests+Log.swift in Sources */,
 				18DB289621A1C2C30024092C /* Data+Msg.swift in Sources */,

@@ -8,10 +8,11 @@
 
 import Foundation
 
-let nameFont = UIFont.systemFontOfSize(15.0)
-let articleFont = UIFont.systemFontOfSize(13.0)
-let commentFont = UIFont.systemFontOfSize(13.0)
-let msgFont = UIFont.systemFontOfSize(13.0)
+let nameFont    = UIFont.systemFontOfSize(15)
+let articleFont = UIFont.systemFontOfSize(13)
+let commentFont = UIFont.systemFontOfSize(13)
+let statusFont  = UIFont.systemFontOfSize(11)
+let msgFont     = UIFont.systemFontOfSize(13)
 
 
 // 主色调高亮颜色

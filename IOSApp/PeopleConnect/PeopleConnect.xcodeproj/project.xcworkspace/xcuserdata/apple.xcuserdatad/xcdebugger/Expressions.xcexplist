@@ -111,6 +111,9 @@
          contextName = "MulImgPicker.viewDidLoad() -&gt; ():View+ImagePicker.swift">
       </ContextState>
       <ContextState
+         contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():View+Contacts.swift">
+      </ContextState>
+      <ContextState
          contextName = "Post.setupGeometry(CGFloat) -&gt; ():Data+Post.swift">
       </ContextState>
       <ContextState
@@ -259,6 +262,9 @@
          contextName = "Post.getCommentsHeight() -&gt; ():Data+Post.swift">
       </ContextState>
       <ContextState
+         contextName = "ImgCellView.tap() -&gt; ():View+PostImgPreview.swift">
+      </ContextState>
+      <ContextState
          contextName = "PostsView.tableView(UITableView, viewForHeaderInSection : Int) -&gt; UIView?:View+Posts.swift">
          <PersistentStrings>
             <PersistentString
@@ -293,6 +299,14 @@
          <PersistentStrings>
             <PersistentString
                value = "font.lineHeight">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "getTimeString(UInt64) -&gt; String:Data+Utility.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "StartTime">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -426,6 +440,9 @@
                value = "self.m_imgView.frame">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "(httpDelComment(Post, cmt : CommentInfo) -&gt; ()).(closure #1):Requests+Cmt.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsView.(httpGetContacts(ContactsView) -&gt; () -&gt; ()).(closure #1):ContactRequests.swift">
