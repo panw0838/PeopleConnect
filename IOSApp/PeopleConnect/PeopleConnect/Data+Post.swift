@@ -53,7 +53,7 @@ extension PostInfo {
         let files = json["file"] as? [String]
         self.files = (files == nil ? Array<String>() : files!)
         
-        let liked = json["like"] as? NSNumber
+        let liked = json["liked"] as? NSNumber
         self.liked = (liked == nil ? false : Bool(liked!.boolValue))
         
         let likes = json["likes"] as? [NSNumber]
@@ -78,9 +78,9 @@ struct CommentInfo {
             return ""
         }
         if uID == userInfo.userID {
-            return "我"
+            return " 我 "
         }
-        return contactsData.getContact(uID)!.name
+        return " " + contactsData.getContact(uID)!.name + " "
     }
 
     func getString(showSrc:Bool)->String {
@@ -90,7 +90,7 @@ struct CommentInfo {
         
         if to != 0 {
             let toName = getUserName(to)
-            str += fromName + " 回 " + toName + ":" + cmt
+            str += fromName + "回" + toName + ":" + cmt
         }
         else {
             str += fromName + ":" + cmt
@@ -169,7 +169,7 @@ class Post {
             let name = contactsData.m_contacts[cID]?.name
             
             if name != nil {
-                str += " " + name!
+                str += " " + name! + " "
             }
         }
         

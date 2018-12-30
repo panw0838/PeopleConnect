@@ -10,91 +10,6 @@ import UIKit
 
 class CommentCell: UITableViewCell {
     @IBOutlet weak var m_comment: UILabel!
-    
-    var m_father:PostsTable?
-    
-    func setupLikeComment(post:Post) {
-        var str:String = "[❤]"
-        let attStr = NSMutableAttributedString(string: str)
-        let attDic:Dictionary = [NSForegroundColorAttributeName:UIColor.blackColor()]
-        var ranges = Array<String>()
-        
-        for cID in post.m_info.likes {
-            let name = contactsData.m_contacts[cID]?.name
-            
-            if name != nil {
-                let range = NSMakeRange(str.characters.count+1, (name?.characters.count)!)
-                str += " " + name!
-                ranges.append(NSStringFromRange(range))
-            }
-        }
-        
-        attStr.setAttributes(attDic, range: NSMakeRange(0, str.characters.count))
-        attStr.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, 3))
-        
-        for range in ranges {
-            attStr.addAttribute(NSForegroundColorAttributeName, value: linkTextColor, range: NSRangeFromString(range))
-        }
-
-        self.m_comment.attributedText = attStr
-        
-        self.m_comment.yb_addAttributeTapActionWithRanges(ranges,
-            tapClicked: { (UILabel, NSString, NSRange, i:Int)->Void in
-                ContactView.ContactID = post.m_info.likes[i]
-                self.m_father?.performSegueWithIdentifier("ShowContact", sender: self)
-        })
-    }
-    
-    func setupComment(isSelf:Bool, post:Post, comment:CommentInfo) {
-        let offset = isSelf ? 4 : 0
-        let fromName = comment.getUserName(comment.from)
-        let toName   = comment.getUserName(comment.to)
-        
-        let str = comment.getString(isSelf)
-        let attStr = NSMutableAttributedString(string: str)
-        let attDic:Dictionary = [NSForegroundColorAttributeName:UIColor.blackColor()]
-        
-        attStr.setAttributes(attDic, range: NSMakeRange(0, str.characters.count))
-        
-        if isSelf {
-            attStr.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, 4))
-        }
-        
-        let fromRange = NSMakeRange(offset, fromName.characters.count)
-        let fromColor = (comment.from == userInfo.userID ? selfTextColor : linkTextColor)
-        let toRange = NSMakeRange(fromRange.location + fromRange.length + 3, toName.characters.count)
-        let toColor = (comment.to == userInfo.userID ? selfTextColor : linkTextColor)
-        var cmtRange = NSMakeRange(fromRange.location+fromRange.length+1, comment.cmt.characters.count)
-        
-        attStr.addAttribute(NSForegroundColorAttributeName, value: fromColor, range: fromRange)
-        if comment.to != 0 {
-            attStr.addAttribute(NSForegroundColorAttributeName, value: toColor, range: toRange)
-        }
-        
-        self.m_comment.attributedText = attStr
-        
-        if comment.from != userInfo.userID {
-            self.m_comment.yb_addAttributeTapActionWithRanges([NSStringFromRange(fromRange)],
-                tapClicked: { (UILabel, NSString, NSRange, NSInteger)->Void in
-                    ContactView.ContactID = comment.from
-                    self.m_father?.performSegueWithIdentifier("ShowContact", sender: self)
-            })
-        }
-        
-        if comment.to != 0 && comment.to != userInfo.userID {
-            cmtRange.location = toRange.location + toRange.length + 1
-            self.m_comment.yb_addAttributeTapActionWithRanges([NSStringFromRange(toRange)],
-                tapClicked: { (UILabel, NSString, NSRange, NSInteger)->Void in
-                    ContactView.ContactID = comment.to
-                    self.m_father?.performSegueWithIdentifier("ShowContact", sender: self)
-            })
-        }
-        
-        self.m_comment.yb_addAttributeTapActionWithStrings([comment.cmt],
-            tapClicked: { (UILabel, NSString, NSRange, NSInteger)->Void in
-                self.m_father?.tapComment(isSelf, post: post, comment: comment)
-        })
-    }
 }
 
 class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
@@ -118,6 +33,57 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
     
     func PostDataUpdated() {
         m_table!.reloadData()
+    }
+    
+    func commentChanged(sender:UITextField) {
+        let alert:UIAlertController = self.presentedViewController as! UIAlertController
+        let input:String = (alert.textFields?.first?.text)!
+        let okAction:UIAlertAction = alert.actions.last!
+        let len = input.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
+        okAction.enabled = (len > 0 && len < 50)
+    }
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return m_data!.numOfPosts()
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if !m_fullView {
+            return 0
+        }
+        return m_data!.postAtIdx(section).m_comments.count + (m_data?.m_sorce == 0 ? 1 : 0)
+    }
+    
+    func setupLikeCell(cell:CommentCell, post:Post) {
+        var str:String = "[❤]"
+        let attDic:Dictionary = [NSForegroundColorAttributeName:UIColor.blackColor()]
+        var ranges = Array<String>()
+        
+        for cID in post.m_info.likes {
+            let name = contactsData.m_contacts[cID]?.name
+            
+            if name != nil {
+                let range = NSMakeRange(str.characters.count, (name?.characters.count)! + 2)
+                str += " " + name! + " "
+                ranges.append(NSStringFromRange(range))
+            }
+        }
+        
+        let attStr = NSMutableAttributedString(string: str)
+        attStr.setAttributes(attDic, range: NSMakeRange(0, str.characters.count))
+        attStr.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, 3))
+        
+        for range in ranges {
+            attStr.addAttribute(NSForegroundColorAttributeName, value: linkTextColor, range: NSRangeFromString(range))
+        }
+        
+        cell.m_comment.attributedText = attStr
+        
+        cell.m_comment.yb_addAttributeTapActionWithRanges(ranges,
+            tapClicked: { (UILabel, NSString, NSRange, i:Int)->Void in
+                ContactView.ContactID = post.m_info.likes[i]
+                self.performSegueWithIdentifier("ShowContact", sender: self)
+        })
     }
     
     func tapComment(isSelf:Bool, post:Post, comment:CommentInfo) {
@@ -153,15 +119,61 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
         }
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return m_data!.numOfPosts()
-    }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if !m_fullView {
-            return 0
+    func setupCommentCell(cell:CommentCell, isSelf:Bool, post:Post, comment:CommentInfo) {
+        let offset = isSelf ? 4 : 0
+        let fromName = comment.getUserName(comment.from)
+        let toName   = comment.getUserName(comment.to)
+        
+        let str = comment.getString(isSelf)
+        let attStr = NSMutableAttributedString(string: str)
+        let attDic:Dictionary = [NSForegroundColorAttributeName:UIColor.blackColor()]
+        
+        attStr.setAttributes(attDic, range: NSMakeRange(0, str.characters.count))
+        
+        if isSelf {
+            attStr.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, 4))
         }
-        return m_data!.postAtIdx(section).m_comments.count + (m_data?.m_sorce == 0 ? 1 : 0)
+        
+        let fromRange = NSMakeRange(offset, fromName.characters.count)
+        let fromColor = (comment.from == userInfo.userID ? selfTextColor : linkTextColor)
+        let toRange = NSMakeRange(fromRange.location + fromRange.length + 1, toName.characters.count)
+        let toColor = (comment.to == userInfo.userID ? selfTextColor : linkTextColor)
+        var cmtRange = NSMakeRange(fromRange.location+fromRange.length+1, comment.cmt.characters.count)
+        
+        attStr.addAttribute(NSForegroundColorAttributeName, value: fromColor, range: fromRange)
+        if comment.to != 0 {
+            attStr.addAttribute(NSForegroundColorAttributeName, value: toColor, range: toRange)
+        }
+        
+        cell.m_comment.attributedText = attStr
+        var ranges = Array<String>()
+        var commands = Array<Int>()
+        
+        if comment.from != userInfo.userID {
+            ranges.append(NSStringFromRange(fromRange))
+            commands.append(0)
+        }
+        
+        if comment.to != 0 && comment.to != userInfo.userID {
+            cmtRange.location = toRange.location + toRange.length + 1
+            ranges.append(NSStringFromRange(toRange))
+            commands.append(1)
+        }
+        
+        ranges.append(NSStringFromRange(cmtRange))
+        commands.append(2)
+        
+        cell.m_comment.yb_addAttributeTapActionWithRanges(ranges,
+            tapClicked: { (UILabel, NSString, NSRange, i:NSInteger)->Void in
+                if commands[i] == 2 {
+                    self.tapComment(isSelf, post: post, comment: comment)
+                }
+                else {
+                    ContactView.ContactID = (commands[i] == 0 ? comment.from : comment.to)
+                    self.performSegueWithIdentifier("ShowContact", sender: self)
+                }
+        })
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -169,20 +181,18 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
         let post = m_data!.postAtIdx(indexPath.section)
         let isSelf = m_data?.m_sorce == 0
         
-        cell.m_father = self
-        
         if isSelf {
             if indexPath.row == 0 {
-                cell.setupLikeComment(post)
+                setupLikeCell(cell, post: post)
             }
             else {
                 let comment = post.m_comments[indexPath.row - 1]
-                cell.setupComment(isSelf, post: post, comment: comment)
+                setupCommentCell(cell, isSelf: isSelf, post: post, comment: comment)
             }
         }
         else {
             let comment = post.m_comments[indexPath.row]
-            cell.setupComment(isSelf, post: post, comment: comment)
+            setupCommentCell(cell, isSelf: isSelf, post: post, comment: comment)
         }
         
         return cell

@@ -40,7 +40,7 @@ class PostHeader: UITableViewHeaderFooterView {
     
     var m_status     = UILabel(frame:CGRectZero)
     
-    var m_liktBtn    = UIButton(frame: CGRectZero)
+    var m_likeBtn    = UIButton(frame: CGRectZero)
     var m_commentBtn = UIButton(frame: CGRectZero)
     var m_deleteBtn  = UIButton(frame: CGRectZero)
     
@@ -95,10 +95,10 @@ class PostHeader: UITableViewHeaderFooterView {
         m_status.font = statusFont
         self.addSubview(m_status)
 
-        m_liktBtn.setImage(UIImage(named: "post_like"), forState: .Normal)
-        m_liktBtn.setImage(UIImage(named: "post_like_hi"), forState: .Highlighted)
-        m_liktBtn.addTarget(self, action: Selector("actLike:"), forControlEvents: .TouchDown)
-        self.addSubview(m_liktBtn)
+        m_likeBtn.setImage(UIImage(named: "post_like"), forState: .Normal)
+        m_likeBtn.setImage(UIImage(named: "post_like_hi"), forState: .Highlighted)
+        m_likeBtn.addTarget(self, action: Selector("actLike:"), forControlEvents: .TouchDown)
+        self.addSubview(m_likeBtn)
         
         m_commentBtn.setImage(UIImage(named: "post_cmt"), forState: .Normal)
         m_commentBtn.addTarget(self, action: Selector("actComment:"), forControlEvents: .TouchDown)
@@ -137,8 +137,7 @@ class PostHeader: UITableViewHeaderFooterView {
     
     @IBAction func actLike(sender: AnyObject) {
         if m_post?.m_info.user != userInfo.userID {
-            httpLikePost(m_post!)
-            m_liktBtn.highlighted = !m_liktBtn.highlighted
+            httpLikePost(m_post!, btn: m_likeBtn)
         }
     }
     
@@ -201,9 +200,9 @@ class PostHeader: UITableViewHeaderFooterView {
             m_commentBtn.hidden = false
             m_commentBtn.frame = CGRectMake(self.frame.width - PostBtnSize, buttom, PostBtnSize, PostBtnSize)
             
-            m_liktBtn.hidden = selfPost
-            m_liktBtn.highlighted = (m_post?.m_info.liked)!
-            m_liktBtn.frame = CGRectMake(self.frame.width - PostBtnSize - 50, buttom, PostBtnSize, PostBtnSize)
+            m_likeBtn.hidden = selfPost
+            m_likeBtn.highlighted = (m_post?.m_info.liked)!
+            m_likeBtn.frame = CGRectMake(self.frame.width - PostBtnSize - 50, buttom, PostBtnSize, PostBtnSize)
             
             m_deleteBtn.hidden = !selfPost
             m_deleteBtn.frame = CGRectMake(self.frame.width - PostBtnSize - 50, buttom, PostBtnSize, PostBtnSize)
@@ -214,7 +213,7 @@ class PostHeader: UITableViewHeaderFooterView {
         }
         else {
             m_commentBtn.hidden = true
-            m_liktBtn.hidden = true
+            m_likeBtn.hidden = true
             m_deleteBtn.hidden = true
             m_status.hidden = true
         }

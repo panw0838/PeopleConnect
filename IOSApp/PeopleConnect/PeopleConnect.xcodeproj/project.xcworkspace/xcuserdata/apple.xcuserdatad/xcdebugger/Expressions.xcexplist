@@ -55,15 +55,15 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "(httpSyncContactPost(UInt64) -&gt; ()).(closure #1):Requests+Post.swift">
-      </ContextState>
-      <ContextState
          contextName = "(httpDeclineRequest(UInt64) -&gt; ()).(closure #1):Requests+Msg.swift">
          <PersistentStrings>
             <PersistentString
                value = "msgData">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "(httpSyncContactPost(UInt64) -&gt; ()).(closure #1):Requests+Post.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsView.updateTags() -&gt; ():ContactsView.swift">
@@ -256,13 +256,13 @@
          contextName = "PostData.Update() -&gt; ():Data+Post.swift">
       </ContextState>
       <ContextState
+         contextName = "ImgCellView.tap() -&gt; ():View+PostImgPreview.swift">
+      </ContextState>
+      <ContextState
          contextName = "ContactsView.AddNewTag(AnyObject) -&gt; ():ContactsView.swift">
       </ContextState>
       <ContextState
          contextName = "Post.getCommentsHeight() -&gt; ():Data+Post.swift">
-      </ContextState>
-      <ContextState
-         contextName = "ImgCellView.tap() -&gt; ():View+PostImgPreview.swift">
       </ContextState>
       <ContextState
          contextName = "PostsView.tableView(UITableView, viewForHeaderInSection : Int) -&gt; UIView?:View+Posts.swift">
@@ -402,6 +402,14 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "PostsTable.numberOfSectionsInTableView(UITableView) -&gt; Int:View+PostsTable.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.m_data">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ImgPicker.collectionView(UICollectionView, cellForItemAtIndexPath : NSIndexPath) -&gt; UICollectionViewCell:View+ImagePicker.swift">
       </ContextState>
       <ContextState
@@ -507,10 +515,10 @@
                value = "self.frame">
             </PersistentString>
             <PersistentString
-               value = "m_post">
+               value = "m_post!.m_width">
             </PersistentString>
             <PersistentString
-               value = "m_post!.m_width">
+               value = "m_post">
             </PersistentString>
             <PersistentString
                value = "m_post?.m_contentHeight">

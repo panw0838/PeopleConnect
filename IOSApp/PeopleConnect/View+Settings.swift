@@ -16,7 +16,7 @@ let msgFont     = UIFont.systemFontOfSize(13)
 
 
 // 主色调高亮颜色
-let hlTextColor = UIColor(red: 0.28, green: 0.35, blue: 0.54, alpha: 1.0)
+let hlTextColor   = UIColor(red: 0.28, green: 0.35, blue: 0.54, alpha: 1.0)
 let linkTextColor = UIColor(red: 0.09, green: 0.49, blue: 0.99, alpha: 1.0)
 let selfTextColor = UIColor(red: 0.09, green: 0.49, blue: 0.09, alpha: 1.0)
 
@@ -29,7 +29,7 @@ func getTextHeight(text:String, width:CGFloat, font:UIFont)->CGFloat {
     let style = NSMutableParagraphStyle()
     //style.alignment = .Left
     style.lineBreakMode = .ByWordWrapping
-    //style.lineSpacing = 6
+    style.lineSpacing = 3
 
     let dict = [NSFontAttributeName:font, NSParagraphStyleAttributeName:style]
     let size = text.boundingRectWithSize(maxSize, options: [.UsesLineFragmentOrigin], attributes: dict, context: nil)
