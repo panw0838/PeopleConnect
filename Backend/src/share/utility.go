@@ -47,7 +47,7 @@ func ReadInput(r *http.Request, v interface{}) error {
 }
 
 func GetTimeID(t time.Time) uint64 {
-	var startTime = time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local)
+	var startTime = time.Date(2001, 1, 1, 0, 0, 0, 0, time.UTC)
 	duration := t.Sub(startTime)
 	return uint64(duration / 1000 / 1000 / 1000)
 }
