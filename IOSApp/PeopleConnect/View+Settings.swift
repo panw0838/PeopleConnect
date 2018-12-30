@@ -20,7 +20,7 @@ let hlTextColor = UIColor(red: 0.28, green: 0.35, blue: 0.54, alpha: 1.0)
 let linkTextColor = UIColor(red: 0.09, green: 0.49, blue: 0.99, alpha: 1.0)
 let selfTextColor = UIColor(red: 0.09, green: 0.49, blue: 0.09, alpha: 1.0)
 
-let PostPhotoSize:CGFloat = 45
+let PostPhotoSize:CGFloat = 50
 let PostBtnSize:CGFloat = 30
 let PostItemGapF:CGFloat = 5
 

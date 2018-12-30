@@ -70,6 +70,20 @@ func httpDelComment(post:Post, cmt:CommentInfo) {
 func httpUpdateComments() {
 }
 
-func httpLikePost() {
-    
+func httpLikePost(post:Post) {
+    let params: Dictionary = [
+        "uid":NSNumber(unsignedLongLong: userInfo.userID),
+        "oid":NSNumber(unsignedLongLong: post.m_info.user),
+        "pid":NSNumber(unsignedLongLong: post.m_info.id)]
+    http.postRequest("likepost", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            if getErrorCode(response as! NSData) == 0 {
+                //let like = Bool(likeObj.boolValue)
+                //post.m_father?.Update()
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+        }
+    )
 }

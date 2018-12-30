@@ -30,7 +30,9 @@ struct PostInfo {
     var id:UInt64 = 0
     var flag:UInt64 = 0
     var content:String = ""
-    var files:Array<String> = Array<String>()
+    var liked = false
+    var files = Array<String>()
+    var likes = Array<UInt64>()
 }
 
 extension PostInfo {
@@ -50,6 +52,17 @@ extension PostInfo {
         
         let files = json["file"] as? [String]
         self.files = (files == nil ? Array<String>() : files!)
+        
+        let liked = json["like"] as? NSNumber
+        self.liked = (liked == nil ? false : Bool(liked!.boolValue))
+        
+        let likes = json["likes"] as? [NSNumber]
+        if likes != nil {
+            for like in likes! {
+                let uID = UInt64(like.unsignedLongLongValue)
+                self.likes.append(uID)
+            }
+        }
     }
 }
 
@@ -75,7 +88,7 @@ struct CommentInfo {
         let fromName = getUserName(from)
         var str = showSrc ? srcName : ""
         
-        if from != to && to != 0 {
+        if to != 0 {
             let toName = getUserName(to)
             str += fromName + " 回 " + toName + ":" + cmt
         }
@@ -108,7 +121,6 @@ extension CommentInfo {
 
 class Post {
     var m_info:PostInfo = PostInfo()
-    var m_likes = Array<UInt64>()
     var m_comments = Array<CommentInfo>()
     var m_father:PostData?
     
@@ -128,6 +140,40 @@ class Post {
     func getPreview(idx:Int)->UIImage {
         let key = getPreviewKey(m_info, i: idx)
         return (previews[key] == nil ? UIImage(named: "loading")! : previews[key]!)
+    }
+    
+    func getLikeContacts() {
+        var contactIDs = Set<UInt64>()
+        var photoIDs = Set<UInt64>()
+        for like in m_info.likes {
+            let likeOwner = contactsData.m_contacts[like]
+            if likeOwner == nil {
+                contactIDs.insert(like)
+            }
+            else if getContactPhoto(like) == nil {
+                photoIDs.insert(like)
+            }
+        }
+        if contactIDs.count > 0 {
+            //httpGetPostsUsers(Array<UInt64>(contactIDs), post: self)
+        }
+        if photoIDs.count > 0 {
+            //httpGetPostsPhotos(Array<UInt64>(photoIDs), post:self)
+        }
+    }
+    
+    func getLikeString()->String {
+        var str:String = "[❤]"
+        
+        for cID in m_info.likes {
+            let name = contactsData.m_contacts[cID]?.name
+            
+            if name != nil {
+                str += " " + name!
+            }
+        }
+        
+        return str
     }
     
     func getHeight(width:CGFloat, fullView: Bool)->CGFloat {
@@ -171,7 +217,7 @@ class PostData {
     }
     
     func postAtIdx(i:Int)->Post {
-        return m_posts[i]
+        return m_posts[m_posts.count - i - 1]
     }
     
     func clear() {
