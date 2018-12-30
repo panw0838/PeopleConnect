@@ -60,13 +60,23 @@ struct CommentInfo {
     var cmt:String = ""
     var src:UInt32 = 0
     
+    func getUserName(uID:UInt64)->String {
+        if uID == 0 {
+            return ""
+        }
+        if uID == userInfo.userID {
+            return "我"
+        }
+        return contactsData.getContact(uID)!.name
+    }
+
     func getString(showSrc:Bool)->String {
         let srcName = "[" + SrcNames[src]! + "]"
-        let fromName = (from == userInfo.userID ? "我" : contactsData.getContact(from)!.name)
+        let fromName = getUserName(from)
         var str = showSrc ? srcName : ""
         
         if from != to && to != 0 {
-            let toName = (to == userInfo.userID ? "我" : contactsData.getContact(to)!.name)
+            let toName = getUserName(to)
             str += fromName + " 回 " + toName + ":" + cmt
         }
         else {
@@ -74,37 +84,6 @@ struct CommentInfo {
         }
         
         return str
-    }
-    
-    func getAttrString(showSrc:Bool)->NSMutableAttributedString {
-        let fromName = (from == userInfo.userID ? "我" : contactsData.getContact(from)!.name)
-        let offset = showSrc ? 4 : 0
-        var toStart = offset
-        var toLength = 0
-        
-        if from != to && to != 0 {
-            let toName = (to == userInfo.userID ? "我" : contactsData.getContact(to)!.name)
-            toStart = fromName.characters.count + 3 + offset
-            toLength = toName.characters.count
-        }
-        
-        let str = getString(showSrc)
-        let attStr = NSMutableAttributedString(string: str)
-        let attDic:Dictionary = [NSForegroundColorAttributeName:UIColor.blackColor()]
-        
-        attStr.setAttributes(attDic, range: NSMakeRange(0, str.characters.count))
-        
-        if showSrc {
-            attStr.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, 4))
-        }
-        
-        attStr.addAttribute(NSForegroundColorAttributeName, value: linkTextColor, range: NSMakeRange(offset, fromName.characters.count))
-        
-        if toLength != 0 {
-            attStr.addAttribute(NSForegroundColorAttributeName, value: linkTextColor, range: NSMakeRange(toStart, toLength))
-        }
-        
-        return attStr
     }
 }
 

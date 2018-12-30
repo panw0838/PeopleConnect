@@ -130,6 +130,7 @@
 #pragma mark - mainFunction
 - (void)yb_addAttributeTapActionWithStrings:(NSArray <NSString *> *)strings tapClicked:(void (^) (UILabel * label, NSString *string, NSRange range, NSInteger index))tapClick
 {
+    [self yb_removeAttributeTapActions];
     [self yb_getRangesWithStrings:strings];
     self.userInteractionEnabled = YES;
     
@@ -141,6 +142,7 @@
 - (void)yb_addAttributeTapActionWithStrings:(NSArray <NSString *> *)strings
                                    delegate:(id <YBAttributeTapActionDelegate> )delegate
 {
+    [self yb_removeAttributeTapActions];
     [self yb_getRangesWithStrings:strings];
     self.userInteractionEnabled = YES;
     
@@ -151,6 +153,7 @@
 
 - (void)yb_addAttributeTapActionWithRanges:(NSArray<NSString *> *)ranges tapClicked:(void (^)(UILabel *, NSString *, NSRange, NSInteger))tapClick
 {
+    [self yb_removeAttributeTapActions];
     [self yb_getRangesWithRanges:ranges];
     self.userInteractionEnabled = YES;
     
@@ -161,12 +164,22 @@
 
 - (void)yb_addAttributeTapActionWithRanges:(NSArray<NSString *> *)ranges delegate:(id<YBAttributeTapActionDelegate>)delegate
 {
+    [self yb_removeAttributeTapActions];
     [self yb_getRangesWithRanges:ranges];
     self.userInteractionEnabled = YES;
     
     if (self.delegate != delegate) {
         self.delegate = delegate;
     }
+}
+
+- (void)yb_removeAttributeTapActions
+{
+    self.tapBlock = nil;
+    self.delegate = nil;
+    self.effectDic = nil;
+    self.isTapAction = NO;
+    self.attributeStrings = [NSMutableArray array];
 }
 
 #pragma mark - touchAction
@@ -312,7 +325,7 @@
         if (CGRectContainsPoint(rect, point)) {
             
             CGPoint relativePoint = CGPointMake(point.x - CGRectGetMinX(rect), point.y - CGRectGetMinY(rect));
-
+            
             CFIndex index = CTLineGetStringIndexForPosition(line, relativePoint);
             
             CGFloat offset;
@@ -512,21 +525,16 @@
         }
     }
 }
-
+/*
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"attributedText"]) {
         if (self.isTapAction) {
             if (![change[NSKeyValueChangeNewKey] isEqual: change[NSKeyValueChangeOldKey]]) {
-               
+                
             }
         }
     }
 }
-
-- (void)dealloc
-{
-    [self yb_removeObserver];
-}
-
+*/
 @end

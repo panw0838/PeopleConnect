@@ -16,7 +16,9 @@
 		1860EFC321D4BC0B00402460 /* Requests+Cmt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1860EFC221D4BC0B00402460 /* Requests+Cmt.swift */; };
 		1860EFC521D53ED600402460 /* View+Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1860EFC421D53ED600402460 /* View+Requests.swift */; };
 		1897D00B21D5DD1800E4A02A /* View+PostImgFullview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1897D00A21D5DD1800E4A02A /* View+PostImgFullview.swift */; };
-		1897D00D21D888E200E4A02A /* Data+Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1897D00C21D888E200E4A02A /* Data+Utility.swift */; };
+		1897D00D21D888E200E4A02A /* Data+Time.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1897D00C21D888E200E4A02A /* Data+Time.swift */; };
+		1897D02021D8DF3000E4A02A /* UILabel+YBAttributeTextTapAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 1897D01F21D8DF3000E4A02A /* UILabel+YBAttributeTextTapAction.m */; };
+		1897D02221D8E6DF00E4A02A /* View+Posts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1897D02121D8E6DF00E4A02A /* View+Posts.swift */; };
 		18AE41F62199E2680008B792 /* server.cer in Resources */ = {isa = PBXBuildFile; fileRef = 18AE41F52199E2680008B792 /* server.cer */; };
 		18AE420A219AC4170008B792 /* View+Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE4209219AC4170008B792 /* View+Login.swift */; };
 		18AE420C219AE3AD0008B792 /* Data+User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE420B219AE3AD0008B792 /* Data+User.swift */; };
@@ -38,7 +40,7 @@
 		18DB28BE21A5B9CC0024092C /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB28BD21A5B9CC0024092C /* Observer.swift */; };
 		18DB28C021A6CCE60024092C /* Requests+Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB28BF21A6CCE60024092C /* Requests+Log.swift */; };
 		18DEBF2E21C50AD5004E88DD /* CountryCode in Resources */ = {isa = PBXBuildFile; fileRef = 18DEBF2D21C50AD5004E88DD /* CountryCode */; };
-		18DEBF3021C512EB004E88DD /* Data+CellNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DEBF2F21C512EB004E88DD /* Data+CellNumber.swift */; };
+		18DEBF3021C512EB004E88DD /* Data+Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DEBF2F21C512EB004E88DD /* Data+Cell.swift */; };
 		18DEBF3221C5F0D7004E88DD /* Data+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DEBF3121C5F0D7004E88DD /* Data+Image.swift */; };
 		18E08D2021CBA120007AACB4 /* ImgPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18E08D1F21CBA120007AACB4 /* ImgPicker.xib */; };
 		18E08D2221CBBFA5007AACB4 /* ImgCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18E08D2121CBBFA5007AACB4 /* ImgCell.xib */; };
@@ -185,7 +187,10 @@
 		1860EFC221D4BC0B00402460 /* Requests+Cmt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Cmt.swift"; sourceTree = "<group>"; };
 		1860EFC421D53ED600402460 /* View+Requests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Requests.swift"; sourceTree = "<group>"; };
 		1897D00A21D5DD1800E4A02A /* View+PostImgFullview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+PostImgFullview.swift"; sourceTree = "<group>"; };
-		1897D00C21D888E200E4A02A /* Data+Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Utility.swift"; sourceTree = "<group>"; };
+		1897D00C21D888E200E4A02A /* Data+Time.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Time.swift"; sourceTree = "<group>"; };
+		1897D01E21D8DF3000E4A02A /* UILabel+YBAttributeTextTapAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UILabel+YBAttributeTextTapAction.h"; path = "Widgets/UILabel+YBAttributeTextTapAction.h"; sourceTree = "<group>"; };
+		1897D01F21D8DF3000E4A02A /* UILabel+YBAttributeTextTapAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UILabel+YBAttributeTextTapAction.m"; path = "Widgets/UILabel+YBAttributeTextTapAction.m"; sourceTree = "<group>"; };
+		1897D02121D8E6DF00E4A02A /* View+Posts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Posts.swift"; sourceTree = "<group>"; };
 		18AE41F52199E2680008B792 /* server.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = server.cer; sourceTree = "<group>"; };
 		18AE4209219AC4170008B792 /* View+Login.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Login.swift"; sourceTree = "<group>"; };
 		18AE420B219AE3AD0008B792 /* Data+User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+User.swift"; sourceTree = "<group>"; };
@@ -206,14 +211,14 @@
 		18DB28BF21A6CCE60024092C /* Requests+Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Log.swift"; sourceTree = "<group>"; };
 		18DB28C121A6D76A0024092C /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		18DEBF2D21C50AD5004E88DD /* CountryCode */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CountryCode; sourceTree = "<group>"; };
-		18DEBF2F21C512EB004E88DD /* Data+CellNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+CellNumber.swift"; sourceTree = "<group>"; };
+		18DEBF2F21C512EB004E88DD /* Data+Cell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Cell.swift"; sourceTree = "<group>"; };
 		18DEBF3121C5F0D7004E88DD /* Data+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Image.swift"; sourceTree = "<group>"; };
 		18E08D1F21CBA120007AACB4 /* ImgPicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImgPicker.xib; sourceTree = "<group>"; };
 		18E08D2121CBBFA5007AACB4 /* ImgCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImgCell.xib; sourceTree = "<group>"; };
 		18E08D2321CBFD71007AACB4 /* SingleImg.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SingleImg.xib; sourceTree = "<group>"; };
 		18E08D2621CE573A007AACB4 /* Data+Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Cache.swift"; sourceTree = "<group>"; };
 		18E08D2821CE7798007AACB4 /* View+Loading.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Loading.swift"; sourceTree = "<group>"; };
-		18E13ED421BD630B006FCE28 /* Widgets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Widgets; sourceTree = "<group>"; };
+		18E13ED421BD630B006FCE28 /* Widgets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Widgets; path = /Users/apple/Documents/PeopleConnect/IOSApp/PeopleConnect/PeopleConnect/Widgets; sourceTree = "<absolute>"; };
 		18E8CB7C219331A400E29383 /* PeopleConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeopleConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18E8CB7F219331A400E29383 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		18E8CB88219331A400E29383 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -313,7 +318,8 @@
 		18E8CB7E219331A400E29383 /* PeopleConnect */ = {
 			isa = PBXGroup;
 			children = (
-				18E13ED421BD630B006FCE28 /* Widgets */,
+				1897D01E21D8DF3000E4A02A /* UILabel+YBAttributeTextTapAction.h */,
+				1897D01F21D8DF3000E4A02A /* UILabel+YBAttributeTextTapAction.m */,
 				18AE41F52199E2680008B792 /* server.cer */,
 				18DB28C121A6D76A0024092C /* Bridging-Header.h */,
 				18E8CB7F219331A400E29383 /* AppDelegate.swift */,
@@ -325,9 +331,9 @@
 				18DB289921A3A8BA0024092C /* Requests+Contact.swift */,
 				18DB289B21A3AF750024092C /* Requests+Tag.swift */,
 				18DB28BF21A6CCE60024092C /* Requests+Log.swift */,
-				1897D00C21D888E200E4A02A /* Data+Utility.swift */,
+				1897D00C21D888E200E4A02A /* Data+Time.swift */,
 				18E08D2621CE573A007AACB4 /* Data+Cache.swift */,
-				18DEBF2F21C512EB004E88DD /* Data+CellNumber.swift */,
+				18DEBF2F21C512EB004E88DD /* Data+Cell.swift */,
 				18DEBF3121C5F0D7004E88DD /* Data+Image.swift */,
 				18AE420B219AE3AD0008B792 /* Data+User.swift */,
 				1854304821B01E27004973E6 /* Data+Post.swift */,
@@ -342,6 +348,7 @@
 				18DB289121A03FCC0024092C /* View+Contact.swift */,
 				18D3A8E02198015C00EB3289 /* View+Contacts.swift */,
 				18DB2879219D85BF0024092C /* View+MoveMembers.swift */,
+				1897D02121D8E6DF00E4A02A /* View+Posts.swift */,
 				18D3A8E22198017000EB3289 /* View+PostsTable.swift */,
 				18FF5DE021C156A7008DB746 /* View+PostHeader.swift */,
 				1801E9B121BFB1ED004C3FE2 /* View+PostImgPreview.swift */,
@@ -611,15 +618,16 @@
 				18AE420A219AC4170008B792 /* View+Login.swift in Sources */,
 				18DB289C21A3AF750024092C /* Requests+Tag.swift in Sources */,
 				18D3A8DF2197F3CD00EB3289 /* View+Messages.swift in Sources */,
+				1897D02221D8E6DF00E4A02A /* View+Posts.swift in Sources */,
 				18E08D2921CE7798007AACB4 /* View+Loading.swift in Sources */,
 				1860EFC321D4BC0B00402460 /* Requests+Cmt.swift in Sources */,
 				18E8CBB02193441500E29383 /* Requests.swift in Sources */,
-				1897D00D21D888E200E4A02A /* Data+Utility.swift in Sources */,
+				1897D00D21D888E200E4A02A /* Data+Time.swift in Sources */,
 				1897D00B21D5DD1800E4A02A /* View+PostImgFullview.swift in Sources */,
 				18DB28C021A6CCE60024092C /* Requests+Log.swift in Sources */,
 				18DB289621A1C2C30024092C /* Data+Msg.swift in Sources */,
 				1854304721AD78A4004973E6 /* View+CreatePost.swift in Sources */,
-				18DEBF3021C512EB004E88DD /* Data+CellNumber.swift in Sources */,
+				18DEBF3021C512EB004E88DD /* Data+Cell.swift in Sources */,
 				18DB289421A145410024092C /* Requests+Msg.swift in Sources */,
 				18DB287A219D85BF0024092C /* View+MoveMembers.swift in Sources */,
 				18E08D2721CE573A007AACB4 /* Data+Cache.swift in Sources */,
@@ -631,6 +639,7 @@
 				18D3A8E12198015C00EB3289 /* View+Contacts.swift in Sources */,
 				1806A87821B7F556005A5AF1 /* View+ImagePicker.swift in Sources */,
 				18FF5DD921C14BF9008DB746 /* View+Settings.swift in Sources */,
+				1897D02021D8DF3000E4A02A /* UILabel+YBAttributeTextTapAction.m in Sources */,
 				1860EFC521D53ED600402460 /* View+Requests.swift in Sources */,
 				1854304521AC3D99004973E6 /* Requests+Post.swift in Sources */,
 				1854304921B01E27004973E6 /* Data+Post.swift in Sources */,

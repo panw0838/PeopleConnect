@@ -1689,13 +1689,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Posts.swift"
-            timestampString = "567487943.543996"
+            timestampString = "567863446.908422"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
-            landmarkName = "tableView(_:didSelectRowAtIndexPath:)"
-            landmarkType = "5">
+            startingLineNumber = "165"
+            endingLineNumber = "165">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1705,11 +1703,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Data+Post.swift"
-            timestampString = "567798575.579435"
+            timestampString = "567863446.908422"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "155"
-            endingLineNumber = "155"
+            startingLineNumber = "134"
+            endingLineNumber = "134"
             landmarkName = "getHeight(_:fullView:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -3000,13 +2998,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PeopleConnect/View+PostsTable.swift"
-            timestampString = "567753507.9258111"
+            filePath = "PeopleConnect/View+PostHeader.swift"
+            timestampString = "567844435.112144"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "114"
-            endingLineNumber = "114"
-            landmarkName = "viewDidLoad()"
+            startingLineNumber = "207"
+            endingLineNumber = "207"
+            landmarkName = "reload(_:width:fullView:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -3016,13 +3014,29 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PeopleConnect/View+PostHeader.swift"
-            timestampString = "567844435.112144"
+            filePath = "PeopleConnect/Widgets/UILabel+YBAttributeTextTapAction.m"
+            timestampString = "567860455.691782"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "207"
-            endingLineNumber = "207"
-            landmarkName = "reload(_:width:fullView:)"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
+            landmarkName = "-yb_addAttributeTapActionWithRanges:tapClicked:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PeopleConnect/View+PostsTable.swift"
+            timestampString = "567862910.71358"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "113"
+            endingLineNumber = "113"
+            landmarkName = "tableView(_:cellForRowAtIndexPath:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
