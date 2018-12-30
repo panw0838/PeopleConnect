@@ -66,6 +66,7 @@ func main() {
 	http.HandleFunc("/comment", post.NewCommentHandler)
 	http.HandleFunc("/delcmt", post.DelCmtHandler)
 	http.HandleFunc("/updatecmts", post.UpdateCommentsHandler)
+	http.HandleFunc("/likepost", post.LikePostHandler)
 
 	fs := http.FileServer(http.Dir("files"))
 	http.Handle("/files/", http.StripPrefix("/files/", fs))

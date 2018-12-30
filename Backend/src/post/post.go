@@ -3,6 +3,7 @@ package post
 import (
 	"encoding/json"
 	"group"
+	"share"
 	"strconv"
 	"user"
 
@@ -19,7 +20,9 @@ type PostData struct {
 	Files    []string  `json:"file,omitempty"`
 	Nearby   bool      `json:"near,omitempty"`
 	Groups   []uint32  `json:"group,omitempty"`
-	Comments []Comment `json:"cmt,omitempty"`
+	Comments []Comment `json:"cmt,omitempty"` // for output
+	Liked    bool      `json:"liked,omitempty"`
+	Likes    []int64   `json:"likes,omitempty"`
 }
 
 func getPostKey(userID uint64) string {
@@ -42,12 +45,12 @@ func dbAddPost(uID uint64, data PostData, c redis.Conn) error {
 }
 
 func dbDelPost(uID uint64, pID uint64, c redis.Conn) error {
-	postKey := getPostKey(uID)
-	cmtKey := getCommentKey(uID, pID)
+	cmtKey := share.GetPostCmtKey(uID, pID)
 	_, err := c.Do("DEL", cmtKey)
 	if err != nil {
 		return err
 	}
+	postKey := getPostKey(uID)
 	_, err = c.Do("ZREMRANGEBYSCORE", postKey, pID, pID)
 	return err
 }
@@ -94,13 +97,18 @@ func dbGetSelfPosts(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostDat
 		if err != nil {
 			return results, err
 		}
-
 		post.Owner = uID
-		comments, err := dbGetComments(uID, post.ID, uID, AllGroups, 0, c)
+
+		post.Comments, err = dbGetComments(uID, post.ID, uID, AllGroups, 0, c)
 		if err != nil {
 			return nil, err
 		}
-		post.Comments = comments
+
+		post.Likes, err = dbGetLikes(uID, post.ID, c)
+		if err != nil {
+			return nil, err
+		}
+
 		results = append(results, post)
 	}
 

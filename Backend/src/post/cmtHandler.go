@@ -109,18 +109,15 @@ type UpdateCommentsReturn struct {
 
 func UpdateCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	var input UpdateCommentsInput
-	var header = []byte{byte(0)}
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		header[0] = 1
-		w.Write(header)
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		header[0] = 2
-		w.Write(header)
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
@@ -130,8 +127,7 @@ func UpdateCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	for _, cmtInput := range input.Comments {
 		comments, err := dbGetComments(cmtInput.Owner, cmtInput.Post, input.User, input.Source, cmtInput.Start, c)
 		if err != nil {
-			header[0] = 3
-			w.Write(header)
+			share.WriteError(w, 1)
 			return
 		}
 		var cmtReturn UpdateCmtReturn
@@ -141,11 +137,46 @@ func UpdateCommentsHandler(w http.ResponseWriter, r *http.Request) {
 
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		header[0] = 4
-		w.Write(header)
+		share.WriteError(w, 1)
 		return
 	}
 
-	w.Write(header)
+	share.WriteError(w, 0)
 	w.Write(bytes)
+}
+
+type LikePostInput struct {
+	UID  uint64 `json:"uid"`
+	OID  uint64 `json:"oid"`
+	PID  uint64 `json:"pid"`
+	Like bool   `json:"like"`
+}
+
+func LikePostHandler(w http.ResponseWriter, r *http.Request) {
+	var input LikePostInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	if input.UID == input.OID {
+		share.WriteError(w, 1)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+	defer c.Close()
+
+	err = dbLikePost(input.UID, input.OID, input.PID, input.Like, c)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	share.WriteError(w, 0)
 }

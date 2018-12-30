@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"share"
-	"strconv"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
@@ -24,12 +23,8 @@ type CommentsData struct {
 	Comments []Comment `json:"cmts"`
 }
 
-func getCommentKey(uID uint64, pID uint64) string {
-	return "cmt:" + strconv.FormatUint(uID, 10) + ":" + strconv.FormatUint(pID, 10)
-}
-
 func dbGetComments(oID uint64, pID uint64, uID uint64, src uint32, from uint64, c redis.Conn) ([]Comment, error) {
-	cmtKey := getCommentKey(oID, pID)
+	cmtKey := share.GetPostCmtKey(oID, pID)
 	values, err := redis.Values(c.Do("ZRANGEBYSCORE", cmtKey, from, share.MAX_TIME))
 	if err != nil {
 		return nil, err
@@ -71,7 +66,7 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, error) {
 		return 0, err
 	}
 
-	cmtKey := getCommentKey(input.PostOwner, input.PostID)
+	cmtKey := share.GetPostCmtKey(input.PostOwner, input.PostID)
 	_, err = c.Do("ZADD", cmtKey, comment.ID, bytes)
 	if err != nil {
 		return 0, err
@@ -81,7 +76,7 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, error) {
 }
 
 func dbDelComment(input DelCmtInput, c redis.Conn) error {
-	cmtKey := getCommentKey(input.PostOwner, input.PostID)
+	cmtKey := share.GetPostCmtKey(input.PostOwner, input.PostID)
 
 	values, err := redis.Values(c.Do("ZRANGEBYSCORE", cmtKey, input.CmtID, input.CmtID))
 	if err != nil {
@@ -109,4 +104,21 @@ func dbDelComment(input DelCmtInput, c redis.Conn) error {
 	}
 
 	return nil
+}
+
+func dbGetLikes(oID uint64, pID uint64, c redis.Conn) ([]int64, error) {
+	likeKey := share.GetPostLikeKey(oID, pID)
+	members, err := redis.Int64s(c.Do("SMEMBERS", likeKey))
+	return members, err
+}
+
+func dbLikePost(uID uint64, oID uint64, pID uint64, like bool, c redis.Conn) error {
+	likeKey := share.GetPostLikeKey(oID, pID)
+	if like {
+		_, err := c.Do("SADD", likeKey, uID)
+		return err
+	} else {
+		_, err := c.Do("SREM", likeKey, uID)
+		return err
+	}
 }

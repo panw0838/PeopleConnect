@@ -13,3 +13,11 @@ func GetGroupKey(gID uint32) string {
 func GetUserGroupKey(uID uint64) string {
 	return "groups:" + strconv.FormatUint(uID, 10)
 }
+
+func GetPostCmtKey(uID uint64, pID uint64) string {
+	return "cmt:" + strconv.FormatUint(uID, 10) + ":" + strconv.FormatUint(pID, 10)
+}
+
+func GetPostLikeKey(uID uint64, pID uint64) string {
+	return "like:" + strconv.FormatUint(uID, 10) + ":" + strconv.FormatUint(pID, 10)
+}
