@@ -36,7 +36,6 @@ struct PreviewLayout {
 }
 
 class ImgPreview: UIView {
-    let m_gap:CGFloat = 5.0
     var m_post:Post? = nil
     var m_preImgs = Array<ImgCellView>()
     var m_pattern = Array<PreviewLayout>()
@@ -60,7 +59,7 @@ class ImgPreview: UIView {
             img.m_father = self
             img.clipsToBounds = true
             img.contentMode = .ScaleAspectFill
-            img.layer.cornerRadius = 10
+            img.layer.cornerRadius = 5
             img.userInteractionEnabled = true
             img.addGestureRecognizer(tap)
             m_preImgs.append(img)
@@ -83,8 +82,8 @@ class ImgPreview: UIView {
             }
             
             let fullSize = self.frame.height
-            let blkSize = (self.frame.height - m_gap) / 2
-            let step = blkSize + m_gap
+            let blkSize = (self.frame.height - PostPreViewGap) / 2
+            let step = blkSize + PostPreViewGap
             
             for var i=0; i<numImgs; i++ {
                 let layout = m_pattern[i]

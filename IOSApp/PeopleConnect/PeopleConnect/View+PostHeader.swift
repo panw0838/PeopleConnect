@@ -8,6 +8,11 @@
 
 import UIKit
 
+let PostPhotoSize:CGFloat = 50
+let PostBtnSize:CGFloat = 30
+let PostItemGap:CGFloat = 5
+let PostPreViewGap:CGFloat = 3
+
 class PostFooter: UITableViewHeaderFooterView {
     static let Height:CGFloat = 21.0
     
@@ -43,6 +48,8 @@ class PostHeader: UITableViewHeaderFooterView {
     var m_likeBtn    = UIButton(frame: CGRectZero)
     var m_commentBtn = UIButton(frame: CGRectZero)
     var m_deleteBtn  = UIButton(frame: CGRectZero)
+    
+    var m_permitTags = TagsView(frame: CGRectZero)
     
     var m_post:Post? = nil
     var m_father:UIViewController? = nil
@@ -107,6 +114,8 @@ class PostHeader: UITableViewHeaderFooterView {
         m_deleteBtn.setImage(UIImage(named: "post_delete"), forState: .Normal)
         m_deleteBtn.addTarget(self, action: Selector("deletePost:"), forControlEvents: .TouchDown)
         self.addSubview(m_deleteBtn)
+        
+        self.addSubview(m_permitTags)
     }
     
     func commentChanged(sender:UITextField) {
@@ -153,20 +162,20 @@ class PostHeader: UITableViewHeaderFooterView {
         self.m_father!.presentViewController(alert, animated: true, completion: nil)
     }
 
-    func reload(post:Post, width:CGFloat, fullView:Bool) {
+    func reload(post:Post, width:CGFloat, selfView: Bool, fullView:Bool) {
         m_post = post
         let selfPost = (m_post?.m_father?.m_sorce == 0)
         var buttom:CGFloat = 0.0
         
-        if fullView {
+        if fullView && !selfView {
             let contact = contactsData.getContact((m_post?.m_info.user)!)
             
             m_photo.image = getPhoto((m_post?.m_info.user)!)
             m_photo.frame = CGRectMake(0, 0, PostPhotoSize, PostPhotoSize)
-            buttom = PostPhotoSize + PostItemGapF
+            buttom = PostPhotoSize + PostItemGap
             
             m_name.text = contact?.name
-            m_name.frame = CGRectMake(PostPhotoSize + PostItemGapF, 0, width, 20)
+            m_name.frame = CGRectMake(PostPhotoSize + PostItemGap, 0, width, 20)
         }
         else {
             m_photo.hidden = true
@@ -179,18 +188,18 @@ class PostHeader: UITableViewHeaderFooterView {
             m_article.hidden = false
             m_article.sizeToFit()
             m_article.frame = CGRectMake(0, buttom, width, CGFloat(ceilf(Float(height))))
-            buttom += (height + PostItemGapF)
+            buttom += (height + PostItemGap)
         }
         else {
             m_article.hidden = true
         }
         
         if m_post?.numImages() > 0 {
-            let height = (width - PostItemGapF*2) / 3
+            let height = (width - PostPreViewGap*2) / 3
             m_previews.hidden = false
             m_previews.frame = CGRectMake(0, buttom, width, height)
             m_previews.reload(m_post!)
-            buttom += (height + PostItemGapF)
+            buttom += (height + PostItemGap)
         }
         else {
             m_previews.hidden = true
@@ -210,12 +219,24 @@ class PostHeader: UITableViewHeaderFooterView {
             m_status.hidden = false
             m_status.frame = CGRectMake(0, buttom, 150, 20)
             m_status.text = getTimeString((m_post?.m_info.id)!)
+            
+            buttom += (PostBtnSize + PostItemGap)
         }
         else {
             m_commentBtn.hidden = true
             m_likeBtn.hidden = true
             m_deleteBtn.hidden = true
             m_status.hidden = true
+        }
+        
+        if fullView && selfView {
+            let height = post.getPermitHeight(width)
+            m_permitTags.hidden = false
+            m_permitTags.frame = CGRectMake(0, buttom, width, height)
+            m_permitTags.load(post, width: width)
+        }
+        else {
+            m_permitTags.hidden = true
         }
     }
 }

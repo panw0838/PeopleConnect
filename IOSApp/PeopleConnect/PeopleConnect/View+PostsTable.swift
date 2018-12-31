@@ -151,20 +151,20 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
         var commands = Array<Int>()
         
         if comment.from != userInfo.userID {
-            ranges.append(NSStringFromRange(fromRange))
+            ranges.append(fromName)
             commands.append(0)
         }
         
         if comment.to != 0 && comment.to != userInfo.userID {
             cmtRange.location = toRange.location + toRange.length + 1
-            ranges.append(NSStringFromRange(toRange))
+            ranges.append(toName)
             commands.append(1)
         }
         
-        ranges.append(NSStringFromRange(cmtRange))
+        ranges.append(comment.cmt)
         commands.append(2)
         
-        cell.m_comment.yb_addAttributeTapActionWithRanges(ranges,
+        cell.m_comment.yb_addAttributeTapActionWithStrings(ranges,
             tapClicked: { (UILabel, NSString, NSRange, i:NSInteger)->Void in
                 if commands[i] == 2 {
                     self.tapComment(isSelf, post: post, comment: comment)
@@ -201,8 +201,9 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterViewWithIdentifier("PostHeader") as! PostHeader
         let post = m_data!.postAtIdx(section)
+        let isSelf = (m_data?.m_sorce == 0)
         header.m_father = self
-        header.reload(post, width:m_table!.contentSize.width, fullView: m_fullView)
+        header.reload(post, width:m_table!.contentSize.width, selfView: isSelf, fullView: m_fullView)
         return header
     }
     
@@ -235,7 +236,8 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         let post = m_data!.postAtIdx(section)
-        return post.getHeight(m_table!.contentSize.width, fullView: m_fullView)
+        let isSelf = m_data?.m_sorce == 0
+        return post.getHeight(m_table!.contentSize.width, selfView: isSelf, fullView: m_fullView)
     }
     
     func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {

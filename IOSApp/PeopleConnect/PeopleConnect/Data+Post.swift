@@ -30,6 +30,7 @@ struct PostInfo {
     var id:UInt64 = 0
     var flag:UInt64 = 0
     var content:String = ""
+    var near  = false
     var liked = false
     var files = Array<String>()
     var likes = Array<UInt64>()
@@ -38,16 +39,18 @@ struct PostInfo {
 extension PostInfo {
     init?(json: [String: AnyObject]) {
         guard
-            let user = json["user"] as? NSNumber,
-            let id = json["id"] as? NSNumber,
-            let flag = json["flag"] as? NSNumber,
+            let user    = json["user"] as? NSNumber,
+            let id      = json["id"] as? NSNumber,
+            let flag    = json["flag"] as? NSNumber,
+            let near    = json["near"] as? NSNumber,
             let content = json["cont"] as? String
         else {
             return nil
         }
         self.user = UInt64(user.unsignedLongLongValue)
-        self.id = UInt64(id.unsignedLongLongValue)
+        self.id   = UInt64(id.unsignedLongLongValue)
         self.flag = UInt64(flag.unsignedLongLongValue)
+        self.near = Bool(near.boolValue)
         self.content = content
         
         let files = json["file"] as? [String]
@@ -144,21 +147,14 @@ class Post {
     
     func getLikeContacts() {
         var contactIDs = Set<UInt64>()
-        var photoIDs = Set<UInt64>()
         for like in m_info.likes {
             let likeOwner = contactsData.m_contacts[like]
             if likeOwner == nil {
                 contactIDs.insert(like)
             }
-            else if getContactPhoto(like) == nil {
-                photoIDs.insert(like)
-            }
         }
         if contactIDs.count > 0 {
-            //httpGetPostsUsers(Array<UInt64>(contactIDs), post: self)
-        }
-        if photoIDs.count > 0 {
-            //httpGetPostsPhotos(Array<UInt64>(photoIDs), post:self)
+            httpGetPostsUsers(Array<UInt64>(contactIDs), post: m_father!)
         }
     }
     
@@ -176,12 +172,36 @@ class Post {
         return str
     }
     
-    func getHeight(width:CGFloat, fullView: Bool)->CGFloat {
+    func getHeight(width:CGFloat, selfView: Bool, fullView: Bool)->CGFloat {
+        let photoHeight = (selfView ? 0 : PostPhotoSize + PostItemGap)
         let articleHeight = (m_info.content.characters.count == 0 ? 0.0 :
-            (getTextHeight(m_info.content, width: width, font: articleFont) + PostItemGapF))
-        let previewHeight = (numImages() == 0 ? 0.0 : ((width - PostItemGapF*2) / 3 + PostItemGapF))
-        return articleHeight + previewHeight + (fullView ? PostPhotoSize + PostItemGapF + PostBtnSize + PostItemGapF : PostItemGapF)
+            (getTextHeight(m_info.content, width: width, font: articleFont) + PostItemGap))
+        let previewHeight = (numImages() == 0 ? 0.0 : ((width - PostPreViewGap*2) / 3 + PostItemGap))
+        let toolHeight = PostBtnSize + PostItemGap
+        let permitHeight = (selfView ? getPermitHeight(width) + PostItemGap : 0)
+        return articleHeight + previewHeight + (fullView ? photoHeight + toolHeight + permitHeight : PostItemGap)
     }
+    
+    func getPermitTags()->Array<Tag> {
+        var tags = Array<Tag>()
+        
+        for tag in contactsData.m_tags {
+            if tag.m_bit & m_info.flag != 0 {
+                tags.append(tag)
+            }
+            for subTag in tag.m_subTags {
+                if subTag.m_bit & m_info.flag != 0 {
+                    tags.append(subTag)
+                }
+            }
+        }
+        
+        if contactsData.m_undefine.m_bit & m_info.flag != 0 {
+            tags.append(contactsData.m_undefine)
+        }
+        
+        return tags
+    }    
 }
 
 protocol PostDataDelegate {

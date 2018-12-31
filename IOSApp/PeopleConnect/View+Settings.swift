@@ -20,20 +20,23 @@ let hlTextColor   = UIColor(red: 0.28, green: 0.35, blue: 0.54, alpha: 1.0)
 let linkTextColor = UIColor(red: 0.09, green: 0.49, blue: 0.99, alpha: 1.0)
 let selfTextColor = UIColor(red: 0.09, green: 0.49, blue: 0.09, alpha: 1.0)
 
-let PostPhotoSize:CGFloat = 50
-let PostBtnSize:CGFloat = 30
-let PostItemGapF:CGFloat = 5
-
 func getTextHeight(text:String, width:CGFloat, font:UIFont)->CGFloat {
     let maxSize = CGSizeMake(width, CGFloat(MAXFLOAT))
     let style = NSMutableParagraphStyle()
     //style.alignment = .Left
     style.lineBreakMode = .ByWordWrapping
-    style.lineSpacing = 3
+    style.lineSpacing = 2
 
     let dict = [NSFontAttributeName:font, NSParagraphStyleAttributeName:style]
     let size = text.boundingRectWithSize(maxSize, options: [.UsesLineFragmentOrigin], attributes: dict, context: nil)
     return CGFloat(ceilf(Float(size.height)))
+}
+
+func getTextWidth(text:String, height:CGFloat, font:UIFont)->CGFloat {
+    let maxSize = CGSizeMake(CGFloat(MAXFLOAT), height)
+    let dict = [NSFontAttributeName:font]
+    let size = text.boundingRectWithSize(maxSize, options: [.UsesLineFragmentOrigin], attributes: dict, context: nil)
+    return CGFloat(ceilf(Float(size.width)))
 }
 
 func getMsgSize(text:String, maxSize:CGSize, font:UIFont)->CGSize {

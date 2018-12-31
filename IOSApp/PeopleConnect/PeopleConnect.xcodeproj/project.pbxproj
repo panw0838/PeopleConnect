@@ -19,6 +19,7 @@
 		1897D00D21D888E200E4A02A /* Data+Time.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1897D00C21D888E200E4A02A /* Data+Time.swift */; };
 		1897D02021D8DF3000E4A02A /* UILabel+YBAttributeTextTapAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 1897D01F21D8DF3000E4A02A /* UILabel+YBAttributeTextTapAction.m */; };
 		1897D02221D8E6DF00E4A02A /* View+Posts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1897D02121D8E6DF00E4A02A /* View+Posts.swift */; };
+		189AC5D221D9CBDA0008BB95 /* View+Tags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189AC5D121D9CBDA0008BB95 /* View+Tags.swift */; };
 		18AE41F62199E2680008B792 /* server.cer in Resources */ = {isa = PBXBuildFile; fileRef = 18AE41F52199E2680008B792 /* server.cer */; };
 		18AE420A219AC4170008B792 /* View+Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE4209219AC4170008B792 /* View+Login.swift */; };
 		18AE420C219AE3AD0008B792 /* Data+User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AE420B219AE3AD0008B792 /* Data+User.swift */; };
@@ -191,6 +192,7 @@
 		1897D01E21D8DF3000E4A02A /* UILabel+YBAttributeTextTapAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UILabel+YBAttributeTextTapAction.h"; path = "Widgets/UILabel+YBAttributeTextTapAction.h"; sourceTree = "<group>"; };
 		1897D01F21D8DF3000E4A02A /* UILabel+YBAttributeTextTapAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UILabel+YBAttributeTextTapAction.m"; path = "Widgets/UILabel+YBAttributeTextTapAction.m"; sourceTree = "<group>"; };
 		1897D02121D8E6DF00E4A02A /* View+Posts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Posts.swift"; sourceTree = "<group>"; };
+		189AC5D121D9CBDA0008BB95 /* View+Tags.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Tags.swift"; sourceTree = "<group>"; };
 		18AE41F52199E2680008B792 /* server.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = server.cer; sourceTree = "<group>"; };
 		18AE4209219AC4170008B792 /* View+Login.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Login.swift"; sourceTree = "<group>"; };
 		18AE420B219AE3AD0008B792 /* Data+User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+User.swift"; sourceTree = "<group>"; };
@@ -351,6 +353,7 @@
 				1897D02121D8E6DF00E4A02A /* View+Posts.swift */,
 				18D3A8E22198017000EB3289 /* View+PostsTable.swift */,
 				18FF5DE021C156A7008DB746 /* View+PostHeader.swift */,
+				189AC5D121D9CBDA0008BB95 /* View+Tags.swift */,
 				1801E9B121BFB1ED004C3FE2 /* View+PostImgPreview.swift */,
 				1897D00A21D5DD1800E4A02A /* View+PostImgFullview.swift */,
 				1854304621AD78A4004973E6 /* View+CreatePost.swift */,
@@ -616,6 +619,7 @@
 				18DB289821A1CD200024092C /* View+Conversation.swift in Sources */,
 				18FF5DE121C156A7008DB746 /* View+PostHeader.swift in Sources */,
 				18AE420A219AC4170008B792 /* View+Login.swift in Sources */,
+				189AC5D221D9CBDA0008BB95 /* View+Tags.swift in Sources */,
 				18DB289C21A3AF750024092C /* Requests+Tag.swift in Sources */,
 				18D3A8DF2197F3CD00EB3289 /* View+Messages.swift in Sources */,
 				1897D02221D8E6DF00E4A02A /* View+Posts.swift in Sources */,

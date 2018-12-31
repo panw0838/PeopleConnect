@@ -208,13 +208,6 @@ class ContactsData {
     var m_delegates = Array<ContactDataDelegate>()
 
     init() {
-        m_contacts.removeAll()
-        
-        m_tags.removeAll()
-        
-        m_blacklist.m_members.removeAll()
-        m_undefine.m_members.removeAll()
-
         // system tags
         m_tags.append(Tag(id: 0x22, father: 0, name: "家人"))
         m_tags.append(Tag(id: 0x23, father: 0, name: "同学"))
