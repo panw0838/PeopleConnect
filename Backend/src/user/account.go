@@ -124,8 +124,7 @@ func dbLogon(info LoginInfo, c redis.Conn) (uint64, error) {
 }
 
 func DbGetUserInfoField(accountKey string, filed string, c redis.Conn) (string, error) {
-	values, err := redis.Values(c.Do("HMGET", accountKey, filed))
-	value, err := redis.String(values[0], err)
+	value, err := redis.String(c.Do("HGET", accountKey, filed))
 	if err != nil {
 		return "", err
 	}
@@ -135,8 +134,7 @@ func DbGetUserInfoField(accountKey string, filed string, c redis.Conn) (string, 
 
 func DbGetUserName(uID uint64, c redis.Conn) (string, error) {
 	userKey := GetAccountKey(uID)
-	values, err := redis.Values(c.Do("HMGET", userKey, NameField))
-	name, err := redis.String(values[0], err)
+	name, err := redis.String(c.Do("HGET", userKey, NameField))
 	if err != nil {
 		return "", err
 	} else {

@@ -208,8 +208,7 @@ func dbGetFlag(user1 uint64, user2 uint64, c redis.Conn) (uint64, error) {
 		return 0, nil // 0 means no relation
 	}
 
-	values, err := redis.Values(c.Do("HMGET", relationKey, FlagField))
-	relation, err := share.GetUint64(values[0], err)
+	relation, err := redis.Uint64(c.Do("HGET", relationKey, FlagField))
 	if err != nil {
 		return 0, err
 	}

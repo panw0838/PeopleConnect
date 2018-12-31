@@ -15,11 +15,7 @@ type UserGroups struct {
 
 func DbGetUserGroups(uID uint64, c redis.Conn) ([]uint32, error) {
 	userKey := GetAccountKey(uID)
-	values, err := redis.Values(c.Do("HMGET", userKey, GroupsFiled))
-	if len(values) == 0 {
-		return nil, nil
-	}
-	bytes, err := redis.Bytes(values[0], err)
+	bytes, err := redis.Bytes(c.Do("HGET", userKey, GroupsFiled))
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +37,7 @@ func dbSetUserGroups(uID uint64, groups UserGroups, c redis.Conn) error {
 		return err
 	}
 
-	_, err = c.Do("HMSET", userKey, GroupsFiled, bytes)
+	_, err = c.Do("HSET", userKey, GroupsFiled, bytes)
 	if err != nil {
 		return err
 	}

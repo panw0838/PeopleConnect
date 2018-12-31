@@ -33,7 +33,6 @@ const FriendMask uint64 = (USER_TAG_BITS |
 type CustomTag struct {
 	Father uint8  `json:"father"`
 	Name   string `json:"name"`
-	Index  uint8  `json:"idx,omitempty"`
 }
 
 type UserTags struct {
@@ -101,13 +100,13 @@ func dbMoveTagMembers(input UpdateTagMemberInput, c redis.Conn) error {
 func dbGetUserTags(uID uint64, c redis.Conn) (UserTags, error) {
 	var tags UserTags
 	userKey := GetAccountKey(uID)
-	values, err := redis.Values(c.Do("HMGET", userKey, TagsField))
+	value, err := c.Do("HGET", userKey, TagsField)
 	if err != nil {
 		return tags, err
 	}
 
-	if len(values) == 1 && values[0] != nil {
-		bytes, err := redis.Bytes(values[0], err)
+	if value != nil {
+		bytes, err := redis.Bytes(value, err)
 		if err != nil {
 			return tags, err
 		}
@@ -129,7 +128,7 @@ func dbSetUserTags(uID uint64, tags UserTags, c redis.Conn) error {
 	if err != nil {
 		return err
 	}
-	_, err = c.Do("HMSET", userKey, TagsField, bytes)
+	_, err = c.Do("HSET", userKey, TagsField, bytes)
 	return err
 }
 

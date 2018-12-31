@@ -162,10 +162,16 @@ type LoginInfo struct {
 	Device      string `json:"device"`
 }
 
+type OutputTag struct {
+	Father uint8  `json:"father"`
+	Name   string `json:"name"`
+	Index  uint8  `json:"id"`
+}
+
 type LoginResponse struct {
 	UserID uint64      `json:"user"`
 	Name   string      `json:"name"`
-	Tags   []CustomTag `json:"tags,omitempty"`
+	Tags   []OutputTag `json:"tags,omitempty"`
 	Groups []uint64    `json:"groups,omitempty"`
 }
 
@@ -209,8 +215,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	for idx, tag := range tags.Tags {
 		if tag.Father != 0 {
-			tag.Index = uint8(idx)
-			feedback.Tags = append(feedback.Tags, tag)
+			var newTag OutputTag
+			newTag.Father = tag.Father
+			newTag.Name = tag.Name
+			newTag.Index = uint8(idx)
+			feedback.Tags = append(feedback.Tags, newTag)
 		}
 	}
 
