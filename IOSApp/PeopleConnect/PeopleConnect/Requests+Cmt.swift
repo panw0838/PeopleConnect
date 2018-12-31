@@ -9,6 +9,15 @@
 import Foundation
 import AFNetworking
 
+func addComment(post:Post, cmtObjs:[AnyObject]) {
+    // add comments
+    for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
+        if let cmt = CommentInfo(json: cmtObj) {
+            post.m_comments.append(cmt)
+        }
+    }
+}
+
 func httpAddComment(post:Post, to:UInt64, src:UInt32, cmt:String) {
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
@@ -16,12 +25,17 @@ func httpAddComment(post:Post, to:UInt64, src:UInt32, cmt:String) {
         "oid":NSNumber(unsignedLongLong: post.m_info.user),
         "pid":NSNumber(unsignedLongLong: post.m_info.id),
         "cmt":cmt,
-        "src":NSNumber(unsignedInt: src)]
+        "src":NSNumber(unsignedInt: src),
+        "last":NSNumber(unsignedLongLong: (post.m_comments.count == 0 ? 0 : post.m_comments.last!.id))]
     http.postRequest("comment", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let subData = processErrorCode(response as! NSData, failed: nil)
             if subData != nil {
                 if let json = getJson(subData!) {
+                    if let cmtObjs = json["cmt"] as? [AnyObject] {
+                        addComment(post, cmtObjs: cmtObjs)
+                    }
+                    
                     if let id = json["cid"] as? NSNumber {
                         var newComment = CommentInfo()
                         newComment.from = userInfo.userID

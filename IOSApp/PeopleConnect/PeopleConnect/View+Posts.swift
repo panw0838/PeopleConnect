@@ -40,7 +40,7 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setTable(m_posts, data: friendPosts, fullView: true)
-        httpSyncPost()
+        httpSyncFriendsPost()
         httpSyncContactPost(userInfo.userID)
     }
     /*

@@ -64,11 +64,7 @@ func addPost(data:PostData, postObjs:[AnyObject]) {
             data.AddPost(post)
             // add comments
             if let cmtObjs = postObj["cmt"] as? [AnyObject] {
-                for case let cmtObj in (cmtObjs as? [[String:AnyObject]])! {
-                    if let cmt = CommentInfo(json: cmtObj) {
-                        data.m_posts.last?.m_comments.append(cmt)
-                    }
-                }
+                addComment(data.m_posts.last!, cmtObjs: cmtObjs)
             }
         }
     }
@@ -140,7 +136,7 @@ func httpDeletePost(post:Post) {
     )
 }
 
-func httpSyncPost() {
+func httpSyncFriendsPost() {
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
         "post":NSNumber(unsignedLongLong: 0)]
