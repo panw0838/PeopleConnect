@@ -62,21 +62,24 @@ func dbGetPost(oID uint64, pID uint64, c redis.Conn) (bool, PostData, error) {
 	if err != nil {
 		return false, post, err
 	}
-	if len(values) == 0 {
-		return false, post, nil
-	}
-	data, err := redis.Bytes(values[0], err)
-	if err != nil {
-		return false, post, err
-	}
 
-	err = json.Unmarshal(data, &post)
-	if err != nil {
-		return false, post, err
-	}
+	for _, value := range values {
+		if value != nil {
+			data, err := redis.Bytes(values[0], err)
+			if err != nil {
+				return false, post, err
+			}
 
-	post.Owner = oID
-	return true, post, nil
+			err = json.Unmarshal(data, &post)
+			if err != nil {
+				return false, post, err
+			}
+
+			post.Owner = oID
+			return true, post, nil
+		}
+	}
+	return false, post, nil
 }
 
 func dbGetSelfPosts(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostData, error) {

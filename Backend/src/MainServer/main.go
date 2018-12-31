@@ -58,7 +58,7 @@ func main() {
 
 	http.HandleFunc("/newpost", post.NewPostHandler)
 	http.HandleFunc("/delpost", post.DelPostHandler)
-	http.HandleFunc("/syncposts", post.SyncPostsHandler)
+	http.HandleFunc("/syncposts", post.SyncFriendsPostsHandler)
 	http.HandleFunc("/synccontactposts", post.SyncContactPostsHandler)
 	http.HandleFunc("/syncnearbyposts", post.SyncNearbyPostsHandler)
 	http.HandleFunc("/syncgroupposts", post.SyncGroupPublishHandler)

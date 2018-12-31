@@ -128,3 +128,73 @@ func dbLikePost(uID uint64, oID uint64, pID uint64, like bool, c redis.Conn) err
 		return err
 	}
 }
+
+type UpdateComment struct {
+	OID  uint64    `json:"oid"`
+	PID  uint64    `json:"pid"`
+	Cmts []Comment `json:"cmts"`
+}
+
+func dbUpdatePubCmts(uID uint64, pubKey string, pIDs []uint64, oIDs []uint64, cIDs []uint64, src uint32, c redis.Conn) ([]UpdateComment, error) {
+	var cmts []UpdateComment
+
+	for idx, pID := range pIDs {
+		// old posts won't update
+		if pID < 0 {
+			continue
+		}
+		publishes, err := redis.Strings(c.Do("ZRANGEBYSCORE", pubKey, pID, pID))
+		if err != nil {
+			return nil, err
+		}
+
+		for _, publish := range publishes {
+			var curOID uint64
+			var curPID uint64
+			fmt.Sscanf(publish, "%d:%d", &curOID, &curPID)
+
+			if curOID != oIDs[idx] || curPID != pIDs[idx] {
+				continue
+			}
+
+			// get friends comments
+			comments, err := dbGetComments(oIDs[idx], pIDs[idx], uID, src, cIDs[idx], c)
+			if err != nil {
+				return nil, err
+			}
+			if len(comments) > 0 {
+				var newCmts UpdateComment
+				newCmts.OID = oIDs[idx]
+				newCmts.PID = pIDs[idx]
+				newCmts.Cmts = comments
+				cmts = append(cmts, newCmts)
+			}
+		}
+	}
+
+	return cmts, nil
+}
+
+func dbUpdateSelfCmts(uID uint64, pIDs []uint64, cIDs []uint64, c redis.Conn) ([]UpdateComment, error) {
+	var cmts []UpdateComment
+
+	for idx, pID := range pIDs {
+		// old posts won't update
+		if pID < 0 {
+			continue
+		}
+		comments, err := dbGetComments(uID, pID, uID, AllGroups, cIDs[idx], c)
+		if err != nil {
+			return nil, err
+		}
+		if len(comments) > 0 {
+			var newCmts UpdateComment
+			newCmts.OID = uID
+			newCmts.PID = pID
+			newCmts.Cmts = comments
+			cmts = append(cmts, newCmts)
+		}
+	}
+
+	return cmts, nil
+}

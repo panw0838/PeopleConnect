@@ -17,10 +17,12 @@ type AddCmtInput struct {
 	PostID    uint64 `json:"pid"`
 	Msg       string `json:"cmt"`
 	Group     uint32 `json:"src"`
+	LastCMT   uint64 `json:"last"`
 }
 
 type CommentResponse struct {
-	CmtID uint64 `json:"cid"`
+	CmtID    uint64    `json:"cid"`
+	Comments []Comment `json:"cmts"`
 }
 
 func NewCommentHandler(w http.ResponseWriter, r *http.Request) {
@@ -46,6 +48,11 @@ func NewCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response CommentResponse
 	response.CmtID = cmtID
+	response.Comments, err = dbGetComments(input.PostOwner, input.PostID, input.UID, input.Group, input.LastCMT, c)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
 	bytes, err := json.Marshal(response)
 	if err != nil {
 		share.WriteError(w, 1)

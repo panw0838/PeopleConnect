@@ -241,15 +241,19 @@ func DelPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type SyncPostInput struct {
-	User   uint64 `json:"user"`
-	PostID uint64 `json:"post"`
+	User   uint64   `json:"user"`
+	PostID uint64   `json:"post"`
+	OIDs   []uint64 `json:"oids,omitempty"`
+	PIDs   []uint64 `json:"pids,omitempty"`
+	CIDs   []uint64 `json:"cmts,omitempty"`
 }
 
 type SyncPostReturn struct {
-	Posts []PostData `json:"posts"`
+	Posts []PostData      `json:"posts"`
+	Cmts  []UpdateComment `json:"cmts"`
 }
 
-func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
+func SyncFriendsPostsHandler(w http.ResponseWriter, r *http.Request) {
 	var input SyncPostInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
@@ -264,18 +268,26 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
+	var response SyncPostReturn
+
 	var from uint64 = 0
 	if input.PostID != 0 {
 		from = input.PostID + 1
 	}
-	posts, err := dbGetFriendPublish(input.User, from, share.MAX_TIME, c)
+	response.Posts, err = dbGetFriendPublish(input.User, from, share.MAX_TIME, c)
 	if err != nil {
 		share.WriteError(w, 1)
 		return
 	}
 
-	var response SyncPostReturn
-	response.Posts = posts
+	if len(input.PIDs) > 0 {
+		pubKey := getFPubKey(input.User)
+		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, FriendGroup, c)
+		if err != nil {
+			share.WriteError(w, 1)
+			return
+		}
+	}
 
 	bytes, err := json.Marshal(response)
 	if err != nil {
@@ -288,8 +300,11 @@ func SyncPostsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type SyncContactPostsInput struct {
-	User    uint64 `json:"uid"`
-	Contact uint64 `json:"cid"`
+	User     uint64   `json:"uid"`
+	Contact  uint64   `json:"cid"`
+	LastPost uint64   `json:"pid"`
+	PIDs     []uint64 `json:"pids,omitempty"`
+	CIDs     []uint64 `json:"cmts,omitempty"`
 }
 
 func SyncContactPostsHandler(w http.ResponseWriter, r *http.Request) {
@@ -310,9 +325,20 @@ func SyncContactPostsHandler(w http.ResponseWriter, r *http.Request) {
 	var response SyncPostReturn
 
 	if input.User == input.Contact {
-		response.Posts, err = dbGetSelfPosts(input.User, 0, share.MAX_TIME, c)
+		response.Posts, err = dbGetSelfPosts(input.User, input.LastPost, share.MAX_TIME, c)
+
+		if len(input.PIDs) > 0 {
+			comments, err := dbUpdateSelfCmts(input.User, input.PIDs, input.CIDs, c)
+			if err != nil {
+				share.WriteError(w, 1)
+				return
+			}
+			if len(comments) > 0 {
+				response.Cmts = comments
+			}
+		}
 	} else {
-		response.Posts, err = dbGetUserPosts(input.User, input.Contact, 0, share.MAX_TIME, c)
+		response.Posts, err = dbGetUserPosts(input.User, input.Contact, input.LastPost, share.MAX_TIME, c)
 	}
 	if err != nil {
 		share.WriteError(w, 1)
@@ -369,8 +395,11 @@ func SyncNearbyPostsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type SyncGroupPublishInput struct {
-	User  uint64 `json:"uid"`
-	Group uint32 `json:"gid"`
+	User  uint64   `json:"uid"`
+	Group uint32   `json:"gid"`
+	OIDs  []uint64 `json:"oids,omitempty"`
+	PIDs  []uint64 `json:"pids,omitempty"`
+	CIDs  []uint64 `json:"cmts,omitempty"`
 }
 
 func SyncGroupPublishHandler(w http.ResponseWriter, r *http.Request) {
@@ -394,6 +423,15 @@ func SyncGroupPublishHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		share.WriteError(w, 1)
 		return
+	}
+
+	if len(input.PIDs) > 0 {
+		pubKey := getGPubKey(input.Group)
+		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, input.Group, c)
+		if err != nil {
+			share.WriteError(w, 1)
+			return
+		}
 	}
 
 	bytes, err := json.Marshal(response)
