@@ -7,6 +7,8 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
+const Max_Groups int = 5
+
 type UserGroups struct {
 	Groups []uint32 `json:"groups"`
 }
@@ -14,6 +16,9 @@ type UserGroups struct {
 func DbGetUserGroups(uID uint64, c redis.Conn) ([]uint32, error) {
 	userKey := GetAccountKey(uID)
 	values, err := redis.Values(c.Do("HMGET", userKey, GroupsFiled))
+	if len(values) == 0 {
+		return nil, nil
+	}
 	bytes, err := redis.Bytes(values[0], err)
 	if err != nil {
 		return nil, err
@@ -48,6 +53,10 @@ func dbAddGroup(uID uint64, group uint32, c redis.Conn) error {
 	groups, err := DbGetUserGroups(uID, c)
 	if err != nil {
 		return err
+	}
+
+	if len(groups) >= Max_Groups {
+		return fmt.Errorf("Reach max groups")
 	}
 
 	for _, gID := range groups {

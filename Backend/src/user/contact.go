@@ -48,7 +48,7 @@ func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	if inBlacklist(flag) {
+	if (flag & BLK_BIT) != 0 {
 		return 0, fmt.Errorf("account not exists")
 	}
 	return contactID, nil

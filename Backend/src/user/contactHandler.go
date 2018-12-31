@@ -14,7 +14,6 @@ import (
 )
 
 type GetContactsReturn struct {
-	Tags     []TagInfo     `json:"tags"`
 	Contacts []ContactInfo `json:"contacts"`
 }
 
@@ -41,13 +40,6 @@ func GetContactsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response.Contacts = contacts
-
-	tags, err := dbGetTags(account.UserID, c)
-	if err != nil {
-		share.WriteError(w, 1)
-		return
-	}
-	response.Tags = tags
 
 	data, err := json.Marshal(&response)
 	if err != nil {

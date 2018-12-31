@@ -11,10 +11,9 @@ import (
 )
 
 type AddTagParams struct {
-	User    uint64   `json:"user"`
-	Father  uint8    `json:"father"`
-	Name    string   `json:"name"`
-	Members []uint64 `json:"members"`
+	User   uint64 `json:"user"`
+	Father uint8  `json:"father"`
+	Name   string `json:"name"`
 }
 
 type AddTagReturn struct {
@@ -22,63 +21,47 @@ type AddTagReturn struct {
 }
 
 func AddTagHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Error: read request")
-		return
-	}
-
 	var params AddTagParams
-	err = json.Unmarshal(body, &params)
+	err := share.ReadInput(r, &params)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error %s", body)
+		share.WriteError(w, 1)
 		return
 	}
 
 	var nameLen = len(params.Name)
 	if nameLen > int(NAME_SIZE) || nameLen <= 0 {
-		fmt.Fprintf(w, "Error: Invalid tag name")
+		share.WriteError(w, 1)
 		return
 	}
 
-	if !isValidMainTag(params.Father) {
-		fmt.Fprintf(w, "Error: Invalud father tag")
+	if !isValidSysTag(params.Father) {
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
 
 	tagIdx, err := dbAddTag(params.User, params.Father, params.Name, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
-	}
-
-	tagID := tagIdx + USER_TAG_START
-	tagBits := (ONE_64<<tagID | ONE_64<<params.Father)
-
-	for _, member := range params.Members {
-		err = dbEnableBits(params.User, member, tagBits, c)
-		if err != nil {
-			fmt.Fprintf(w, "Error: %v", err)
-			return
-		}
 	}
 
 	var returnData AddTagReturn
-	returnData.Tag = tagID
+	returnData.Tag = tagIdx
 	data, err := json.Marshal(&returnData)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
-	fmt.Fprintf(w, "%s", data)
+	share.WriteError(w, 0)
+	w.Write(data)
 }
 
 type RemTagInput struct {
@@ -89,81 +72,59 @@ type RemTagInput struct {
 func RemTagHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "Error: read request")
+		share.WriteError(w, 1)
 		return
 	}
 
 	var input RemTagInput
 	err = json.Unmarshal(body, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error")
-		return
-	}
-
-	if !isUserTag(input.Tag) {
-		fmt.Fprintf(w, "Error: Invalid tag")
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
-
-	exists, err := dbUserTagExists(input.User, input.Tag, c)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
-	if !exists {
-		fmt.Fprintf(w, "Error: tag not exists")
-		return
-	}
-
-	hasMember, err := dbTagHasMember(input.User, input.Tag, c)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	} else if hasMember {
-		fmt.Fprintf(w, "Error: Tag has members")
-		return
-	}
 
 	err = dbRemTag(input.User, input.Tag, c)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
+		share.WriteError(w, 1)
 		return
 	}
 
-	fmt.Fprintf(w, "Success")
+	share.WriteError(w, 0)
 }
 
 type UpdateTagMemberInput struct {
-	User uint64   `json:"user"`
-	Tag  uint8    `json:"tag"`
-	Add  []uint64 `json:"add"`
-	Rem  []uint64 `json:"rem"`
+	User      uint64   `json:"user"`
+	Tag       uint8    `json:"tag"`
+	SystemTag bool     `json:"sys"`
+	Add       []uint64 `json:"add"`
+	Rem       []uint64 `json:"rem"`
 }
 
 func UpdateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		share.WriteError(w, 1)
-		return
-	}
-
 	var input UpdateTagMemberInput
-	err = json.Unmarshal(body, &input)
+	err := share.ReadInput(r, &input)
 	if err != nil {
 		share.WriteError(w, 1)
 		return
 	}
 
-	if !isValidMainTag(input.Tag) && !isUserTag(input.Tag) {
-		share.WriteError(w, 1)
-		return
+	if input.SystemTag {
+		if !isValidSysTag(input.Tag) {
+			share.WriteError(w, 1)
+			return
+		}
+	} else {
+		if uint64(input.Tag) > MAX_USR_TAGS {
+			share.WriteError(w, 1)
+			return
+		}
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
@@ -173,45 +134,10 @@ func UpdateTagMemberHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	// check tag
-	if isUserTag(input.Tag) {
-		exists, err := dbUserTagExists(input.User, input.Tag, c)
-		if err != nil {
-			share.WriteError(w, 1)
-			return
-		}
-		if !exists {
-			share.WriteError(w, 1)
-			return
-		}
-	}
-
-	addBits, err := getTagAndFatherBits(input.User, input.Tag, c)
+	err = dbMoveTagMembers(input, c)
 	if err != nil {
 		share.WriteError(w, 1)
 		return
-	}
-
-	for _, member := range input.Add {
-		err := dbEnableBits(input.User, member, addBits, c)
-		if err != nil {
-			share.WriteError(w, 1)
-			return
-		}
-	}
-
-	remBits, err := getTagAndSonsBits(input.User, input.Tag, c)
-	if err != nil {
-		share.WriteError(w, 1)
-		return
-	}
-
-	for _, member := range input.Rem {
-		err := dbDisableBits(input.User, member, remBits, c)
-		if err != nil {
-			share.WriteError(w, 1)
-			return
-		}
 	}
 
 	share.WriteError(w, 0)
