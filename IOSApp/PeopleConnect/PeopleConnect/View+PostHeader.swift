@@ -170,10 +170,12 @@ class PostHeader: UITableViewHeaderFooterView {
         if fullView && !selfView {
             let contact = contactsData.getContact((m_post?.m_info.user)!)
             
+            m_photo.hidden = false
             m_photo.image = getPhoto((m_post?.m_info.user)!)
             m_photo.frame = CGRectMake(0, 0, PostPhotoSize, PostPhotoSize)
             buttom = PostPhotoSize + PostItemGap
             
+            m_name.hidden = false
             m_name.text = contact?.name
             m_name.frame = CGRectMake(PostPhotoSize + PostItemGap, 0, width, 20)
         }
