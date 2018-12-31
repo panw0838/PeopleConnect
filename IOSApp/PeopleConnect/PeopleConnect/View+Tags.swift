@@ -9,11 +9,11 @@
 import UIKit
 
 let TagColors = [
-    0x21:UIColor.redColor(),
-    0x22:UIColor.greenColor(),
-    0x23:UIColor.blueColor(),
-    0x24:UIColor.yellowColor(),
-    0x25:UIColor.purpleColor()]
+    1:UIColor.redColor(),
+    2:UIColor.greenColor(),
+    3:UIColor.blueColor(),
+    4:UIColor.yellowColor(),
+    5:UIColor.purpleColor()]
 
 let PostTagHeight:CGFloat = 15
 let PostTagSpace:CGFloat = 15

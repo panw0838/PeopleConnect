@@ -16,15 +16,6 @@ func httpGetFriends(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
             if conData != nil {
                 if let json = try? NSJSONSerialization.JSONObjectWithData(conData!, options: .MutableContainers) as! [String:AnyObject] {
                     var contacts:Array<ContactInfo> = Array<ContactInfo>()
-                    var userTags:Array<TagInfo> = Array<TagInfo>()
-                    
-                    if let tagObjs = json["tags"] as? [AnyObject] {
-                        for case let tagObj in (tagObjs as? [[String:AnyObject]])! {
-                            if let tag = TagInfo(json: tagObj) {
-                                userTags.append(tag)
-                            }
-                        }
-                    }
                     
                     if let contactObjs = json["contacts"] as? [AnyObject] {
                         for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
@@ -34,7 +25,7 @@ func httpGetFriends(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
                         }
                     }
                     
-                    contactsData.loadContacts(contacts, userTags: userTags)
+                    contactsData.loadContacts(contacts)
                     passed?()
                 }
             }
@@ -46,7 +37,7 @@ func httpGetFriends(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
 }
 
 func httpGetNearbyUsers() {
-    contactsData.m_stranger.clear()
+    contactsData.m_stranger.clearContacts()
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
         "x":NSNumber(double: userInfo.x),
@@ -79,7 +70,7 @@ func httpGetNearbyUsers() {
 }
 
 func httpGetPossibleContacts() {
-    contactsData.m_possible.clear()
+    contactsData.m_stranger.clearContacts()
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("possiblecontacts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
@@ -167,19 +158,20 @@ func httpRemContact(contact:UInt64) {
     })
 }
 
-func httpMoveContacts(tagID:UInt8, addMembers:Array<UInt64>, remMembers:Array<UInt64>) {
+func httpMoveContacts(tag:Tag, addMembers:Array<UInt64>, remMembers:Array<UInt64>) {
     let adds:NSMutableArray = http.getUInt64ArrayParam(addMembers)
     let rems:NSMutableArray = http.getUInt64ArrayParam(remMembers)
     let params:Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
-        "tag":NSNumber(unsignedChar: tagID),
+        "tag":NSNumber(unsignedChar: tag.m_tagID),
+        "sys":NSNumber(bool: (tag.m_fatherID == 0)),
         "add":adds,
         "rem":rems]
     http.postRequest("updatetagmember", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if getErrorCode(response as! NSData) == 0 {
-                contactsData.moveContactsInTag(addMembers, tagID: tagID)
-                contactsData.moveContactsOutTag(remMembers, tagID: tagID)
+                contactsData.moveContactsInTag(addMembers, tag: tag)
+                contactsData.moveContactsOutTag(remMembers, tag: tag)
                 contactsData.updateDelegates()
             }
         },

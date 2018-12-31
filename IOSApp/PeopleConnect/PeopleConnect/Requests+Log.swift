@@ -71,6 +71,16 @@ func httpLogon(code:Int, cell:String, pass:String, passed:(()->Void)?, failed:((
                     let newContact = ContactInfo(id: userInfo.userID, f: 0, n: userInfo.userName)
                     contactsData.m_contacts[newContact.user] = newContact
                     userData.setCurUser()
+                    
+                    if let tagObjs = dict["tags"] as? [AnyObject] {
+                        for case let tagObj in (tagObjs as? [[String:AnyObject]])! {
+                            if let tag = TagInfo(json: tagObj) {
+                                contactsData.addSubTag(Tag(id: tag.tagID, father: tag.fatherID, name: tag.tagName))
+                            }
+                        }
+                    }
+                    
+                    // todo process groups
                 }
                 passed?()
             }

@@ -9,15 +9,15 @@
 import Foundation
 
 func httpAddTag(father:UInt8, name:String) {
-    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "father":NSNumber(unsignedChar: father), "name":name]
+    let params: Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "father":NSNumber(unsignedChar: father),
+        "name":name]
     http.postRequest("addtag", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-            if (html.hasPrefix("Error")) {
-                print("%s", html)
-            }
-            else {
-                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
+            let tagData = processErrorCode(response as! NSData, failed: nil)
+            if tagData != nil {
+                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(tagData!, options: .MutableContainers)
                 if (jsonObj != nil) {
                     let dict: NSDictionary = jsonObj as! NSDictionary
                     let tagID: UInt8 = (UInt8)((dict["tag"]?.integerValue)!)
@@ -31,16 +31,14 @@ func httpAddTag(father:UInt8, name:String) {
     })
 }
 
-func httpRemTag(tag:UInt8) {
-    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "tag":NSNumber(unsignedChar: tag)]
+func httpRemTag(tag:Tag) {
+    let params: Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "tag":NSNumber(unsignedChar: tag.m_tagID)]
     http.postRequest("remtag", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-            if (html.hasPrefix("Error")) {
-                print("%s", html)
-            }
-            else {
-                contactsData.remTag(tag)
+            if getErrorCode(response as! NSData) == 0 {
+                tag.m_father?.remSubTag(tag)
                 contactsData.updateDelegates()
             }
         },

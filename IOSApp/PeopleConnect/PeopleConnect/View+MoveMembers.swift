@@ -25,12 +25,12 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
     @IBOutlet weak var m_table: UICollectionView!
     @IBOutlet weak var m_moveBtn: UIBarButtonItem!
 
-    var m_tagID:UInt8 = 0
+    var m_tag:Tag?
     var m_inTagMembers:Array<ContactInfo> = Array<ContactInfo>()
     var m_outTagMembers:Array<ContactInfo> = Array<ContactInfo>()
     
     @IBAction func UpdateMembers(sender: AnyObject) {
-        let bit:UInt64 = BitOne << UInt64(m_tagID)
+        let bit = m_tag!.m_bit
         var addMembers:Array<UInt64> = Array<UInt64>()
         var remMembers:Array<UInt64> = Array<UInt64>()
         for member in m_inTagMembers {
@@ -44,7 +44,7 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
             }
         }
         if addMembers.count != 0 || remMembers.count != 0 {
-            httpMoveContacts(m_tagID, addMembers: addMembers, remMembers: remMembers)
+            httpMoveContacts(m_tag!, addMembers: addMembers, remMembers: remMembers)
             navigationController?.popViewControllerAnimated(true)
         }
     }
@@ -56,7 +56,7 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
     }
     
     func reloadData() {
-        let bit:UInt64 = BitOne << UInt64(m_tagID)
+        let bit = m_tag!.m_bit
         for contact in contactsData.m_contacts.values {
             if contact.isContact() {
                 if contact.flag & bit == 0 {
@@ -67,7 +67,7 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
                 }
             }
         }
-        m_title.title = contactsData.getTag(m_tagID)!.m_tagName
+        m_title.title = m_tag!.m_tagName
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {

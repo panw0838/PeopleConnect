@@ -19,7 +19,7 @@ class SubTagHeader: UICollectionReusableView {
     @IBOutlet weak var m_delBtn: UIButton!
     @IBOutlet weak var m_editBtn: UIButton!
     @IBOutlet weak var m_refreshBtn: UIButton!
-    var m_tagID:UInt8 = 0
+    var m_tag:Tag?
 }
 
 class ContactsView:
@@ -91,7 +91,7 @@ class ContactsView:
         let noAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
             handler: { action in
-                httpRemTag(header.m_tagID)
+                httpRemTag(header.m_tag!)
         })
         alert.addAction(noAction)
         alert.addAction(okAction)
@@ -107,10 +107,10 @@ class ContactsView:
     
     @IBAction func RefreshTag(sender: AnyObject) {
         let header = sender.superview as! SubTagHeader
-        if header.m_tagID == 0xfe {
+        if header.m_tag!.m_tagID == 0xfe {
             httpGetPossibleContacts()
         }
-        else if header.m_tagID == 0xff {
+        else if header.m_tag!.m_tagID == 0xff {
             userData.startLocate(self)
         }
     }
@@ -157,7 +157,7 @@ class ContactsView:
             header.m_editBtn.hidden = !subTag.canBeEdit()
             header.m_delBtn.hidden = !subTag.canBeDelete()
             header.m_refreshBtn.hidden = !subTag.isStrangerTag()
-            header.m_tagID = subTag.m_tagID
+            header.m_tag = subTag
             return header
         }
         else {
@@ -214,7 +214,7 @@ class ContactsView:
         if segue.identifier == "ShowMoveMember" {
             let from = sender?.superview as! SubTagHeader
             let to = segue.destinationViewController as! MoveMemberView
-            to.m_tagID = from.m_tagID
+            to.m_tag = from.m_tag
         }
         if segue.identifier == "StartConversation" {
             let to = segue.destinationViewController as! ConversationView
