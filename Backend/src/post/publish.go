@@ -2,6 +2,7 @@ package post
 
 import (
 	"fmt"
+	"message"
 	"share"
 	"strconv"
 	"user"
@@ -27,16 +28,13 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 	// add to friends timeline
 	if (post.Flag & user.FriendMask) != 0 {
 		contactsKey := user.GetContactsKey(uID)
-		contacts, err := redis.Strings(c.Do("SMEMBERS", contactsKey))
+		values, err := redis.Int64s(c.Do("SMEMBERS", contactsKey))
 		if err != nil {
 			return err
 		}
 
-		for _, contact := range contacts {
-			cID, err := strconv.ParseUint(contact, 10, 64)
-			if err != nil {
-				return err
-			}
+		for _, value := range values {
+			cID := uint64(value)
 			canSee, err := canSeeFPost(cID, uID, post.Flag, c)
 			if err != nil {
 				return err
@@ -47,6 +45,10 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 				if err != nil {
 					return err
 				}
+
+				var msg message.Message
+				msg.Type = message.NTF_NEW
+				err = message.DbAddMessege(cID, msg, c)
 			}
 		}
 	}

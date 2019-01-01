@@ -47,7 +47,7 @@ func SendMsgHandler(w http.ResponseWriter, r *http.Request) {
 	msg.Content = input.Msg
 	msg.Type = input.Type
 
-	err = dbAddMessege(input.To, msg, c)
+	err = DbAddMessege(input.To, msg, c)
 	if err != nil {
 		share.WriteError(w, 1)
 		return

@@ -78,7 +78,7 @@ func dbAddContact(uID uint64, cID uint64, name string, c redis.Conn) error {
 	var msg Message
 	msg.From = uID
 	msg.Type = NTF_ADD
-	err = dbAddMessege(cID, msg, c)
+	err = DbAddMessege(cID, msg, c)
 	if err != nil {
 		return err
 	}

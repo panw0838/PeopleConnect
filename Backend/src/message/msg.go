@@ -15,22 +15,32 @@ const MSG_STR uint8 = 0x00
 const MSG_PIC uint8 = 0x01
 const MSG_VID uint8 = 0x02
 
-// notifications
+// notifications requests
 const NTF_REQ uint8 = 0x10
 const NTF_ADD uint8 = 0x11
 
+// notifications posts
+const NTF_CMT uint8 = 0x20
+const NTF_LIK uint8 = 0x21
+const NTF_NEW uint8 = 0x22
+
 type Message struct {
+	Type uint8  `json:"type"`
+	Time uint64 `json:"time"`
+	// for message
 	From    uint64 `json:"from"`
-	Time    uint64 `json:"time"`
-	Content string `json:"cont"`
-	Type    uint8  `json:"type"`
+	Content string `json:"cont,omitempty"`
+	// for post notify
+	OID uint64 `json:"oid,omitempty"`
+	PID uint64 `json:"pid,omitempty"`
+	Src uint32 `json:"src,omitempty"`
 }
 
 func getMsgKey(userID uint64) string {
 	return "msg:" + strconv.FormatUint(userID, 10)
 }
 
-func dbAddMessege(to uint64, msg Message, c redis.Conn) error {
+func DbAddMessege(to uint64, msg Message, c redis.Conn) error {
 	msg.Time = share.GetTimeID(time.Now())
 	data, err := json.Marshal(msg)
 	if err != nil {
@@ -108,10 +118,8 @@ func dbAddRequest(input RequestContactInput, c redis.Conn) uint16 {
 
 	// add to message notification
 	var msg Message
-	msg.From = input.From
 	msg.Type = NTF_REQ
-
-	err = dbAddMessege(input.To, msg, c)
+	err = DbAddMessege(input.To, msg, c)
 	if err != nil {
 		return 1
 	}
