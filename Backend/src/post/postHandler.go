@@ -241,11 +241,11 @@ func DelPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type SyncPostInput struct {
-	User   uint64   `json:"user"`
-	PostID uint64   `json:"post"`
-	OIDs   []uint64 `json:"oids,omitempty"`
-	PIDs   []uint64 `json:"pids,omitempty"`
-	CIDs   []uint64 `json:"cmts,omitempty"`
+	User     uint64   `json:"user"`
+	LastPost uint64   `json:"last"`
+	OIDs     []uint64 `json:"oids,omitempty"`
+	PIDs     []uint64 `json:"pids,omitempty"`
+	CIDs     []uint64 `json:"cmts,omitempty"`
 }
 
 type SyncPostReturn struct {
@@ -270,9 +270,9 @@ func SyncFriendsPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response SyncPostReturn
 
-	var from uint64 = 0
-	if input.PostID != 0 {
-		from = input.PostID + 1
+	var from uint64 = input.LastPost
+	if input.LastPost != 0 {
+		from++
 	}
 	response.Posts, err = dbGetFriendPublish(input.User, from, share.MAX_TIME, c)
 	if err != nil {
@@ -356,7 +356,7 @@ func SyncContactPostsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type SyncNearbyPostsInput struct {
-	User uint64  `json:"user"`
+	User uint64  `json:"uid"`
 	X    float64 `json:"x"`
 	Y    float64 `json:"y"`
 }

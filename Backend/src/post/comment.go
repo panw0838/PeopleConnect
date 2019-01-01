@@ -138,11 +138,14 @@ type UpdateComment struct {
 func dbUpdatePubCmts(uID uint64, pubKey string, pIDs []uint64, oIDs []uint64, cIDs []uint64, src uint32, c redis.Conn) ([]UpdateComment, error) {
 	var cmts []UpdateComment
 
+	oldDay := share.GetTimeID(time.Now()) - 3600*24*3
+
 	for idx, pID := range pIDs {
 		// old posts won't update
-		if pID < 0 {
+		if pID < oldDay {
 			continue
 		}
+
 		publishes, err := redis.Strings(c.Do("ZRANGEBYSCORE", pubKey, pID, pID))
 		if err != nil {
 			return nil, err
@@ -178,9 +181,11 @@ func dbUpdatePubCmts(uID uint64, pubKey string, pIDs []uint64, oIDs []uint64, cI
 func dbUpdateSelfCmts(uID uint64, pIDs []uint64, cIDs []uint64, c redis.Conn) ([]UpdateComment, error) {
 	var cmts []UpdateComment
 
+	oldDay := share.GetTimeID(time.Now()) - 3600*24*7
+
 	for idx, pID := range pIDs {
 		// old posts won't update
-		if pID < 0 {
+		if pID < oldDay {
 			continue
 		}
 		comments, err := dbGetComments(uID, pID, uID, AllGroups, cIDs[idx], c)
