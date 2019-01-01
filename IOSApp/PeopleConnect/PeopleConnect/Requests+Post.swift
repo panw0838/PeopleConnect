@@ -28,7 +28,7 @@ func httpGetPostsUsers(cIDs:Array<UInt64>, post:PostData) {
                                 contactsData.m_contacts[contact.user] = contact
                             }
                         }
-                        post.Update()
+                        post.UpdateDelegate()
                     }
                 }
             }
@@ -50,7 +50,7 @@ func httpGetPostsPhotos(cIDs:Array<UInt64>, post:PostData) {
                 for (i, cID) in cIDs.enumerate() {
                     contactsData.setPhoto(cID, data: subDatas[i], update: true)
                 }
-                post.Update()
+                post.UpdateDelegate()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -103,7 +103,7 @@ func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>, groups:Array<UI
                         previews[previewKey] = UIImage(data: data)
                     }
                     selfPosts.AddPost(postInfo)
-                    selfPosts.Update()
+                    selfPosts.UpdateDelegate()
                 }
             }
         },
@@ -124,7 +124,7 @@ func httpDeletePost(post:Post) {
                 for (idx, p) in (post.m_father?.m_posts.enumerate())! {
                     if p.m_info.id == post.m_info.id && p.m_info.user == post.m_info.user {
                         post.m_father?.m_posts.removeAtIndex(idx)
-                        post.m_father?.Update()
+                        post.m_father?.UpdateDelegate()
                         break
                     }
                 }
@@ -136,10 +136,14 @@ func httpDeletePost(post:Post) {
     )
 }
 
-func httpSyncFriendsPost() {
+func httpSyncFriendsPost(pIDs:Array<UInt64>, oIDs:Array<UInt64>, cIDs:Array<UInt64>) {
+    let lastPost = (friendPosts.m_posts.count == 0 ? 0 : friendPosts.m_posts.last?.m_info.id)
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
-        "post":NSNumber(unsignedLongLong: 0)]
+        "last":NSNumber(unsignedLongLong: lastPost!),
+        "pids":http.getUInt64ArrayParam(pIDs),
+        "oids":http.getUInt64ArrayParam(oIDs),
+        "cids":http.getUInt64ArrayParam(cIDs)]
     http.postRequest("syncposts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let postsData = processErrorCode(response as! NSData, failed: nil)
@@ -148,7 +152,7 @@ func httpSyncFriendsPost() {
                     if let postObjs = json["posts"] as? [AnyObject] {
                         addPost(friendPosts, postObjs: postObjs)
                         friendPosts.getPreviews()
-                        friendPosts.Update()
+                        friendPosts.UpdateDelegate()
                     }
                 }
             }
@@ -159,7 +163,7 @@ func httpSyncFriendsPost() {
     )
 }
 
-func httpSyncContactPost(cID:UInt64) {
+func httpSyncContactPost(cID:UInt64, pIDs:Array<UInt64>, oIDs:Array<UInt64>, cIDs:Array<UInt64>) {
     var postData:PostData?
     
     if cID == userInfo.userID {
@@ -171,7 +175,10 @@ func httpSyncContactPost(cID:UInt64) {
     
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
-        "cid":NSNumber(unsignedLongLong: cID)]
+        "cid":NSNumber(unsignedLongLong: cID),
+        "pids":http.getUInt64ArrayParam(pIDs),
+        "oids":http.getUInt64ArrayParam(oIDs),
+        "cids":http.getUInt64ArrayParam(cIDs)]
     
     postData!.clear()
 
@@ -183,7 +190,7 @@ func httpSyncContactPost(cID:UInt64) {
                     if let postObjs = json["posts"] as? [AnyObject] {
                         addPost(postData!, postObjs: postObjs)
                         postData!.getPreviews()
-                        postData!.Update()
+                        postData!.UpdateDelegate()
                     }
                 }
             }
@@ -196,6 +203,7 @@ func httpSyncContactPost(cID:UInt64) {
 
 func httpSyncNearbyPost() {
     let params: Dictionary = [
+        "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "x":NSNumber(double: userInfo.x),
         "y":NSNumber(double: userInfo.y)]
     http.postRequest("syncnearbyposts", params: params,
@@ -207,7 +215,7 @@ func httpSyncNearbyPost() {
                         addPost(nearPosts, postObjs: postObjs)
                         nearPosts.getContacts()
                         nearPosts.getPreviews()
-                        nearPosts.Update()
+                        nearPosts.UpdateDelegate()
                     }
                 }
             }
@@ -218,10 +226,14 @@ func httpSyncNearbyPost() {
     )
 }
 
-func httpSyncGroupPost(gID:UInt32) {
+func httpSyncGroupPost(gID:UInt32, pIDs:Array<UInt64>, oIDs:Array<UInt64>, cIDs:Array<UInt64>) {
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
-        "gid":NSNumber(unsignedInt: gID)]
+        "gid":NSNumber(unsignedInt: gID),
+        "pids":http.getUInt64ArrayParam(pIDs),
+        "oids":http.getUInt64ArrayParam(oIDs),
+        "cids":http.getUInt64ArrayParam(cIDs)]
+
     http.postRequest("syncgroupposts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let postsData = processErrorCode(response as! NSData, failed: nil)
@@ -231,7 +243,7 @@ func httpSyncGroupPost(gID:UInt32) {
                         addPost(groupsPosts[gID]!, postObjs: postObjs)
                         groupsPosts[gID]!.getContacts()
                         groupsPosts[gID]!.getPreviews()
-                        groupsPosts[gID]!.Update()
+                        groupsPosts[gID]!.UpdateDelegate()
                     }
                 }
             }
@@ -255,7 +267,7 @@ func httpGetSnapshots(files:Array<String>, post:PostData) {
                     setPostPreview(file, data: subDatas[i])
                     previews[file] = UIImage(data: subDatas[i])
                 }
-                post.Update()
+                post.UpdateDelegate()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in

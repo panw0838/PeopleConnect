@@ -45,10 +45,14 @@ class ContactView: PostsTable, UITableViewDelegate {
         }
         else {
             if contactsPosts[m_contact.user] == nil {
-                contactsPosts[m_contact.user] = PostData(src: UsrPosts)
-                httpSyncContactPost(ContactView.ContactID)
+                postData = PostData(src: UsrPosts)
+                postData!.m_contact = ContactView.ContactID
+                contactsPosts[ContactView.ContactID] = postData
             }
-            postData = contactsPosts[m_contact.user]
+            else {
+                postData = contactsPosts[m_contact.user]
+            }
+            postData?.Update()
         }
 
         m_preDelegate = postData?.m_delegate

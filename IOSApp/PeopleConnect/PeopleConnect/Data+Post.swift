@@ -210,6 +210,7 @@ protocol PostDataDelegate {
 
 class PostData {
     var m_sorce:UInt32 = 0
+    var m_contact:UInt64 = 0
     var m_posts = Array<Post>()
     var m_delegate:PostDataDelegate? = nil
     
@@ -229,6 +230,35 @@ class PostData {
     }
     
     func Update() {
+        var pIDs = Array<UInt64>()
+        var oIDs = Array<UInt64>()
+        var cIDs = Array<UInt64>()
+        
+        for post in m_posts {
+            pIDs.append(post.m_info.id)
+            oIDs.append(post.m_info.user)
+            cIDs.append((post.m_comments.count == 0 ? 0 : post.m_comments.last!.id))
+        }
+        
+        switch m_sorce {
+        case SlfPosts:
+            httpSyncContactPost(userInfo.userID, pIDs: pIDs, oIDs: oIDs, cIDs: cIDs)
+            break
+        case UsrPosts:
+            httpSyncContactPost(m_contact, pIDs: pIDs, oIDs: oIDs, cIDs: cIDs)
+            break
+        case FriPosts:
+            httpSyncFriendsPost(pIDs, oIDs: oIDs, cIDs: cIDs)
+            break
+        case StrPosts:
+            break
+        default:
+            httpSyncGroupPost(m_sorce, pIDs: pIDs, oIDs: oIDs, cIDs: cIDs)
+            break
+        }
+    }
+    
+    func UpdateDelegate() {
         m_delegate?.PostDataUpdated()
     }
     
