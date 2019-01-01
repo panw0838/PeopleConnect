@@ -10,16 +10,15 @@ import Foundation
 import UIKit
 import AFNetworking
 
-let SlfPosts:UInt32 = 0
 let UsrPosts:UInt32 = 0
 let FriPosts:UInt32 = 1
 let StrPosts:UInt32 = 2
 
 var SrcNames:Dictionary<UInt32, String> = [0:"全部", 1:"好友", 2:"附近"]
 
-var selfPosts    = PostData(src: SlfPosts)
+var selfPosts    = PostData(cid: userInfo.userID)
 var friendPosts  = PostData(src: FriPosts)
-var nearPosts    = PostData(src: StrPosts)
+var nearPosts    = NearPostData(src: StrPosts)
 var groupsPosts   = Dictionary<UInt32, PostData>()
 var contactsPosts = Dictionary<UInt64, PostData>()
 
@@ -214,19 +213,37 @@ class PostData {
     var m_posts = Array<Post>()
     var m_delegate:PostDataDelegate? = nil
     
+    
     init(src:UInt32) {
         m_sorce = src
     }
     
+    init(cid:UInt64) {
+        m_sorce = UsrPosts
+        m_contact = cid
+    }
+    
     func AddPost(info:PostInfo) {
+        var post = getPost(info.user, pID: info.id)
+        if post != nil {
+            return
+        }
+        post = Post(info: info)
+        post!.m_father = self
+        m_posts.append(post!)
+    }
+    
+    func getPost(oID:UInt64, pID:UInt64)->Post? {
         for post in m_posts {
-            if post.m_info.id == info.id && post.m_info.user == info.user {
-                return
+            if post.m_info.id == pID && post.m_info.user == oID {
+                return post
             }
         }
-        let post = Post(info: info)
-        post.m_father = self
-        m_posts.append(post)
+        return nil
+    }
+    
+    func getLast()->UInt64 {
+        return m_posts.count == 0 ? 0 : (m_posts.last?.m_info.id)!
     }
     
     func Update() {
@@ -241,9 +258,6 @@ class PostData {
         }
         
         switch m_sorce {
-        case SlfPosts:
-            httpSyncContactPost(userInfo.userID, pIDs: pIDs, oIDs: oIDs, cIDs: cIDs)
-            break
         case UsrPosts:
             httpSyncContactPost(m_contact, pIDs: pIDs, oIDs: oIDs, cIDs: cIDs)
             break
@@ -251,11 +265,16 @@ class PostData {
             httpSyncFriendsPost(pIDs, oIDs: oIDs, cIDs: cIDs)
             break
         case StrPosts:
+            httpSyncNearbyPost()
             break
         default:
             httpSyncGroupPost(m_sorce, pIDs: pIDs, oIDs: oIDs, cIDs: cIDs)
             break
         }
+    }
+    
+    func setDelegate(delegate:PostDataDelegate) {
+        m_delegate = delegate
     }
     
     func UpdateDelegate() {
@@ -268,10 +287,6 @@ class PostData {
     
     func postAtIdx(i:Int)->Post {
         return m_posts[m_posts.count - i - 1]
-    }
-    
-    func clear() {
-        m_posts.removeAll()
     }
     
     func getContacts() {
@@ -318,6 +333,64 @@ class PostData {
         }
         if files.count > 0 {
             httpGetSnapshots(files, post: self)
+        }
+    }
+}
+
+class NearPostData:PostData {
+    // for nearby posts
+    var m_gIDs = Array<UInt64>()
+    var m_geoPosts = Dictionary<UInt64, PostData>()
+    
+    func AddPost(gID:UInt64, info:PostInfo) {
+        let posts = m_geoPosts[gID]
+        posts?.AddPost(info)
+        posts?.m_posts.last?.m_father = self
+    }
+    
+    func UpdateSquares() {
+        for gid in m_gIDs {
+            let geoPosts = m_geoPosts[gid]
+            if geoPosts == nil {
+                m_geoPosts[gid] = PostData(src: StrPosts)
+                let nilIDs = Array<UInt64>()
+                httpSyncGeoSquarePost(gid, pIDs: nilIDs, oIDs: nilIDs, cIDs: nilIDs)
+            }
+            else {
+                var pIDs = Array<UInt64>()
+                var oIDs = Array<UInt64>()
+                var cIDs = Array<UInt64>()
+                
+                for post in (geoPosts?.m_posts)! {
+                    pIDs.append(post.m_info.id)
+                    oIDs.append(post.m_info.user)
+                    cIDs.append((post.m_comments.count == 0 ? 0 : post.m_comments.last!.id))
+                }
+                
+                httpSyncGeoSquarePost(gid, pIDs: pIDs, oIDs: oIDs, cIDs: cIDs)
+            }
+        }
+    }
+    
+    func reload() {
+        m_posts.removeAll()
+        
+        for gID in m_gIDs {
+            let postData = m_geoPosts[gID]
+            if postData != nil && postData!.m_posts.count > 0 {
+                for post in postData!.m_posts {
+                    m_posts.append(post)
+                }
+            }
+        }
+
+        m_posts.sortInPlace({$0.m_info.id > $1.m_info.id})
+    }
+    
+    override func setDelegate(delegate:PostDataDelegate) {
+        m_delegate = delegate
+        for data in m_geoPosts.enumerate() {
+            data.element.1.setDelegate(delegate)
         }
     }
 }

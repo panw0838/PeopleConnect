@@ -45,8 +45,7 @@ class ContactView: PostsTable, UITableViewDelegate {
         }
         else {
             if contactsPosts[m_contact.user] == nil {
-                postData = PostData(src: UsrPosts)
-                postData!.m_contact = ContactView.ContactID
+                postData = PostData(cid: ContactView.ContactID)
                 contactsPosts[ContactView.ContactID] = postData
             }
             else {

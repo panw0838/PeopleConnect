@@ -58,6 +58,18 @@ func httpGetPostsPhotos(cIDs:Array<UInt64>, post:PostData) {
     )
 }
 
+func updateComments(postData:PostData, updateObjs:[AnyObject]) {
+    // update comments
+    for case let updateObj in (updateObjs as? [[String:AnyObject]])! {
+        let oID = UInt64((updateObj["oid"]?.unsignedLongLongValue)!)
+        let pID = UInt64((updateObj["pid"]?.unsignedLongLongValue)!)
+        let post = postData.getPost(oID, pID: pID)
+        if let cmtObjs = updateObj["cmt"] as? [AnyObject] {
+            addComment(post!, cmtObjs: cmtObjs)
+        }
+    }
+}
+
 func addPost(data:PostData, postObjs:[AnyObject]) {
     for case let postObj in (postObjs as? [[String:AnyObject]])! {
         if let post = PostInfo(json: postObj) {
@@ -68,6 +80,18 @@ func addPost(data:PostData, postObjs:[AnyObject]) {
             }
         }
     }
+}
+
+func syncPosts(data:PostData, json:[String:AnyObject]) {
+    if let postObjs = json["posts"] as? [AnyObject] {
+        addPost(data, postObjs: postObjs)
+    }
+    if let cmtObjs = json["cmts"] as? [AnyObject] {
+        updateComments(data, updateObjs: cmtObjs)
+    }
+    data.getContacts()
+    data.getPreviews()
+    data.UpdateDelegate()
 }
 
 func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>, groups:Array<UInt32>, nearby:Bool) {
@@ -97,6 +121,7 @@ func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>, groups:Array<UI
                     postInfo.id = pID
                     postInfo.flag = flag
                     postInfo.content = desc
+                    postInfo.near = nearby
                     for (idx, data) in datas.enumerate() {
                         postInfo.files.append(String(idx)+".png")
                         let previewKey = getPreviewKey(postInfo, i: idx)
@@ -149,11 +174,7 @@ func httpSyncFriendsPost(pIDs:Array<UInt64>, oIDs:Array<UInt64>, cIDs:Array<UInt
             let postsData = processErrorCode(response as! NSData, failed: nil)
             if postsData != nil {
                 if let json = getJson(postsData!) {
-                    if let postObjs = json["posts"] as? [AnyObject] {
-                        addPost(friendPosts, postObjs: postObjs)
-                        friendPosts.getPreviews()
-                        friendPosts.UpdateDelegate()
-                    }
+                    syncPosts(friendPosts, json: json)
                 }
             }
         },
@@ -176,22 +197,50 @@ func httpSyncContactPost(cID:UInt64, pIDs:Array<UInt64>, oIDs:Array<UInt64>, cID
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "cid":NSNumber(unsignedLongLong: cID),
+        "last":NSNumber(unsignedLongLong: postData!.getLast()),
         "pids":http.getUInt64ArrayParam(pIDs),
         "oids":http.getUInt64ArrayParam(oIDs),
         "cids":http.getUInt64ArrayParam(cIDs)]
-    
-    postData!.clear()
 
     http.postRequest("synccontactposts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let postsData = processErrorCode(response as! NSData, failed: nil)
             if postsData != nil {
                 if let json = getJson(postsData!) {
+                    syncPosts(postData!, json: json)
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+        }
+    )
+}
+
+func httpSyncGeoSquarePost(gID:UInt64, pIDs:Array<UInt64>, oIDs:Array<UInt64>, cIDs:Array<UInt64>) {
+    let postData = nearPosts.m_geoPosts[gID]!
+    let params: Dictionary = [
+        "uid":NSNumber(unsignedLongLong: userInfo.userID),
+        "gid":NSNumber(unsignedLongLong: gID),
+        "last":NSNumber(unsignedLongLong: postData.getLast()),
+        "pids":http.getUInt64ArrayParam(pIDs),
+        "oids":http.getUInt64ArrayParam(oIDs),
+        "cids":http.getUInt64ArrayParam(cIDs)]
+    http.postRequest("syncnearposts", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let postsData = processErrorCode(response as! NSData, failed: nil)
+            if postsData != nil {
+                if let json = getJson(postsData!) {
                     if let postObjs = json["posts"] as? [AnyObject] {
-                        addPost(postData!, postObjs: postObjs)
-                        postData!.getPreviews()
-                        postData!.UpdateDelegate()
+                        addPost(postData, postObjs: postObjs)
+                        nearPosts.reload()
                     }
+                    if let cmtObjs = json["cmts"] as? [AnyObject] {
+                        updateComments(postData, updateObjs: cmtObjs)
+                    }
+                    postData.getContacts()
+                    postData.getPreviews()
+                    nearPosts.UpdateDelegate()
                 }
             }
         },
@@ -206,16 +255,18 @@ func httpSyncNearbyPost() {
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "x":NSNumber(double: userInfo.x),
         "y":NSNumber(double: userInfo.y)]
-    http.postRequest("syncnearbyposts", params: params,
+    http.postRequest("syncnearinfo", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let postsData = processErrorCode(response as! NSData, failed: nil)
             if postsData != nil {
                 if let json = getJson(postsData!) {
-                    if let postObjs = json["posts"] as? [AnyObject] {
-                        addPost(nearPosts, postObjs: postObjs)
-                        nearPosts.getContacts()
-                        nearPosts.getPreviews()
-                        nearPosts.UpdateDelegate()
+                    if let gIDObjs = json["gids"] as? [AnyObject] {
+                        nearPosts.m_gIDs.removeAll()
+                        for case let gIDObj in (gIDObjs as? [NSNumber])! {
+                            let gid = gIDObj.unsignedLongLongValue
+                            nearPosts.m_gIDs.append(gid)
+                        }
+                        nearPosts.UpdateSquares()
                     }
                 }
             }
@@ -227,9 +278,11 @@ func httpSyncNearbyPost() {
 }
 
 func httpSyncGroupPost(gID:UInt32, pIDs:Array<UInt64>, oIDs:Array<UInt64>, cIDs:Array<UInt64>) {
+    let postData = groupsPosts[gID]!
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "gid":NSNumber(unsignedInt: gID),
+        "last":NSNumber(unsignedLongLong: postData.getLast()),
         "pids":http.getUInt64ArrayParam(pIDs),
         "oids":http.getUInt64ArrayParam(oIDs),
         "cids":http.getUInt64ArrayParam(cIDs)]
@@ -239,12 +292,7 @@ func httpSyncGroupPost(gID:UInt32, pIDs:Array<UInt64>, oIDs:Array<UInt64>, cIDs:
             let postsData = processErrorCode(response as! NSData, failed: nil)
             if postsData != nil {
                 if let json = getJson(postsData!) {
-                    if let postObjs = json["posts"] as? [AnyObject] {
-                        addPost(groupsPosts[gID]!, postObjs: postObjs)
-                        groupsPosts[gID]!.getContacts()
-                        groupsPosts[gID]!.getPreviews()
-                        groupsPosts[gID]!.UpdateDelegate()
-                    }
+                    syncPosts(postData, json: json)
                 }
             }
         },

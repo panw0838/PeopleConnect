@@ -29,7 +29,7 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
             setTable(m_posts, data: friendPosts, fullView: true)
         }
         else if select == 2 {
-            setTable(m_posts, data: nearPosts, fullView: true)
+            setTable(m_posts, data: nearPosts as PostData, fullView: true)
             if userInfo.x == 0 && userInfo.y == 0 {
                 userData.startLocate(self)
             }
