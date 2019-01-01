@@ -52,7 +52,25 @@ func GetTimeID(t time.Time) uint64 {
 	return uint64(duration / 1000 / 1000 / 1000)
 }
 
-func GetGeoID(x float64, y float64) uint64 {
+func expandU32ToU64(value uint64) uint64 {
+	var result uint64 = 0
+
+	var i int
+	var v32 = value
+	for i = 0; i < 32; i++ {
+		if (v32 & 0x80000000) != 0 {
+			result |= 0x1
+		}
+		if i != 31 {
+			result <<= 2
+		}
+		v32 <<= 1
+	}
+
+	return result
+}
+
+func GetGeoIDs(x float64, y float64) []uint64 {
 	var resultX uint64 = 0
 	var _x float64 = x + 90
 	var midX float64 = 90.0
@@ -64,7 +82,7 @@ func GetGeoID(x float64, y float64) uint64 {
 		}
 		midX /= 2
 		if i < (steps - 1) {
-			resultX <<= 2
+			resultX <<= 1
 		}
 	}
 	var resultY uint64 = 0
@@ -72,15 +90,39 @@ func GetGeoID(x float64, y float64) uint64 {
 	var midY float64 = 180.0
 	for i := 0; i < steps; i++ {
 		if _y > midY {
-			resultY |= 0x2
+			resultY |= 0x1
 			_y -= midY
 		}
 		midY /= 2
 		if i < (steps - 1) {
-			resultY <<= 2
+			resultY <<= 1
 		}
 	}
-	return (resultX | resultY)
+
+	var ids []uint64
+
+	x0 := expandU32ToU64(resultX)
+	y0 := (expandU32ToU64(resultY) << 1)
+	x1 := expandU32ToU64(resultX + 1)
+	y1 := (expandU32ToU64(resultY+1) << 1)
+	x_1 := expandU32ToU64(resultX - 1)
+	y_1 := (expandU32ToU64(resultY-1) << 1)
+
+	ids = append(ids, x0|y0)
+	ids = append(ids, x_1|y0)
+	ids = append(ids, x0|y_1)
+	ids = append(ids, x1|y0)
+	ids = append(ids, x0|y1)
+	ids = append(ids, x_1|y_1)
+	ids = append(ids, x1|y_1)
+	ids = append(ids, x1|y1)
+	ids = append(ids, x_1|y1)
+
+	return ids
+}
+
+func GetGeoNearby() {
+
 }
 
 func WriteU16(w http.ResponseWriter, value uint16) {

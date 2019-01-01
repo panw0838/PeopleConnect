@@ -62,8 +62,8 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 
 	// add to nearby timeline
 	if post.Nearby {
-		geoID := share.GetGeoID(post.X, post.Y)
-		nearKey := getNearKey(geoID)
+		geoIDs := share.GetGeoIDs(post.X, post.Y)
+		nearKey := getNearKey(geoIDs[0])
 		_, err := c.Do("ZADD", nearKey, post.ID, publishStr)
 		if err != nil {
 			return err
@@ -106,49 +106,46 @@ func dbGetFriendPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]Pos
 	return results, nil
 }
 
-func dbGetNearbyPublish(input SyncNearbyPostsInput, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
+func dbGetNearbyPublish(uID uint64, geoID uint64, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
 	var results []PostData
-	geoID := share.GetGeoID(input.X, input.Y)
-	for pos := geoID - 3; pos <= geoID+3; pos++ {
-		nearKey := getNearKey(pos)
-		publishes, err := redis.Strings(c.Do("ZRANGEBYSCORE", nearKey, from, to))
+	nearKey := getNearKey(geoID)
+	publishes, err := redis.Strings(c.Do("ZRANGEBYSCORE", nearKey, from, to))
+	if err != nil {
+		return nil, err
+	}
+
+	for _, publish := range publishes {
+		var oID uint64
+		var pID uint64
+		fmt.Sscanf(publish, "%d:%d", &oID, &pID)
+
+		if uID == oID {
+			continue
+		}
+
+		isStranger, err := user.IsStranger(uID, oID, c)
 		if err != nil {
 			return nil, err
 		}
+		if !isStranger {
+			continue
+		}
 
-		for _, publish := range publishes {
-			var oID uint64
-			var pID uint64
-			fmt.Sscanf(publish, "%d:%d", &oID, &pID)
-
-			if input.User == oID {
-				continue
-			}
-
-			isStranger, err := user.IsStranger(input.User, oID, c)
+		success, post, err := dbGetPost(oID, pID, c)
+		if err != nil {
+			return nil, err
+		}
+		if success {
+			post.Liked, err = dbGetLike(uID, oID, pID, c)
 			if err != nil {
 				return nil, err
 			}
-			if !isStranger {
-				continue
-			}
-
-			success, post, err := dbGetPost(oID, pID, c)
+			// get strangers comments
+			post.Comments, err = dbGetComments(oID, post.ID, uID, StrangerGroup, 0, c)
 			if err != nil {
 				return nil, err
 			}
-			if success {
-				post.Liked, err = dbGetLike(input.User, oID, pID, c)
-				if err != nil {
-					return nil, err
-				}
-				// get strangers comments
-				post.Comments, err = dbGetComments(oID, post.ID, input.User, StrangerGroup, 0, c)
-				if err != nil {
-					return nil, err
-				}
-				results = append(results, post)
-			}
+			results = append(results, post)
 		}
 	}
 	return results, nil

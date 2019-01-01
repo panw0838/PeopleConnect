@@ -19,7 +19,7 @@ type NearUser struct {
 }
 
 func dbGetNearbyUsers(input GetNearUsersInput, c redis.Conn) ([]NearUser, error) {
-	geoID := share.GetGeoID(input.X, input.Y)
+	geoIDs := share.GetGeoIDs(input.X, input.Y)
 	nearKey := GetNearKey()
 
 	// update user geo info
@@ -29,42 +29,41 @@ func dbGetNearbyUsers(input GetNearUsersInput, c redis.Conn) ([]NearUser, error)
 	}
 
 	// add user to near table
-	_, err = c.Do("ZADD", nearKey, geoID, input.UID)
+	_, err = c.Do("ZADD", nearKey, geoIDs[0], input.UID)
 	if err != nil {
 		return nil, err
 	}
 
-	var step uint64 = 0x3
-	values, err := redis.Values(c.Do("ZRANGEBYSCORE", nearKey, geoID-step, geoID+step))
-	if err != nil {
-		return nil, err
-	}
 	var results []NearUser
-	for _, value := range values {
-		cID, err := share.GetUint64(value, err)
+	for _, geoID := range geoIDs {
+		values, err := redis.Int64s(c.Do("ZRANGEBYSCORE", nearKey, geoID, geoID))
 		if err != nil {
 			return nil, err
 		}
-		if input.UID != cID {
-			isStranger, err := IsStranger(input.UID, cID, c)
-			if err != nil {
-				return nil, err
-			}
-			if isStranger {
-				var user NearUser
-				user.UID = cID
-				user.Name, err = DbGetUserName(cID, c)
+		for _, value := range values {
+			cID := uint64(value)
+			if input.UID != cID {
+				isStranger, err := IsStranger(input.UID, cID, c)
 				if err != nil {
 					return nil, err
 				}
-				user.X, user.Y, err = dbGetUserPosition(cID, c)
-				if err != nil {
-					return nil, err
+				if isStranger {
+					var user NearUser
+					user.UID = cID
+					user.Name, err = DbGetUserName(cID, c)
+					if err != nil {
+						return nil, err
+					}
+					user.X, user.Y, err = dbGetUserPosition(cID, c)
+					if err != nil {
+						return nil, err
+					}
+					results = append(results, user)
 				}
-				results = append(results, user)
 			}
 		}
 	}
+
 	return results, nil
 }
 

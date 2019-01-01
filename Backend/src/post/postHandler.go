@@ -240,7 +240,7 @@ func DelPostHandler(w http.ResponseWriter, r *http.Request) {
 	share.WriteError(w, 0)
 }
 
-type SyncPostInput struct {
+type SyncFriendsPostInput struct {
 	User     uint64   `json:"user"`
 	LastPost uint64   `json:"last"`
 	OIDs     []uint64 `json:"oids,omitempty"`
@@ -254,7 +254,7 @@ type SyncPostReturn struct {
 }
 
 func SyncFriendsPostsHandler(w http.ResponseWriter, r *http.Request) {
-	var input SyncPostInput
+	var input SyncFriendsPostInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
 		share.WriteError(w, 1)
@@ -270,11 +270,7 @@ func SyncFriendsPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response SyncPostReturn
 
-	var from uint64 = input.LastPost
-	if input.LastPost != 0 {
-		from++
-	}
-	response.Posts, err = dbGetFriendPublish(input.User, from, share.MAX_TIME, c)
+	response.Posts, err = dbGetFriendPublish(input.User, input.LastPost+1, share.MAX_TIME, c)
 	if err != nil {
 		share.WriteError(w, 1)
 		return
@@ -302,7 +298,7 @@ func SyncFriendsPostsHandler(w http.ResponseWriter, r *http.Request) {
 type SyncContactPostsInput struct {
 	User     uint64   `json:"uid"`
 	Contact  uint64   `json:"cid"`
-	LastPost uint64   `json:"pid"`
+	LastPost uint64   `json:"last"`
 	PIDs     []uint64 `json:"pids,omitempty"`
 	CIDs     []uint64 `json:"cmts,omitempty"`
 }
@@ -325,7 +321,7 @@ func SyncContactPostsHandler(w http.ResponseWriter, r *http.Request) {
 	var response SyncPostReturn
 
 	if input.User == input.Contact {
-		response.Posts, err = dbGetSelfPosts(input.User, input.LastPost, share.MAX_TIME, c)
+		response.Posts, err = dbGetSelfPosts(input.User, input.LastPost+1, share.MAX_TIME, c)
 
 		if len(input.PIDs) > 0 {
 			comments, err := dbUpdateSelfCmts(input.User, input.PIDs, input.CIDs, c)
@@ -355,14 +351,47 @@ func SyncContactPostsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(bytes)
 }
 
-type SyncNearbyPostsInput struct {
+type SyncNearInfoInput struct {
 	User uint64  `json:"uid"`
 	X    float64 `json:"x"`
 	Y    float64 `json:"y"`
 }
 
-func SyncNearbyPostsHandler(w http.ResponseWriter, r *http.Request) {
-	var input SyncNearbyPostsInput
+type SyncNearInfoReturn struct {
+	GIDs []uint64 `json:"gids"`
+}
+
+func SyncNearInfoHandler(w http.ResponseWriter, r *http.Request) {
+	var input SyncNearInfoInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	var response SyncNearInfoReturn
+	response.GIDs = share.GetGeoIDs(input.X, input.Y)
+	bytes, err := json.Marshal(response)
+	if err != nil {
+		share.WriteError(w, 1)
+		return
+	}
+
+	share.WriteError(w, 0)
+	w.Write(bytes)
+}
+
+type SyncNearPostsInput struct {
+	UID      uint64   `json:"uid"`
+	GID      uint64   `json:"gid"`
+	LastPost uint64   `json:"last"`
+	OIDs     []uint64 `json:"oids,omitempty"`
+	PIDs     []uint64 `json:"pids,omitempty"`
+	CIDs     []uint64 `json:"cmts,omitempty"`
+}
+
+func SyncNearPostsHandler(w http.ResponseWriter, r *http.Request) {
+	var input SyncNearPostsInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
 		share.WriteError(w, 1)
@@ -378,7 +407,7 @@ func SyncNearbyPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response SyncPostReturn
 
-	response.Posts, err = dbGetNearbyPublish(input, 0, share.MAX_TIME, c)
+	response.Posts, err = dbGetNearbyPublish(input.UID, input.GID, input.LastPost, share.MAX_TIME, c)
 	if err != nil {
 		share.WriteError(w, 1)
 		return
@@ -395,11 +424,12 @@ func SyncNearbyPostsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type SyncGroupPublishInput struct {
-	User  uint64   `json:"uid"`
-	Group uint32   `json:"gid"`
-	OIDs  []uint64 `json:"oids,omitempty"`
-	PIDs  []uint64 `json:"pids,omitempty"`
-	CIDs  []uint64 `json:"cmts,omitempty"`
+	User     uint64   `json:"uid"`
+	Group    uint32   `json:"gid"`
+	LastPost uint64   `json:"last"`
+	OIDs     []uint64 `json:"oids,omitempty"`
+	PIDs     []uint64 `json:"pids,omitempty"`
+	CIDs     []uint64 `json:"cmts,omitempty"`
 }
 
 func SyncGroupPublishHandler(w http.ResponseWriter, r *http.Request) {
@@ -419,7 +449,7 @@ func SyncGroupPublishHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response SyncPostReturn
 
-	response.Posts, err = dbGetGroupPublish(input.User, input.Group, 0, share.MAX_TIME, c)
+	response.Posts, err = dbGetGroupPublish(input.User, input.Group, input.LastPost+1, share.MAX_TIME, c)
 	if err != nil {
 		share.WriteError(w, 1)
 		return
