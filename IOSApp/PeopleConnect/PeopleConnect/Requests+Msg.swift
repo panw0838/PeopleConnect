@@ -50,7 +50,7 @@ func httpSyncRequests(passed:(()->Void)?, failed:((String?)->Void)?) {
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let reqData = processErrorCode(response as! NSData, failed: failed)
             if reqData != nil {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(reqData!, options: .MutableContainers) as! [String:AnyObject] {
+                if let json = getJson(reqData!) {
                     if let reqObjs = json["requests"] as? [AnyObject] {
                         var photoIDs = Array<UInt64>()
                         for case let reqObj in (reqObjs as? [[String:AnyObject]])! {
@@ -99,7 +99,8 @@ func httpSendMessege(to:UInt64, messege:String) {
                 selfMessege.data = messege
                 selfMessege.type = .Msg_Str
                 msgData.AddNewMsg(selfMessege)
-                msgData.UpdateDelegates()
+                msgData.getConversation(to).UpdateDelegate()
+                msgData.UpdateDelegate()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -115,14 +116,39 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let msgJson = processErrorCode(response as! NSData, failed: failed)
             if msgJson != nil {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(msgJson!, options: .MutableContainers) as! [String:AnyObject] {
+                if let json = getJson(msgJson!) {
                     if let messObjs = json["mess"] as? [AnyObject] {
+                        var syncSlfPosts = false
+                        var syncFrdPosts = false
                         for case let messObj in (messObjs as? [[String:AnyObject]])! {
                             if let msg = MsgInfo(json: messObj) {
                                 msgData.AddNewMsg(msg)
+                                if msg.type == .Ntf_New {
+                                    syncFrdPosts = true
+                                }
+                                if msg.type == .Ntf_Lik {
+                                    syncSlfPosts = true
+                                }
+                                if msg.type == .Ntf_Cmt {
+                                    if msg.oID == userInfo.userID {
+                                        syncSlfPosts = true
+                                    }
+                                    else {
+                                        if msg.src == FriPosts {
+                                            syncFrdPosts = true
+                                        }
+                                        // don't need to sync stranger/group posts
+                                    }
+                                }
                             }
                         }
-                        msgData.UpdateDelegates()
+                        if syncFrdPosts {
+                            friendPosts.Update()
+                        }
+                        if syncSlfPosts {
+                            selfPosts.Update()
+                        }
+                        msgData.UpdateDelegate()
                     }
                     let newSyncID = (UInt64)((json["sync"]?.unsignedLongLongValue)!)
                     userData.setMsgSyncID(newSyncID)

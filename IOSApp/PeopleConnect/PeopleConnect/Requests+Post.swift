@@ -21,7 +21,7 @@ func httpGetPostsUsers(cIDs:Array<UInt64>, post:PostData) {
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let conData = processErrorCode(response as! NSData, failed: nil)
             if conData != nil {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(conData!, options: .MutableContainers) as! [String:AnyObject] {
+                if let json = getJson(conData!) {
                     if let contactObjs = json["users"] as? [AnyObject] {
                         for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: contactObj) {

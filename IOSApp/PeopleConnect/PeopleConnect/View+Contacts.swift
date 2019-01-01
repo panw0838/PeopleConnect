@@ -218,7 +218,7 @@ class ContactsView:
         }
         if segue.identifier == "StartConversation" {
             let to = segue.destinationViewController as! ConversationView
-            to.m_conversastion = msgData.getConversation(self.m_selectContact)
+            to.m_conv = msgData.getConversation(self.m_selectContact)
         }
     }
 }

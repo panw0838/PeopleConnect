@@ -35,47 +35,82 @@ enum MessegeType : Int {
     case Msg_Str = 0x00
     case Msg_Pic = 0x01
     case Msg_Vid = 0x02
-    case Msg_Voc = 0x03
-    case Msg_Lik = 0x04
     
     case Ntf_Req = 0x10
     case Ntf_Add = 0x11
+    
+    case Ntf_Cmt = 0x20
+    case Ntf_Lik = 0x21
+    case Ntf_New = 0x22
 }
 
 let GroupBit:UInt64 = 0x8000000000000000
 
 struct MsgInfo {
-    var from:UInt64 = 0
-    var time:UInt64 = 0
-    var data:String = ""
     var type:MessegeType = .Msg_Str
+    var time:UInt64 = 0
+
+    var from:UInt64 = 0
+    var data:String = ""
     var group:UInt32 = 0
+    
+    var oID:UInt64 = 0
+    var pID:UInt64 = 0
+    var src:UInt32 = 0
     
     func getConversationID()->UInt64 {
         if type == .Ntf_Req {
             return 0
+        }
+        if type == .Ntf_Cmt || type == .Ntf_Lik {
+            return 1
         }
         if group != 0 {
             return UInt64(group) + GroupBit
         }
         return from
     }
+    
+    func getMessage()->String {
+        if type == .Ntf_Add {
+            return "我已添加你为好友，我们可以对话了"
+        }
+        if type == .Ntf_Cmt {
+            return "有人给你留言"
+        }
+        if type == .Ntf_Lik {
+            return "有人为你点赞"
+        }
+        return data
+    }
 }
 
 extension MsgInfo {
     init?(json: [String: AnyObject]) {
         guard
-            let from = json["from"] as? NSNumber,
             let time = json["time"] as? NSNumber,
-            let data = json["cont"] as? String,
             let type = json["type"] as? NSNumber
         else {
             return nil
         }
-        self.from = UInt64(from.unsignedLongLongValue)
-        self.time = UInt64(time.unsignedLongLongValue)
-        self.data = data
         self.type = MessegeType(rawValue: type.integerValue)!
+        self.time = UInt64(time.unsignedLongLongValue)
+
+        if let data = json["cont"] as? String {
+            self.data = data
+        }
+        if let from = json["from"] as? NSNumber {
+            self.from = UInt64(from.unsignedLongLongValue)
+        }
+        if let oID = json["oid"] as? NSNumber {
+            self.oID = UInt64(oID.unsignedLongLongValue)
+        }
+        if let pID = json["pid"] as? NSNumber {
+            self.pID = UInt64(pID.unsignedLongLongValue)
+        }
+        if let src = json["src"] as? NSNumber {
+            self.src = UInt32(src.unsignedIntValue)
+        }
     }
 }
 
@@ -89,28 +124,51 @@ class MsgInfoCoder:NSObject, NSCoding {
     required init?(coder aDecoder: NSCoder) {
         super.init()
         guard
-            let from = aDecoder.decodeObjectForKey("from") as? NSNumber,
-            let time = aDecoder.decodeObjectForKey("time") as? NSNumber,
-            let data = aDecoder.decodeObjectForKey("cont") as? String,
             let type = aDecoder.decodeObjectForKey("type") as? NSNumber,
-            let group = aDecoder.decodeObjectForKey("group") as? NSNumber
+            let time = aDecoder.decodeObjectForKey("time") as? NSNumber
         else {
             return nil
         }
-        m_info.from = UInt64(from.unsignedLongLongValue)
-        m_info.time = UInt64(time.unsignedLongLongValue)
-        m_info.data = data
         m_info.type = MessegeType(rawValue: type.integerValue)!
-        m_info.group = UInt32(group.unsignedIntValue)
+        m_info.time = UInt64(time.unsignedLongLongValue)
+
+        if let from = aDecoder.decodeObjectForKey("from") as? NSNumber {
+            m_info.from = UInt64(from.unsignedLongLongValue)
+        }
+        if let data = aDecoder.decodeObjectForKey("cont") as? String {
+            m_info.data = data
+        }
+        if let group = aDecoder.decodeObjectForKey("group") as? NSNumber {
+            m_info.group = UInt32(group.unsignedIntValue)
+        }
+        
+        if let oID = aDecoder.decodeObjectForKey("oid") as? NSNumber {
+            m_info.oID = UInt64(oID.unsignedLongLongValue)
+        }
+        if let pID = aDecoder.decodeObjectForKey("pid") as? NSNumber {
+            m_info.pID = UInt64(pID.unsignedLongLongValue)
+        }
+        if let src = aDecoder.decodeObjectForKey("src") as? NSNumber {
+            m_info.src = UInt32(src.unsignedIntValue)
+        }
     }
     
     func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.from), forKey: "from")
-        aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.time), forKey: "time")
-        aCoder.encodeObject(m_info.data, forKey: "cont")
         aCoder.encodeObject(NSNumber(integer: m_info.type.rawValue), forKey: "type")
+        aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.time), forKey: "time")
+
+        aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.from), forKey: "from")
+        aCoder.encodeObject(m_info.data, forKey: "cont")
         aCoder.encodeObject(NSNumber(unsignedInt: m_info.group), forKey: "group")
+        
+        aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.oID), forKey: "oid")
+        aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.pID), forKey: "pid")
+        aCoder.encodeObject(NSNumber(unsignedInt: m_info.src), forKey: "src")
     }
+}
+
+protocol ConvDelegate {
+    func ConvUpdated()
 }
 
 class Conversation {
@@ -118,6 +176,7 @@ class Conversation {
     var m_name:String = "未知对话"
     var m_img:UIImage = UIImage(named: "default_profile")!
     var m_messages:Array<MsgInfo> = Array<MsgInfo>()
+    var m_delegate:ConvDelegate?
     
     init(id:UInt64) {
         m_id = id
@@ -127,39 +186,33 @@ class Conversation {
             m_name = "好友申请"
             m_img = UIImage(named: "messages_requests")!
         }
+        else if id == 1 {
+            m_name = "动态通知"
+            m_img = UIImage(named: "messages_notify")!
+        }
     }
     
     init(gid:UInt32) {
         m_id = UInt64(gid) + GroupBit
     }
     
-    func addMessage(newMessage:MsgInfo) {
-        m_messages.append(newMessage)
+    func UpdateDelegate() {
+        m_delegate?.ConvUpdated()
     }
     
-    func remMessage(uid:UInt64, time:UInt64) {
-        for (idx, msg) in m_messages.enumerate() {
-            if msg.from == uid && time == msg.time {
-                m_messages.removeAtIndex(idx)
-                break
-            }
-        }
+    func addMessage(newMessage:MsgInfo) {
+        m_messages.append(newMessage)
+        m_delegate?.ConvUpdated()
     }
     
     func lastMessage()->String? {
         if m_id == 0 {
             return String(m_messages.count) + "个新申请"
         }
-        let lastIdx = m_messages.count - 1
-        return getMessage(lastIdx)
-    }
-    
-    func getMessage(idx:Int)->String {
-        let msgInfo = m_messages[idx]
-        if msgInfo.type == .Ntf_Add {
-            return m_name + "已添加你为好友，你们可以对话了"
+        else if m_id == 1 {
+            return String(m_messages.count) + "个动态通知"
         }
-        return msgInfo.data
+        return m_messages.last?.getMessage()
     }
 }
 
@@ -167,15 +220,22 @@ protocol MsgDelegate {
     func MsgUpdated()
 }
 
+protocol ReqDelegate {
+    func ReqUpdated()
+}
+
 class MsgData {
     var m_requests = Array<RequestInfo>()
     var m_conversations = Array<Conversation>()
-    var m_delegates = Array<MsgDelegate>()
-    var m_requestDelegate:MsgDelegate?
+    var m_delegate:MsgDelegate?
+    var m_requestDelegate:ReqDelegate?
     
     init() {
         // add system conversations
         m_conversations.append(Conversation(id: 0))
+        m_conversations.append(Conversation(id: 1))
+        
+        loadMsgFromCache()
     }
     
     func loadMsgFromCache() {
@@ -208,6 +268,10 @@ class MsgData {
         var saveData = Array<MsgInfoCoder>()
         
         for conversation in m_conversations {
+            // skip notifications
+            if conversation.m_id < 10 {
+                continue
+            }
             for msgInfo in conversation.m_messages {
                 saveData.append(MsgInfoCoder(info: msgInfo))
             }
@@ -216,14 +280,20 @@ class MsgData {
         NSKeyedArchiver.archiveRootObject(saveData, toFile: path)
     }
     
-    func UpdateDelegates() {
-        for delegate in m_delegates {
-            delegate.MsgUpdated()
-        }
+    func Update() {
+        httpSyncMessege(nil, failed: nil)
+    }
+    
+    func UpdateRequests() {
+        httpSyncRequests(nil, failed: nil)
+    }
+    
+    func UpdateDelegate() {
+        m_delegate?.MsgUpdated()
     }
     
     func UpdateRequestsDelegate() {
-        m_requestDelegate?.MsgUpdated()
+        m_requestDelegate?.ReqUpdated()
     }
     
     func getConversation(uID:UInt64)->Conversation {
@@ -249,6 +319,7 @@ class MsgData {
         let convID = newMsg.getConversationID()
         let conversation = popConversation(convID)
         conversation.addMessage(newMsg)
+        conversation.UpdateDelegate()
         m_conversations.append(conversation)
         
         // process notifications

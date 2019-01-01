@@ -63,17 +63,22 @@ class RequestCell:UITableViewCell {
     }
 }
 
-class RequestsView:UIViewController, MsgDelegate, UITableViewDataSource, UITableViewDelegate {
+class RequestsView:UIViewController, ReqDelegate, UITableViewDataSource, UITableViewDelegate {
     
     @IBOutlet weak var m_table: UITableView!
     
-    func MsgUpdated() {
+    func ReqUpdated() {
         m_table.reloadData()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         msgData.m_requestDelegate = self
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        msgData.m_requestDelegate = nil
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {

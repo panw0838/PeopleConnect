@@ -26,7 +26,7 @@ class MessegesView: UITableViewController, MsgDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        msgData.m_delegates.append(self)
+        msgData.m_delegate = self
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -46,7 +46,7 @@ class MessegesView: UITableViewController, MsgDelegate {
         cell.m_id = conversation.m_id
         cell.m_profile.image = conversation.m_img
         cell.m_profile.layer.cornerRadius = 10
-        cell.m_time.hidden = (cell.m_id == 0)
+        cell.m_time.hidden = (cell.m_id < 10)
         
         return cell
     }
@@ -54,7 +54,10 @@ class MessegesView: UITableViewController, MsgDelegate {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let conversation = msgData.m_conversations[indexPath.row]
         if conversation.m_id == 0 {
-            self.performSegueWithIdentifier("ShowRequests", sender: self)
+            self.performSegueWithIdentifier("ShowRequests", sender: conversation)
+        }
+        else if conversation.m_id == 1 {
+            self.performSegueWithIdentifier("ShowNotify", sender: conversation)
         }
         else {
             self.performSegueWithIdentifier("ShowConversation", sender: conversation)
@@ -62,20 +65,22 @@ class MessegesView: UITableViewController, MsgDelegate {
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let conversation = sender as! Conversation
         if segue.identifier == "ShowRequests" {
-            let newReqConv = msgData.getConversation(0)
-            
             // sync new requests
-            if newReqConv.m_messages.count > 0 {
-                httpSyncRequests(nil, failed: nil)
+            if conversation.m_messages.count > 0 || msgData.m_requests.count == 0 {
+                msgData.UpdateRequests()
             }
-            
             // clean notifications
-            newReqConv.m_messages.removeAll()
+            conversation.m_messages.removeAll()
+        }
+        if segue.identifier == "ShowNotify" {
+            let to = segue.destinationViewController as! PostNotifyView
+            to.m_data = conversation
         }
         if segue.identifier == "ShowConversation" {
             let to = segue.destinationViewController as! ConversationView
-            to.m_conversastion = (sender as! Conversation)
+            to.m_conv = conversation
         }
     }
 }

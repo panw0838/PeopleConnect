@@ -72,9 +72,9 @@ class MsgCell: UITableViewCell {
     }
 }
 
-class ConversationView: UIViewController, UITableViewDataSource, UITableViewDelegate, MsgDelegate {
+class ConversationView: UIViewController, UITableViewDataSource, UITableViewDelegate, ConvDelegate {
     
-    var m_conversastion:Conversation? = nil
+    var m_conv:Conversation? = nil
     
     @IBOutlet weak var m_text: UITextField!
     @IBOutlet weak var m_messegesTable: UITableView!
@@ -82,11 +82,11 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     @IBAction func SendMessege(sender: AnyObject) {
         let messege = m_text.text
         if messege?.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) > 0 {
-            httpSendMessege(m_conversastion!.m_id, messege: messege!)
+            httpSendMessege(m_conv!.m_id, messege: messege!)
         }
     }
     
-    func MsgUpdated() {
+    func ConvUpdated() {
         self.m_messegesTable.reloadData()
         let lastMsg = msgData.m_conversations.count - 1
         let lastIdx = NSIndexPath(forRow: lastMsg, inSection: 0)
@@ -95,8 +95,13 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        msgData.m_delegates.append(self)
         m_messegesTable.registerClass(MsgCell.classForCoder(), forCellReuseIdentifier: "MsgCell")
+        m_conv?.m_delegate = self
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        self.viewDidDisappear(animated)
+        m_conv?.m_delegate = nil
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -104,11 +109,11 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return m_conversastion!.m_messages.count
+        return m_conv!.m_messages.count
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let msg = m_conversastion?.m_messages[indexPath.row]
+        let msg = m_conv?.m_messages[indexPath.row]
         let maxTextSize = CGSizeMake(m_messegesTable.contentSize.width - 40*2 - 8*4, CGFloat(MAXFLOAT))
         let textSize = getMsgSize((msg?.data)!, maxSize: maxTextSize, font: msgFont)
         let textHeight = textSize.height + 20 * 2
@@ -117,7 +122,7 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("MsgCell", forIndexPath: indexPath) as! MsgCell
-        let messege = m_conversastion!.m_messages[indexPath.row]
+        let messege = m_conv!.m_messages[indexPath.row]
         cell.reload(messege, width: m_messegesTable.contentSize.width)
         return cell
     }

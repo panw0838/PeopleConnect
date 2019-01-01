@@ -14,7 +14,7 @@ func httpGetFriends(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let conData = processErrorCode(response as! NSData, failed: failed)
             if conData != nil {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(conData!, options: .MutableContainers) as! [String:AnyObject] {
+                if let json = getJson(conData!) {
                     var contacts:Array<ContactInfo> = Array<ContactInfo>()
                     
                     if let contactObjs = json["contacts"] as? [AnyObject] {
@@ -46,7 +46,7 @@ func httpGetNearbyUsers() {
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let usersData = processErrorCode(response as! NSData, failed: nil)
             if usersData != nil {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(usersData!, options: .MutableContainers) as! [String:AnyObject] {
+                if let json = getJson(usersData!) {
                     if let contactObjs = json["users"] as? [AnyObject] {
                         for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: contactObj) {
@@ -76,7 +76,7 @@ func httpGetPossibleContacts() {
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let usersData = processErrorCode(response as! NSData, failed: nil)
             if usersData != nil {
-                if let json = try? NSJSONSerialization.JSONObjectWithData(usersData!, options: .MutableContainers) as! [String:AnyObject] {
+                if let json = getJson(usersData!) {
                     if let usersObjs = json["users"] as? [AnyObject] {
                         for case let userObj in (usersObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: userObj) {

@@ -14,7 +14,7 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
     @IBOutlet weak var m_posts: UITableView!
     
     func UpdateLocationSuccess() {
-        httpSyncNearbyPost()
+        nearPosts.Update()
     }
     
     func UpdateLocationFail() {

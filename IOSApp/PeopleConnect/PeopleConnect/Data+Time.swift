@@ -21,24 +21,22 @@ func getTimeString(time:UInt64)->String {
     let months  = days / 30
     let years   = days / 365
     
-    if years > 0 {
+    if Int(years) > 0 {
         return String(Int(years)) + "年前"
     }
-    if months > 0 {
+    if Int(months) > 0 {
         return String(Int(months)) + "月前"
     }
-    if days > 0 {
+    if Int(days) > 0 {
         return String(Int(days)) + "天前"
     }
-    else if hours > 0 {
+    if Int(hours) > 0 {
         return String(Int(hours)) + "小时前"
     }
-    else if minites > 0 {
+    if Int(minites) > 0 {
         return String(Int(minites)) + "分钟前"
     }
-    else {
-        return "刚刚"
-    }
+    return "刚刚"
 }
 
 func getFormatTime(time:UInt64)->String {
