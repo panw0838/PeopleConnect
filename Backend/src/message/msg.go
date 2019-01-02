@@ -25,10 +25,10 @@ const NTF_LIK uint8 = 0x21
 const NTF_NEW uint8 = 0x22
 
 type Message struct {
+	From uint64 `json:"from"`
 	Type uint8  `json:"type"`
 	Time uint64 `json:"time"`
 	// for message
-	From    uint64 `json:"from"`
 	Content string `json:"cont,omitempty"`
 	// for post notify
 	OID uint64 `json:"oid,omitempty"`
@@ -118,6 +118,7 @@ func dbAddRequest(input RequestContactInput, c redis.Conn) uint16 {
 
 	// add to message notification
 	var msg Message
+	msg.From = input.From
 	msg.Type = NTF_REQ
 	err = DbAddMessege(input.To, msg, c)
 	if err != nil {

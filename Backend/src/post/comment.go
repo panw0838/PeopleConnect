@@ -73,17 +73,20 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, error) {
 		return 0, err
 	}
 
+	// add to message notification
+	var msg message.Message
+	msg.From = input.UID
+	msg.Type = message.NTF_CMT
+	msg.OID = input.PostOwner
+	msg.PID = input.PostID
+	msg.Src = input.Group
+	var to = input.PostOwner
 	if input.To != 0 {
-		// add to message notification
-		var msg message.Message
-		msg.Type = message.NTF_CMT
-		msg.OID = input.PostOwner
-		msg.PID = input.PostID
-		msg.Src = input.Group
-		err = message.DbAddMessege(input.To, msg, c)
-		if err != nil {
-			return 0, err
-		}
+		to = input.To
+	}
+	err = message.DbAddMessege(to, msg, c)
+	if err != nil {
+		return 0, err
 	}
 
 	return comment.ID, nil
@@ -141,6 +144,7 @@ func dbLikePost(uID uint64, oID uint64, pID uint64, like bool, c redis.Conn) err
 		}
 
 		var msg message.Message
+		msg.From = uID
 		msg.Type = message.NTF_LIK
 		msg.OID = oID
 		msg.PID = pID
