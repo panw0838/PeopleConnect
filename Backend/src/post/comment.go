@@ -170,30 +170,31 @@ func dbUpdatePubCmts(uID uint64, pubKey string, pIDs []uint64, oIDs []uint64, cI
 
 	for idx, pID := range pIDs {
 		// old posts won't update
-		if pID >= oldDay {
-			publishes, err := redis.Strings(c.Do("ZRANGEBYSCORE", pubKey, pID, pID))
-			if err != nil {
-				return nil, err
-			}
+		if pID < oldDay {
+			continue
+		}
+		publishes, err := redis.Strings(c.Do("ZRANGEBYSCORE", pubKey, pID, pID))
+		if err != nil {
+			return nil, err
+		}
 
-			for _, publish := range publishes {
-				var curOID uint64
-				var curPID uint64
-				fmt.Sscanf(publish, "%d:%d", &curOID, &curPID)
+		for _, publish := range publishes {
+			var curOID uint64
+			var curPID uint64
+			fmt.Sscanf(publish, "%d:%d", &curOID, &curPID)
 
-				if curOID == oIDs[idx] && curPID == pIDs[idx] {
-					// get friends comments
-					comments, err := dbGetComments(oIDs[idx], pIDs[idx], uID, src, cIDs[idx], c)
-					if err != nil {
-						return nil, err
-					}
-					if len(comments) > 0 {
-						var newCmts UpdateComment
-						newCmts.OID = oIDs[idx]
-						newCmts.PID = pIDs[idx]
-						newCmts.Cmts = comments
-						cmts = append(cmts, newCmts)
-					}
+			if curOID == oIDs[idx] && curPID == pIDs[idx] {
+				// get friends comments
+				comments, err := dbGetComments(oIDs[idx], pIDs[idx], uID, src, cIDs[idx], c)
+				if err != nil {
+					return nil, err
+				}
+				if len(comments) > 0 {
+					var newCmts UpdateComment
+					newCmts.OID = oIDs[idx]
+					newCmts.PID = pIDs[idx]
+					newCmts.Cmts = comments
+					cmts = append(cmts, newCmts)
 				}
 			}
 		}
@@ -209,18 +210,19 @@ func dbUpdateSelfCmts(uID uint64, pIDs []uint64, cIDs []uint64, c redis.Conn) ([
 
 	for idx, pID := range pIDs {
 		// old posts won't update
-		if pID >= oldDay {
-			comments, err := dbGetComments(uID, pID, uID, AllGroups, cIDs[idx], c)
-			if err != nil {
-				return nil, err
-			}
-			if len(comments) > 0 {
-				var newCmts UpdateComment
-				newCmts.OID = uID
-				newCmts.PID = pID
-				newCmts.Cmts = comments
-				cmts = append(cmts, newCmts)
-			}
+		if pID < oldDay {
+			continue
+		}
+		comments, err := dbGetComments(uID, pID, uID, AllGroups, cIDs[idx], c)
+		if err != nil {
+			return nil, err
+		}
+		if len(comments) > 0 {
+			var newCmts UpdateComment
+			newCmts.OID = uID
+			newCmts.PID = pID
+			newCmts.Cmts = comments
+			cmts = append(cmts, newCmts)
 		}
 	}
 

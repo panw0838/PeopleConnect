@@ -245,7 +245,7 @@ type SyncFriendsPostInput struct {
 	LastPost uint64   `json:"last"`
 	OIDs     []uint64 `json:"oids,omitempty"`
 	PIDs     []uint64 `json:"pids,omitempty"`
-	CIDs     []uint64 `json:"cmts,omitempty"`
+	CIDs     []uint64 `json:"cids,omitempty"`
 }
 
 type SyncPostReturn struct {
@@ -300,7 +300,7 @@ type SyncContactPostsInput struct {
 	Contact  uint64   `json:"cid"`
 	LastPost uint64   `json:"last"`
 	PIDs     []uint64 `json:"pids,omitempty"`
-	CIDs     []uint64 `json:"cmts,omitempty"`
+	CIDs     []uint64 `json:"cids,omitempty"`
 }
 
 func SyncContactPostsHandler(w http.ResponseWriter, r *http.Request) {
@@ -322,7 +322,6 @@ func SyncContactPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	if input.User == input.Contact {
 		response.Posts, err = dbGetSelfPosts(input.User, input.LastPost+1, share.MAX_TIME, c)
-
 		if len(input.PIDs) > 0 {
 			comments, err := dbUpdateSelfCmts(input.User, input.PIDs, input.CIDs, c)
 			if err != nil {
@@ -387,7 +386,7 @@ type SyncNearPostsInput struct {
 	LastPost uint64   `json:"last"`
 	OIDs     []uint64 `json:"oids,omitempty"`
 	PIDs     []uint64 `json:"pids,omitempty"`
-	CIDs     []uint64 `json:"cmts,omitempty"`
+	CIDs     []uint64 `json:"cids,omitempty"`
 }
 
 func SyncNearPostsHandler(w http.ResponseWriter, r *http.Request) {
@@ -429,7 +428,7 @@ type SyncGroupPublishInput struct {
 	LastPost uint64   `json:"last"`
 	OIDs     []uint64 `json:"oids,omitempty"`
 	PIDs     []uint64 `json:"pids,omitempty"`
-	CIDs     []uint64 `json:"cmts,omitempty"`
+	CIDs     []uint64 `json:"cids,omitempty"`
 }
 
 func SyncGroupPublishHandler(w http.ResponseWriter, r *http.Request) {
