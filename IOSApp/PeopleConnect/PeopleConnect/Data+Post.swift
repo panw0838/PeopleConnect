@@ -95,7 +95,7 @@ struct CommentInfo {
         if uID == userInfo.userID {
             return " 我 "
         }
-        return " " + contactsData.getContact(uID)!.name + " "
+        return " " + getName(uID) + " "
     }
 
     func getString(showSrc:Bool)->String {
