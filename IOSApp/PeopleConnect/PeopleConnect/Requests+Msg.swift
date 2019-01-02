@@ -118,35 +118,33 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
             if msgJson != nil {
                 if let json = getJson(msgJson!) {
                     if let messObjs = json["mess"] as? [AnyObject] {
-                        var syncSlfPosts = false
-                        var syncFrdPosts = false
                         for case let messObj in (messObjs as? [[String:AnyObject]])! {
                             if let msg = MsgInfo(json: messObj) {
                                 msgData.AddNewMsg(msg)
                                 if msg.type == .Ntf_New {
-                                    syncFrdPosts = true
+                                    friendPosts.m_needSync = true
                                 }
                                 if msg.type == .Ntf_Lik {
-                                    syncSlfPosts = true
+                                    selfPosts.m_needSync = true
                                 }
                                 if msg.type == .Ntf_Cmt {
                                     if msg.oID == userInfo.userID {
-                                        syncSlfPosts = true
+                                        selfPosts.m_needSync = true
                                     }
                                     else {
                                         if msg.src == FriPosts {
-                                            syncFrdPosts = true
+                                            friendPosts.m_needSync = true
                                         }
-                                        // don't need to sync stranger/group posts
+                                        else if msg.src == StrPosts {
+                                            nearPosts.m_needSync = true
+                                        }
+                                        else {
+                                            let groupPosts = groupsPosts[msg.src]
+                                            groupPosts?.m_needSync = true
+                                        }
                                     }
                                 }
                             }
-                        }
-                        if syncFrdPosts {
-                            friendPosts.Update()
-                        }
-                        if syncSlfPosts {
-                            selfPosts.Update()
                         }
                         msgData.UpdateDelegate()
                     }

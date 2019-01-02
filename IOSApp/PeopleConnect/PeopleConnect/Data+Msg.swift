@@ -76,10 +76,10 @@ struct MsgInfo {
             return "我已添加你为好友，我们可以对话了"
         }
         if type == .Ntf_Cmt {
-            return "有人给你留言"
+            return "给你留言"
         }
         if type == .Ntf_Lik {
-            return "有人为你点赞"
+            return "为你点赞"
         }
         return data
     }
@@ -88,20 +88,23 @@ struct MsgInfo {
 extension MsgInfo {
     init?(json: [String: AnyObject]) {
         guard
+            let from = json["from"] as? NSNumber,
             let time = json["time"] as? NSNumber,
             let type = json["type"] as? NSNumber
         else {
             return nil
         }
+        self.from = UInt64(from.unsignedLongLongValue)
         self.type = MessegeType(rawValue: type.integerValue)!
         self.time = UInt64(time.unsignedLongLongValue)
 
         if let data = json["cont"] as? String {
             self.data = data
         }
-        if let from = json["from"] as? NSNumber {
-            self.from = UInt64(from.unsignedLongLongValue)
+        if let group = json["group"] as? NSNumber {
+            self.group = UInt32(group.unsignedIntValue)
         }
+        
         if let oID = json["oid"] as? NSNumber {
             self.oID = UInt64(oID.unsignedLongLongValue)
         }
@@ -124,17 +127,16 @@ class MsgInfoCoder:NSObject, NSCoding {
     required init?(coder aDecoder: NSCoder) {
         super.init()
         guard
+            let from = aDecoder.decodeObjectForKey("from") as? NSNumber,
             let type = aDecoder.decodeObjectForKey("type") as? NSNumber,
             let time = aDecoder.decodeObjectForKey("time") as? NSNumber
         else {
             return nil
         }
+        m_info.from = UInt64(from.unsignedLongLongValue)
         m_info.type = MessegeType(rawValue: type.integerValue)!
         m_info.time = UInt64(time.unsignedLongLongValue)
 
-        if let from = aDecoder.decodeObjectForKey("from") as? NSNumber {
-            m_info.from = UInt64(from.unsignedLongLongValue)
-        }
         if let data = aDecoder.decodeObjectForKey("cont") as? String {
             m_info.data = data
         }
@@ -154,10 +156,10 @@ class MsgInfoCoder:NSObject, NSCoding {
     }
     
     func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.from), forKey: "from")
         aCoder.encodeObject(NSNumber(integer: m_info.type.rawValue), forKey: "type")
         aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.time), forKey: "time")
 
-        aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.from), forKey: "from")
         aCoder.encodeObject(m_info.data, forKey: "cont")
         aCoder.encodeObject(NSNumber(unsignedInt: m_info.group), forKey: "group")
         

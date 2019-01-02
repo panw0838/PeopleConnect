@@ -44,7 +44,7 @@ func httpAddComment(post:Post, to:UInt64, src:UInt32, cmt:String) {
                         newComment.cmt  = cmt
                         newComment.src  = src
                         post.m_comments.append(newComment)
-                        post.m_father?.Update()
+                        post.m_father?.UpdateDelegate()
                     }
                 }
             }

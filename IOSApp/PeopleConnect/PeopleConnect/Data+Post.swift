@@ -22,6 +22,20 @@ var nearPosts    = NearPostData(src: StrPosts)
 var groupsPosts   = Dictionary<UInt32, PostData>()
 var contactsPosts = Dictionary<UInt64, PostData>()
 
+func getPost(src:UInt32, pID:UInt64, oID:UInt64)->Post? {
+    if oID == userInfo.userID {
+        return selfPosts.getPost(pID, oID: oID)
+    }
+    if src == FriPosts {
+        return friendPosts.getPost(pID, oID: oID)
+    }
+    if src == StrPosts {
+        return nearPosts.getPost(pID, oID: oID)
+    }
+    let groupPost = groupsPosts[src]
+    return groupPost?.getPost(pID, oID: oID)
+}
+
 var previews = Dictionary<String, UIImage>()
 
 struct PostInfo {
@@ -170,17 +184,7 @@ class Post {
         
         return str
     }
-    
-    func getHeight(width:CGFloat, selfView: Bool, fullView: Bool)->CGFloat {
-        let photoHeight = (selfView ? 0 : PostPhotoSize + PostItemGap)
-        let articleHeight = (m_info.content.characters.count == 0 ? 0.0 :
-            (getTextHeight(m_info.content, width: width, font: articleFont) + PostItemGap))
-        let previewHeight = (numImages() == 0 ? 0.0 : ((width - PostPreViewGap*2) / 3 + PostItemGap))
-        let toolHeight = PostBtnSize + PostItemGap
-        let permitHeight = (selfView ? getPermitHeight(width) + PostItemGap : 0)
-        return articleHeight + previewHeight + (fullView ? photoHeight + toolHeight + permitHeight : PostItemGap)
-    }
-    
+
     func getPermitTags()->Array<Tag> {
         var tags = Array<Tag>()
         
@@ -212,6 +216,7 @@ class PostData {
     var m_contact:UInt64 = 0
     var m_posts = Array<Post>()
     var m_delegate:PostDataDelegate? = nil
+    var m_needSync:Bool = false
     
     
     init(src:UInt32) {
@@ -223,17 +228,18 @@ class PostData {
         m_contact = cid
     }
     
-    func AddPost(info:PostInfo) {
-        var post = getPost(info.user, pID: info.id)
+    func AddPost(info:PostInfo)->Bool {
+        var post = getPost(info.id, oID: info.user)
         if post != nil {
-            return
+            return false
         }
         post = Post(info: info)
         post!.m_father = self
         m_posts.append(post!)
+        return true
     }
     
-    func getPost(oID:UInt64, pID:UInt64)->Post? {
+    func getPost(pID:UInt64, oID:UInt64)->Post? {
         for post in m_posts {
             if post.m_info.id == pID && post.m_info.user == oID {
                 return post
@@ -243,7 +249,7 @@ class PostData {
     }
     
     func getLast()->UInt64 {
-        return m_posts.count == 0 ? 0 : (m_posts.last?.m_info.id)!
+        return m_posts.count == 0 ? 0 : m_posts.last!.m_info.id
     }
     
     func Update() {

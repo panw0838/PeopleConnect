@@ -58,6 +58,7 @@
 		18EC43D221C92B9C00DF18F2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18EC43D021C92B9C00DF18F2 /* Main.storyboard */; };
 		18EC43D421C9529700DF18F2 /* View+SingleImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EC43D321C9529700DF18F2 /* View+SingleImage.swift */; };
 		18F8622B21DBA6A00089D953 /* View+PostNotifies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F8622A21DBA6A00089D953 /* View+PostNotifies.swift */; };
+		18F8623521DCB2590089D953 /* View+SinglePost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F8623421DCB2590089D953 /* View+SinglePost.swift */; };
 		18FF5DD921C14BF9008DB746 /* View+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF5DD821C14BF9008DB746 /* View+Settings.swift */; };
 		18FF5DE121C156A7008DB746 /* View+PostHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF5DE021C156A7008DB746 /* View+PostHeader.swift */; };
 		18FF5DE321C38B66008DB746 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18FF5DE221C38B66008DB746 /* CoreTelephony.framework */; };
@@ -237,6 +238,7 @@
 		18EC43D121C92B9C00DF18F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		18EC43D321C9529700DF18F2 /* View+SingleImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+SingleImage.swift"; sourceTree = "<group>"; };
 		18F8622A21DBA6A00089D953 /* View+PostNotifies.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+PostNotifies.swift"; sourceTree = "<group>"; };
+		18F8623421DCB2590089D953 /* View+SinglePost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+SinglePost.swift"; sourceTree = "<group>"; };
 		18FF5DD821C14BF9008DB746 /* View+Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "View+Settings.swift"; path = "../View+Settings.swift"; sourceTree = "<group>"; };
 		18FF5DE021C156A7008DB746 /* View+PostHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+PostHeader.swift"; sourceTree = "<group>"; };
 		18FF5DE221C38B66008DB746 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
@@ -353,6 +355,7 @@
 				18DB289121A03FCC0024092C /* View+Contact.swift */,
 				18D3A8E02198015C00EB3289 /* View+Contacts.swift */,
 				18DB2879219D85BF0024092C /* View+MoveMembers.swift */,
+				18F8623421DCB2590089D953 /* View+SinglePost.swift */,
 				1897D02121D8E6DF00E4A02A /* View+Posts.swift */,
 				18D3A8E22198017000EB3289 /* View+PostsTable.swift */,
 				18FF5DE021C156A7008DB746 /* View+PostHeader.swift */,
@@ -651,6 +654,7 @@
 				1860EFC521D53ED600402460 /* View+Requests.swift in Sources */,
 				1854304521AC3D99004973E6 /* Requests+Post.swift in Sources */,
 				1854304921B01E27004973E6 /* Data+Post.swift in Sources */,
+				18F8623521DCB2590089D953 /* View+SinglePost.swift in Sources */,
 				18EC43D421C9529700DF18F2 /* View+SingleImage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

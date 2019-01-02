@@ -13,6 +13,19 @@ let PostBtnSize:CGFloat = 30
 let PostItemGap:CGFloat = 5
 let PostPreViewGap:CGFloat = 3
 
+extension Post {
+    func getHeight(width:CGFloat, showPhoto: Bool, showTool: Bool)->CGFloat {
+        let selfPost = (m_info.user == userInfo.userID)
+        let photoHeight   = (showPhoto ? PostPhotoSize + PostItemGap : 0)
+        let articleHeight = (m_info.content.characters.count == 0 ? 0.0 :
+            (getTextHeight(m_info.content, width: width, font: articleFont) + PostItemGap))
+        let previewHeight = (numImages() == 0 ? 0.0 : ((width - PostPreViewGap*2) / 3 + PostItemGap))
+        let toolHeight    = (showTool ? PostBtnSize + PostItemGap : 0)
+        let permitHeight  = (selfPost ? getPermitHeight(width) + PostItemGap : 0)
+        return photoHeight + articleHeight + previewHeight + toolHeight + permitHeight
+    }
+}
+
 class PostFooter: UITableViewHeaderFooterView {
     static let Height:CGFloat = 21.0
     
@@ -162,12 +175,12 @@ class PostHeader: UITableViewHeaderFooterView {
         self.m_father!.presentViewController(alert, animated: true, completion: nil)
     }
 
-    func reload(post:Post, width:CGFloat, selfView: Bool, fullView:Bool) {
+    func reload(post:Post, width:CGFloat, showPhoto: Bool, showTool:Bool) {
         m_post = post
-        let selfPost = (m_post?.m_father?.m_sorce == 0)
+        let selfPost = (m_post?.m_info.user == userInfo.userID)
         var buttom:CGFloat = 0.0
         
-        if fullView && !selfView {
+        if showPhoto {
             let contact = contactsData.getContact((m_post?.m_info.user)!)
             
             m_photo.hidden = false
@@ -207,7 +220,7 @@ class PostHeader: UITableViewHeaderFooterView {
             m_previews.hidden = true
         }
         
-        if fullView {
+        if showTool {
             m_commentBtn.hidden = false
             m_commentBtn.frame = CGRectMake(self.frame.width - PostBtnSize, buttom, PostBtnSize, PostBtnSize)
             
@@ -231,7 +244,7 @@ class PostHeader: UITableViewHeaderFooterView {
             m_status.hidden = true
         }
         
-        if fullView && selfView {
+        if selfPost {
             let height = post.getPermitHeight(width)
             m_permitTags.hidden = false
             m_permitTags.frame = CGRectMake(0, buttom, width, height)

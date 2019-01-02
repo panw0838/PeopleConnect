@@ -23,13 +23,19 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
     @IBAction func switchPosts(sender: AnyObject) {
         let select = (sender as! UISegmentedControl).selectedSegmentIndex
         if select == 0 {
-            setTable(m_posts, data: selfPosts, fullView: true)
+            setTable(m_posts, data: selfPosts, showPhoto: false, showMsg: true)
+            if selfPosts.m_needSync {
+                selfPosts.Update()
+            }
         }
         else if select == 1 {
-            setTable(m_posts, data: friendPosts, fullView: true)
+            setTable(m_posts, data: friendPosts, showPhoto: true, showMsg: true)
+            if friendPosts.m_needSync {
+                friendPosts.Update()
+            }
         }
         else if select == 2 {
-            setTable(m_posts, data: nearPosts as PostData, fullView: true)
+            setTable(m_posts, data: nearPosts as PostData, showPhoto: true, showMsg: true)
             if userInfo.x == 0 && userInfo.y == 0 {
                 userData.startLocate(self)
             }
@@ -39,7 +45,7 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setTable(m_posts, data: friendPosts, fullView: true)
+        setTable(m_posts, data: friendPosts, showPhoto: false, showMsg: true)
         friendPosts.Update()
         selfPosts.Update()
     }

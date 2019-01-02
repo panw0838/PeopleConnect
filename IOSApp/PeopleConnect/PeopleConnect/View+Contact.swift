@@ -18,9 +18,8 @@ class ContactView: PostsTable, UITableViewDelegate {
     @IBOutlet weak var m_reqBtn: UIButton!
     
     static var ContactID:UInt64 = 0
-    static var ShowReqBtn:Bool = false
     
-    var m_contact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
+    var m_noteName:String = ""
     var m_messege:String = ""
     var m_nameGood:Bool = false
     var m_messegeGood:Bool = false
@@ -31,43 +30,42 @@ class ContactView: PostsTable, UITableViewDelegate {
         
         m_profile.layer.cornerRadius = 10
         m_reqBtn.layer.cornerRadius = 10
-        m_reqBtn.hidden = !ContactView.ShowReqBtn
-
-        m_contact = contactsData.m_contacts[ContactView.ContactID]!
+        m_reqBtn.hidden = true
         
-        m_name.text = m_contact.name
-        m_profile.image = UIImage(data: getContactPhoto(m_contact.user)!)
+        m_name.text = getName(ContactView.ContactID)
+        m_profile.image = getPhoto(ContactView.ContactID)
 
         var postData:PostData?
         
-        if m_contact.user == userInfo.userID {
+        if ContactView.ContactID == userInfo.userID {
             postData = selfPosts
         }
         else {
-            if contactsPosts[m_contact.user] == nil {
+            if contactsPosts[ContactView.ContactID] == nil {
                 postData = PostData(cid: ContactView.ContactID)
                 contactsPosts[ContactView.ContactID] = postData
             }
             else {
-                postData = contactsPosts[m_contact.user]
+                postData = contactsPosts[ContactView.ContactID]
             }
-            postData?.Update()
         }
-
+            
         m_preDelegate = postData?.m_delegate
-        setTable(m_posts, data: postData!, fullView: false)
+        setTable(m_posts, data: postData!, showPhoto: false, showMsg: false)
+        postData?.Update()
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         m_data?.m_delegate = m_preDelegate
+        ContactView.ContactID = 0
     }
     
     func requestNameChanged(sender:UITextField) {
         let alert:UIAlertController = self.presentedViewController as! UIAlertController
         let okAction:UIAlertAction = alert.actions.last!
-        m_contact.name = (alert.textFields?.first?.text)!
-        let nameSize = m_contact.name.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
+        self.m_name.text = (alert.textFields?.first?.text)!
+        let nameSize = self.m_name.text!.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
         m_nameGood = (nameSize > 0 && nameSize < 18)
         okAction.enabled = (m_nameGood && m_messegeGood)
     }
@@ -86,11 +84,11 @@ class ContactView: PostsTable, UITableViewDelegate {
         let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
             handler: { action in
-                httpRequestContact(self.m_contact.user, name: self.m_contact.name, messege: self.m_messege)
+                httpRequestContact(ContactView.ContactID, name: self.m_name.text!, messege: self.m_messege)
         })
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
-            textField.placeholder = self.m_contact.name
+            textField.placeholder = self.m_name.text
             textField.addTarget(self, action: Selector("requestNameChanged:"), forControlEvents: .EditingChanged)
         }
         alert.addTextFieldWithConfigurationHandler {

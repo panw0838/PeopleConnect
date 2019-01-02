@@ -63,7 +63,7 @@ func updateComments(postData:PostData, updateObjs:[AnyObject]) {
     for case let updateObj in (updateObjs as? [[String:AnyObject]])! {
         let oID = UInt64((updateObj["oid"]?.unsignedLongLongValue)!)
         let pID = UInt64((updateObj["pid"]?.unsignedLongLongValue)!)
-        let post = postData.getPost(oID, pID: pID)
+        let post = postData.getPost(pID, oID: oID)
         if let cmtObjs = updateObj["cmt"] as? [AnyObject] {
             addComment(post!, cmtObjs: cmtObjs)
         }
@@ -73,10 +73,11 @@ func updateComments(postData:PostData, updateObjs:[AnyObject]) {
 func addPost(data:PostData, postObjs:[AnyObject]) {
     for case let postObj in (postObjs as? [[String:AnyObject]])! {
         if let post = PostInfo(json: postObj) {
-            data.AddPost(post)
-            // add comments
-            if let cmtObjs = postObj["cmt"] as? [AnyObject] {
-                addComment(data.m_posts.last!, cmtObjs: cmtObjs)
+            if data.AddPost(post) {
+                // add comments
+                if let cmtObjs = postObj["cmt"] as? [AnyObject] {
+                    addComment(data.m_posts.last!, cmtObjs: cmtObjs)
+                }
             }
         }
     }
@@ -92,6 +93,7 @@ func syncPosts(data:PostData, json:[String:AnyObject]) {
     data.getContacts()
     data.getPreviews()
     data.UpdateDelegate()
+    data.m_needSync = false
 }
 
 func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>, groups:Array<UInt32>, nearby:Bool) {

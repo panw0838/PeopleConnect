@@ -55,6 +55,15 @@ func getAttrTextHeight(text:NSMutableAttributedString, width:CGFloat, font:UIFon
     return CGFloat((numLines-1) * linespace + baseHeight + (numLines == 2 ? 2 : 0))
 }
 
+func getName(cID:UInt64)->String {
+    var name = ""
+    let data = contactsData.m_contacts[cID]
+    if data != nil {
+        name = data!.name
+    }
+    return name
+}
+
 func getPhoto(cID:UInt64)->UIImage {
     var photo = UIImage(named: "default_profile")
     let data = contactsData.getPhoto(cID)

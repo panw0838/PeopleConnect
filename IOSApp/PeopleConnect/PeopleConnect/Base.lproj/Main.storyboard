@@ -24,7 +24,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="W40-GU-GYX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="733" y="-1106"/>
+            <point key="canvasLocation" x="733" y="-890"/>
         </scene>
         <!--消息-->
         <scene sceneID="h5q-Hn-X7R">
@@ -113,7 +113,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="If8-VN-He5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1546" y="-1106"/>
+            <point key="canvasLocation" x="1546" y="-890"/>
         </scene>
         <!--联系人-->
         <scene sceneID="bwo-Jo-e9d">
@@ -130,7 +130,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vqw-fl-iie" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="748" y="0.0"/>
+            <point key="canvasLocation" x="748" y="64"/>
         </scene>
         <!--联系人-->
         <scene sceneID="DFM-uy-UqD">
@@ -330,7 +330,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E2x-J4-tQp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1546" y="0.0"/>
+            <point key="canvasLocation" x="1546" y="64"/>
         </scene>
         <!--详细资料-->
         <scene sceneID="bnN-3H-pGg">
@@ -443,11 +443,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zPJ-Gx-Pxk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3462" y="-60"/>
+            <point key="canvasLocation" x="3150" y="44"/>
         </scene>
         <!--动态通知-->
         <scene sceneID="Y86-yr-irv">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NZ6-8y-YEm" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="G9h-hn-QHp" customClass="PostNotifyView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="7zP-5N-E0v"/>
@@ -457,17 +458,67 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="cwI-CD-uOn">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="80" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="cwI-CD-uOn">
                                 <rect key="frame" x="0.0" y="64" width="600" height="487"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="fl5-Cr-8kv">
-                                        <rect key="frame" x="0.0" y="92" width="600" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="PostNotifyCell" rowHeight="80" id="kAt-ab-Tee" customClass="PostNotifyCell" customModule="PeopleConnect" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="92" width="600" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fl5-Cr-8kv" id="NpQ-S1-PCf">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="kAt-ab-Tee" id="yZr-aN-Je8">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="79"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ahG-QY-JWN">
+                                                    <rect key="frame" x="8" y="15" width="50" height="50"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="50" id="1cL-9J-U4J"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KBv-2V-2TF">
+                                                    <rect key="frame" x="66" y="48" width="465" height="17"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="17" id="45M-hx-vVZ"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="djZ-PX-Di6">
+                                                    <rect key="frame" x="539" y="13" width="53" height="53"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="53" id="oNw-sT-fd4"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bli-NR-Ul0">
+                                                    <rect key="frame" x="66" y="13" width="465" height="29"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="ahG-QY-JWN" firstAttribute="centerY" secondItem="djZ-PX-Di6" secondAttribute="centerY" id="2Py-zg-8OM"/>
+                                                <constraint firstItem="bli-NR-Ul0" firstAttribute="leading" secondItem="ahG-QY-JWN" secondAttribute="trailing" constant="8" symbolic="YES" id="4Dr-KV-BkH"/>
+                                                <constraint firstItem="KBv-2V-2TF" firstAttribute="bottom" secondItem="ahG-QY-JWN" secondAttribute="bottom" id="7qK-Dy-YoH"/>
+                                                <constraint firstItem="ahG-QY-JWN" firstAttribute="leading" secondItem="yZr-aN-Je8" secondAttribute="leadingMargin" id="9ni-lV-4wg"/>
+                                                <constraint firstItem="ahG-QY-JWN" firstAttribute="top" secondItem="yZr-aN-Je8" secondAttribute="topMargin" constant="7" id="IAs-N9-9EY"/>
+                                                <constraint firstItem="djZ-PX-Di6" firstAttribute="leading" secondItem="bli-NR-Ul0" secondAttribute="trailing" constant="8" symbolic="YES" id="IeL-SS-HdK"/>
+                                                <constraint firstItem="bli-NR-Ul0" firstAttribute="top" secondItem="yZr-aN-Je8" secondAttribute="topMargin" constant="5" id="JX8-nj-ZPz"/>
+                                                <constraint firstItem="KBv-2V-2TF" firstAttribute="top" secondItem="bli-NR-Ul0" secondAttribute="bottom" constant="6" id="QWZ-HC-43N"/>
+                                                <constraint firstItem="ahG-QY-JWN" firstAttribute="centerY" secondItem="yZr-aN-Je8" secondAttribute="centerY" id="UyN-eX-aDK"/>
+                                                <constraint firstItem="bli-NR-Ul0" firstAttribute="top" secondItem="djZ-PX-Di6" secondAttribute="top" id="eV0-hc-gWP"/>
+                                                <constraint firstItem="djZ-PX-Di6" firstAttribute="leading" secondItem="KBv-2V-2TF" secondAttribute="trailing" constant="8" symbolic="YES" id="ksK-XG-kR2"/>
+                                                <constraint firstItem="bli-NR-Ul0" firstAttribute="leading" secondItem="KBv-2V-2TF" secondAttribute="leading" id="vu4-KD-uht"/>
+                                                <constraint firstItem="djZ-PX-Di6" firstAttribute="trailing" secondItem="yZr-aN-Je8" secondAttribute="trailingMargin" id="z2l-Yn-azM"/>
+                                            </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="m_name" destination="bli-NR-Ul0" id="GbS-gy-MQM"/>
+                                            <outlet property="m_notify" destination="KBv-2V-2TF" id="Lmr-3H-hdW"/>
+                                            <outlet property="m_photo" destination="ahG-QY-JWN" id="qRj-R8-nnF"/>
+                                            <outlet property="m_post" destination="djZ-PX-Di6" id="Do7-e1-K0G"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -485,10 +536,73 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="动态通知" id="k7M-bB-q3o"/>
+                    <connections>
+                        <outlet property="m_table" destination="cwI-CD-uOn" id="GRn-qN-dF0"/>
+                        <segue destination="0pB-ge-6ZV" kind="show" identifier="ShowPost" id="ZKu-3p-1go"/>
+                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="NZ6-8y-YEm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2524" y="-2089"/>
+            <point key="canvasLocation" x="2332" y="-1725"/>
+        </scene>
+        <!--Single Post View-->
+        <scene sceneID="Fgs-iK-vZ0">
+            <objects>
+                <viewController id="0pB-ge-6ZV" customClass="SinglePostView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="KpB-qX-0Wp"/>
+                        <viewControllerLayoutGuide type="bottom" id="ktK-tf-3WV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="myP-La-NZc">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="sdr-SX-W6n">
+                                <rect key="frame" x="20" y="72" width="560" height="471"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CommentCell" rowHeight="18" id="W7m-YS-M6c" customClass="CommentCell" customModule="PeopleConnect" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="92" width="560" height="18"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="W7m-YS-M6c" id="uQG-q2-3fo">
+                                            <rect key="frame" x="0.0" y="0.0" width="560" height="18"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="用户回复" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UWc-t1-616">
+                                                    <rect key="frame" x="0.0" y="0.0" width="560" height="18"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="UWc-t1-616" secondAttribute="trailing" id="QDn-UN-MdN"/>
+                                                <constraint firstItem="UWc-t1-616" firstAttribute="centerY" secondItem="uQG-q2-3fo" secondAttribute="centerY" id="eOd-Va-eMG"/>
+                                                <constraint firstItem="UWc-t1-616" firstAttribute="leading" secondItem="uQG-q2-3fo" secondAttribute="leading" id="gQx-kY-1yO"/>
+                                                <constraint firstItem="UWc-t1-616" firstAttribute="top" secondItem="uQG-q2-3fo" secondAttribute="top" id="hMa-3c-5he"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                        <connections>
+                                            <outlet property="m_comment" destination="UWc-t1-616" id="Fnv-Qh-l1p"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="0pB-ge-6ZV" id="Rdj-2b-DYZ"/>
+                                    <outlet property="delegate" destination="0pB-ge-6ZV" id="eAK-Dn-4Dd"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="m_postsTable" destination="sdr-SX-W6n" id="flf-VJ-icV"/>
+                        <segue destination="pv7-Vn-KsV" kind="show" identifier="ShowContact" id="3XJ-ri-55N"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mMC-VN-wQ2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3142" y="-1725"/>
         </scene>
         <!--好友申请-->
         <scene sceneID="QlS-5M-gYo">
@@ -616,7 +730,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cCZ-c7-kTd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2524" y="-1405"/>
+            <point key="canvasLocation" x="2332" y="-1057"/>
         </scene>
         <!--会话-->
         <scene sceneID="enG-ND-1uO">
@@ -682,7 +796,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PFo-Pj-iMQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2524" y="-508"/>
+            <point key="canvasLocation" x="2332" y="-388"/>
         </scene>
         <!--发布动态-->
         <scene sceneID="87t-6T-shC">
@@ -1018,7 +1132,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Zhm-nI-Lma" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3462" y="1242"/>
+            <point key="canvasLocation" x="3142" y="1242"/>
         </scene>
         <!--Title-->
         <scene sceneID="Y73-qc-dZx">
@@ -1139,7 +1253,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9ll-gG-QJq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2508" y="428"/>
+            <point key="canvasLocation" x="2332" y="460"/>
         </scene>
         <!--动态-->
         <scene sceneID="c4j-T9-H0Q">
@@ -1234,7 +1348,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="loP-XP-hC1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2508" y="1242"/>
+            <point key="canvasLocation" x="2332" y="1242"/>
         </scene>
         <!--动态-->
         <scene sceneID="7mK-am-h84">
@@ -1251,7 +1365,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mqW-Pr-we6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="748" y="1242"/>
+            <point key="canvasLocation" x="784" y="1242"/>
         </scene>
         <!--Login View-->
         <scene sceneID="fVc-De-uEb">
@@ -1368,7 +1482,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HuB-VB-40B" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="0.0" y="0.0"/>
+            <point key="canvasLocation" x="-4" y="64"/>
         </scene>
         <!--Log View-->
         <scene sceneID="AQf-Y0-Llv">
@@ -1768,6 +1882,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="XOj-qb-4jh"/>
-        <segue reference="xrR-La-VIP"/>
+        <segue reference="3XJ-ri-55N"/>
     </inferredMetricsTieBreakers>
 </document>
