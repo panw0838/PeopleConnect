@@ -208,6 +208,7 @@ class ContactsView:
     override func viewDidLoad() {
         super.viewDidLoad()
         contactsData.m_delegates.append(self)
+        httpGetFriends()
     }
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

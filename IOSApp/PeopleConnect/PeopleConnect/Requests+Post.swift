@@ -122,10 +122,9 @@ func httpDeletePost(post:Post) {
 }
 
 func httpSyncFriendsPost(pIDs:Array<UInt64>, oIDs:Array<UInt64>, cIDs:Array<UInt64>) {
-    let lastPost = (friendPosts.m_posts.count == 0 ? 0 : friendPosts.m_posts.last?.m_info.id)
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
-        "last":NSNumber(unsignedLongLong: lastPost!),
+        "last":NSNumber(unsignedLongLong: friendPosts.getLast()),
         "pids":http.getUInt64ArrayParam(pIDs),
         "oids":http.getUInt64ArrayParam(oIDs),
         "cids":http.getUInt64ArrayParam(cIDs)]
@@ -145,15 +144,7 @@ func httpSyncFriendsPost(pIDs:Array<UInt64>, oIDs:Array<UInt64>, cIDs:Array<UInt
 }
 
 func httpSyncContactPost(cID:UInt64, pIDs:Array<UInt64>, oIDs:Array<UInt64>, cIDs:Array<UInt64>) {
-    var postData:PostData?
-    
-    if cID == userInfo.userID {
-        postData = selfPosts
-    }
-    else {
-        postData = contactsPosts[cID]
-    }
-    
+    let postData = (cID == userInfo.userID ? selfPosts : contactsPosts[cID])
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "cid":NSNumber(unsignedLongLong: cID),

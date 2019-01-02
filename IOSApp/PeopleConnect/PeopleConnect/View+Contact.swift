@@ -35,6 +35,15 @@ class ContactView: PostsTable, UITableViewDelegate {
         m_name.text = getName(ContactView.ContactID)
         m_profile.image = getPhoto(ContactView.ContactID)
 
+        if getContactPhoto(ContactView.ContactID) == nil {
+            let cIDs:Array<UInt64> = [ContactView.ContactID]
+            httpGetPhotos(cIDs,
+                passed: {()->Void in
+                    self.m_profile.image = getPhoto(ContactView.ContactID)
+                },
+                failed: nil)
+        }
+
         var postData:PostData?
         
         if ContactView.ContactID == userInfo.userID {

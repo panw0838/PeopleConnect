@@ -27,6 +27,7 @@ class MessegesView: UITableViewController, MsgDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         msgData.m_delegate = self
+        httpSyncMessege(nil, failed: nil)
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {

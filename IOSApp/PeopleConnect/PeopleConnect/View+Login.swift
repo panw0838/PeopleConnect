@@ -204,32 +204,10 @@ class LogView: BaseLogRegView {
     
     var m_logStage = 0
     func logSuccess() {
-        switch m_logStage {
-        case 0:
-            m_logStage++
-            httpGetFriends(logSuccess, failed: logFail)
-            break
-        case 1:
-            m_logStage++
-            let ids = contactsData.getMissingPhotos()
-            if ids.count > 0 {
-                httpGetPhotos(ids, passed: logSuccess, failed: logFail)
-            }
-            else {
-                logSuccess()
-            }
-            break
-        case 2:
-            m_logStage++
-            httpSyncMessege(logSuccess, failed: logFail)
-            break
-        default:
-            tcp.start("192.168.0.104", port: 8888)
-            tcp.logon()
-            m_father?.m_loading?.stopLoading()
-            m_father?.performSegueWithIdentifier("ShowMainMenu", sender: nil)
-            break
-        }
+        tcp.start("192.168.0.104", port: 8888)
+        tcp.logon()
+        m_father?.m_loading?.stopLoading()
+        m_father?.performSegueWithIdentifier("ShowMainMenu", sender: nil)
     }
 
     @IBAction func log() {
@@ -411,34 +389,11 @@ class LoginView: UIViewController {
         }
     }
 
-    var _logStage = 0
     func logSuccess() {
-        switch _logStage {
-        case 0:
-            _logStage++
-            httpGetFriends(logSuccess, failed: nil)
-            break
-        case 1:
-            _logStage++
-            let ids = contactsData.getMissingPhotos()
-            if ids.count > 0 {
-                httpGetPhotos(ids, passed: logSuccess, failed: nil)
-            }
-            else {
-                logSuccess()
-            }
-            break
-        case 2:
-            _logStage++
-            httpSyncMessege(logSuccess, failed: nil)
-            break
-        default:
-            tcp.start("192.168.0.104", port: 8888)
-            tcp.logon()
-            m_loading?.stopLoading()
-            performSegueWithIdentifier("ShowMainMenu", sender: nil)
-            break
-        }
+        tcp.start("192.168.0.104", port: 8888)
+        tcp.logon()
+        m_loading?.stopLoading()
+        performSegueWithIdentifier("ShowMainMenu", sender: nil)
     }
     
     @IBAction func login1(sender: AnyObject) {

@@ -8,11 +8,11 @@
 
 import Foundation
 
-func httpGetFriends(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
+func httpGetFriends() {
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("contacts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let conData = processErrorCode(response as! NSData, failed: failed)
+            let conData = processErrorCode(response as! NSData, failed: nil)
             if conData != nil {
                 if let json = getJson(conData!) {
                     var contacts:Array<ContactInfo> = Array<ContactInfo>()
@@ -24,14 +24,21 @@ func httpGetFriends(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
                             }
                         }
                     }
-                    
                     contactsData.loadContacts(contacts)
-                    passed?()
+                    contactsData.updateDelegates()
+
+                    let photoList = contactsData.getMissingPhotos()
+                    if photoList.count > 0 {
+                        httpGetPhotos(photoList,
+                            passed: {()->Void in
+                                contactsData.updateDelegates()
+                            },
+                            failed: nil)
+                    }
                 }
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-            failed?(err: "请求失败")
         }
     )
 }
@@ -85,7 +92,7 @@ func httpGetPossibleContacts() {
                         for case let userObj in (usersObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: userObj) {
                                 contactsData.m_possible.m_members.append(contact.user)
-                                contactsData.m_contacts[contact.user] = contact
+                                contactsData.addUser(contact)
                             }
                         }
                         
@@ -232,7 +239,7 @@ func httpSearchContact(key:String) {
                     var contact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
                     contact.user = (UInt64)((dict["user"]?.integerValue)!)
                     contact.name = dict["name"] as! String
-                    contactsData.addContact(contact)
+                    contactsData.addUser(contact)
                     uid = contact.user
                 }
             }
