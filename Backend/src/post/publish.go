@@ -121,33 +121,29 @@ func dbGetNearbyPublish(uID uint64, geoID uint64, from uint64, to uint64, c redi
 		var pID uint64
 		fmt.Sscanf(publish, "%d:%d", &oID, &pID)
 
-		if uID == oID {
-			continue
-		}
-
-		isStranger, err := user.IsStranger(uID, oID, c)
-		if err != nil {
-			return nil, err
-		}
-		if !isStranger {
-			continue
-		}
-
-		success, post, err := dbGetPost(oID, pID, c)
-		if err != nil {
-			return nil, err
-		}
-		if success {
-			post.Liked, err = dbGetLike(uID, oID, pID, c)
+		if uID != oID {
+			isStranger, err := user.IsStranger(uID, oID, c)
 			if err != nil {
 				return nil, err
 			}
-			// get strangers comments
-			post.Comments, err = dbGetComments(oID, post.ID, uID, StrangerGroup, 0, c)
-			if err != nil {
-				return nil, err
+			if isStranger {
+				success, post, err := dbGetPost(oID, pID, c)
+				if err != nil {
+					return nil, err
+				}
+				if success {
+					post.Liked, err = dbGetLike(uID, oID, pID, c)
+					if err != nil {
+						return nil, err
+					}
+					// get strangers comments
+					post.Comments, err = dbGetComments(oID, post.ID, uID, StrangerGroup, 0, c)
+					if err != nil {
+						return nil, err
+					}
+					results = append(results, post)
+				}
 			}
-			results = append(results, post)
 		}
 	}
 	return results, nil
@@ -166,33 +162,29 @@ func dbGetGroupPublish(uID uint64, gID uint32, from uint64, to uint64, c redis.C
 		var pID uint64
 		fmt.Sscanf(publish, "%d:%d", &oID, &pID)
 
-		if uID == oID {
-			continue
-		}
-
-		isBlacklist, err := user.IsBlacklist(uID, oID, c)
-		if err != nil {
-			return nil, err
-		}
-		if isBlacklist {
-			continue
-		}
-
-		success, post, err := dbGetPost(oID, pID, c)
-		if err != nil {
-			return nil, err
-		}
-		if success {
-			post.Liked, err = dbGetLike(uID, oID, pID, c)
+		if uID != oID {
+			isBlacklist, err := user.IsBlacklist(uID, oID, c)
 			if err != nil {
 				return nil, err
 			}
-			// get group comments
-			post.Comments, err = dbGetComments(oID, post.ID, uID, gID, 0, c)
-			if err != nil {
-				return nil, err
+			if !isBlacklist {
+				success, post, err := dbGetPost(oID, pID, c)
+				if err != nil {
+					return nil, err
+				}
+				if success {
+					post.Liked, err = dbGetLike(uID, oID, pID, c)
+					if err != nil {
+						return nil, err
+					}
+					// get group comments
+					post.Comments, err = dbGetComments(oID, post.ID, uID, gID, 0, c)
+					if err != nil {
+						return nil, err
+					}
+					results = append(results, post)
+				}
 			}
-			results = append(results, post)
 		}
 	}
 
