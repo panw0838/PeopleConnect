@@ -148,10 +148,13 @@ func httpDeletePost(post:Post) {
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let errCode = getErrorCode(response as! NSData)
             if errCode == 0 {
-                for (idx, p) in (post.m_father?.m_posts.enumerate())! {
+                for (idx, p) in selfPosts.m_posts.enumerate() {
                     if p.m_info.id == post.m_info.id && p.m_info.user == post.m_info.user {
-                        post.m_father?.m_posts.removeAtIndex(idx)
-                        post.m_father?.UpdateDelegate()
+                        selfPosts.m_posts.removeAtIndex(idx)
+                        if selfPosts.m_lockAt == idx {
+                            selfPosts.m_lockAt = -2
+                        }
+                        selfPosts.UpdateDelegate()
                         break
                     }
                 }

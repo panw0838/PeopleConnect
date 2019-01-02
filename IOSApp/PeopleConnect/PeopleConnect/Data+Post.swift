@@ -22,18 +22,17 @@ var nearPosts    = NearPostData(src: StrPosts)
 var groupsPosts   = Dictionary<UInt32, PostData>()
 var contactsPosts = Dictionary<UInt64, PostData>()
 
-func getPost(src:UInt32, pID:UInt64, oID:UInt64)->Post? {
+func getPostData(src:UInt32, oID:UInt64)->PostData? {
     if oID == userInfo.userID {
-        return selfPosts.getPost(pID, oID: oID)
+        return selfPosts
     }
     if src == FriPosts {
-        return friendPosts.getPost(pID, oID: oID)
+        return friendPosts
     }
     if src == StrPosts {
-        return nearPosts.getPost(pID, oID: oID)
+        return nearPosts
     }
-    let groupPost = groupsPosts[src]
-    return groupPost?.getPost(pID, oID: oID)
+    return groupsPosts[src]
 }
 
 var previews = Dictionary<String, UIImage>()
@@ -137,8 +136,8 @@ extension CommentInfo {
 
 class Post {
     var m_info:PostInfo = PostInfo()
-    var m_comments = Array<CommentInfo>()
     var m_father:PostData?
+    var m_comments = Array<CommentInfo>()
     
     init(info:PostInfo) {
         m_info = info
@@ -156,19 +155,6 @@ class Post {
     func getPreview(idx:Int)->UIImage {
         let key = getPreviewKey(m_info, i: idx)
         return (previews[key] == nil ? UIImage(named: "loading")! : previews[key]!)
-    }
-    
-    func getLikeContacts() {
-        var contactIDs = Set<UInt64>()
-        for like in m_info.likes {
-            let likeOwner = contactsData.m_contacts[like]
-            if likeOwner == nil {
-                contactIDs.insert(like)
-            }
-        }
-        if contactIDs.count > 0 {
-            httpGetPostsUsers(Array<UInt64>(contactIDs), post: m_father!)
-        }
     }
     
     func getLikeString()->String {
@@ -217,6 +203,7 @@ class PostData {
     var m_posts = Array<Post>()
     var m_delegate:PostDataDelegate? = nil
     var m_needSync:Bool = false
+    var m_lockAt:Int = -1
     
     
     init(src:UInt32) {
@@ -234,7 +221,7 @@ class PostData {
             return false
         }
         post = Post(info: info)
-        post!.m_father = self
+        post?.m_father = self
         m_posts.append(post!)
         return true
     }
@@ -246,6 +233,20 @@ class PostData {
             }
         }
         return nil
+    }
+    
+    func lockPost(pID:UInt64, oID:UInt64)->Bool {
+        for (idx, post) in m_posts.enumerate() {
+            if post.m_info.id == pID && post.m_info.user == oID {
+                m_lockAt = idx
+                return true
+            }
+        }
+        return false
+    }
+    
+    func unLock() {
+        m_lockAt = -1
     }
     
     func getLast()->UInt64 {
@@ -288,19 +289,24 @@ class PostData {
     }
     
     func numOfPosts()->Int {
+        if m_lockAt >= 0 {
+            return 1
+        }
+        if m_lockAt == -2 {
+            return 0
+        }
         return m_posts.count
     }
     
     func postAtIdx(i:Int)->Post {
-        return m_posts[m_posts.count - i - 1]
+        return m_lockAt == -1 ? m_posts[m_posts.count - i - 1] : m_posts[m_lockAt]
     }
     
     func getContacts() {
         var contactIDs = Set<UInt64>()
         var photoIDs = Set<UInt64>()
         for post in m_posts {
-            let postOwner = contactsData.m_contacts[post.m_info.user]
-            if postOwner == nil {
+            if contactsData.m_contacts[post.m_info.user] == nil {
                 contactIDs.insert(post.m_info.user)
                 photoIDs.insert(post.m_info.user)
             }
@@ -308,9 +314,14 @@ class PostData {
                 photoIDs.insert(post.m_info.user)
             }
             
+            for like in post.m_info.likes {
+                if contactsData.m_contacts[like] == nil {
+                    contactIDs.insert(like)
+                }
+            }
+            
             for comment in post.m_comments {
-                let cmtOwner = contactsData.m_contacts[comment.from]
-                if cmtOwner == nil {
+                if contactsData.m_contacts[comment.from] == nil {
                     contactIDs.insert(comment.from)
                 }
             }
@@ -351,7 +362,6 @@ class NearPostData:PostData {
     func AddPost(gID:UInt64, info:PostInfo) {
         let posts = m_geoPosts[gID]
         posts?.AddPost(info)
-        posts?.m_posts.last?.m_father = self
     }
     
     func UpdateSquares() {
@@ -386,6 +396,7 @@ class NearPostData:PostData {
             if postData != nil && postData!.m_posts.count > 0 {
                 for post in postData!.m_posts {
                     m_posts.append(post)
+                    post.m_father = self
                 }
             }
         }

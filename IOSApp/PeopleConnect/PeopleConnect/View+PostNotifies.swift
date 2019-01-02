@@ -13,7 +13,6 @@ class PostNotifyCell:UITableViewCell {
     @IBOutlet weak var m_name: UILabel!
     @IBOutlet weak var m_notify: UILabel!
     @IBOutlet weak var m_post: UIImageView!
-    
 }
 
 
@@ -43,6 +42,8 @@ class PostNotifyView:UIViewController, MsgDelegate, UITableViewDataSource, UITab
         let cell = tableView.dequeueReusableCellWithIdentifier("PostNotifyCell") as! PostNotifyCell
         let notify = m_data?.m_messages[indexPath.row]
         cell.m_photo.image = getPhoto(notify!.from)
+        cell.m_photo.layer.masksToBounds = true
+        cell.m_photo.layer.cornerRadius = 10
         cell.m_name.text = getName(notify!.from)
         cell.m_notify.text = notify?.getMessage()
         return cell
@@ -50,10 +51,10 @@ class PostNotifyView:UIViewController, MsgDelegate, UITableViewDataSource, UITab
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let notify = m_data?.m_messages[indexPath.row]
-        let post = getPost(notify!.src, pID: notify!.pID, oID: notify!.oID)
-        if post != nil {
-            SinglePostView.SinglePost    = post
-            SinglePostView.SinglePostSrc = (notify!.oID == userInfo.userID ? UsrPosts : notify!.src)
+        let postData = getPostData(notify!.src, oID: notify!.oID)
+        
+        if postData != nil && postData!.lockPost(notify!.pID, oID: notify!.oID) {
+            SinglePostView.postData = postData
             performSegueWithIdentifier("ShowPost", sender: nil)
         }
     }

@@ -53,10 +53,10 @@ class MessegesView: UITableViewController, MsgDelegate {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let conversation = msgData.m_conversations[indexPath.row]
-        if conversation.m_id == 0 {
+        if conversation.m_id == ConvType.ConvRequest.rawValue {
             self.performSegueWithIdentifier("ShowRequests", sender: conversation)
         }
-        else if conversation.m_id == 1 {
+        else if conversation.m_id == ConvType.ConvPostNTF.rawValue {
             self.performSegueWithIdentifier("ShowNotify", sender: conversation)
         }
         else {

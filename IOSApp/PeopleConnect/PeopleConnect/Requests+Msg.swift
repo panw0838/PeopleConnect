@@ -121,6 +121,17 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
                         for case let messObj in (messObjs as? [[String:AnyObject]])! {
                             if let msg = MsgInfo(json: messObj) {
                                 msgData.AddNewMsg(msg)
+                                
+                                // process notifications
+                                if msg.type == .Ntf_Add {
+                                    var contact = contactsData.m_contacts[msg.from]
+                                    if contact?.flag == 0 {
+                                        contact?.flag = UndefineBit
+                                        contactsData.m_contacts[msg.from] = contact
+                                        contactsData.updateDelegates()
+                                    }
+                                }
+                                
                                 if msg.type == .Ntf_New {
                                     friendPosts.m_needSync = true
                                 }

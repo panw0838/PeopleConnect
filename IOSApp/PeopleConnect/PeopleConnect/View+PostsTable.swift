@@ -204,7 +204,7 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
         let header = tableView.dequeueReusableHeaderFooterViewWithIdentifier("PostHeader") as! PostHeader
         let post = m_data!.postAtIdx(section)
         header.m_father = self
-        header.reload(post, width:m_table!.contentSize.width, showPhoto: m_showPhoto, showTool: m_showMsg)
+        header.reload(post, data: m_data!, width:m_table!.contentSize.width, showPhoto: m_showPhoto, showTool: m_showMsg)
         return header
     }
     

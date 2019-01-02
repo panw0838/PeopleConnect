@@ -71,8 +71,7 @@ func httpDelComment(post:Post, cmt:CommentInfo) {
                         break
                     }
                 }
-                
-                post.m_father?.Update()
+                post.m_father?.UpdateDelegate()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in

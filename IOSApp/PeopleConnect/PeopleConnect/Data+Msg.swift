@@ -60,15 +60,18 @@ struct MsgInfo {
     
     func getConversationID()->UInt64 {
         if type == .Ntf_Req {
-            return 0
+            return 1
         }
         if type == .Ntf_Cmt || type == .Ntf_Lik {
-            return 1
+            return 2
         }
         if group != 0 {
             return UInt64(group) + GroupBit
         }
-        return from
+        if from != 0 {
+            return from
+        }
+        return 0
     }
     
     func getMessage()->String {
@@ -169,6 +172,11 @@ class MsgInfoCoder:NSObject, NSCoding {
     }
 }
 
+enum ConvType: UInt64 {
+    case ConvRequest = 1
+    case ConvPostNTF = 2
+}
+
 protocol ConvDelegate {
     func ConvUpdated()
 }
@@ -184,13 +192,22 @@ class Conversation {
         m_id = id
         
         // new requests
-        if id == 0 {
+        if id == ConvType.ConvRequest.rawValue {
             m_name = "好友申请"
             m_img = UIImage(named: "messages_requests")!
         }
-        else if id == 1 {
+        else if id == ConvType.ConvPostNTF.rawValue {
             m_name = "动态通知"
             m_img = UIImage(named: "messages_notify")!
+        }
+        else if (m_id & GroupBit) != 0 {
+        }
+        else {
+            let contact = contactsData.m_contacts[m_id]
+            if contact != nil {
+                m_name = getName(m_id)
+                m_img = getPhoto(m_id)
+            }
         }
     }
     
@@ -208,10 +225,10 @@ class Conversation {
     }
     
     func lastMessage()->String? {
-        if m_id == 0 {
+        if m_id == ConvType.ConvRequest.rawValue {
             return String(m_messages.count) + "个新申请"
         }
-        else if m_id == 1 {
+        else if m_id == ConvType.ConvPostNTF.rawValue {
             return String(m_messages.count) + "个动态通知"
         }
         return m_messages.last?.getMessage()
@@ -234,8 +251,8 @@ class MsgData {
     
     init() {
         // add system conversations
-        m_conversations.append(Conversation(id: 0))
         m_conversations.append(Conversation(id: 1))
+        m_conversations.append(Conversation(id: 2))
         
         loadMsgFromCache()
     }
@@ -319,19 +336,12 @@ class MsgData {
     
     func AddNewMsg(newMsg:MsgInfo) {
         let convID = newMsg.getConversationID()
-        let conversation = popConversation(convID)
-        conversation.addMessage(newMsg)
-        conversation.UpdateDelegate()
-        m_conversations.append(conversation)
         
-        // process notifications
-        if newMsg.type == .Ntf_Add {
-            var contact = contactsData.m_contacts[newMsg.from]
-            if contact?.flag == 0 {
-                contact?.flag = UndefineBit
-                contactsData.m_contacts[newMsg.from] = contact
-                contactsData.updateDelegates()
-            }
+        if convID != 0 {
+            let conversation = popConversation(convID)
+            conversation.addMessage(newMsg)
+            m_conversations.append(conversation)
+            conversation.UpdateDelegate()
         }
     }
     
