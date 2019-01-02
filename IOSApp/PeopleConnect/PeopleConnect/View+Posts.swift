@@ -45,7 +45,7 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setTable(m_posts, data: friendPosts, showPhoto: false, showMsg: true)
+        setTable(m_posts, data: friendPosts, showPhoto: true, showMsg: true)
         friendPosts.Update()
         selfPosts.Update()
     }

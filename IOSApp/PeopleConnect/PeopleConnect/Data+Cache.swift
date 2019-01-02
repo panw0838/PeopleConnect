@@ -8,6 +8,24 @@
 
 import Foundation
 
+func getName(cID:UInt64)->String {
+    var name = ""
+    let data = contactsData.m_contacts[cID]
+    if data != nil {
+        name = data!.name
+    }
+    return name
+}
+
+func getPhoto(cID:UInt64)->UIImage {
+    var photo = UIImage(named: "default_profile")
+    let data = getContactPhoto(cID)
+    if data != nil {
+        photo = UIImage(data: data!)
+    }
+    return photo!
+}
+
 func getContactPhotoPath(cID:UInt64)->String {
     let cacheDir = NSSearchPathForDirectoriesInDomains(.CachesDirectory, .UserDomainMask, true)[0]
     let fileName = String(cID) + ".png"

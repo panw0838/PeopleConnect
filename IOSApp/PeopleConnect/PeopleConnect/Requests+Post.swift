@@ -13,51 +13,6 @@ func getFileUrl(cID:UInt64, pID:UInt64, fileName:String)->String {
     return String(cID) + "/" + String(pID) + "/" + fileName
 }
 
-func httpGetPostsUsers(cIDs:Array<UInt64>, post:PostData) {
-    let params:Dictionary = [
-        "user":NSNumber(unsignedLongLong: userInfo.userID),
-        "cids":http.getUInt64ArrayParam(cIDs)]
-    http.postRequest("users", params: params,
-        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let conData = processErrorCode(response as! NSData, failed: nil)
-            if conData != nil {
-                if let json = getJson(conData!) {
-                    if let contactObjs = json["users"] as? [AnyObject] {
-                        for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
-                            if let contact = ContactInfo(json: contactObj) {
-                                contactsData.m_contacts[contact.user] = contact
-                            }
-                        }
-                        post.UpdateDelegate()
-                    }
-                }
-            }
-        },
-        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-        }
-    )
-}
-
-func httpGetPostsPhotos(cIDs:Array<UInt64>, post:PostData) {
-    let params:Dictionary = [
-        "user":NSNumber(unsignedLongLong: userInfo.userID),
-        "cids":http.getUInt64ArrayParam(cIDs)]
-    http.postRequest("photos", params: params,
-        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let photosData = processErrorCode(response as! NSData, failed: nil)
-            if photosData != nil {
-                let subDatas = splitData(photosData!)
-                for (i, cID) in cIDs.enumerate() {
-                    contactsData.setPhoto(cID, data: subDatas[i], update: true)
-                }
-                post.UpdateDelegate()
-            }
-        },
-        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-        }
-    )
-}
-
 func updateComments(postData:PostData, updateObjs:[AnyObject]) {
     // update comments
     for case let updateObj in (updateObjs as? [[String:AnyObject]])! {

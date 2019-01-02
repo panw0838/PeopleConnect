@@ -43,43 +43,41 @@ func httpDeclineRequest(contact:UInt64) {
     )
 }
 
-func httpSyncRequests(passed:(()->Void)?, failed:((String?)->Void)?) {
+func httpSyncRequests() {
     msgData.m_requests.removeAll()
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("syncrequests", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let reqData = processErrorCode(response as! NSData, failed: failed)
+            let reqData = processErrorCode(response as! NSData, failed: nil)
             if reqData != nil {
                 if let json = getJson(reqData!) {
                     if let reqObjs = json["requests"] as? [AnyObject] {
-                        var photoIDs = Array<UInt64>()
+                        var ids = Array<UInt64>()
                         for case let reqObj in (reqObjs as? [[String:AnyObject]])! {
                             if let request = RequestInfo(json: reqObj) {
                                 let newContact = ContactInfo(id: request.from, f: 0, n: request.name)
-                                contactsData.m_contacts[request.from] = newContact
+                                contactsData.addUser(newContact)
                                 msgData.m_requests.append(request)
-                                if contactsData.getPhoto(request.from) == nil {
-                                    photoIDs.append(request.from)
-                                }
+                                ids.append(request.from)
                             }
                         }
-                        if photoIDs.count > 0 {
-                            httpGetPhotos(photoIDs,
+                        
+                        let photoList = getPhotoMissingList(ids)
+                        if photoList.count > 0 {
+                            httpGetPhotos(photoList,
                                 passed: {()->Void in
                                     msgData.UpdateRequestsDelegate()
                                 },
-                                failed: nil)
+                                failed: nil)                            
                         }
-                        else {
-                            msgData.UpdateRequestsDelegate()
-                        }
+
+                        msgData.UpdateRequestsDelegate()
                     }
                 }
-                passed?()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-            failed?("请求失败")
+            print("请求失败")
     })
 }
 

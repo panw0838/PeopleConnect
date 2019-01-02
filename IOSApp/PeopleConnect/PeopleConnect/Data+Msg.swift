@@ -304,7 +304,7 @@ class MsgData {
     }
     
     func UpdateRequests() {
-        httpSyncRequests(nil, failed: nil)
+        httpSyncRequests()
     }
     
     func UpdateDelegate() {

@@ -47,6 +47,12 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "addComment(Post, cmtObjs : [AnyObject]) -&gt; ():Requests+Cmt.swift">
+      </ContextState>
+      <ContextState
+         contextName = "(httpSyncContactPost(UInt64, pIDs : [UInt64], oIDs : [UInt64], cIDs : [UInt64]) -&gt; ()).(closure #1):Requests+Post.swift">
+      </ContextState>
+      <ContextState
          contextName = "Conversation.init(id : UInt64) -&gt; Conversation:Messege.swift">
          <PersistentStrings>
             <PersistentString
@@ -96,6 +102,9 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "PostData.UpdateDelegate() -&gt; ():Data+Post.swift">
+      </ContextState>
+      <ContextState
          contextName = "(httpAddComment(Post, to : UInt64, pub : UInt8, cmt : String) -&gt; ()).(closure #1):Requests+Post.swift">
       </ContextState>
       <ContextState
@@ -106,6 +115,14 @@
       </ContextState>
       <ContextState
          contextName = "LogView.logSuccess() -&gt; ():View+Login.swift">
+      </ContextState>
+      <ContextState
+         contextName = "PostsTable.setTable(UITableView, data : PostData, showPhoto : Bool, showMsg : Bool) -&gt; ():View+PostsTable.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "nearPosts">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "MulImgPicker.viewDidLoad() -&gt; ():View+ImagePicker.swift">
@@ -311,6 +328,15 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "(httpAddComment(Post, to : UInt64, src : UInt32, cmt : String) -&gt; ()).(closure #1):Requests+Cmt.swift">
+      </ContextState>
+      <ContextState
+         contextName = "(httpSyncNearbyPost() -&gt; ()).(closure #1):Requests+Post.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsData.addUser(ContactInfo) -&gt; ():Data+Contact.swift">
+      </ContextState>
+      <ContextState
          contextName = "ContactsView.numberOfSectionsInCollectionView(UICollectionView) -&gt; Int:ContactsView.swift">
          <PersistentStrings>
             <PersistentString
@@ -391,6 +417,9 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "PostNotifyView.tableView(UITableView, didSelectRowAtIndexPath : NSIndexPath) -&gt; ():View+PostNotifies.swift">
+      </ContextState>
+      <ContextState
          contextName = "(httpGetSnapshots([String]) -&gt; ()).(closure #1):Requests+Post.swift">
          <PersistentStrings>
             <PersistentString
@@ -400,6 +429,9 @@
                value = "postData">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "PostData.(getContacts(PostData) -&gt; () -&gt; ()).(closure #1):Data+Post.swift">
       </ContextState>
       <ContextState
          contextName = "PostsTable.numberOfSectionsInTableView(UITableView) -&gt; Int:View+PostsTable.swift">
@@ -428,10 +460,16 @@
          contextName = "loadCountryInfo() -&gt; [Int : CountryInfo]:Data+Country.swift">
       </ContextState>
       <ContextState
+         contextName = "Conversation.getMessage(Int) -&gt; String:Data+Msg.swift">
+      </ContextState>
+      <ContextState
          contextName = "ContactsView.prepareForSegue(UIStoryboardSegue, sender : AnyObject?) -&gt; ():ContactsView.swift">
       </ContextState>
       <ContextState
          contextName = "HttpService.(loginRequest(HttpService) -&gt; () -&gt; ()).(closure #2):Requests.swift">
+      </ContextState>
+      <ContextState
+         contextName = "syncPosts(PostData, json : [String : AnyObject]) -&gt; ():Requests+Post.swift">
       </ContextState>
       <ContextState
          contextName = "SingleImgView.viewWillAppear(Bool) -&gt; ():View+SingleImage.swift">
@@ -457,6 +495,9 @@
       </ContextState>
       <ContextState
          contextName = "MessegeData.AddNewMessege(UInt64, newMessege : MessegeInfo) -&gt; ():Messege.swift">
+      </ContextState>
+      <ContextState
+         contextName = "addPost(PostData, postObjs : [AnyObject]) -&gt; ():Requests+Post.swift">
       </ContextState>
       <ContextState
          contextName = "PostCell.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:View+Posts.swift">
@@ -515,10 +556,10 @@
                value = "self.frame">
             </PersistentString>
             <PersistentString
-               value = "m_post!.m_width">
+               value = "m_post">
             </PersistentString>
             <PersistentString
-               value = "m_post">
+               value = "m_post!.m_width">
             </PersistentString>
             <PersistentString
                value = "m_post?.m_contentHeight">
@@ -554,6 +595,9 @@
                value = "userInfo.userID">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "MsgInfo.getConversationID() -&gt; UInt64:Data+Msg.swift">
       </ContextState>
       <ContextState
          contextName = "(httpGetNearbyUsers() -&gt; ()).(closure #1):Requests+Contact.swift">

@@ -21,7 +21,7 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
     
     func setTable(table:UITableView, data:PostData, showPhoto: Bool, showMsg: Bool) {
         m_data = data
-        m_data?.m_delegate = self
+        m_data?.setDelegate(self)
         
         m_table = table
         m_table!.registerClass(PostHeader.classForCoder(), forHeaderFooterViewReuseIdentifier: "PostHeader")

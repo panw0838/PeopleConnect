@@ -57,7 +57,7 @@ class ContactView: PostsTable, UITableViewDelegate {
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        m_data?.m_delegate = m_preDelegate
+        m_data?.setDelegate(m_preDelegate)
         ContactView.ContactID = 0
     }
     

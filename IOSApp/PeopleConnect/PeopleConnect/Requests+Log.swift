@@ -35,7 +35,7 @@ func httpRegistry(code:Int, cell:String, pass:String, photo:NSData, passed:(()->
                     userInfo.cellNumber = cell
                     userInfo.password = pass
                     let newContact = ContactInfo(id: userInfo.userID, f: 0, n: userInfo.userName)
-                    contactsData.setPhoto(newContact.user, data: photo, update: true)
+                    setContactPhoto(newContact.user, photo: photo)
                     contactsData.m_contacts[newContact.user] = newContact
                     userData.setCurUser()
                 }
@@ -75,7 +75,8 @@ func httpLogon(code:Int, cell:String, pass:String, passed:(()->Void)?, failed:((
                     if let tagObjs = dict["tags"] as? [AnyObject] {
                         for case let tagObj in (tagObjs as? [[String:AnyObject]])! {
                             if let tag = TagInfo(json: tagObj) {
-                                contactsData.addSubTag(Tag(id: tag.tagID, father: tag.fatherID, name: tag.tagName))
+                                let newTag = Tag(id: tag.tagID, father: tag.fatherID, name: tag.tagName)
+                                contactsData.addSubTag(newTag)
                             }
                         }
                     }

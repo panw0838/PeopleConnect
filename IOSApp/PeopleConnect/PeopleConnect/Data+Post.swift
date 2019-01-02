@@ -215,6 +215,14 @@ class PostData {
         m_contact = cid
     }
     
+    func setDelegate(delegate:PostDataDelegate?) {
+        m_delegate = delegate
+    }
+    
+    func UpdateDelegate() {
+        m_delegate?.PostDataUpdated()
+    }
+    
     func AddPost(info:PostInfo)->Bool {
         var post = getPost(info.id, oID: info.user)
         if post != nil {
@@ -280,14 +288,6 @@ class PostData {
         }
     }
     
-    func setDelegate(delegate:PostDataDelegate) {
-        m_delegate = delegate
-    }
-    
-    func UpdateDelegate() {
-        m_delegate?.PostDataUpdated()
-    }
-    
     func numOfPosts()->Int {
         if m_lockAt >= 0 {
             return 1
@@ -327,10 +327,18 @@ class PostData {
             }
         }
         if contactIDs.count > 0 {
-            httpGetPostsUsers(Array<UInt64>(contactIDs), post: self)
+            httpGetUsers(Array<UInt64>(contactIDs),
+                passed: {()->Void in
+                    self.UpdateDelegate()
+                },
+                failed: nil)
         }
         if photoIDs.count > 0 {
-            httpGetPostsPhotos(Array<UInt64>(photoIDs), post:self)
+            httpGetPhotos(Array<UInt64>(photoIDs),
+                passed: {()->Void in
+                    self.UpdateDelegate()
+                },
+                failed: nil)
         }
     }
     
@@ -368,8 +376,10 @@ class NearPostData:PostData {
         for gid in m_gIDs {
             let geoPosts = m_geoPosts[gid]
             if geoPosts == nil {
-                m_geoPosts[gid] = PostData(src: StrPosts)
+                let newSubPostsData = PostData(src: StrPosts)
                 let nilIDs = Array<UInt64>()
+                newSubPostsData.setDelegate(m_delegate)
+                m_geoPosts[gid] = newSubPostsData
                 httpSyncGeoSquarePost(gid, pIDs: nilIDs, oIDs: nilIDs, cIDs: nilIDs)
             }
             else {
@@ -404,7 +414,7 @@ class NearPostData:PostData {
         m_posts.sortInPlace({$0.m_info.id > $1.m_info.id})
     }
     
-    override func setDelegate(delegate:PostDataDelegate) {
+    override func setDelegate(delegate:PostDataDelegate?) {
         m_delegate = delegate
         for data in m_geoPosts.enumerate() {
             data.element.1.setDelegate(delegate)

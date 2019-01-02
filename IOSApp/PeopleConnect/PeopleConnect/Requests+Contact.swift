@@ -57,7 +57,11 @@ func httpGetNearbyUsers() {
                         
                         let photoList = getPhotoMissingList(contactsData.m_stranger.m_members)
                         if photoList.count > 0 {
-                            httpGetPhotos(photoList, passed: nil, failed: nil)
+                            httpGetPhotos(photoList,
+                                passed: {()->Void in
+                                    contactsData.updateDelegates()
+                                },
+                                failed: nil)
                         }
                     }
                     contactsData.updateDelegates()
@@ -70,7 +74,7 @@ func httpGetNearbyUsers() {
 }
 
 func httpGetPossibleContacts() {
-    contactsData.m_stranger.clearContacts()
+    contactsData.m_possible.clearContacts()
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("possiblecontacts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
@@ -87,7 +91,11 @@ func httpGetPossibleContacts() {
                         
                         let photoList = getPhotoMissingList(contactsData.m_possible.m_members)
                         if photoList.count > 0 {
-                            httpGetPhotos(photoList, passed: nil, failed: nil)
+                            httpGetPhotos(photoList,
+                                passed: {()->Void in
+                                    contactsData.updateDelegates()
+                                },
+                                failed: nil)
                         }
                     }
                     contactsData.updateDelegates()
@@ -99,7 +107,37 @@ func httpGetPossibleContacts() {
     )
 }
 
+func httpGetUsers(cIDs:Array<UInt64>, passed: (()->Void)?, failed: ((err:String?)->Void)?) {
+    let params:Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "cids":http.getUInt64ArrayParam(cIDs)]
+    http.postRequest("users", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let conData = processErrorCode(response as! NSData, failed: failed)
+            if conData != nil {
+                if let json = getJson(conData!) {
+                    if let contactObjs = json["users"] as? [AnyObject] {
+                        for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
+                            if let contact = ContactInfo(json: contactObj) {
+                                contactsData.addUser(contact)
+                            }
+                        }
+                    }
+                }
+                passed?()
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            failed?(err: "请求失败")
+        }
+    )
+}
+
 func httpGetPhotos(cIDs:Array<UInt64>, passed: (()->Void)?, failed: ((err:String?)->Void)?) {
+    if cIDs.count == 0 {
+        return
+    }
+    
     let contacts:NSMutableArray = http.getUInt64ArrayParam(cIDs)
     let params:Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
@@ -110,9 +148,8 @@ func httpGetPhotos(cIDs:Array<UInt64>, passed: (()->Void)?, failed: ((err:String
             if photosData != nil {
                 let subDatas = splitData(photosData!)
                 for (i, cID) in cIDs.enumerate() {
-                    contactsData.setPhoto(cID, data: subDatas[i], update: true)
+                    setContactPhoto(cID, photo: subDatas[i])
                 }
-                contactsData.updateDelegates()
                 passed?()
             }
         },

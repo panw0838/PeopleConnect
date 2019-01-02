@@ -211,7 +211,6 @@ class ContactsData {
     var m_stranger = Tag(id: StrangerTag, father: 0, name: "附近的陌生人")
     var m_tags: Array<Tag> = Array<Tag>()
     var m_contacts = Dictionary<UInt64, ContactInfo>()
-    var m_photos = Dictionary<UInt64, NSData>()
     var m_delegates = Array<ContactDataDelegate>()
 
     init() {
@@ -240,25 +239,10 @@ class ContactsData {
         return tags
     }
     
-    func getPhoto(cID:UInt64)->NSData? {
-        if m_photos[cID] != nil {
-            return m_photos[cID]
-        }
-        m_photos[cID] = getContactPhoto(cID)
-        return m_photos[cID]
-    }
-    
-    func setPhoto(cID:UInt64, data:NSData, update:Bool) {
-        m_photos[cID] = data
-        if update {
-            setContactPhoto(cID, photo: data)
-        }
-    }
-    
     func getMissingPhotos()->Array<UInt64> {
         var ids = Array<UInt64>()
         for (_, contact) in m_contacts.enumerate() {
-            if getPhoto(contact.0) == nil {
+            if getContactPhoto(contact.0) == nil {
                 ids.append(contact.0)
             }
         }
@@ -319,6 +303,10 @@ class ContactsData {
         m_contacts[contact.user] = contact
     }
     
+    func addUser(contact:ContactInfo) {
+        m_contacts[contact.user] = contact
+    }
+
     func remContact(contactID:UInt64) {
         m_undefine.remMember(contactID)
         for tag in m_tags {
