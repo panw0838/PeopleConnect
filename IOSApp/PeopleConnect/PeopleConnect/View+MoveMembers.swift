@@ -8,18 +8,12 @@
 
 import UIKit
 
-class MemberCell: UICollectionViewCell {
-    @IBOutlet weak var m_image: UIImageView!
-    @IBOutlet weak var m_name: UILabel!
-    
-}
-
 class MembersHeader: UICollectionReusableView {
     @IBOutlet weak var m_name: UILabel!
     
 }
 
-class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     @IBOutlet weak var m_title: UINavigationItem!
     @IBOutlet weak var m_table: UICollectionView!
@@ -49,8 +43,9 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
         }
     }
     
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        m_table.registerClass(ContactCell.classForCoder(), forCellWithReuseIdentifier: "ContactCell")
         m_moveBtn.enabled = false
         reloadData()
     }
@@ -91,11 +86,9 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("MemberCell", forIndexPath: indexPath) as! MemberCell
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ContactCell", forIndexPath: indexPath) as! ContactCell
         let members = indexPath.section == 0 ? m_inTagMembers : m_outTagMembers
-        //cell.backgroundColor = UIColor.blueColor()
-        cell.m_image.image = UIImage(named: "default_profile")
-        cell.m_name.text = members[indexPath.row].name
+        cell.reload(members[indexPath.row].user, tag: nil)
         return cell
     }
     
@@ -110,5 +103,17 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
             m_inTagMembers.append(member)
         }
         m_table.reloadData()
+    }
+    
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+        var width = m_table.contentSize.width
+        for var num = 1; width > 65; num++ {
+            width = (m_table.contentSize.width - 5*CGFloat(num)) / CGFloat(num)
+        }
+        return CGSizeMake(width, width+ContactNameHeight)
+    }
+    
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
     }
 }

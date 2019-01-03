@@ -133,6 +133,10 @@ class Tag {
         }
     }
     
+    func isSysTag()->Bool {
+        return isContactTag() && m_fatherID == 0
+    }
+    
     func isUserTag()->Bool {
         return (m_fatherID != 0)
     }
@@ -141,12 +145,8 @@ class Tag {
         return isUserTag() && (m_members.count == 0)
     }
     
-    func canBeEdit()->Bool {
+    func isContactTag()->Bool {
         return (m_bit & GroupMask) != 0
-    }
-    
-    func isStrangerTag()->Bool {
-        return (m_bit == 0)
     }
     
     func addMember(contact: ContactInfo) {
@@ -156,7 +156,15 @@ class Tag {
             }
         }
         else if (m_bit & contact.flag) != 0 {
-            m_members.append(contact.user)
+            var exists = false
+            for member in m_members {
+                if member == contact.user {
+                    exists = true
+                }
+            }
+            if !exists {
+                m_members.append(contact.user)
+            }
         }
     }
     
@@ -211,7 +219,7 @@ class ContactsData {
     var m_stranger = Tag(id: StrangerTag, father: 0, name: "附近的陌生人")
     var m_tags: Array<Tag> = Array<Tag>()
     var m_contacts = Dictionary<UInt64, ContactInfo>()
-    var m_delegates = Array<ContactDataDelegate>()
+    var m_delegate:ContactDataDelegate?
 
     init() {
         // system tags
@@ -221,10 +229,12 @@ class ContactsData {
         m_tags.append(Tag(id: 5, father: 0, name: "朋友"))
     }
     
+    func setDelegate(delegate:ContactDataDelegate?) {
+        m_delegate = delegate
+    }
+    
     func updateDelegates() {
-        for delegate in contactsData.m_delegates {
-            delegate.ContactDataUpdate()
-        }
+        m_delegate?.ContactDataUpdate()
     }
     
     func getPostTags()->Array<Tag> {
