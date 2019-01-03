@@ -14,7 +14,10 @@ let UndefineBit:    UInt64 = 0x200000000
 let UserTagMask:    UInt64 = 0xFFFFFFFF
 let RelateTagMask:  UInt64 = (UserTagMask | 0x3E00000000)
 let GroupMask:      UInt64 = (UserTagMask | 0x3C00000000)
-let PossibleTag:    UInt8  = 0xFE
+
+let CellUsersTag:   UInt8  = 0xFC
+let SuggestTag:     UInt8  = 0xFD
+let FaceToFaceTag:  UInt8  = 0xFE
 let StrangerTag:    UInt8  = 0xFF
 let SysTagOffset:   UInt64 = 32
 
@@ -111,6 +114,7 @@ class Tag {
     var m_members: Array<UInt64> = Array<UInt64>()
     var m_father:Tag? = nil
     var m_subTags: Array<Tag> = Array<Tag>()
+    var m_numActions:Int = 0
     
     init(id: UInt8, father: UInt8, name: String) {
         m_tagID = id
@@ -139,6 +143,10 @@ class Tag {
     
     func isUserTag()->Bool {
         return (m_fatherID != 0)
+    }
+    
+    func isStrangerTag()->Bool {
+        return m_bit == 0
     }
     
     func canBeDelete()->Bool {
@@ -213,10 +221,14 @@ class Tag {
 var contactsData:ContactsData = ContactsData()
 
 class ContactsData {
-    var m_blacklist = Tag(id: 0, father: 0, name: "黑名单")
-    var m_undefine = Tag(id: 1, father: 0, name: "联系人")
-    var m_possible = Tag(id: PossibleTag, father: 0, name: "可能认识的人")
-    var m_stranger = Tag(id: StrangerTag, father: 0, name: "附近的陌生人")
+    var m_blacklist  = Tag(id: 0, father: 0, name: "黑名单")
+    var m_undefine   = Tag(id: 1, father: 0, name: "联系人")
+
+    var m_cellUsers  = Tag(id: CellUsersTag,  father: 0, name: "手机通讯录")
+    var m_suggests   = Tag(id: SuggestTag,    father: 0, name: "推荐联系人")
+    var m_faceToFace = Tag(id: FaceToFaceTag, father: 0, name: "面对面加好友")
+    var m_stranger   = Tag(id: StrangerTag,   father: 0, name: "附近的陌生人")
+    
     var m_tags: Array<Tag> = Array<Tag>()
     var m_contacts = Dictionary<UInt64, ContactInfo>()
     var m_delegate:ContactDataDelegate?
@@ -271,7 +283,7 @@ class ContactsData {
             return 1
         }
         else {
-            return 2
+            return 4
         }
     }
 
@@ -289,7 +301,18 @@ class ContactsData {
             return m_undefine
         }
         else {
-            return subIdx == 0 ? m_possible : m_stranger
+            if subIdx == 0 {
+                return m_cellUsers
+            }
+            else if subIdx == 1 {
+                return m_suggests
+            }
+            else if subIdx == 2 {
+                return m_faceToFace
+            }
+            else {
+                return m_stranger
+            }
         }
     }
     

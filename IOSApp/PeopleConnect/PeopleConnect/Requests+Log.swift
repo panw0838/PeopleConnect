@@ -10,9 +10,10 @@ import Foundation
 import AFNetworking
 import UIKit
 
-func httpRegistry(code:Int, cell:String, pass:String, photo:NSData, passed:(()->Void)?, failed:((String?)->Void)?) {
+func httpRegistry(name:String, code:Int, cell:String, pass:String, photo:NSData, passed:(()->Void)?, failed:((String?)->Void)?) {
     let deviceID:String = (UIDevice.currentDevice().identifierForVendor?.UUIDString)!
     let params: Dictionary = [
+        "name":name,
         "cell":cell,
         "code":NSNumber(integer: code),
         "pass":pass,
@@ -30,7 +31,7 @@ func httpRegistry(code:Int, cell:String, pass:String, photo:NSData, passed:(()->
                 if (jsonObj != nil) {
                     let dict: NSDictionary = jsonObj as! NSDictionary
                     userInfo.userID = (UInt64)((dict["user"]?.unsignedLongLongValue)!)
-                    userInfo.userName = dict["name"] as! String
+                    userInfo.userName = name
                     userInfo.countryCode = code
                     userInfo.cellNumber = cell
                     userInfo.password = pass

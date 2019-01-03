@@ -80,8 +80,44 @@ func httpGetNearbyUsers() {
     )
 }
 
-func httpGetPossibleContacts() {
-    contactsData.m_possible.clearContacts()
+func httpGetCellContacts(key:String) {
+    let params: Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "codes":"",
+        "cells":""]
+    http.postRequest("searchcontact", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let usersData = processErrorCode(response as! NSData, failed: nil)
+            if usersData != nil {
+                if let json = getJson(usersData!) {
+                    if let contactObjs = json["users"] as? [AnyObject] {
+                        for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
+                            if let contact = ContactInfo(json: contactObj) {
+                                contactsData.m_stranger.m_members.append(contact.user)
+                                contactsData.m_contacts[contact.user] = contact
+                            }
+                        }
+                        
+                        let photoList = getPhotoMissingList(contactsData.m_stranger.m_members)
+                        if photoList.count > 0 {
+                            httpGetPhotos(photoList,
+                                passed: {()->Void in
+                                    contactsData.updateDelegates()
+                                },
+                                failed: nil)
+                        }
+                    }
+                    contactsData.updateDelegates()
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+    })
+}
+
+func httpGetSuggestContacts() {
+    contactsData.m_suggests.clearContacts()
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("possiblecontacts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
@@ -91,12 +127,12 @@ func httpGetPossibleContacts() {
                     if let usersObjs = json["users"] as? [AnyObject] {
                         for case let userObj in (usersObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: userObj) {
-                                contactsData.m_possible.m_members.append(contact.user)
+                                contactsData.m_suggests.m_members.append(contact.user)
                                 contactsData.addUser(contact)
                             }
                         }
                         
-                        let photoList = getPhotoMissingList(contactsData.m_possible.m_members)
+                        let photoList = getPhotoMissingList(contactsData.m_suggests.m_members)
                         if photoList.count > 0 {
                             httpGetPhotos(photoList,
                                 passed: {()->Void in
@@ -217,34 +253,6 @@ func httpMoveContacts(tag:Tag, addMembers:Array<UInt64>, remMembers:Array<UInt64
                 contactsData.moveContactsInTag(addMembers, tag: tag)
                 contactsData.moveContactsOutTag(remMembers, tag: tag)
                 contactsData.updateDelegates()
-            }
-        },
-        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-            print("请求失败")
-    })
-}
-
-func httpSearchContact(key:String) {
-    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID), "key":key]
-    http.postRequest("searchcontact", params: params,
-        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            var uid:UInt64 = 0
-            let html: String = String.init(data: response as! NSData, encoding: NSUTF8StringEncoding)!
-            if (html.hasPrefix("Error")) {
-            }
-            else {
-                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(response as! NSData, options: .MutableContainers)
-                if (jsonObj != nil) {
-                    let dict: NSDictionary = jsonObj as! NSDictionary
-                    var contact:ContactInfo = ContactInfo(id: 0, f: 0, n: "")
-                    contact.user = (UInt64)((dict["user"]?.integerValue)!)
-                    contact.name = dict["name"] as! String
-                    contactsData.addUser(contact)
-                    uid = contact.user
-                }
-            }
-            for callback in searchCallbacks {
-                callback.SearchUpdateUI(uid)
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in

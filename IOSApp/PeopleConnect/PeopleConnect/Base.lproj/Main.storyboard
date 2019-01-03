@@ -206,13 +206,7 @@
                             <constraint firstItem="1ZK-Uh-ED4" firstAttribute="trailing" secondItem="Bcy-8X-g4K" secondAttribute="trailingMargin" id="hIU-g1-Wjc"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="联系人" id="Axs-ek-r9q">
-                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="gfO-zz-Ge6">
-                            <connections>
-                                <action selector="SearchContact:" destination="aTw-ZE-vUS" id="Opd-tp-OcR"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="联系人" id="Axs-ek-r9q"/>
                     <connections>
                         <outlet property="m_contacts" destination="9lJ-mp-RGE" id="KjT-2B-7dh"/>
                         <outlet property="m_tabsBar" destination="1ZK-Uh-ED4" id="R3R-04-cxU"/>

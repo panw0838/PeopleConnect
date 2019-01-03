@@ -14,7 +14,6 @@ let MoveMemberID:UInt64 = 1
 let AddTagID    :UInt64 = 2
 let DeleteTagID :UInt64 = 3
 let RefreshID   :UInt64 = 4
-let FaceToFaceID:UInt64 = 5
 
 let ContactNameHeight:CGFloat = 32
 
@@ -62,11 +61,7 @@ class ContactCell: UICollectionViewCell {
             break
         case RefreshID:
             m_image.image = UIImage(named: "group_refresh")
-            m_name.text   = "刷新"
-            break
-        case FaceToFaceID:
-            m_image.image = UIImage(named: "group_facetoface")
-            m_name.text   = "面对面加好友"
+            m_name.text   = ""
             break
         default:
             m_image.image = getPhoto(cID)
@@ -115,14 +110,18 @@ class ContactCell: UICollectionViewCell {
             self.m_father?.presentViewController(alert, animated: true, completion: nil)
             break
         case RefreshID:
-            if m_tag?.m_tagID == PossibleTag {
-                httpGetPossibleContacts()
+            if m_tag?.m_tagID == CellUsersTag {
+                // todo
+            }
+            else if m_tag?.m_tagID == SuggestTag {
+                httpGetSuggestContacts()
+            }
+            else if m_tag?.m_tagID == FaceToFaceTag {
+                // todo
             }
             else if m_tag?.m_tagID == StrangerTag {
                 m_father?.RefreshNearby()
             }
-            break
-        case FaceToFaceID:
             break
         default:
             let contact = contactsData.m_contacts[m_id]
@@ -160,7 +159,6 @@ class ContactCell: UICollectionViewCell {
 
 class SubTagHeader: UICollectionReusableView {
     @IBOutlet weak var m_tagName: UILabel!
-    var m_tag:Tag?
 }
 
 class ContactsView:
@@ -177,12 +175,18 @@ class ContactsView:
     
     var m_curTag: Int = 0
     var m_selectContact:UInt64 = 0
+    var m_showEdits = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         m_contacts.registerClass(ContactCell.classForCoder(), forCellWithReuseIdentifier: "ContactCell")
         contactsData.setDelegate(self)
         httpGetFriends()
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: Selector("EditContactsTable:"))
+    }
+    
+    @IBAction func EditContacts(sender: AnyObject) {
+        
     }
     
     @IBAction func ChangeTab(sender: AnyObject) {
@@ -218,22 +222,16 @@ class ContactsView:
         userData.startLocate(self)
     }
     
-    @IBAction func EditContactsTable(sender: AnyObject) {
-        
+    @IBAction func DoneContactsTable(sender: AnyObject) {
+        m_showEdits = false
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: Selector("EditContactsTable:"))
+        m_contacts.reloadData()
     }
     
-    @IBAction func SearchContact(sender: AnyObject) {
-        let alert = UIAlertController(title: "搜索联系人", message: "", preferredStyle: .Alert)
-        let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
-        let okAction = UIAlertAction(title: "确定", style: .Default, handler: { action in
-            httpSearchContact((alert.textFields?.first?.text)!)
-        })
-        alert.addTextFieldWithConfigurationHandler { (textField: UITextField!) -> Void in
-            textField.placeholder = "请输入手机号"
-        }
-        alert.addAction(noAction)
-        alert.addAction(okAction)
-        self.presentViewController(alert, animated: true, completion: nil)
+    @IBAction func EditContactsTable(sender: AnyObject) {
+        m_showEdits = true
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: Selector("DoneContactsTable:"))
+        m_contacts.reloadData()
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -242,20 +240,19 @@ class ContactsView:
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let subTag = contactsData.getSubTag(m_curTag, subIdx: section)
-        let members = subTag.m_members.count
+        
         if subTag.isSysTag() {
-            return members + 2 // move add
+            subTag.m_numActions = (m_showEdits ? 2 : 0) // move add
         }
-        if subTag.isUserTag() {
-            return members + 1 + (subTag.canBeDelete() ? 1 : 0) // move and delete
+        else if subTag.isUserTag() {
+             // move and delete
+            subTag.m_numActions = (m_showEdits ? (1 + (subTag.canBeDelete() ? 1 : 0)) : 0)
         }
-        if subTag.m_tagID == PossibleTag {
-            return members + 1 // face2face
+        else if subTag.isStrangerTag() {
+            subTag.m_numActions = 1 // refresh
         }
-        if subTag.m_tagID == StrangerTag {
-            return members + 1 // face2face
-        }
-        return 0
+
+        return subTag.m_numActions + subTag.m_members.count
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
@@ -263,36 +260,31 @@ class ContactsView:
         let subTag  = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
         
         cell.m_father = self
-        if indexPath.row < subTag.m_members.count {
-            let contact = subTag.m_members[indexPath.row]
-            cell.reload(contact, tag: subTag)
-        }
-        else {
-            // action cells
-            let offset = indexPath.row - subTag.m_members.count
-            
+        
+        if indexPath.row < subTag.m_numActions {
             if subTag.isSysTag() {
-                if offset == 0 {
+                if indexPath.row == 0 {
                     cell.reload(MoveMemberID, tag: subTag)
                 }
                 else {
                     cell.reload(AddTagID, tag: subTag)
                 }
             }
-            if subTag.isUserTag() {
-                if offset == 0 {
+            else if subTag.isUserTag() {
+                if indexPath.row == 0 {
                     cell.reload(MoveMemberID, tag: subTag)
                 }
                 else {
                     cell.reload(DeleteTagID, tag: subTag)
                 }
             }
-            if subTag.m_tagID == PossibleTag {
-                cell.reload(FaceToFaceID, tag: subTag)
-            }
-            if subTag.m_tagID == StrangerTag {
+            else {
                 cell.reload(RefreshID, tag: subTag)
             }
+        }
+        else {
+            let contact = subTag.m_members[indexPath.row - subTag.m_numActions]
+            cell.reload(contact, tag: subTag)
         }
         
         return cell
@@ -304,7 +296,6 @@ class ContactsView:
             let subTag = contactsData.getSubTag(m_curTag, subIdx: indexPath.section)
         
             header.m_tagName.text = subTag.m_tagName
-            header.m_tag = subTag
             return header
         }
         else {

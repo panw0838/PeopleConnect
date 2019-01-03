@@ -233,7 +233,7 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
     var m_father:LoginView? = nil
     
     @IBAction func reg(sender: AnyObject) {
-        httpRegistry(m_countryCode, cell: m_cellNumber, pass: m_password, photo: m_photo!,
+        httpRegistry(m_nickName, code: m_countryCode, cell: m_cellNumber, pass: m_password, photo: m_photo!,
             passed: { ()->Void in
                 self.m_father?.m_loading?.stopLoading()
                 self.m_father!.performSegueWithIdentifier("ShowMainMenu", sender: nil)
