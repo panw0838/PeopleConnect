@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"share"
 	"strconv"
 
@@ -22,36 +21,6 @@ type ContactInfo struct {
 
 func GetContactsKey(user uint64) string {
 	return "contacts:" + strconv.FormatUint(user, 10)
-}
-
-// todo, build search tree
-func dbSearchContact(userID uint64, key string, c redis.Conn) (uint64, error) {
-	cellKey := getCellKey(0, key)
-	exists, err := redis.Int64(c.Do("EXISTS", cellKey))
-	if err != nil {
-		return 0, err
-	}
-	if exists == 0 {
-		return 0, fmt.Errorf("account not exists")
-	}
-
-	account, err := redis.String(c.Do("GET", cellKey))
-	if err != nil {
-		return 0, err
-	}
-	contactID, err := getAccountID(account)
-	if err != nil {
-		return 0, err
-	}
-
-	flag, _, err := GetCashFlag(contactID, userID, c)
-	if err != nil {
-		return 0, err
-	}
-	if (flag & BLK_BIT) != 0 {
-		return 0, fmt.Errorf("account not exists")
-	}
-	return contactID, nil
 }
 
 func dbGetContacts(userID uint64, c redis.Conn) ([]ContactInfo, error) {

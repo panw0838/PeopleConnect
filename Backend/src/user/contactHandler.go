@@ -2,7 +2,6 @@ package user
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -250,58 +249,81 @@ func GetPhotosHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type SearchContactInput struct {
-	User uint64 `json:"user"`
-	Key  string `json:"key"`
+	User         uint64   `json:"user"`
+	CountryCodes []int    `json:"codes"`
+	CellNumbers  []string `json:"cells"`
 }
 
 type SearchContactReturn struct {
-	User uint64 `json:"user"`
-	Name string `json:"name"`
+	Users []ContactInfo `json:"users"`
 }
 
 func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Error: read request")
-		return
-	}
-
 	var input SearchContactInput
-	err = json.Unmarshal(body, &input)
+	err := share.ReadInput(r, &input)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error %s", body)
+		share.WriteError(w, 1)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		fmt.Fprintf(w, "Error: connect db error")
+		share.WriteError(w, 1)
 		return
 	}
 	defer c.Close()
 
-	contactID, err := dbSearchContact(input.User, input.Key, c)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
-
-	accountKey := GetAccountKey(contactID)
-	name, err := DbGetUserInfoField(accountKey, NameField, c)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %v", err)
-		return
-	}
-
 	var response SearchContactReturn
-	response.User = contactID
-	response.Name = name
+
+	for idx, cell := range input.CellNumbers {
+		cID, err := dbGetUser(input.CountryCodes[idx], cell, c)
+		if err != nil {
+			share.WriteError(w, 1)
+			return
+		}
+		if cID == 0 {
+			var nilContact ContactInfo
+			nilContact.User = 0
+			nilContact.Flag = 0
+			nilContact.Name = ""
+			response.Users = append(response.Users, nilContact)
+			continue
+		}
+
+		flag, _, err := GetCashFlag(cID, input.User, c)
+		if err != nil {
+			share.WriteError(w, 1)
+			return
+		}
+		if (flag & BLK_BIT) != 0 {
+			var nilContact ContactInfo
+			nilContact.User = 0
+			nilContact.Flag = 0
+			nilContact.Name = ""
+			response.Users = append(response.Users, nilContact)
+			continue
+		}
+
+		accountKey := GetAccountKey(cID)
+		name, err := DbGetUserInfoField(accountKey, NameField, c)
+		if err != nil {
+			share.WriteError(w, 1)
+			return
+		}
+
+		var newContact ContactInfo
+		newContact.User = cID
+		newContact.Flag = flag
+		newContact.Name = name
+		response.Users = append(response.Users, newContact)
+	}
 
 	data, err := json.Marshal(&response)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json read error %s", body)
+		share.WriteError(w, 1)
 		return
 	}
 
-	fmt.Fprintf(w, "%s", data)
+	share.WriteError(w, 0)
+	w.Write(data)
 }

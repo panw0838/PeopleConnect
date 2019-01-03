@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"share"
 	"strconv"
 	"strings"
 
@@ -29,6 +30,10 @@ func GetAccountKey(userID uint64) string {
 	return "user:" + strconv.FormatUint(userID, 10)
 }
 
+func getSearchTable(contryCode int) string {
+	return "cell:" + strconv.FormatInt(int64(contryCode), 10)
+}
+
 func getAccountID(account string) (uint64, error) {
 	userID, err := strconv.ParseUint(account[5:], 10, 64)
 	if err != nil {
@@ -37,27 +42,44 @@ func getAccountID(account string) (uint64, error) {
 	return uint64(userID), nil
 }
 
-func getCellKey(contryCode int, cellNumber string) string {
-	return "cell:" + strconv.FormatInt(int64(contryCode), 10) + "_" + cellNumber
-}
-
-func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
-	cellKey := getCellKey(info.CountryCode, info.CellNumber)
-	exists, err := redis.Int64(c.Do("EXISTS", cellKey))
+func dbGetUser(contryCode int, cellNumber string, c redis.Conn) (uint64, error) {
+	// get search table
+	searchTable := getSearchTable(contryCode)
+	value, err := c.Do("ZSCORE", searchTable, cellNumber)
 	if err != nil {
 		return 0, err
 	}
-	if exists == 1 {
+	if value == nil {
+		return 0, nil
+	}
+
+	uID, err := share.GetUint64(value, err)
+	if err != nil {
+		return 0, err
+	}
+
+	return uID, nil
+}
+
+func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
+	exists, err := dbGetUser(info.CountryCode, info.CellNumber, c)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+	if exists != 0 {
 		return 0, fmt.Errorf("Account exists")
 	}
 
 	newID, err := redis.Uint64(c.Do("INCR", NewUIDKey))
 	if err != nil {
+		fmt.Println(err)
 		return 0, err
 	}
 
 	_, err = c.Do("MULTI")
 	if err != nil {
+		fmt.Println(err)
 		return 0, err
 	}
 
@@ -73,17 +95,21 @@ func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 		PassField, info.Password,
 		IPField, "")
 	if err != nil {
+		fmt.Println(err)
 		return 0, err
 	}
 
 	// add cell number to search table
-	_, err = c.Do("SET", cellKey, accountKey)
+	searchTable := getSearchTable(info.CountryCode)
+	_, err = c.Do("ZADD", searchTable, newID, info.CellNumber)
 	if err != nil {
+		fmt.Println(err)
 		return 0, err
 	}
 
 	_, err = c.Do("EXEC")
 	if err != nil {
+		fmt.Println(err)
 		return 0, err
 	}
 
@@ -91,24 +117,15 @@ func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 }
 
 func dbLogon(info LoginInfo, c redis.Conn) (uint64, error) {
-	cellKey := getCellKey(info.CountryCode, info.CellNumber)
-	exists, err := redis.Int64(c.Do("EXISTS", cellKey))
+	uID, err := dbGetUser(info.CountryCode, info.CellNumber, c)
 	if err != nil {
 		return 0, err
 	}
-	if exists == 0 {
-		return 0, fmt.Errorf("account not exists")
+	if uID == 0 {
+		return 0, fmt.Errorf("Account not exists")
 	}
 
-	accountKey, err := redis.String(c.Do("GET", cellKey))
-	if err != nil {
-		return 0, err
-	}
-
-	userID, err := getAccountID(accountKey)
-	if err != nil {
-		return 0, err
-	}
+	accountKey := GetAccountKey(uID)
 
 	password, err := DbGetUserInfoField(accountKey, PassField, c)
 	if err != nil {
@@ -117,7 +134,7 @@ func dbLogon(info LoginInfo, c redis.Conn) (uint64, error) {
 
 	if strings.Compare(password, info.Password) == 0 {
 		_ = DbSetUserInfoField(accountKey, DeviceField, info.Device, c)
-		return userID, nil
+		return uID, nil
 	} else {
 		return 0, fmt.Errorf("password not correct")
 	}
