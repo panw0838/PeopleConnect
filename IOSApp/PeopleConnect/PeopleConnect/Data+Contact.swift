@@ -176,9 +176,11 @@ class Tag {
         }
     }
     
-    func remMember(contactID: UInt64) {
-        for subTag in m_subTags {
-            subTag.remMember(contactID)
+    func remMember(contactID: UInt64, inSubTags:Bool) {
+        if inSubTags {
+            for subTag in m_subTags {
+                subTag.remMember(contactID, inSubTags: inSubTags)
+            }
         }
 
         for (index, member) in m_members.enumerate() {
@@ -341,9 +343,9 @@ class ContactsData {
     }
 
     func remContact(contactID:UInt64) {
-        m_undefine.remMember(contactID)
+        m_undefine.remMember(contactID, inSubTags: true)
         for tag in m_tags {
-            tag.remMember(contactID)
+            tag.remMember(contactID, inSubTags: true)
         }
         var info = m_contacts[contactID]
         if info != nil {
@@ -359,9 +361,9 @@ class ContactsData {
     func moveContactsInTag(cIDs:Array<UInt64>, tag:Tag) {
         for cID in cIDs {
             var contact = m_contacts[cID]!
-            tag.m_father?.remMember(cID)
+            tag.m_father?.remMember(cID, inSubTags: false)
             if contact.isUndefine() {
-                m_undefine.remMember(cID)
+                m_undefine.remMember(cID, inSubTags: false)
             }
             contact.flag |= (tag.m_bit | tag.m_fatherBit)
             tag.addMember(contact)
@@ -372,7 +374,7 @@ class ContactsData {
     func moveContactsOutTag(cIDs:Array<UInt64>, tag:Tag) {
         for cID in cIDs {
             var contact = m_contacts[cID]!
-            tag.remMember(cID)
+            tag.remMember(cID, inSubTags: true)
             contact.flag &= ~(tag.m_bit | tag.m_subBits)
             tag.m_father?.addMember(contact)
             if contact.isUndefine() {
