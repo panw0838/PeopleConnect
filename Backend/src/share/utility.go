@@ -3,6 +3,7 @@ package share
 import (
 	"encoding/binary"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -19,6 +20,10 @@ const MAX_TIME uint64 = MAX_U64
 const ContactDB = "127.0.0.1:6379"
 
 const MaxUploadSize = 20 * 1024 * 1024
+
+type TimeID struct {
+	Time uint64 `json:"id"`
+}
 
 func GetUint64(reply interface{}, err error) (uint64, error) {
 	str, err := redis.String(reply, err)
@@ -139,4 +144,13 @@ func WriteU32(w http.ResponseWriter, value uint32) {
 
 func WriteError(w http.ResponseWriter, err uint16) {
 	WriteU16(w, err)
+}
+
+func WriteErrorCode(w http.ResponseWriter, err error) {
+	if err != nil {
+		fmt.Println(err)
+		WriteError(w, 1)
+	} else {
+		WriteError(w, 0)
+	}
 }

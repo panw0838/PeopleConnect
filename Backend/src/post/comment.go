@@ -84,7 +84,7 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, error) {
 	if input.To != 0 {
 		to = input.To
 	}
-	err = message.DbAddMessege(to, msg, c)
+	_, err = message.DbAddMessege(to, msg, c)
 	if err != nil {
 		return 0, err
 	}
@@ -148,8 +148,7 @@ func dbLikePost(uID uint64, oID uint64, pID uint64, like bool, c redis.Conn) err
 		msg.Type = message.NTF_LIK
 		msg.OID = oID
 		msg.PID = pID
-		err = message.DbAddMessege(oID, msg, c)
-
+		_, err = message.DbAddMessege(oID, msg, c)
 		return err
 	} else {
 		_, err := c.Do("SREM", likeKey, uID)

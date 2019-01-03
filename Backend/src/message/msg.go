@@ -40,18 +40,18 @@ func getMsgKey(userID uint64) string {
 	return "msg:" + strconv.FormatUint(userID, 10)
 }
 
-func DbAddMessege(to uint64, msg Message, c redis.Conn) error {
+func DbAddMessege(to uint64, msg Message, c redis.Conn) (uint64, error) {
 	msg.Time = share.GetTimeID(time.Now())
 	data, err := json.Marshal(msg)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	msgKey := getMsgKey(to)
 	_, err = c.Do("ZADD", msgKey, msg.Time, data)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return msg.Time, nil
 }
 
 func dbGetMessages(input MessegeSyncInput, c redis.Conn) (uint64, []Message, error) {
@@ -120,7 +120,7 @@ func dbAddRequest(input RequestContactInput, c redis.Conn) uint16 {
 	var msg Message
 	msg.From = input.From
 	msg.Type = NTF_REQ
-	err = DbAddMessege(input.To, msg, c)
+	_, err = DbAddMessege(input.To, msg, c)
 	if err != nil {
 		return 1
 	}

@@ -86,7 +86,6 @@ func IsFriend(user1 uint64, user2 uint64, c redis.Conn) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
 	return IsFriendFlag(relation.lFlag, relation.mFlag), nil
 }
 

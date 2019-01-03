@@ -2,6 +2,7 @@ package message
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"share"
 	"user"
@@ -20,40 +21,47 @@ func SendMsgHandler(w http.ResponseWriter, r *http.Request) {
 	var input SendMsgInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
 
 	friend, err := user.IsFriend(input.From, input.To, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	if !friend {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, fmt.Errorf("Msg not friend"))
 		return
 	}
 
 	var msg Message
-
 	msg.From = input.From
 	msg.Content = input.Msg
 	msg.Type = input.Type
-
-	err = DbAddMessege(input.To, msg, c)
+	timeID, err := DbAddMessege(input.To, msg, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
-	share.WriteError(w, 0)
+	var response share.TimeID
+	response.Time = timeID
+	data, err := json.Marshal(response)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	share.WriteErrorCode(w, nil)
+	w.Write(data)
 }
 
 type MessegeSyncInput struct {

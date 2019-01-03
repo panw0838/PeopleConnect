@@ -48,7 +48,7 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 
 				var msg message.Message
 				msg.Type = message.NTF_NEW
-				err = message.DbAddMessege(cID, msg, c)
+				_, err = message.DbAddMessege(cID, msg, c)
 			}
 		}
 	}
