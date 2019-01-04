@@ -117,7 +117,7 @@ class ContactCell: UICollectionViewCell {
                 httpGetSuggestContacts()
             }
             else if m_tag?.m_tagID == FaceToFaceTag {
-                // todo
+                m_father?.startFaceToFace()
             }
             else if m_tag?.m_tagID == StrangerTag {
                 m_father?.RefreshNearby()
@@ -168,6 +168,7 @@ class ContactsView:
     UICollectionViewDelegate,
     UICollectionViewDelegateFlowLayout,
     ContactDataDelegate,
+    CounterDelegate,
     SearchContactCallback,
     UpdateLocationDelegate{
     
@@ -186,10 +187,6 @@ class ContactsView:
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: Selector("EditContactsTable:"))
     }
     
-    @IBAction func EditContacts(sender: AnyObject) {
-        
-    }
-    
     @IBAction func ChangeTab(sender: AnyObject) {
         m_curTag = m_tabsBar.selectedSegmentIndex
         m_contacts.reloadData()
@@ -197,6 +194,15 @@ class ContactsView:
     
     func ContactDataUpdate() {
         self.m_contacts.reloadData()
+    }
+    
+    func counterFinished() {
+        httpGetFaceUsers()
+    }
+    
+    func startFaceToFace() {
+        gLoadingView.setupCounting(10, delegate: self)
+        userData.startLocate(self)
     }
     
     func SearchUpdateUI(uid:UInt64) {
@@ -212,15 +218,31 @@ class ContactsView:
         }
     }
 
+    var m_searchNear = false
+
     func UpdateLocationSuccess() {
-        httpGetNearbyUsers()
+        if m_searchNear {
+            httpGetNearbyUsers()
+            m_searchNear = false
+        }
+        else {
+            httpRegFaceUsers(
+                {()->Void in
+                    gLoadingView.startCounting()
+                },
+                failed: {(err:String?)->Void in
+                    gLoadingView.stopCounting()
+                })
+        }
     }
     
     func UpdateLocationFail() {
+        m_searchNear = false
     }
     
     func RefreshNearby() {
         userData.startLocate(self)
+        m_searchNear = true
     }
     
     @IBAction func DoneContactsTable(sender: AnyObject) {

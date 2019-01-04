@@ -198,7 +198,7 @@ class LogView: BaseLogRegView {
     func logFail(msg:String?) {
         // show error
         m_logStage = 0
-        m_father?.m_loading?.stopLoading()
+        gLoadingView.stopLoading()
         m_father?.showError(msg)
     }
     
@@ -206,13 +206,13 @@ class LogView: BaseLogRegView {
     func logSuccess() {
         tcp.start("192.168.0.104", port: 8888)
         tcp.logon()
-        m_father?.m_loading?.stopLoading()
+        gLoadingView.stopLoading()
         m_father?.performSegueWithIdentifier("ShowMainMenu", sender: nil)
     }
 
     @IBAction func log() {
         httpLogon(m_countryCode, cell: m_cellNumber, pass: m_password, passed: logSuccess, failed: logFail)
-        m_father?.m_loading?.startLoading()
+        gLoadingView.startLoading()
     }
     
     override func updateNextButton() {
@@ -235,15 +235,15 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
     @IBAction func reg(sender: AnyObject) {
         httpRegistry(m_nickName, code: m_countryCode, cell: m_cellNumber, pass: m_password, photo: m_photo!,
             passed: { ()->Void in
-                self.m_father?.m_loading?.stopLoading()
+                gLoadingView.stopLoading()
                 self.m_father!.performSegueWithIdentifier("ShowMainMenu", sender: nil)
             },
             failed: { (errMsg:String?)->Void in
-                self.m_father?.m_loading?.stopLoading()
+                gLoadingView.stopLoading()
                 self.m_father?.showError(errMsg)
             }
         )
-        m_father?.m_loading?.startLoading()
+        gLoadingView.startLoading()
     }
     
     @IBAction func pickPhoto() {
@@ -349,8 +349,6 @@ class LoginView: UIViewController {
     @IBOutlet weak var m_logView: UIView!
     @IBOutlet weak var m_regView: UIView!
     
-    var m_loading:LoadingAlert? = nil
-    
     @IBAction func switchLogReg(sender: AnyObject) {
         if m_logRegSwitch.selectedSegmentIndex == 0 {
             m_logView.hidden = false
@@ -375,7 +373,6 @@ class LoginView: UIViewController {
         super.viewDidLoad()
         m_logView.hidden = false
         m_regView.hidden = true
-        m_loading = LoadingAlert(parent: self.view)
         
         for child in self.childViewControllers {
             let logView = child as? LogView
@@ -392,12 +389,12 @@ class LoginView: UIViewController {
     func logSuccess() {
         tcp.start("192.168.0.104", port: 8888)
         tcp.logon()
-        m_loading?.stopLoading()
+        gLoadingView.stopLoading()
         performSegueWithIdentifier("ShowMainMenu", sender: nil)
     }
     
     @IBAction func login1(sender: AnyObject) {
-        m_loading?.startLoading()
+        gLoadingView.startLoading()
         httpLogon(86, cell: "13700000000", pass: "qqqqqqqq", passed: logSuccess, failed: nil)
     }
     

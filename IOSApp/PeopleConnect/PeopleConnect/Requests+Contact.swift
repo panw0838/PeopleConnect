@@ -15,26 +15,16 @@ func httpGetFriends() {
             let conData = processErrorCode(response as! NSData, failed: nil)
             if conData != nil {
                 if let json = getJson(conData!) {
-                    var contacts:Array<ContactInfo> = Array<ContactInfo>()
-                    
+                    contactsData.clearContacts()
                     if let contactObjs = json["contacts"] as? [AnyObject] {
                         for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: contactObj) {
-                                contacts.append(contact)
+                                contactsData.addContact(contact)
                             }
                         }
                     }
-                    contactsData.loadContacts(contacts)
                     contactsData.updateDelegates()
-
-                    let photoList = contactsData.getMissingPhotos()
-                    if photoList.count > 0 {
-                        httpGetPhotos(photoList,
-                            passed: {()->Void in
-                                contactsData.updateDelegates()
-                            },
-                            failed: nil)
-                    }
+                    contactsData.getPhotos()
                 }
             }
         },
@@ -44,7 +34,7 @@ func httpGetFriends() {
 }
 
 func httpGetNearbyUsers() {
-    contactsData.m_stranger.clearContacts()
+    contactsData.m_nearUsers.clearContacts()
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
         "x":NSNumber(double: userInfo.x),
@@ -57,19 +47,57 @@ func httpGetNearbyUsers() {
                     if let contactObjs = json["users"] as? [AnyObject] {
                         for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: contactObj) {
-                                contactsData.m_stranger.m_members.append(contact.user)
+                                contactsData.m_nearUsers.m_members.append(contact.user)
                                 contactsData.m_contacts[contact.user] = contact
                             }
                         }
-                        
-                        let photoList = getPhotoMissingList(contactsData.m_stranger.m_members)
-                        if photoList.count > 0 {
-                            httpGetPhotos(photoList,
-                                passed: {()->Void in
-                                    contactsData.updateDelegates()
-                                },
-                                failed: nil)
+                        contactsData.getPhotos(contactsData.m_nearUsers.m_members)
+                    }
+                    contactsData.updateDelegates()
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+        }
+    )
+}
+
+func httpRegFaceUsers(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
+    contactsData.m_faceUsers.clearContacts()
+    let params: Dictionary = [
+        "uid":NSNumber(unsignedLongLong: userInfo.userID),
+        "x":NSNumber(double: userInfo.x),
+        "y":NSNumber(double: userInfo.y)]
+    http.postRequest("regfaceusers", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            if getErrorCode(response as! NSData) == 0 {
+                passed?()
+            }
+            else {
+                failed?(err: "请求失败")
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            failed?(err: "请求失败")
+        }
+    )
+}
+
+func httpGetFaceUsers() {
+    let params: Dictionary = ["uid":NSNumber(unsignedLongLong: userInfo.userID)]
+    http.postRequest("getfaceusers", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let usersData = processErrorCode(response as! NSData, failed: nil)
+            if usersData != nil {
+                if let json = getJson(usersData!) {
+                    if let contactObjs = json["users"] as? [AnyObject] {
+                        for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
+                            if let contact = ContactInfo(json: contactObj) {
+                                contactsData.m_faceUsers.m_members.append(contact.user)
+                                contactsData.m_contacts[contact.user] = contact
+                            }
                         }
+                        contactsData.getPhotos(contactsData.m_faceUsers.m_members)
                     }
                     contactsData.updateDelegates()
                 }
@@ -81,10 +109,11 @@ func httpGetNearbyUsers() {
 }
 
 func httpGetCellContacts(key:String) {
+    contactsData.m_cellUsers.clearContacts()
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
         "codes":"",
-        "cells":""]
+        "cells":""] // todo cell contacts
     http.postRequest("searchcontact", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let usersData = processErrorCode(response as! NSData, failed: nil)
@@ -93,19 +122,11 @@ func httpGetCellContacts(key:String) {
                     if let contactObjs = json["users"] as? [AnyObject] {
                         for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: contactObj) {
-                                contactsData.m_stranger.m_members.append(contact.user)
+                                contactsData.m_cellUsers.m_members.append(contact.user)
                                 contactsData.m_contacts[contact.user] = contact
                             }
                         }
-                        
-                        let photoList = getPhotoMissingList(contactsData.m_stranger.m_members)
-                        if photoList.count > 0 {
-                            httpGetPhotos(photoList,
-                                passed: {()->Void in
-                                    contactsData.updateDelegates()
-                                },
-                                failed: nil)
-                        }
+                        contactsData.getPhotos(contactsData.m_cellUsers.m_members)
                     }
                     contactsData.updateDelegates()
                 }
@@ -117,7 +138,7 @@ func httpGetCellContacts(key:String) {
 }
 
 func httpGetSuggestContacts() {
-    contactsData.m_suggests.clearContacts()
+    contactsData.m_rcmtUsers.clearContacts()
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("possiblecontacts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
@@ -127,19 +148,11 @@ func httpGetSuggestContacts() {
                     if let usersObjs = json["users"] as? [AnyObject] {
                         for case let userObj in (usersObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: userObj) {
-                                contactsData.m_suggests.m_members.append(contact.user)
+                                contactsData.m_rcmtUsers.m_members.append(contact.user)
                                 contactsData.addUser(contact)
                             }
                         }
-                        
-                        let photoList = getPhotoMissingList(contactsData.m_suggests.m_members)
-                        if photoList.count > 0 {
-                            httpGetPhotos(photoList,
-                                passed: {()->Void in
-                                    contactsData.updateDelegates()
-                                },
-                                failed: nil)
-                        }
+                        contactsData.getPhotos(contactsData.m_rcmtUsers.m_members)
                     }
                     contactsData.updateDelegates()
                 }

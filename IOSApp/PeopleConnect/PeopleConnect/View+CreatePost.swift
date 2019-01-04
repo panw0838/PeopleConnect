@@ -103,6 +103,7 @@ class CreatePostView:
     UICollectionViewDataSource,
     UICollectionViewDelegate,
     ImgPickerDelegate,
+    UITextFieldDelegate,
     UINavigationControllerDelegate,
     RemoveAttDelegate,
     UpdateLocationDelegate {
@@ -116,23 +117,26 @@ class CreatePostView:
     @IBOutlet weak var m_strangerSee: UISwitch!
     @IBOutlet weak var m_createPostBtn: UIBarButtonItem!
     
-    var m_loading:LoadingAlert? = nil
     var m_picker = ImgPicker(maxCount: 9)
     var m_atts = Array<UIImage>()
     
+    func updateCreateBtn() {
+        m_createPostBtn.enabled = (m_atts.count > 0 || m_desc.text?.characters.count > 0)
+    }
+    
     func UpdateLocationSuccess() {
-        m_loading?.stopLoading()
+        updateCreateBtn()
     }
     
     func UpdateLocationFail() {
-        m_loading?.stopLoading()
         m_strangerSee.setOn(false, animated: true)
+        updateCreateBtn()
     }
 
     @IBAction func changeNearby(sender: AnyObject) {
         if m_strangerSee.on {
             userData.startLocate(self)
-            m_loading?.startLoading()
+            m_createPostBtn.enabled = false
         }
     }
     
@@ -152,12 +156,12 @@ class CreatePostView:
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        m_loading = LoadingAlert(parent: self.view)
         m_picker.m_pickerDelegate = self
         m_postTags.allowsSelection = true
         m_postTags.allowsMultipleSelection = true
         m_postGroups.allowsSelection = true
         m_postGroups.allowsMultipleSelection = true
+        m_createPostBtn.enabled = false
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -165,6 +169,10 @@ class CreatePostView:
         m_postTagsCell.m_tags = contactsData.getPostTags()
         m_postTagsCell.m_flag = 0
         m_postGroupsCell.m_selectGroups.removeAll()
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+        updateCreateBtn()
     }
     
     func removeAtt(idx: Int) {
@@ -191,6 +199,7 @@ class CreatePostView:
         }
         
         m_attachments.reloadData()
+        updateCreateBtn()
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {

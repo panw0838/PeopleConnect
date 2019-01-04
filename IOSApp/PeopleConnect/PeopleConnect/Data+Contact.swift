@@ -226,10 +226,10 @@ class ContactsData {
     var m_blacklist  = Tag(id: 0, father: 0, name: "黑名单")
     var m_undefine   = Tag(id: 1, father: 0, name: "联系人")
 
-    var m_cellUsers  = Tag(id: CellUsersTag,  father: 0, name: "手机通讯录")
-    var m_suggests   = Tag(id: SuggestTag,    father: 0, name: "推荐联系人")
-    var m_faceToFace = Tag(id: FaceToFaceTag, father: 0, name: "面对面加好友")
-    var m_stranger   = Tag(id: StrangerTag,   father: 0, name: "附近的陌生人")
+    var m_cellUsers = Tag(id: CellUsersTag,  father: 0, name: "手机通讯录")
+    var m_rcmtUsers = Tag(id: SuggestTag,    father: 0, name: "推荐联系人")
+    var m_faceUsers = Tag(id: FaceToFaceTag, father: 0, name: "面对面加好友")
+    var m_nearUsers = Tag(id: StrangerTag,   father: 0, name: "附近的陌生人")
     
     var m_tags: Array<Tag> = Array<Tag>()
     var m_contacts = Dictionary<UInt64, ContactInfo>()
@@ -263,14 +263,31 @@ class ContactsData {
         return tags
     }
     
-    func getMissingPhotos()->Array<UInt64> {
+    func getPhotos() {
         var ids = Array<UInt64>()
         for (_, contact) in m_contacts.enumerate() {
             if getContactPhoto(contact.0) == nil {
                 ids.append(contact.0)
             }
         }
-        return ids
+        if ids.count > 0 {
+            httpGetPhotos(ids,
+                passed: {()->Void in
+                    contactsData.updateDelegates()
+                },
+                failed: nil)
+        }
+    }
+    
+    func getPhotos(members:Array<UInt64>) {
+        let photoList = getPhotoMissingList(members)
+        if photoList.count > 0 {
+            httpGetPhotos(photoList,
+                passed: {()->Void in
+                    contactsData.updateDelegates()
+                },
+                failed: nil)
+        }
     }
     
     func numMainTags()->Int {
@@ -307,13 +324,13 @@ class ContactsData {
                 return m_cellUsers
             }
             else if subIdx == 1 {
-                return m_suggests
+                return m_rcmtUsers
             }
             else if subIdx == 2 {
-                return m_faceToFace
+                return m_faceUsers
             }
             else {
-                return m_stranger
+                return m_nearUsers
             }
         }
     }
@@ -384,15 +401,11 @@ class ContactsData {
         }
     }
     
-    func loadContacts(contacts:Array<ContactInfo>) {
+    func clearContacts() {
         for tag in m_tags {
             tag.clearContacts()
         }
         
         m_undefine.clearContacts()
-        
-        for contact in contacts {
-            addContact(contact)
-        }
     }
 }
