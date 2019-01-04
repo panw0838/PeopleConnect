@@ -59,7 +59,6 @@ func RegFaceUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 type GetFaceToFaceInput struct {
 	UID uint64 `json:"uid"`
-	GID uint64 `json:"gid"`
 }
 
 func GetFaceUsersHandler(w http.ResponseWriter, r *http.Request) {
@@ -85,8 +84,14 @@ func GetFaceUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 	face2FaceKey := GetFace2FaceKey()
 
+	gID, err := share.GetUint64(c.Do("ZSCORE", face2FaceKey, input.UID))
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
 	var users []User
-	values, err := redis.Int64s(c.Do("ZRANGEBYSCORE", face2FaceKey, input.GID, input.GID))
+	values, err := redis.Int64s(c.Do("ZRANGEBYSCORE", face2FaceKey, gID, gID))
 	if err != nil {
 		share.WriteErrorCode(w, err)
 		return
