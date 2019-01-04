@@ -134,6 +134,7 @@ class ContactCell: UICollectionViewCell {
                 let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
                 
                 let msgAction = UIAlertAction(title: "发信息", style: .Default, handler: { action in
+                    self.m_father?.m_convID = self.m_id
                     self.m_father?.performSegueWithIdentifier("StartConversation", sender: nil)
                 })
                 
@@ -174,7 +175,7 @@ class ContactsView:
     @IBOutlet weak var m_contacts: UICollectionView!
     
     var m_curTag: Int = 0
-    var m_selectContact:UInt64 = 0
+    var m_convID:UInt64 = 0
     var m_showEdits = false
     
     override func viewDidLoad() {
@@ -333,7 +334,7 @@ class ContactsView:
         }
         if segue.identifier == "StartConversation" {
             let to = segue.destinationViewController as! ConversationView
-            to.m_conv = msgData.getConversation(self.m_selectContact)
+            to.m_conv = msgData.popConversation(self.m_convID)
         }
     }
 }

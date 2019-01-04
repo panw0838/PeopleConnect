@@ -81,7 +81,7 @@ func httpSyncRequests() {
     })
 }
 
-func httpSendMessege(to:UInt64, messege:String) {
+func httpSendMessege(to:UInt64, messege:String, passed:((UInt64)->Void)?, failed:(()->Void)?) {
     let params: Dictionary = [
         "from":NSNumber(unsignedLongLong: userInfo.userID),
         "to":NSNumber(unsignedLongLong: to),
@@ -89,20 +89,17 @@ func httpSendMessege(to:UInt64, messege:String) {
         "type":NSNumber(integer: MessegeType.Msg_Str.rawValue)]
     http.postRequest("sendmessege", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            if getErrorCode(response as! NSData) == 0 {
-                tcp.notifyMessege(to)
-                var selfMessege = MsgInfo()
-                selfMessege.from = userInfo.userID
-                selfMessege.time = 0
-                selfMessege.data = messege
-                selfMessege.type = .Msg_Str
-                msgData.AddNewMsg(selfMessege)
-                msgData.getConversation(to).UpdateDelegate()
-                msgData.UpdateDelegate()
+            if let retData = processErrorCode(response as! NSData, failed: nil) {
+                if let json = getJson(retData) {
+                    tcp.notifyMessege(to)
+                    passed?(UInt64(json["id"]!.unsignedLongLongValue))
+                    return
+                }
             }
+            failed?()
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-            print("请求失败")
+            failed?()
         })
 }
 
@@ -112,9 +109,8 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
         "sync":NSNumber(unsignedLongLong: userInfo.msgSyncID)]
     http.postRequest("syncmessege", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let msgJson = processErrorCode(response as! NSData, failed: failed)
-            if msgJson != nil {
-                if let json = getJson(msgJson!) {
+            if let msgJson = processErrorCode(response as! NSData, failed: failed) {
+                if let json = getJson(msgJson) {
                     if let messObjs = json["mess"] as? [AnyObject] {
                         for case let messObj in (messObjs as? [[String:AnyObject]])! {
                             if let msg = MsgInfo(json: messObj) {

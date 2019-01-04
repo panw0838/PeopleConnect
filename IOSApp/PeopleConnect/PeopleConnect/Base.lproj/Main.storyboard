@@ -638,7 +638,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="iy3-vu-T8y">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="iy3-vu-T8y">
                                 <rect key="frame" x="20" y="513" width="492" height="30"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -648,7 +648,7 @@
                                 <rect key="frame" x="520" y="513" width="60" height="30"/>
                                 <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="60" id="mpa-YQ-SZ4"/>
+                                    <constraint firstAttribute="width" constant="60" id="FsE-wq-yvy"/>
                                 </constraints>
                                 <state key="normal" title="发送">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -670,15 +670,16 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="lXg-71-86q" firstAttribute="leading" secondItem="XbN-g0-JbK" secondAttribute="leadingMargin" id="2cU-ad-0Do"/>
-                            <constraint firstItem="GYu-9G-jZu" firstAttribute="trailing" secondItem="XbN-g0-JbK" secondAttribute="trailingMargin" id="S3C-jd-bPf"/>
-                            <constraint firstItem="iy3-vu-T8y" firstAttribute="top" secondItem="lXg-71-86q" secondAttribute="bottom" constant="8" symbolic="YES" id="S6p-Uz-cTe"/>
-                            <constraint firstItem="cz0-iU-3qv" firstAttribute="top" secondItem="iy3-vu-T8y" secondAttribute="bottom" constant="8" symbolic="YES" id="V6u-Eq-VtN"/>
-                            <constraint firstItem="iy3-vu-T8y" firstAttribute="top" secondItem="GYu-9G-jZu" secondAttribute="top" id="YVH-Eo-Tdk"/>
-                            <constraint firstItem="lXg-71-86q" firstAttribute="leading" secondItem="iy3-vu-T8y" secondAttribute="leading" id="ZjZ-z0-8us"/>
-                            <constraint firstItem="GYu-9G-jZu" firstAttribute="trailing" secondItem="lXg-71-86q" secondAttribute="trailing" id="aTK-do-AG9"/>
-                            <constraint firstItem="GYu-9G-jZu" firstAttribute="leading" secondItem="iy3-vu-T8y" secondAttribute="trailing" constant="8" symbolic="YES" id="eKW-HL-0nk"/>
-                            <constraint firstItem="lXg-71-86q" firstAttribute="top" secondItem="KxF-f2-Zg9" secondAttribute="bottom" constant="8" symbolic="YES" id="rbX-JZ-Gts"/>
+                            <constraint firstItem="iy3-vu-T8y" firstAttribute="leading" secondItem="lXg-71-86q" secondAttribute="leading" id="6tS-Mi-9uI"/>
+                            <constraint firstItem="GYu-9G-jZu" firstAttribute="trailing" secondItem="lXg-71-86q" secondAttribute="trailing" id="AQf-RY-8Qj"/>
+                            <constraint firstItem="iy3-vu-T8y" firstAttribute="leading" secondItem="XbN-g0-JbK" secondAttribute="leadingMargin" id="CU7-a9-qHY"/>
+                            <constraint firstItem="cz0-iU-3qv" firstAttribute="top" secondItem="iy3-vu-T8y" secondAttribute="bottom" constant="8" symbolic="YES" id="Jj3-ZW-JnZ"/>
+                            <constraint firstItem="cz0-iU-3qv" firstAttribute="top" secondItem="GYu-9G-jZu" secondAttribute="bottom" constant="8" symbolic="YES" id="MfI-iZ-7ox"/>
+                            <constraint firstItem="lXg-71-86q" firstAttribute="top" secondItem="KxF-f2-Zg9" secondAttribute="bottom" constant="8" symbolic="YES" id="XrE-BY-dnV"/>
+                            <constraint firstItem="lXg-71-86q" firstAttribute="trailing" secondItem="XbN-g0-JbK" secondAttribute="trailingMargin" id="bQZ-zE-HkF"/>
+                            <constraint firstItem="iy3-vu-T8y" firstAttribute="top" secondItem="lXg-71-86q" secondAttribute="bottom" constant="8" symbolic="YES" id="joZ-yC-nrO"/>
+                            <constraint firstItem="iy3-vu-T8y" firstAttribute="top" secondItem="GYu-9G-jZu" secondAttribute="top" id="miv-gx-Fzi"/>
+                            <constraint firstItem="GYu-9G-jZu" firstAttribute="leading" secondItem="iy3-vu-T8y" secondAttribute="trailing" constant="8" symbolic="YES" id="xLa-2S-278"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="会话" id="mgo-vx-7fP"/>
@@ -1735,6 +1736,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="pWd-Ma-Nx5"/>
-        <segue reference="BOu-Ex-kTg"/>
+        <segue reference="xrR-La-VIP"/>
     </inferredMetricsTieBreakers>
 </document>

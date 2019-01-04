@@ -179,6 +179,9 @@ enum ConvType: UInt64 {
 
 protocol ConvDelegate {
     func ConvUpdated()
+    func MsgSend(idx:Int)
+    func MsgSentSuccess(idx:Int)
+    func MsgSentFail(idx:Int)
 }
 
 class Conversation {
@@ -221,7 +224,27 @@ class Conversation {
     
     func addMessage(newMessage:MsgInfo) {
         m_messages.append(newMessage)
-        m_delegate?.ConvUpdated()
+        UpdateDelegate()
+    }
+    
+    func sendMessage(from:UInt64, message:String, type:MessegeType) {
+        let idx = m_messages.count
+        var selfMessege = MsgInfo()
+        selfMessege.from = from
+        selfMessege.time = 0
+        selfMessege.data = message
+        selfMessege.type = type
+        addMessage(selfMessege)
+        m_delegate?.MsgSend(idx)
+        httpSendMessege(m_id, messege: message,
+            passed: {(timeID:UInt64)->Void in
+                self.m_messages[idx].time = timeID
+                self.m_delegate?.MsgSentSuccess(idx)
+            },
+            failed: {()->Void in
+                self.m_delegate?.MsgSentFail(idx)
+            }
+        )
     }
     
     func lastMessage()->String? {
@@ -314,24 +337,24 @@ class MsgData {
     func UpdateRequestsDelegate() {
         m_requestDelegate?.ReqUpdated()
     }
-    
-    func getConversation(uID:UInt64)->Conversation {
-        for conversation in m_conversations {
-            if conversation.m_id == uID {
-                return conversation
-            }
-        }
-        return Conversation(id: uID)
-    }
-    
+
     func popConversation(id:UInt64)->Conversation {
+        var conv:Conversation? = nil
+        
         for (i, conversation) in m_conversations.enumerate() {
             if conversation.m_id == id {
                 m_conversations.removeAtIndex(i)
-                return conversation
+                conv = conversation
             }
         }
-        return Conversation(id: id)
+        
+        if conv == nil {
+            conv = Conversation(id: id)
+        }
+        
+        m_conversations.append(conv!)
+        
+        return conv!
     }
     
     func AddNewMsg(newMsg:MsgInfo) {
@@ -340,8 +363,7 @@ class MsgData {
         if convID != 0 {
             let conversation = popConversation(convID)
             conversation.addMessage(newMsg)
-            m_conversations.append(conversation)
-            conversation.UpdateDelegate()
+            UpdateDelegate()    // data changed
         }
     }
     
