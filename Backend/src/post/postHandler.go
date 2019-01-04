@@ -146,14 +146,14 @@ type NewPostReturn struct {
 func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(share.MaxUploadSize)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	var input NewPostInput
 	err = getFormInput(r.MultipartForm, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	fmt.Printf("input %d %d\n", input.User, input.Flag)
@@ -161,14 +161,14 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	pID := share.GetTimeID(time.Now())
 	files, err := getFormFile(input.User, pID, r.MultipartForm)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		removePostFiles(input.User, pID)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		removePostFiles(input.User, pID)
 		return
 	}
@@ -187,7 +187,7 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = dbAddPost(input.User, postData, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		removePostFiles(input.User, pID)
 		return
 	}
@@ -195,7 +195,7 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	postData.Owner = input.User
 	err = dbPublishPost(input.User, postData, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -203,7 +203,7 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	response.Post = pID
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -220,20 +220,20 @@ func DelPostHandler(w http.ResponseWriter, r *http.Request) {
 	var input DelPostInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
 
 	err = dbDelPost(input.User, input.Post, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -257,13 +257,13 @@ func SyncFriendsPostsHandler(w http.ResponseWriter, r *http.Request) {
 	var input SyncFriendsPostInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
@@ -272,7 +272,7 @@ func SyncFriendsPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	response.Posts, err = dbGetFriendPublish(input.User, input.LastPost+1, share.MAX_TIME, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -280,14 +280,14 @@ func SyncFriendsPostsHandler(w http.ResponseWriter, r *http.Request) {
 		pubKey := getFPubKey(input.User)
 		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, FriendGroup, c)
 		if err != nil {
-			share.WriteError(w, 1)
+			share.WriteErrorCode(w, err)
 			return
 		}
 	}
 
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -307,13 +307,13 @@ func SyncContactPostsHandler(w http.ResponseWriter, r *http.Request) {
 	var input SyncContactPostsInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
@@ -325,7 +325,7 @@ func SyncContactPostsHandler(w http.ResponseWriter, r *http.Request) {
 		if len(input.PIDs) > 0 {
 			comments, err := dbUpdateSelfCmts(input.User, input.PIDs, input.CIDs, c)
 			if err != nil {
-				share.WriteError(w, 1)
+				share.WriteErrorCode(w, err)
 				return
 			}
 			if len(comments) > 0 {
@@ -336,13 +336,13 @@ func SyncContactPostsHandler(w http.ResponseWriter, r *http.Request) {
 		response.Posts, err = dbGetUserPosts(input.User, input.Contact, input.LastPost, share.MAX_TIME, c)
 	}
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -364,7 +364,7 @@ func SyncNearInfoHandler(w http.ResponseWriter, r *http.Request) {
 	var input SyncNearInfoInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -372,7 +372,7 @@ func SyncNearInfoHandler(w http.ResponseWriter, r *http.Request) {
 	response.GIDs = share.GetGeoIDs(input.X, input.Y)
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -393,13 +393,13 @@ func SyncNearPostsHandler(w http.ResponseWriter, r *http.Request) {
 	var input SyncNearPostsInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
@@ -408,13 +408,13 @@ func SyncNearPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	response.Posts, err = dbGetNearbyPublish(input.UID, input.GID, input.LastPost, share.MAX_TIME, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -435,13 +435,13 @@ func SyncGroupPublishHandler(w http.ResponseWriter, r *http.Request) {
 	var input SyncGroupPublishInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
@@ -450,7 +450,7 @@ func SyncGroupPublishHandler(w http.ResponseWriter, r *http.Request) {
 
 	response.Posts, err = dbGetGroupPublish(input.User, input.Group, input.LastPost+1, share.MAX_TIME, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -458,14 +458,14 @@ func SyncGroupPublishHandler(w http.ResponseWriter, r *http.Request) {
 		pubKey := getGPubKey(input.Group)
 		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, input.Group, c)
 		if err != nil {
-			share.WriteError(w, 1)
+			share.WriteErrorCode(w, err)
 			return
 		}
 	}
 
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -481,7 +481,7 @@ func GetPreviewsHandler(w http.ResponseWriter, r *http.Request) {
 	var input GetPreviewsInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -495,7 +495,7 @@ func GetPreviewsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Sscanf(file, "%d_%d_%s", &cID, &pID, &fName)
 		data, err := getSnapshot(cID, pID, fName)
 		if err != nil {
-			share.WriteError(w, 1)
+			share.WriteErrorCode(w, err)
 			return
 		}
 

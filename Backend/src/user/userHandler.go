@@ -97,14 +97,14 @@ func getPhoto(uID uint64, form *multipart.Form) error {
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(share.MaxUploadSize)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	var input RegistryInfo
 	err = getFormInput(r.MultipartForm, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -126,14 +126,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
 
 	uID, err := dbRegistry(input, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -147,7 +147,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	response.UserID = uID
 	data, err := json.Marshal(&response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -179,33 +179,33 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var info LoginInfo
 	err := share.ReadInput(r, &info)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
 
 	userID, err := dbLogon(info, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	accountKey := GetAccountKey(userID)
 	name, err := DbGetUserInfoField(accountKey, NameField, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	tags, err := dbGetUserTags(userID, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -225,7 +225,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	data, err := json.Marshal(&feedback)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 

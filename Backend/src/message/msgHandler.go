@@ -79,13 +79,13 @@ func SyncMessegeHandler(w http.ResponseWriter, r *http.Request) {
 	var input MessegeSyncInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
@@ -93,7 +93,7 @@ func SyncMessegeHandler(w http.ResponseWriter, r *http.Request) {
 	var output MessegeSyncReturn
 	newSyncID, messages, err := dbGetMessages(input, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	output.Messages = messages
@@ -101,7 +101,7 @@ func SyncMessegeHandler(w http.ResponseWriter, r *http.Request) {
 
 	data, err := json.Marshal(&output)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -120,24 +120,24 @@ func RequestContactHandler(w http.ResponseWriter, r *http.Request) {
 	var input RequestContactInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	if input.From == input.To {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	nameLen := len(input.Name)
 	if nameLen == 0 || nameLen > int(user.NAME_SIZE) {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
@@ -160,18 +160,18 @@ func DeclineRequestHandler(w http.ResponseWriter, r *http.Request) {
 	var input DeclienRequestInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	if input.UID == input.CID {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
@@ -197,20 +197,20 @@ func SyncRequestsHandler(w http.ResponseWriter, r *http.Request) {
 	var input SyncRequestsInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
 
 	requests, err := dbSyncRequests(input.User, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -218,7 +218,7 @@ func SyncRequestsHandler(w http.ResponseWriter, r *http.Request) {
 	response.Requests = requests
 	data, err := json.Marshal(&response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 

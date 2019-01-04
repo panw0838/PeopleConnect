@@ -20,13 +20,13 @@ func GetContactsHandler(w http.ResponseWriter, r *http.Request) {
 	var account AccountInfo
 	err := share.ReadInput(r, &account)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
@@ -35,14 +35,14 @@ func GetContactsHandler(w http.ResponseWriter, r *http.Request) {
 
 	contacts, err := dbGetContacts(account.UserID, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	response.Contacts = contacts
 
 	data, err := json.Marshal(&response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -55,26 +55,26 @@ type GetPostsUsersInput struct {
 	CIDs []uint64 `json:"cids"`
 }
 
-type PostUser struct {
+type User struct {
 	UID  uint64 `json:"user"`
 	Name string `json:"name"`
 }
 
 type GetUsersReturn struct {
-	Users []PostUser `json:"users"`
+	Users []User `json:"users"`
 }
 
 func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	var input GetPostsUsersInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
@@ -82,23 +82,20 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	var response GetUsersReturn
 
 	for _, cID := range input.CIDs {
-		var user PostUser
-
-		name, err := DbGetUserName(cID, c)
+		var user User
+		user.UID = cID
+		user.Name, err = DbGetUserName(cID, c)
 		if err != nil {
-			share.WriteError(w, 1)
+			share.WriteErrorCode(w, err)
 			return
 		}
-
-		user.UID = cID
-		user.Name = name
 
 		response.Users = append(response.Users, user)
 	}
 
 	data, err := json.Marshal(&response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -120,18 +117,18 @@ func GetNearUsersHandler(w http.ResponseWriter, r *http.Request) {
 	var input GetNearUsersInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	if input.X == 0 && input.Y == 0 {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
@@ -139,13 +136,13 @@ func GetNearUsersHandler(w http.ResponseWriter, r *http.Request) {
 	var response GetNearUsersReturn
 	response.Users, err = dbGetNearbyUsers(input, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	data, err := json.Marshal(&response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -153,35 +150,35 @@ func GetNearUsersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-type GetPossibleContactsReturn struct {
+type GetSuggestUsersReturn struct {
 	Users []PossibleContact `json:"users"`
 }
 
-func GetPossibleContactsHandler(w http.ResponseWriter, r *http.Request) {
+func GetSuggestUsersHandler(w http.ResponseWriter, r *http.Request) {
 	var account AccountInfo
 	err := share.ReadInput(r, &account)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
 
-	var response GetPossibleContactsReturn
+	var response GetSuggestUsersReturn
 	response.Users, err = dbGetPossibleContacts(account.UserID, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	data, err := json.Marshal(&response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -197,13 +194,13 @@ func GetPhotosHandler(w http.ResponseWriter, r *http.Request) {
 	var input GetPhotosInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	numIDs := len(input.CIDs)
 	if numIDs == 0 || numIDs > 100 {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -214,21 +211,21 @@ func GetPhotosHandler(w http.ResponseWriter, r *http.Request) {
 		path := filepath.Join("photos", strconv.FormatUint(cID, 10)+".png")
 		file, err := os.Open(path)
 		if err != nil {
-			share.WriteError(w, 1)
+			share.WriteErrorCode(w, err)
 			return
 		}
 		defer file.Close()
 
 		data, err := ioutil.ReadAll(file)
 		if err != nil {
-			share.WriteError(w, 1)
+			share.WriteErrorCode(w, err)
 			return
 		}
 
 		len := len(data)
 
 		if len == 0 {
-			share.WriteError(w, 1)
+			share.WriteErrorCode(w, err)
 			return
 		} else {
 			lens = append(lens, len)
@@ -262,13 +259,13 @@ func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
 	var input SearchContactInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
@@ -278,7 +275,7 @@ func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
 	for idx, cell := range input.CellNumbers {
 		cID, err := dbGetUser(input.CountryCodes[idx], cell, c)
 		if err != nil {
-			share.WriteError(w, 1)
+			share.WriteErrorCode(w, err)
 			return
 		}
 		if cID == 0 {
@@ -292,7 +289,7 @@ func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		flag, _, err := GetCashFlag(cID, input.User, c)
 		if err != nil {
-			share.WriteError(w, 1)
+			share.WriteErrorCode(w, err)
 			return
 		}
 		if (flag & BLK_BIT) != 0 {
@@ -307,7 +304,7 @@ func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
 		accountKey := GetAccountKey(cID)
 		name, err := DbGetUserInfoField(accountKey, NameField, c)
 		if err != nil {
-			share.WriteError(w, 1)
+			share.WriteErrorCode(w, err)
 			return
 		}
 
@@ -320,7 +317,7 @@ func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	data, err := json.Marshal(&response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 

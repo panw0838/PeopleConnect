@@ -29,20 +29,20 @@ func NewCommentHandler(w http.ResponseWriter, r *http.Request) {
 	var input AddCmtInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
 
 	cmtID, err := dbAddComment(input, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -50,12 +50,12 @@ func NewCommentHandler(w http.ResponseWriter, r *http.Request) {
 	response.CmtID = cmtID
 	response.Comments, err = dbGetComments(input.PostOwner, input.PostID, input.UID, input.Group, input.LastCMT, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -74,20 +74,20 @@ func DelCmtHandler(w http.ResponseWriter, r *http.Request) {
 	var input DelCmtInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
 
 	err = dbDelComment(input, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -118,13 +118,13 @@ func UpdateCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	var input UpdateCommentsInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
@@ -134,7 +134,7 @@ func UpdateCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	for _, cmtInput := range input.Comments {
 		comments, err := dbGetComments(cmtInput.Owner, cmtInput.Post, input.User, input.Source, cmtInput.Start, c)
 		if err != nil {
-			share.WriteError(w, 1)
+			share.WriteErrorCode(w, err)
 			return
 		}
 		var cmtReturn UpdateCmtReturn
@@ -144,7 +144,7 @@ func UpdateCommentsHandler(w http.ResponseWriter, r *http.Request) {
 
 	bytes, err := json.Marshal(response)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
@@ -163,25 +163,25 @@ func LikePostHandler(w http.ResponseWriter, r *http.Request) {
 	var input LikePostInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	if input.UID == input.OID {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 	defer c.Close()
 
 	err = dbLikePost(input.UID, input.OID, input.PID, input.Like, c)
 	if err != nil {
-		share.WriteError(w, 1)
+		share.WriteErrorCode(w, err)
 		return
 	}
 
