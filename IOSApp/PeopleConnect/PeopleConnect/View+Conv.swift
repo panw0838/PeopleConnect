@@ -176,6 +176,7 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     
     @IBOutlet weak var m_text: UITextField!
     @IBOutlet weak var m_messegesTable: UITableView!
+    @IBOutlet weak var m_toolBar: UIView!
     
     @IBAction func SendMessege(sender: AnyObject) {
         let messege = m_text.text
@@ -203,12 +204,23 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         cell?.stopLoading(false)
     }
     
+    func scrollToButtom() {
+        if m_conv!.m_messages.count > 0 {
+            let lastMsg = m_conv!.m_messages.count - 1
+            let lastIdx = NSIndexPath(forRow: lastMsg, inSection: 0)
+            self.m_messegesTable.scrollToRowAtIndexPath(lastIdx, atScrollPosition: .Bottom, animated: true)
+        }
+    }
+    
     func ConvUpdated() {
         self.m_messegesTable.reloadData()
-        let lastMsg = m_conv!.m_messages.count - 1
-        let lastIdx = NSIndexPath(forRow: lastMsg, inSection: 0)
-        self.m_messegesTable.scrollToRowAtIndexPath(lastIdx, atScrollPosition: .Bottom, animated: true)
+        scrollToButtom()
     }
+    
+    var defaultTableY:CGFloat = 0
+    var defaultTableHeight:CGFloat = 0
+    var defaultViewHeight:CGFloat = 0
+    var defaultKBY:CGFloat=0
     
     func keyboardWillChangeFrame(notify:NSNotification) {
         // 1.取得弹出后的键盘frame
@@ -220,11 +232,32 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         // 3.键盘变化时，view的位移，包括了上移/恢复下移
         let transformY = keyboardFrame!.origin.y - self.view.frame.size.height;
         
-        self.m_messegesTable.contentInset = UIEdgeInsets(top: keyboardFrame!.origin.y, left: 0, bottom: 0, right: 0)
+        if defaultViewHeight == 0 {
+            defaultViewHeight = self.view.frame.height
+            defaultKBY = keyboardFrame!.origin.y
+        }
+        if defaultTableHeight == 0 {
+            defaultTableHeight = m_messegesTable.frame.height
+        }
+        
+        self.scrollToButtom()
+
+
+        //self.m_messegesTable.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        //m_messegesTable.frame.origin = CGPointMake(m_messegesTable.frame.origin.x, defaultTableY+transformY)
+        //m_toolBar.frame.origin = CGPointMake(m_toolBar.frame.origin.x, defaultToolY - transformY)
         
         UIView.animateWithDuration(Double(duration!), animations: {()->Void in
-            self.view.transform = CGAffineTransformMakeTranslation(0, transformY)
+            //self.m_messegesTable.frame.size = CGSizeMake(self.m_messegesTable.frame.width, self.defaultTableHeight - keyboardFrame!.height)
+            //self.m_toolBar.frame.origin = CGPointMake(self.m_toolBar.frame.origin.x, self.defaultToolY - keyboardFrame!.height)
+            //self.view.transform = CGAffineTransformMakeTranslation(0, transformY)
+            let offset = self.defaultKBY == keyboardFrame!.origin.y ? keyboardFrame!.height : 0
+            self.view.frame.size = CGSizeMake(self.view.frame.width, self.defaultViewHeight-offset)
         })
+    }
+    
+    func keyboardDidChangeFrame(notify:NSNotification) {
+        self.scrollToButtom()
     }
     
     override func viewDidLoad() {
@@ -233,7 +266,10 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         m_conv?.m_delegate = self
         
         // 设置虚拟键盘监听器
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillChangeFrame:"), name: UIKeyboardWillChangeFrameNotification, object: nil)
+        let notifier = NSNotificationCenter.defaultCenter()
+        notifier.addObserver(self, selector: Selector("keyboardWillChangeFrame:"), name: UIKeyboardWillChangeFrameNotification, object: nil)
+        notifier.addObserver(self, selector: Selector("keyboardDidChangeFrame:"), name: UIKeyboardDidChangeFrameNotification, object: nil)
+        
         
         // 设置TextField文字左间距
         m_text.leftView = UIView(frame: CGRectMake(0, 0, 8, 0))

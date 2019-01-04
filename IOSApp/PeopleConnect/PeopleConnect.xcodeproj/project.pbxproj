@@ -33,7 +33,7 @@
 		18DB289221A03FCC0024092C /* View+Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289121A03FCC0024092C /* View+Contact.swift */; };
 		18DB289421A145410024092C /* Requests+Msg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289321A145410024092C /* Requests+Msg.swift */; };
 		18DB289621A1C2C30024092C /* Data+Msg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289521A1C2C30024092C /* Data+Msg.swift */; };
-		18DB289821A1CD200024092C /* View+Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289721A1CD200024092C /* View+Conversation.swift */; };
+		18DB289821A1CD200024092C /* View+Conv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289721A1CD200024092C /* View+Conv.swift */; };
 		18DB289A21A3A8BA0024092C /* Requests+Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289921A3A8BA0024092C /* Requests+Contact.swift */; };
 		18DB289C21A3AF750024092C /* Requests+Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DB289B21A3AF750024092C /* Requests+Tag.swift */; };
 		18DB28B321A5B9590024092C /* CocoaAsyncSocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18DB28A921A5B9120024092C /* CocoaAsyncSocket.framework */; };
@@ -207,7 +207,7 @@
 		18DB289121A03FCC0024092C /* View+Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Contact.swift"; sourceTree = "<group>"; };
 		18DB289321A145410024092C /* Requests+Msg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Msg.swift"; sourceTree = "<group>"; };
 		18DB289521A1C2C30024092C /* Data+Msg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Msg.swift"; sourceTree = "<group>"; };
-		18DB289721A1CD200024092C /* View+Conversation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Conversation.swift"; sourceTree = "<group>"; };
+		18DB289721A1CD200024092C /* View+Conv.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Conv.swift"; sourceTree = "<group>"; };
 		18DB289921A3A8BA0024092C /* Requests+Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Contact.swift"; sourceTree = "<group>"; };
 		18DB289B21A3AF750024092C /* Requests+Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Tag.swift"; sourceTree = "<group>"; };
 		18DB28A221A5B9120024092C /* CocoaAsyncSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CocoaAsyncSocket.xcodeproj; path = "../CocoaAsyncSocket-master/CocoaAsyncSocket.xcodeproj"; sourceTree = "<group>"; };
@@ -348,7 +348,7 @@
 				18FF5DD821C14BF9008DB746 /* View+Settings.swift */,
 				18E08D2821CE7798007AACB4 /* View+Loading.swift */,
 				18AE4209219AC4170008B792 /* View+Login.swift */,
-				18DB289721A1CD200024092C /* View+Conversation.swift */,
+				18DB289721A1CD200024092C /* View+Conv.swift */,
 				1860EFC421D53ED600402460 /* View+Requests.swift */,
 				18F8622A21DBA6A00089D953 /* View+PostNotifies.swift */,
 				18D3A8DE2197F3CD00EB3289 /* View+Messages.swift */,
@@ -622,7 +622,7 @@
 				18DB28BE21A5B9CC0024092C /* Observer.swift in Sources */,
 				18DB289221A03FCC0024092C /* View+Contact.swift in Sources */,
 				1801E9B221BFB1ED004C3FE2 /* View+PostImgPreview.swift in Sources */,
-				18DB289821A1CD200024092C /* View+Conversation.swift in Sources */,
+				18DB289821A1CD200024092C /* View+Conv.swift in Sources */,
 				18FF5DE121C156A7008DB746 /* View+PostHeader.swift in Sources */,
 				18AE420A219AC4170008B792 /* View+Login.swift in Sources */,
 				189AC5D221D9CBDA0008BB95 /* View+Tags.swift in Sources */,

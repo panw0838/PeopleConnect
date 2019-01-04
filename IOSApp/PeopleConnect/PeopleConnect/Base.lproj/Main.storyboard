@@ -638,25 +638,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="iy3-vu-T8y">
-                                <rect key="frame" x="20" y="513" width="492" height="30"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GYu-9G-jZu">
-                                <rect key="frame" x="520" y="513" width="60" height="30"/>
-                                <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="60" id="FsE-wq-yvy"/>
-                                </constraints>
-                                <state key="normal" title="发送">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="SendMessege:" destination="ZcU-UV-izl" eventType="touchDown" id="Krp-g0-oI6"/>
-                                </connections>
-                            </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="61" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lXg-71-86q">
                                 <rect key="frame" x="20" y="72" width="560" height="433"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -667,25 +648,57 @@
                                     <outlet property="delegate" destination="ZcU-UV-izl" id="ikb-KG-ioV"/>
                                 </connections>
                             </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A8h-4F-OZa">
+                                <rect key="frame" x="20" y="513" width="560" height="30"/>
+                                <subviews>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="iy3-vu-T8y">
+                                        <rect key="frame" x="0.0" y="0.0" width="492" height="30"/>
+                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GYu-9G-jZu">
+                                        <rect key="frame" x="500" y="0.0" width="60" height="30"/>
+                                        <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="60" id="OoD-9I-zv4"/>
+                                        </constraints>
+                                        <state key="normal" title="发送">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="SendMessege:" destination="ZcU-UV-izl" eventType="touchDown" id="Krp-g0-oI6"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="GYu-9G-jZu" secondAttribute="trailing" id="BY5-af-nGv"/>
+                                    <constraint firstItem="GYu-9G-jZu" firstAttribute="leading" secondItem="iy3-vu-T8y" secondAttribute="trailing" constant="8" symbolic="YES" id="Hcw-tI-Xb6"/>
+                                    <constraint firstItem="iy3-vu-T8y" firstAttribute="top" secondItem="GYu-9G-jZu" secondAttribute="top" id="QmG-yR-xb1"/>
+                                    <constraint firstAttribute="bottom" secondItem="iy3-vu-T8y" secondAttribute="bottom" id="TdB-Mo-7w0"/>
+                                    <constraint firstItem="iy3-vu-T8y" firstAttribute="bottom" secondItem="GYu-9G-jZu" secondAttribute="bottom" id="dtm-dr-XXu"/>
+                                    <constraint firstItem="GYu-9G-jZu" firstAttribute="top" secondItem="A8h-4F-OZa" secondAttribute="top" id="i3L-9r-GkH"/>
+                                    <constraint firstItem="iy3-vu-T8y" firstAttribute="leading" secondItem="A8h-4F-OZa" secondAttribute="leading" id="mDo-bC-g15"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="iy3-vu-T8y" firstAttribute="leading" secondItem="lXg-71-86q" secondAttribute="leading" id="6tS-Mi-9uI"/>
-                            <constraint firstItem="GYu-9G-jZu" firstAttribute="trailing" secondItem="lXg-71-86q" secondAttribute="trailing" id="AQf-RY-8Qj"/>
-                            <constraint firstItem="iy3-vu-T8y" firstAttribute="leading" secondItem="XbN-g0-JbK" secondAttribute="leadingMargin" id="CU7-a9-qHY"/>
-                            <constraint firstItem="cz0-iU-3qv" firstAttribute="top" secondItem="iy3-vu-T8y" secondAttribute="bottom" constant="8" symbolic="YES" id="Jj3-ZW-JnZ"/>
-                            <constraint firstItem="cz0-iU-3qv" firstAttribute="top" secondItem="GYu-9G-jZu" secondAttribute="bottom" constant="8" symbolic="YES" id="MfI-iZ-7ox"/>
-                            <constraint firstItem="lXg-71-86q" firstAttribute="top" secondItem="KxF-f2-Zg9" secondAttribute="bottom" constant="8" symbolic="YES" id="XrE-BY-dnV"/>
-                            <constraint firstItem="lXg-71-86q" firstAttribute="trailing" secondItem="XbN-g0-JbK" secondAttribute="trailingMargin" id="bQZ-zE-HkF"/>
-                            <constraint firstItem="iy3-vu-T8y" firstAttribute="top" secondItem="lXg-71-86q" secondAttribute="bottom" constant="8" symbolic="YES" id="joZ-yC-nrO"/>
-                            <constraint firstItem="iy3-vu-T8y" firstAttribute="top" secondItem="GYu-9G-jZu" secondAttribute="top" id="miv-gx-Fzi"/>
-                            <constraint firstItem="GYu-9G-jZu" firstAttribute="leading" secondItem="iy3-vu-T8y" secondAttribute="trailing" constant="8" symbolic="YES" id="xLa-2S-278"/>
+                            <constraint firstItem="A8h-4F-OZa" firstAttribute="top" secondItem="lXg-71-86q" secondAttribute="bottom" constant="8" symbolic="YES" id="28c-fv-RhF"/>
+                            <constraint firstItem="cz0-iU-3qv" firstAttribute="top" secondItem="A8h-4F-OZa" secondAttribute="bottom" constant="8" symbolic="YES" id="6JV-0l-buf"/>
+                            <constraint firstItem="lXg-71-86q" firstAttribute="leading" secondItem="A8h-4F-OZa" secondAttribute="leading" id="MAv-Ab-Qs6"/>
+                            <constraint firstItem="lXg-71-86q" firstAttribute="leading" secondItem="XbN-g0-JbK" secondAttribute="leadingMargin" id="OyO-x0-5mc"/>
+                            <constraint firstItem="lXg-71-86q" firstAttribute="trailing" secondItem="XbN-g0-JbK" secondAttribute="trailingMargin" id="fZ4-jN-JQY"/>
+                            <constraint firstItem="A8h-4F-OZa" firstAttribute="trailing" secondItem="lXg-71-86q" secondAttribute="trailing" id="qgX-ik-LdG"/>
+                            <constraint firstItem="lXg-71-86q" firstAttribute="top" secondItem="KxF-f2-Zg9" secondAttribute="bottom" constant="8" symbolic="YES" id="vun-9f-rvD"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="会话" id="mgo-vx-7fP"/>
                     <connections>
                         <outlet property="m_messegesTable" destination="lXg-71-86q" id="qLy-Wh-ke4"/>
                         <outlet property="m_text" destination="iy3-vu-T8y" id="xPP-9W-RwA"/>
+                        <outlet property="m_toolBar" destination="A8h-4F-OZa" id="dnU-BD-26y"/>
                         <segue destination="pv7-Vn-KsV" kind="show" identifier="ShowContact" id="xrR-La-VIP"/>
                     </connections>
                 </viewController>
