@@ -1545,11 +1545,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+CreatePost.swift"
-            timestampString = "568399919.939175"
+            timestampString = "568402337.0276771"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "50"
-            endingLineNumber = "50"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
             landmarkName = "CreatePost(_:)"
             landmarkType = "5">
          </BreakpointContent>

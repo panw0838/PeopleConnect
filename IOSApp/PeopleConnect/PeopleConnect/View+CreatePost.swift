@@ -22,7 +22,9 @@ class CreatePostView:
     @IBOutlet weak var m_visibleTags: TagsView!
     
     func updateCreateBtn() {
-        m_createPostBtn.enabled = (m_imgsPreview.m_picks.count > 0 || m_desc.text?.characters.count > 0)
+        let writed = (m_imgsPreview.m_picks.count > 0 || m_desc.text?.characters.count > 0)
+        let shared = (m_visibleTags.m_flag != 0 || m_strangerSee.on)
+        m_createPostBtn.enabled = (writed && shared)
     }
     
     func UpdateLocationSuccess() {
@@ -59,9 +61,11 @@ class CreatePostView:
         super.viewDidLoad()
         m_createPostBtn.enabled = false
         m_imgsPreview.m_controller = self
+        m_visibleTags.m_controller = self
     }
     
-    func textFieldDidEndEditing(textField: UITextField) {
+    @IBAction func didEndTexting(sender: AnyObject) {
+        m_desc.endEditing(true)
         updateCreateBtn()
     }
     

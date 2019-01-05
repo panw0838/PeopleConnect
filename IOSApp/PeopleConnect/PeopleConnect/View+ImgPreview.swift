@@ -133,6 +133,7 @@ class ImgPreview: UIView, ImgPickerDelegate {
         }
         
         reloadEdit()
+        m_controller?.updateCreateBtn()
     }
     
     func reloadEdit() {

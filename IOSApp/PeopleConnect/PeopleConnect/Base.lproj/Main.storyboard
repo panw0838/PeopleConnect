@@ -728,6 +728,9 @@
                                                     <rect key="frame" x="8" y="8" width="584" height="30"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                                    <connections>
+                                                        <action selector="didEndTexting:" destination="U8x-3C-bqT" eventType="editingDidEndOnExit" id="m4O-RV-sPh"/>
+                                                    </connections>
                                                 </textField>
                                             </subviews>
                                             <constraints>

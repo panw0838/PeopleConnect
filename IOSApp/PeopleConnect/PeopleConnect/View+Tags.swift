@@ -96,12 +96,15 @@ class TagLabel:UILabel {
             backgroundColor = UIColor.grayColor()
             m_father?.m_flag &= ~m_data
         }
+        m_father!.m_controller!.updateCreateBtn()
     }
 }
 
 class TagsView: UIView {
     let MaxTags = 64
     var m_tags = Array<TagLabel>()
+    // for edit
+    var m_controller:CreatePostView? = nil
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -175,6 +178,10 @@ class TagsView: UIView {
             let color = TagColors[Int(colorTagID!)]
             pushEditTag(tag.m_tagName, data: tag.m_bit, color: color!)
         }
+        // init to contacts bit
+        m_tags[m_curTag-1].m_hilighted = true
+        m_tags[m_curTag-1].backgroundColor = m_tags[m_curTag-1].m_hilightColor
+        m_flag = contactsData.m_undefine.m_bit
     }
     
     func load(post:Post, width:CGFloat) {
