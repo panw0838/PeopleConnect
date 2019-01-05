@@ -742,79 +742,23 @@
                             </tableViewSection>
                             <tableViewSection headerTitle="选择附件" id="EJO-5p-4fd">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="118" id="rVp-pq-vQA">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="118" id="rVp-pq-vQA" customClass="PreviewCell" customModule="PeopleConnect" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="138" width="600" height="118"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="rVp-pq-vQA" id="Mj0-SW-W0Q">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="117"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Q4A-fI-oYO">
-                                                    <rect key="frame" x="8" y="8" width="584" height="110"/>
-                                                    <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="5" minimumInteritemSpacing="5" id="kpE-TT-XUE">
-                                                        <size key="itemSize" width="103" height="103"/>
-                                                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                                    </collectionViewFlowLayout>
-                                                    <cells>
-                                                        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="AttachmentCell" id="gog-e0-6oj" customClass="AttachmentCell" customModule="PeopleConnect" customModuleProvider="target">
-                                                            <rect key="frame" x="0.0" y="4" width="103" height="103"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                                                <rect key="frame" x="0.0" y="0.0" width="103" height="103"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
-                                                                <subviews>
-                                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="WAr-a3-Oze">
-                                                                        <rect key="frame" x="1" y="2" width="100" height="100"/>
-                                                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.59999999999999998" colorSpace="calibratedRGB"/>
-                                                                    </imageView>
-                                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="plus" translatesAutoresizingMaskIntoConstraints="NO" id="CzS-JC-p6k">
-                                                                        <rect key="frame" x="28" y="28" width="47" height="47"/>
-                                                                    </imageView>
-                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G9G-dV-qrJ">
-                                                                        <rect key="frame" x="73" y="0.0" width="30" height="30"/>
-                                                                        <state key="normal" image="remove"/>
-                                                                        <connections>
-                                                                            <action selector="deleteAttachment:" destination="gog-e0-6oj" eventType="touchDown" id="T7O-tI-tAZ"/>
-                                                                        </connections>
-                                                                    </button>
-                                                                </subviews>
-                                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                            </view>
-                                                            <constraints>
-                                                                <constraint firstItem="WAr-a3-Oze" firstAttribute="centerX" secondItem="CzS-JC-p6k" secondAttribute="centerX" id="6g8-66-1EG"/>
-                                                                <constraint firstItem="WAr-a3-Oze" firstAttribute="top" secondItem="gog-e0-6oj" secondAttribute="topMargin" constant="-6" id="JIF-i1-bol"/>
-                                                                <constraint firstItem="WAr-a3-Oze" firstAttribute="leading" secondItem="gog-e0-6oj" secondAttribute="leadingMargin" constant="-7" id="KZ5-AM-cW5"/>
-                                                                <constraint firstItem="G9G-dV-qrJ" firstAttribute="top" secondItem="gog-e0-6oj" secondAttribute="top" id="Lu1-wc-06R"/>
-                                                                <constraint firstItem="WAr-a3-Oze" firstAttribute="centerX" secondItem="gog-e0-6oj" secondAttribute="centerX" id="M9m-Mm-azX"/>
-                                                                <constraint firstItem="G9G-dV-qrJ" firstAttribute="leading" secondItem="gog-e0-6oj" secondAttribute="leadingMargin" constant="65" id="Mzd-pz-UHO"/>
-                                                                <constraint firstItem="CzS-JC-p6k" firstAttribute="leading" secondItem="gog-e0-6oj" secondAttribute="leadingMargin" constant="20" id="Vcq-eK-H67"/>
-                                                                <constraint firstItem="CzS-JC-p6k" firstAttribute="centerY" secondItem="WAr-a3-Oze" secondAttribute="centerY" id="Wb2-d8-dpW"/>
-                                                                <constraint firstItem="CzS-JC-p6k" firstAttribute="top" secondItem="gog-e0-6oj" secondAttribute="topMargin" constant="20" id="gjo-tA-gzL"/>
-                                                                <constraint firstAttribute="trailing" secondItem="G9G-dV-qrJ" secondAttribute="trailing" id="jVV-41-U0g"/>
-                                                                <constraint firstItem="CzS-JC-p6k" firstAttribute="centerY" secondItem="gog-e0-6oj" secondAttribute="centerY" id="pNx-75-KDg"/>
-                                                                <constraint firstAttribute="bottomMargin" secondItem="G9G-dV-qrJ" secondAttribute="bottom" constant="65" id="vbI-fY-bMY"/>
-                                                            </constraints>
-                                                            <connections>
-                                                                <outlet property="m_add" destination="CzS-JC-p6k" id="05j-wm-0P7"/>
-                                                                <outlet property="m_delete" destination="G9G-dV-qrJ" id="y0R-lh-w2W"/>
-                                                                <outlet property="m_preview" destination="WAr-a3-Oze" id="tyd-8A-RJ4"/>
-                                                            </connections>
-                                                        </collectionViewCell>
-                                                    </cells>
-                                                    <connections>
-                                                        <outlet property="dataSource" destination="U8x-3C-bqT" id="4Qf-Rh-RMR"/>
-                                                        <outlet property="delegate" destination="U8x-3C-bqT" id="Pty-yl-vGe"/>
-                                                    </connections>
-                                                </collectionView>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x3E-T4-6Tn" customClass="ImgPreview" customModule="PeopleConnect" customModuleProvider="target">
+                                                    <rect key="frame" x="8" y="8" width="584" height="101"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                </view>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="Q4A-fI-oYO" firstAttribute="leading" secondItem="Mj0-SW-W0Q" secondAttribute="leadingMargin" id="8Ua-kt-WmT"/>
-                                                <constraint firstItem="Q4A-fI-oYO" firstAttribute="trailing" secondItem="Mj0-SW-W0Q" secondAttribute="trailingMargin" id="jaO-PS-o3e"/>
-                                                <constraint firstItem="Q4A-fI-oYO" firstAttribute="top" secondItem="Mj0-SW-W0Q" secondAttribute="topMargin" id="qjH-GU-n43"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="Q4A-fI-oYO" secondAttribute="bottom" constant="-9" id="zT1-5G-Mqp"/>
+                                                <constraint firstItem="x3E-T4-6Tn" firstAttribute="bottom" secondItem="Mj0-SW-W0Q" secondAttribute="bottomMargin" id="2Rh-A9-ymG"/>
+                                                <constraint firstItem="x3E-T4-6Tn" firstAttribute="leading" secondItem="Mj0-SW-W0Q" secondAttribute="leadingMargin" id="9Df-7D-7Cc"/>
+                                                <constraint firstItem="x3E-T4-6Tn" firstAttribute="top" secondItem="Mj0-SW-W0Q" secondAttribute="topMargin" id="gMa-kW-iD7"/>
+                                                <constraint firstItem="x3E-T4-6Tn" firstAttribute="trailing" secondItem="Mj0-SW-W0Q" secondAttribute="trailingMargin" id="t2D-SW-GJP"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -1028,9 +972,9 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="m_attachments" destination="Q4A-fI-oYO" id="aGC-tP-9bA"/>
                         <outlet property="m_createPostBtn" destination="r9L-YE-HQN" id="Sne-cu-nGa"/>
                         <outlet property="m_desc" destination="a1Z-gT-LKQ" id="nKS-Ok-Eg7"/>
+                        <outlet property="m_imgsPreview" destination="x3E-T4-6Tn" id="lPP-c3-azJ"/>
                         <outlet property="m_postGroups" destination="l3t-n0-5zf" id="cgb-8g-VMb"/>
                         <outlet property="m_postGroupsCell" destination="8wX-IP-MTG" id="fcl-B1-XJu"/>
                         <outlet property="m_postTags" destination="9Cg-6X-MHg" id="a6x-fH-cub"/>
@@ -1738,8 +1682,6 @@
     </scenes>
     <resources>
         <image name="photo" width="50" height="50"/>
-        <image name="plus" width="512" height="512"/>
-        <image name="remove" width="30" height="30"/>
         <image name="tab_contacts" width="27" height="23"/>
         <image name="tab_contacts_hi" width="27" height="23"/>
         <image name="tab_moment" width="23" height="23"/>

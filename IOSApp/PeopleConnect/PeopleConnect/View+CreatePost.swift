@@ -116,6 +116,7 @@ class CreatePostView:
     @IBOutlet weak var m_postGroups: UICollectionView!
     @IBOutlet weak var m_strangerSee: UISwitch!
     @IBOutlet weak var m_createPostBtn: UIBarButtonItem!
+    @IBOutlet weak var m_imgsPreview: ImgPreview!
     
     var m_picker = ImgPicker(maxCount: 9)
     var m_atts = Array<UIImage>()
@@ -162,6 +163,7 @@ class CreatePostView:
         m_postGroups.allowsSelection = true
         m_postGroups.allowsMultipleSelection = true
         m_createPostBtn.enabled = false
+        m_imgsPreview.m_controller = self
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -200,6 +202,28 @@ class CreatePostView:
         
         m_attachments.reloadData()
         updateCreateBtn()
+    }
+    
+    let pickerSpace:CGFloat = 8
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        if indexPath.section == 1 && indexPath.row == 0 {
+            let width = tableView.contentSize.width - pickerSpace * 2
+            return (width - PostPreViewGap*2) / 3 + pickerSpace * 2
+        }
+        return super.tableView(tableView, heightForRowAtIndexPath: indexPath)
+    }
+    
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = super.tableView(tableView, cellForRowAtIndexPath: indexPath)
+        if indexPath.section == 1 && indexPath.row == 0 {
+            let width = tableView.contentSize.width - pickerSpace * 2
+            m_imgsPreview.frame = CGRectMake(pickerSpace, pickerSpace, width, (width - PostPreViewGap*2) / 3)
+            m_imgsPreview.reloadEdit()
+            print(m_imgsPreview.frame)
+            print(tableView.contentSize)
+        }
+        return cell
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {

@@ -157,6 +157,16 @@ class Post {
         return (previews[key] == nil ? UIImage(named: "loading")! : previews[key]!)
     }
     
+    func getPreviews()->Array<UIImage> {
+        var images = Array<UIImage>()
+        
+        for var i=0; i<m_info.files.count; i++ {
+            images.append(getPreview(i))
+        }
+        
+        return images
+    }
+    
     func getLikeString()->String {
         var str:String = "[❤]"
         

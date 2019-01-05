@@ -26,14 +26,14 @@ class ImgPicker:
     UICollectionViewDataSource,
     UICollectionViewDelegate {
     
-    var m_maxCount = 8
+    var m_maxCount = 9
     var m_imgMgr = PHCachingImageManager()
     var m_imgs:Array<PHAsset>? = nil
-    var m_selected = Array<PHAsset>()
     var m_pickerDelegate:ImgPickerDelegate? = nil
     var m_cliperDelegate:PhotoClipperDelegate? = nil
     var m_singleView:SingleImgView? = nil
     var m_doneBtn:UIBarButtonItem? = nil
+    var m_selected = Array<Int>()
     
     @IBOutlet weak var m_imgTable: UICollectionView!
     
@@ -63,12 +63,33 @@ class ImgPicker:
     }
     
     @IBAction func imgPicked(sender: AnyObject) {
-        self.m_pickerDelegate?.didFinishedPickImage(self.m_selected)
+        var assets = Array<PHAsset>()
+        
+        for i in m_selected {
+            assets.append(m_imgs![i])
+        }
+        
+        self.m_pickerDelegate?.didFinishedPickImage(assets)
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     @IBAction func cancel(sender: AnyObject) {
         self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func removeAtIndex(index:Int) {
+        let indexPath = NSIndexPath(forItem: m_selected[index], inSection: 0)
+        let c = m_imgTable.cellForItemAtIndexPath(indexPath) as? ImgCell
+        c?.m_mark.hidden = true
+        m_imgTable.deselectItemAtIndexPath(indexPath, animated: false)
+
+        m_selected.removeAtIndex(index)
+        for var i=index; i<m_selected.count; i++ {
+            let k = m_selected[i]
+            let c = m_imgTable.cellForItemAtIndexPath(NSIndexPath(forRow: k, inSection: 0)) as? ImgCell
+            c?.m_mark.text = String(i+1)
+            c?.m_mark.hidden = false
+        }
     }
     
     func showClipView(asset:PHAsset) {
@@ -137,11 +158,14 @@ class ImgPicker:
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ImgCell", forIndexPath: indexPath) as! ImgCell
         cell.m_asset = m_imgs![indexPath.row]
-        cell.m_mark.hidden = !cell.selected
         
-        if m_selected.contains(cell.m_asset!) {
-            let idx = m_selected.indexOf(cell.m_asset!)
+        if m_selected.contains(indexPath.row) {
+            let idx = m_selected.indexOf(indexPath.row)
             cell.m_mark.text = String(idx!+1)
+            cell.m_mark.hidden = false
+        }
+        else {
+            cell.m_mark.hidden = true
         }
 
         m_imgMgr.requestImageForAsset(cell.m_asset!, targetSize: CGSizeMake(40, 40), contentMode: .AspectFill, options: nil, resultHandler: {
@@ -165,18 +189,17 @@ class ImgPicker:
         cell.m_mark.hidden = true
         
         if m_maxCount > 1 {
-            let idx = m_selected.indexOf(cell.m_asset!)
+            let idx = m_selected.indexOf(indexPath.row)
             m_selected.removeAtIndex(idx!)
             for var i=idx!; i<m_selected.count; i++ {
-                let k = m_imgs?.indexOf(m_selected[i])
-                let c = collectionView.cellForItemAtIndexPath(NSIndexPath(forRow: k!, inSection: 0)) as? ImgCell
+                let k = m_selected[i]
+                let c = collectionView.cellForItemAtIndexPath(NSIndexPath(forRow: k, inSection: 0)) as? ImgCell
                 c?.m_mark.text = String(i+1)
+                c?.m_mark.hidden = false
             }
         }
         
-        if m_selected.count == 0 {
-            m_doneBtn?.enabled = false
-        }
+        m_doneBtn?.enabled = m_selected.count > 0
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
@@ -187,12 +210,10 @@ class ImgPicker:
         }
         else {
             cell.m_mark.hidden = false
-            m_selected.append(cell.m_asset!)
+            m_selected.append(indexPath.row)
             cell.m_mark.text = String(m_selected.count)
         }
         
-        if m_selected.count > 0 {
-            m_doneBtn?.enabled = true
-        }
+        m_doneBtn?.enabled = m_selected.count > 0
     }
 }
