@@ -112,6 +112,7 @@ class ContactCell: UICollectionViewCell {
         case RefreshID:
             if m_tag?.m_tagID == CellUsersTag {
                 // todo
+                checkContactsBookPrivacy()
             }
             else if m_tag?.m_tagID == SuggestTag {
                 httpGetSuggestContacts()

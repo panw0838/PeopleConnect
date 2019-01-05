@@ -335,7 +335,6 @@
         <!--动态通知-->
         <scene sceneID="Y86-yr-irv">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="NZ6-8y-YEm" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="G9h-hn-QHp" customClass="PostNotifyView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="7zP-5N-E0v"/>
@@ -428,6 +427,7 @@
                         <segue destination="0pB-ge-6ZV" kind="show" identifier="ShowPost" id="ZKu-3p-1go"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NZ6-8y-YEm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2332" y="-1725"/>
         </scene>

@@ -118,13 +118,14 @@ func httpDidFaceUsers() {
     )
 }
 
-func httpGetCellContacts(key:String) {
+func httpGetCellContacts(names:Array<String>, cells:Array<String>) {
     contactsData.m_cellUsers.clearContacts()
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
-        "codes":"",
-        "cells":""] // todo cell contacts
-    http.postRequest("searchcontact", params: params,
+        "code":NSNumber(integer: getCountryCode()),
+        "names":http.getStringArrayParam(names),
+        "cells":http.getStringArrayParam(cells)]
+    http.postRequest("searchusers", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let usersData = processErrorCode(response as! NSData, failed: nil)
             if usersData != nil {

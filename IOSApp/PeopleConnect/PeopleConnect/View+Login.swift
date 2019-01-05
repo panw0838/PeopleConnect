@@ -124,7 +124,7 @@ class LogView: BaseLogRegView {
         m_countryBtn.layer.cornerRadius = 10
         m_passBtn.layer.cornerRadius = 10
         m_photo.layer.cornerRadius = 10
-        m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
+        m_countryBtn.setTitle(getCountryCodeString(), forState: .Normal)
         m_getCodeBtn.hidden = true
         m_logBtn.enabled = false
         m_enableColor = m_logBtn.backgroundColor
@@ -319,7 +319,7 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
         m_cellBtn.layer.cornerRadius = 10
         m_passBtn.layer.cornerRadius = 10
         m_photoBtn.layer.cornerRadius = 10
-        m_countryBtn.setTitle(getCountryCode(), forState: .Normal)
+        m_countryBtn.setTitle(getCountryCodeString(), forState: .Normal)
         m_regBtn.enabled = false
         m_picker.m_cliperDelegate = self
         m_enableColor = m_regBtn.backgroundColor

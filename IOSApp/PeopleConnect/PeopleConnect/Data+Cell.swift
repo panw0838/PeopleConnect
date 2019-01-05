@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreTelephony
+import Contacts
 
 struct CountryInfo {
     var enName = ""
@@ -46,13 +47,17 @@ func loadCountryInfo()->Dictionary<Int, CountryInfo> {
     return countryDict
 }
 
-func getCountryCode()->String {
+func getCountryCode()->Int {
     let networkInfo = CTTelephonyNetworkInfo()
     let carrier = networkInfo.subscriberCellularProvider
-    if carrier != nil {
-        return "+" + carrier!.mobileCountryCode!
+    if carrier != nil && carrier!.mobileCountryCode != nil {
+        return Int(carrier!.mobileCountryCode!)!
     }
-    return "+86"
+    return 86
+}
+
+func getCountryCodeString()->String {
+    return "+" + String(getCountryCode())
 }
 
 func checkCNCellNumber(cell:String)->Bool {
@@ -65,3 +70,74 @@ func checkCNCellNumber(cell:String)->Bool {
     
     return preYD.evaluateWithObject(cell) || preLT.evaluateWithObject(cell) || preDX.evaluateWithObject(cell)
 }
+
+func checkContactsBookPrivacy() {
+    switch (CNContactStore.authorizationStatusForEntityType(.Contacts))
+    {
+    case .Authorized:
+        //存在权限
+        //获取通讯录
+        getContactsBook()
+        break
+    case .NotDetermined:
+        //权限未知
+        //请求权限
+        let store = CNContactStore()
+        store.requestAccessForEntityType(.Contacts, completionHandler: {(success:Bool, err:NSError?)->Void in
+            if success {
+                getContactsBook()
+            }
+            else {
+                print(err)
+            }
+            })
+        break
+    case .Restricted:
+        //如果没有权限
+        break
+    case .Denied:
+        //需要提示
+        //self.defendBlock();
+        break
+    }
+}
+
+func getContactsBook() {
+    let store = CNContactStore()
+    let request = CNContactFetchRequest(keysToFetch: [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey])
+    var names = Array<String>()
+    var cells = Array<String>()
+    do {
+        try store.enumerateContactsWithFetchRequest(request,
+            usingBlock: {(contact:CNContact, pStop:UnsafeMutablePointer<ObjCBool>)->Void in
+                let familyName = (contact.familyName.characters.count > 0 ? " " : "") + contact.familyName
+                let name = contact.givenName + familyName
+                var cell = ""
+                
+                let numbers = contact.phoneNumbers
+                for number in numbers {
+                    if number.label == CNLabelPhoneNumberMobile || (cell.characters.count == 0 && number.label == CNLabelPhoneNumberMain) {
+                        let numString:String = (number.value as! CNPhoneNumber).stringValue
+                        var finalString:String = ""
+                        for c in numString.characters {
+                            if c != " " && c != "(" && c != ")" && c != "-" {
+                                finalString.append(c)
+                            }
+                        }
+                        cell = finalString
+                    }
+                }
+                
+                if name.characters.count != 0 && cell.characters.count != 0 {
+                    names.append(name)
+                    cells.append(cell)
+                    print(name, cell)
+                }
+        })
+    }
+    catch {
+    }
+    
+    httpGetCellContacts(names, cells: cells)
+}
+
