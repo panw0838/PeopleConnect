@@ -158,12 +158,14 @@ class Tag {
     }
     
     func addMember(contact: ContactInfo) {
-        if (m_subBits & contact.flag) != 0 {
+        if m_bit != 0 && (m_subBits & contact.flag) != 0 {
+            // add to sub tags
             for subTag in m_subTags {
                 subTag.addMember(contact)
             }
         }
-        else if (m_bit & contact.flag) != 0 {
+        else if m_bit == 0 || (m_bit & contact.flag) != 0 && (m_subBits & contact.flag) == 0 {
+            // add to self if stranger or no sub tags
             var exists = false
             for member in m_members {
                 if member == contact.user {

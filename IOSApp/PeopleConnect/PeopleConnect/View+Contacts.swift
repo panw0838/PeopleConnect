@@ -197,11 +197,15 @@ class ContactsView:
     }
     
     func counterFinished() {
+        httpDidFaceUsers()
+    }
+    
+    func counterInvoke() {
         httpGetFaceUsers()
     }
     
     func startFaceToFace() {
-        gLoadingView.setupCounting(10, delegate: self)
+        gLoadingView.setupCounting(11, invokeSeconds: 4, delegate: self)
         userData.startLocate(self)
     }
     

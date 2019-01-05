@@ -47,7 +47,7 @@ func httpGetNearbyUsers() {
                     if let contactObjs = json["users"] as? [AnyObject] {
                         for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: contactObj) {
-                                contactsData.m_nearUsers.m_members.append(contact.user)
+                                contactsData.m_nearUsers.addMember(contact)
                                 contactsData.m_contacts[contact.user] = contact
                             }
                         }
@@ -93,7 +93,7 @@ func httpGetFaceUsers() {
                     if let contactObjs = json["users"] as? [AnyObject] {
                         for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: contactObj) {
-                                contactsData.m_faceUsers.m_members.append(contact.user)
+                                contactsData.m_faceUsers.addMember(contact)
                                 contactsData.m_contacts[contact.user] = contact
                             }
                         }
@@ -102,6 +102,16 @@ func httpGetFaceUsers() {
                     contactsData.updateDelegates()
                 }
             }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+        }
+    )
+}
+
+func httpDidFaceUsers() {
+    let params: Dictionary = ["uid":NSNumber(unsignedLongLong: userInfo.userID)]
+    http.postRequest("remfaceusers", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
         }
@@ -122,7 +132,7 @@ func httpGetCellContacts(key:String) {
                     if let contactObjs = json["users"] as? [AnyObject] {
                         for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: contactObj) {
-                                contactsData.m_cellUsers.m_members.append(contact.user)
+                                contactsData.m_cellUsers.addMember(contact)
                                 contactsData.m_contacts[contact.user] = contact
                             }
                         }
@@ -148,7 +158,7 @@ func httpGetSuggestContacts() {
                     if let usersObjs = json["users"] as? [AnyObject] {
                         for case let userObj in (usersObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: userObj) {
-                                contactsData.m_rcmtUsers.m_members.append(contact.user)
+                                contactsData.m_rcmtUsers.addMember(contact)
                                 contactsData.addUser(contact)
                             }
                         }

@@ -1512,22 +1512,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PeopleConnect/Data+Contact.swift"
-            timestampString = "568212471.130101"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "177"
-            endingLineNumber = "177"
-            landmarkName = "addMember(_:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+CreatePost.swift"
             timestampString = "567148639.676357"
             startingColumnNumber = "9223372036854775807"
@@ -1593,11 +1577,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Data+Contact.swift"
-            timestampString = "568309104.5897321"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "365"
-            endingLineNumber = "365"
+            startingLineNumber = "367"
+            endingLineNumber = "367"
             landmarkName = "remContact(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1609,11 +1593,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Data+Contact.swift"
-            timestampString = "568309104.5897321"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "375"
-            endingLineNumber = "375"
+            startingLineNumber = "377"
+            endingLineNumber = "377"
             landmarkName = "getContact(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -2199,11 +2183,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Requests+Contact.swift"
-            timestampString = "568314307.208563"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "203"
-            endingLineNumber = "203"
+            startingLineNumber = "213"
+            endingLineNumber = "213"
             landmarkName = "httpGetPhotos(_:passed:failed:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2215,11 +2199,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Requests+Contact.swift"
-            timestampString = "568314307.208563"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "213"
-            endingLineNumber = "213"
+            startingLineNumber = "223"
+            endingLineNumber = "223"
             landmarkName = "httpGetPhotos(_:passed:failed:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2327,11 +2311,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Requests+Contact.swift"
-            timestampString = "568314307.208563"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "146"
-            endingLineNumber = "146"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
             landmarkName = "httpGetSuggestContacts()"
             landmarkType = "7">
          </BreakpointContent>
@@ -2343,11 +2327,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Requests+Contact.swift"
-            timestampString = "568314307.208563"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "162"
-            endingLineNumber = "162"
+            startingLineNumber = "172"
+            endingLineNumber = "172"
             landmarkName = "httpGetSuggestContacts()"
             landmarkType = "7">
          </BreakpointContent>
@@ -2711,11 +2695,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Data+Contact.swift"
-            timestampString = "568309104.5897321"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "359"
-            endingLineNumber = "359"
+            startingLineNumber = "361"
+            endingLineNumber = "361"
             landmarkName = "addUser(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -2823,11 +2807,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Data+Contact.swift"
-            timestampString = "568309104.5897321"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "405"
-            endingLineNumber = "405"
+            startingLineNumber = "407"
+            endingLineNumber = "407"
             landmarkName = "clearContacts()"
             landmarkType = "5">
          </BreakpointContent>
@@ -2839,11 +2823,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Data+Contact.swift"
-            timestampString = "568309104.5897321"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "409"
-            endingLineNumber = "409"
+            startingLineNumber = "411"
+            endingLineNumber = "411"
             landmarkName = "clearContacts()"
             landmarkType = "5">
          </BreakpointContent>
@@ -2855,11 +2839,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Contacts.swift"
-            timestampString = "568315215.350777"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "340"
-            endingLineNumber = "340"
+            startingLineNumber = "344"
+            endingLineNumber = "344"
             landmarkName = "collectionView(_:layout:sizeForItemAtIndexPath:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -2871,28 +2855,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/Data+Contact.swift"
-            timestampString = "568309104.5897321"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "393"
-            endingLineNumber = "393"
+            startingLineNumber = "395"
+            endingLineNumber = "395"
             landmarkName = "moveContactsOutTag(_:tag:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PeopleConnect/Data+Contact.swift"
-            timestampString = "568213806.126655"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "161"
-            endingLineNumber = "161"
-            landmarkName = "addMember(_:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -2951,11 +2919,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Contacts.swift"
-            timestampString = "568315215.350777"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "231"
-            endingLineNumber = "231"
+            startingLineNumber = "235"
+            endingLineNumber = "235"
             landmarkName = "UpdateLocationSuccess()"
             landmarkType = "5">
          </BreakpointContent>
@@ -2967,11 +2935,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Contacts.swift"
-            timestampString = "568315215.350777"
+            timestampString = "568343986.556352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "234"
-            endingLineNumber = "234"
+            startingLineNumber = "238"
+            endingLineNumber = "238"
             landmarkName = "UpdateLocationSuccess()"
             landmarkType = "5">
          </BreakpointContent>
@@ -2983,7 +2951,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Loading.swift"
-            timestampString = "568315884.10116"
+            timestampString = "568344360.906368"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "49"
