@@ -749,8 +749,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="118"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="x3E-T4-6Tn" customClass="ImgPreview" customModule="PeopleConnect" customModuleProvider="target">
-                                                    <rect key="frame" x="8" y="8" width="584" height="101"/>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x3E-T4-6Tn" customClass="ImgPreview" customModule="PeopleConnect" customModuleProvider="target">
+                                                    <rect key="frame" x="8" y="8" width="584" height="102"/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 </view>
                                             </subviews>
@@ -764,7 +764,7 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="对谁可见" id="pAa-VN-rFD">
+                            <tableViewSection headerTitle="好友可见" id="pAa-VN-rFD">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="73" id="fgI-pm-7GF" customClass="PostTags" customModule="PeopleConnect" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="284" width="600" height="73"/>
@@ -773,186 +773,50 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="73"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="9Cg-6X-MHg">
-                                                    <rect key="frame" x="8" y="37" width="584" height="27"/>
-                                                    <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="3nf-T4-WcX">
-                                                        <size key="itemSize" width="60" height="28"/>
-                                                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                                    </collectionViewFlowLayout>
-                                                    <cells>
-                                                        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PostTagCell" id="cPU-Uu-TYc" customClass="PostTagCell" customModule="PeopleConnect" customModuleProvider="target">
-                                                            <rect key="frame" x="0.0" y="-1" width="60" height="28"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                                                <rect key="frame" x="0.0" y="0.0" width="60" height="28"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
-                                                                <subviews>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tqR-50-v80">
-                                                                        <rect key="frame" x="9" y="3" width="42" height="21"/>
-                                                                        <attributedString key="attributedText">
-                                                                            <fragment content="Label">
-                                                                                <attributes>
-                                                                                    <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                                                    <font key="NSFont" size="17" name="HelveticaNeue"/>
-                                                                                    <paragraphStyle key="NSParagraphStyle" alignment="right" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
-                                                                                </attributes>
-                                                                            </fragment>
-                                                                        </attributedString>
-                                                                        <nil key="highlightedColor"/>
-                                                                    </label>
-                                                                </subviews>
-                                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                            </view>
-                                                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                                            <color key="tintColor" name="keyboardFocusIndicatorColor" catalog="System" colorSpace="catalog"/>
-                                                            <constraints>
-                                                                <constraint firstItem="tqR-50-v80" firstAttribute="centerX" secondItem="cPU-Uu-TYc" secondAttribute="centerX" id="2OB-bM-Xxf"/>
-                                                                <constraint firstItem="tqR-50-v80" firstAttribute="centerY" secondItem="cPU-Uu-TYc" secondAttribute="centerY" id="Muj-pE-sgk"/>
-                                                                <constraint firstItem="tqR-50-v80" firstAttribute="top" secondItem="cPU-Uu-TYc" secondAttribute="topMargin" constant="-5" id="NYf-6v-pdn"/>
-                                                            </constraints>
-                                                            <connections>
-                                                                <outlet property="m_tagName" destination="tqR-50-v80" id="qKJ-im-lUd"/>
-                                                            </connections>
-                                                        </collectionViewCell>
-                                                    </cells>
-                                                    <connections>
-                                                        <outlet property="dataSource" destination="fgI-pm-7GF" id="3H2-Sm-MpL"/>
-                                                        <outlet property="delegate" destination="fgI-pm-7GF" id="FFt-z0-VW1"/>
-                                                    </connections>
-                                                </collectionView>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="以下好友可见" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LVd-uf-gUR">
-                                                    <rect key="frame" x="15" y="8" width="104" height="20"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="104" id="KH2-89-qt8"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xXS-cY-fzf" customClass="TagsView" customModule="PeopleConnect" customModuleProvider="target">
+                                                    <rect key="frame" x="8" y="8" width="584" height="57"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                </view>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="9Cg-6X-MHg" firstAttribute="trailing" secondItem="Lqr-RA-yVT" secondAttribute="trailingMargin" id="0o5-XA-c9T"/>
-                                                <constraint firstItem="9Cg-6X-MHg" firstAttribute="top" secondItem="LVd-uf-gUR" secondAttribute="bottom" constant="9" id="4f3-xR-jcL"/>
-                                                <constraint firstItem="9Cg-6X-MHg" firstAttribute="leading" secondItem="Lqr-RA-yVT" secondAttribute="leadingMargin" id="7Ab-zE-aFR"/>
-                                                <constraint firstItem="LVd-uf-gUR" firstAttribute="leading" secondItem="Lqr-RA-yVT" secondAttribute="leadingMargin" constant="7" id="Gv3-ba-oDd"/>
-                                                <constraint firstItem="9Cg-6X-MHg" firstAttribute="bottom" secondItem="Lqr-RA-yVT" secondAttribute="bottomMargin" id="bb4-Q3-sDh"/>
-                                                <constraint firstItem="LVd-uf-gUR" firstAttribute="top" secondItem="Lqr-RA-yVT" secondAttribute="topMargin" id="x7V-Ms-0yp"/>
+                                                <constraint firstItem="xXS-cY-fzf" firstAttribute="bottom" secondItem="Lqr-RA-yVT" secondAttribute="bottomMargin" id="1OP-a6-wz4"/>
+                                                <constraint firstItem="xXS-cY-fzf" firstAttribute="top" secondItem="Lqr-RA-yVT" secondAttribute="topMargin" id="Kng-PN-JOy"/>
+                                                <constraint firstItem="xXS-cY-fzf" firstAttribute="leading" secondItem="Lqr-RA-yVT" secondAttribute="leadingMargin" id="hWm-dp-Q0H"/>
+                                                <constraint firstItem="xXS-cY-fzf" firstAttribute="trailing" secondItem="Lqr-RA-yVT" secondAttribute="trailingMargin" id="sHc-vn-prP"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="73" id="8wX-IP-MTG" customClass="PostGroups" customModule="PeopleConnect" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="357" width="600" height="73"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="8wX-IP-MTG" id="aWl-mv-MI0">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="73"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="l3t-n0-5zf">
-                                                    <rect key="frame" x="8" y="37" width="584" height="27"/>
-                                                    <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="G4X-W9-hIs">
-                                                        <size key="itemSize" width="60" height="28"/>
-                                                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                                    </collectionViewFlowLayout>
-                                                    <cells>
-                                                        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PostGroupCell" id="sTN-rh-FeE" customClass="PostGroupCell" customModule="PeopleConnect" customModuleProvider="target">
-                                                            <rect key="frame" x="0.0" y="-1" width="60" height="28"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                                                <rect key="frame" x="0.0" y="0.0" width="60" height="28"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
-                                                                <subviews>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fs5-S8-Cwz">
-                                                                        <rect key="frame" x="9" y="3" width="42" height="21"/>
-                                                                        <attributedString key="attributedText">
-                                                                            <fragment content="Label">
-                                                                                <attributes>
-                                                                                    <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                                                    <font key="NSFont" size="17" name="HelveticaNeue"/>
-                                                                                    <paragraphStyle key="NSParagraphStyle" alignment="right" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
-                                                                                </attributes>
-                                                                            </fragment>
-                                                                        </attributedString>
-                                                                        <nil key="highlightedColor"/>
-                                                                    </label>
-                                                                </subviews>
-                                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                            </view>
-                                                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                                            <color key="tintColor" name="keyboardFocusIndicatorColor" catalog="System" colorSpace="catalog"/>
-                                                            <constraints>
-                                                                <constraint firstItem="Fs5-S8-Cwz" firstAttribute="centerX" secondItem="sTN-rh-FeE" secondAttribute="centerX" id="24Q-sd-JpS"/>
-                                                                <constraint firstItem="Fs5-S8-Cwz" firstAttribute="top" secondItem="sTN-rh-FeE" secondAttribute="topMargin" constant="-5" id="Avn-PB-caH"/>
-                                                                <constraint firstItem="Fs5-S8-Cwz" firstAttribute="centerY" secondItem="sTN-rh-FeE" secondAttribute="centerY" id="Fh7-Np-oPS"/>
-                                                            </constraints>
-                                                            <connections>
-                                                                <outlet property="m_groupName" destination="Fs5-S8-Cwz" id="15B-ou-TwC"/>
-                                                            </connections>
-                                                        </collectionViewCell>
-                                                    </cells>
-                                                    <connections>
-                                                        <outlet property="dataSource" destination="8wX-IP-MTG" id="zgD-h1-itV"/>
-                                                        <outlet property="delegate" destination="8wX-IP-MTG" id="fZE-b1-Gag"/>
-                                                    </connections>
-                                                </collectionView>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="以下圈子可见" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AJ6-iC-0D2">
-                                                    <rect key="frame" x="15" y="8" width="104" height="20"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="104" id="eV9-ux-mVI"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="l3t-n0-5zf" firstAttribute="trailing" secondItem="aWl-mv-MI0" secondAttribute="trailingMargin" id="2GK-J2-pRh"/>
-                                                <constraint firstItem="AJ6-iC-0D2" firstAttribute="top" secondItem="aWl-mv-MI0" secondAttribute="topMargin" id="ASR-S3-wHb"/>
-                                                <constraint firstItem="l3t-n0-5zf" firstAttribute="leading" secondItem="aWl-mv-MI0" secondAttribute="leadingMargin" id="Ljm-kk-RIV"/>
-                                                <constraint firstItem="l3t-n0-5zf" firstAttribute="top" secondItem="AJ6-iC-0D2" secondAttribute="bottom" constant="9" id="dWt-sm-IhH"/>
-                                                <constraint firstItem="l3t-n0-5zf" firstAttribute="bottom" secondItem="aWl-mv-MI0" secondAttribute="bottomMargin" id="sGC-vd-z3H"/>
-                                                <constraint firstItem="AJ6-iC-0D2" firstAttribute="leading" secondItem="aWl-mv-MI0" secondAttribute="leadingMargin" constant="7" id="zsF-Ob-5fH"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection headerTitle="附近可见" id="MHG-iL-V4j">
+                                <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="5B2-va-U5c">
-                                        <rect key="frame" x="0.0" y="430" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="385" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5B2-va-U5c" id="sKN-W7-acN">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="附近陌生人可见" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="veo-xW-Vp8">
-                                                    <rect key="frame" x="15" y="8" width="112" height="20"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" misplaced="YES" text="只出现在陌生人的附近动态中，自动屏弊好友" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jEi-CK-9Kj">
-                                                    <rect key="frame" x="15" y="29" width="220" height="14"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="zX6-kV-mKW">
                                                     <rect key="frame" x="533" y="6" width="51" height="31"/>
                                                     <connections>
                                                         <action selector="changeNearby:" destination="U8x-3C-bqT" eventType="valueChanged" id="qC9-a6-I6Q"/>
                                                     </connections>
                                                 </switch>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="只出现在陌生人的附近动态中，自动屏弊好友" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="veo-xW-Vp8">
+                                                    <rect key="frame" x="15" y="12" width="510" height="20"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="trailingMargin" secondItem="zX6-kV-mKW" secondAttribute="trailing" constant="10" id="3DX-dX-kX2"/>
-                                                <constraint firstItem="zX6-kV-mKW" firstAttribute="centerY" secondItem="sKN-W7-acN" secondAttribute="centerY" id="ClF-lx-ka9"/>
-                                                <constraint firstItem="jEi-CK-9Kj" firstAttribute="leading" secondItem="veo-xW-Vp8" secondAttribute="leading" id="DHO-xg-k5N"/>
-                                                <constraint firstItem="veo-xW-Vp8" firstAttribute="leading" secondItem="sKN-W7-acN" secondAttribute="leadingMargin" constant="7" id="FKe-4E-Hqk"/>
-                                                <constraint firstItem="veo-xW-Vp8" firstAttribute="top" secondItem="sKN-W7-acN" secondAttribute="topMargin" id="SdS-wf-ADV"/>
-                                                <constraint firstAttribute="bottom" secondItem="jEi-CK-9Kj" secondAttribute="bottom" id="oeo-qv-8rd"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="zX6-kV-mKW" secondAttribute="trailing" constant="10" id="4xN-db-SgP"/>
+                                                <constraint firstItem="veo-xW-Vp8" firstAttribute="centerY" secondItem="sKN-W7-acN" secondAttribute="centerY" id="TnB-yr-iwo"/>
+                                                <constraint firstItem="veo-xW-Vp8" firstAttribute="leading" secondItem="sKN-W7-acN" secondAttribute="leadingMargin" constant="7" id="UAB-w8-gK6"/>
+                                                <constraint firstItem="zX6-kV-mKW" firstAttribute="leading" secondItem="veo-xW-Vp8" secondAttribute="trailing" constant="8" symbolic="YES" id="UVx-5G-Trq"/>
+                                                <constraint firstItem="veo-xW-Vp8" firstAttribute="top" secondItem="sKN-W7-acN" secondAttribute="topMargin" constant="4" id="XrE-jU-tqr"/>
+                                                <constraint firstItem="veo-xW-Vp8" firstAttribute="centerY" secondItem="zX6-kV-mKW" secondAttribute="centerY" id="Y8R-jt-14Q"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -975,11 +839,8 @@
                         <outlet property="m_createPostBtn" destination="r9L-YE-HQN" id="Sne-cu-nGa"/>
                         <outlet property="m_desc" destination="a1Z-gT-LKQ" id="nKS-Ok-Eg7"/>
                         <outlet property="m_imgsPreview" destination="x3E-T4-6Tn" id="lPP-c3-azJ"/>
-                        <outlet property="m_postGroups" destination="l3t-n0-5zf" id="cgb-8g-VMb"/>
-                        <outlet property="m_postGroupsCell" destination="8wX-IP-MTG" id="fcl-B1-XJu"/>
-                        <outlet property="m_postTags" destination="9Cg-6X-MHg" id="a6x-fH-cub"/>
-                        <outlet property="m_postTagsCell" destination="fgI-pm-7GF" id="FLH-st-nOk"/>
                         <outlet property="m_strangerSee" destination="zX6-kV-mKW" id="poZ-lw-BUu"/>
+                        <outlet property="m_visibleTags" destination="xXS-cY-fzf" id="Eb7-uQ-qmj"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Zhm-nI-Lma" userLabel="First Responder" sceneMemberID="firstResponder"/>
