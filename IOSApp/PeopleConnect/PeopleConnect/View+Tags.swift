@@ -9,13 +9,15 @@
 import UIKit
 
 let TagColors = [
-    1:UIColor.redColor(),
-    2:UIColor.greenColor(),
-    3:UIColor.blueColor(),
-    4:UIColor.yellowColor(),
-    5:UIColor.purpleColor()]
+    1:UIColor(red: 178.0/255.0, green: 34.0/255.0, blue: 34.0/255.0, alpha: 1.0),
+    2:UIColor(red: 34.0/255.0, green: 193.0/255.0, blue: 34.0/255.0, alpha: 1.0),
+    3:UIColor(red: 0.0, green: 139.0/255.0, blue: 139.0/255.0, alpha: 1.0),
+    4:UIColor(red: 139.0/255.0, green: 0.0, blue: 139.0/255.0, alpha: 1.0),
+    5:UIColor(red: 139.0/255.0, green: 139.0/255.0, blue: 0.0, alpha: 1.0)]
 
-let tagEditFont = UIFont.systemFontOfSize(15)
+let nearColor = UIColor(red: 199.0/255.0, green: 21.0/255.0, blue: 133.0/255.0, alpha: 1.0)
+
+let tagEditFont = UIFont.systemFontOfSize(16)
 
 let PostTagHeight:CGFloat = 15
 let PostTagSpace:CGFloat = 15
@@ -23,7 +25,7 @@ let PostTagSpace:CGFloat = 15
 let EditTagExWidth:CGFloat = 20
 let EditTagHeight:CGFloat = 30
 let EditTagSpace:CGFloat = 10
-let EditTagLineSpace:CGFloat = 20
+let EditTagLineSpace:CGFloat = 8
 
 extension Post {
     func getPermitHeight(width:CGFloat)->CGFloat {
@@ -136,10 +138,8 @@ class TagsView: UIView {
     
     var m_flag:UInt64 = 0
     
-    func pushTag(tag:Tag, font:UIFont) {
-        let colorTagID = (tag.m_father != nil ? tag.m_father?.m_tagID : tag.m_tagID)
-        let color = TagColors[Int(colorTagID!)]
-        let tagWidth = getTextWidth(tag.m_tagName, height: EditTagHeight, font: font) + EditTagExWidth
+    func pushEditTag(name:String, data:UInt64, color:UIColor) {
+        let tagWidth = getTextWidth(name, height: EditTagHeight, font: tagEditFont) + EditTagExWidth
         let tagLabel = m_tags[m_curTag]
         
         if tagWidth + m_lineEnd > m_width {
@@ -147,11 +147,11 @@ class TagsView: UIView {
             m_lineEnd = 0
         }
         
-        tagLabel.m_data = tag.m_bit
+        tagLabel.m_data = data
         tagLabel.hidden = false
-        tagLabel.text = tag.m_tagName
+        tagLabel.text = name
         tagLabel.backgroundColor = UIColor.grayColor()
-        tagLabel.m_hilightColor = color!
+        tagLabel.m_hilightColor = color
         tagLabel.frame = CGRectMake(m_lineEnd, CGFloat(m_numLines)*(EditTagHeight+EditTagLineSpace), tagWidth, EditTagHeight)
         
         m_lineEnd += (tagWidth + EditTagSpace)
@@ -171,7 +171,9 @@ class TagsView: UIView {
         let tags = contactsData.getPostTags()
         
         for (_, tag) in tags.enumerate() {
-            pushTag(tag, font: tagEditFont)
+            let colorTagID = (tag.m_father != nil ? tag.m_father?.m_tagID : tag.m_tagID)
+            let color = TagColors[Int(colorTagID!)]
+            pushEditTag(tag.m_tagName, data: tag.m_bit, color: color!)
         }
     }
     
@@ -217,7 +219,7 @@ class TagsView: UIView {
             tagLabel.hidden = false
             tagLabel.frame = CGRectMake(lineEnd, CGFloat(numLines)*(PostTagHeight+PostPreViewGap), tagWidth, PostTagHeight)
             tagLabel.text = "附近"
-            tagLabel.backgroundColor = UIColor.cyanColor()
+            tagLabel.backgroundColor = nearColor
 
             lineEnd += (tagWidth + PostItemGap)
             tagIdx++

@@ -715,16 +715,16 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <sections>
-                            <tableViewSection id="0UU-Lf-4nD">
+                            <tableViewSection headerTitle="此刻感想" id="0UU-Lf-4nD">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="46" id="77u-XH-Y0v">
-                                        <rect key="frame" x="0.0" y="64" width="600" height="46"/>
+                                        <rect key="frame" x="0.0" y="92" width="600" height="46"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="77u-XH-Y0v" id="zD5-Bs-Ep7">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="46"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="说点什么..." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="a1Z-gT-LKQ">
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="......" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="a1Z-gT-LKQ">
                                                     <rect key="frame" x="8" y="8" width="584" height="30"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" returnKeyType="done"/>
@@ -743,7 +743,7 @@
                             <tableViewSection headerTitle="选择附件" id="EJO-5p-4fd">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="118" id="rVp-pq-vQA" customClass="PreviewCell" customModule="PeopleConnect" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="138" width="600" height="118"/>
+                                        <rect key="frame" x="0.0" y="166" width="600" height="118"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="rVp-pq-vQA" id="Mj0-SW-W0Q">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="118"/>
@@ -767,7 +767,7 @@
                             <tableViewSection headerTitle="好友可见" id="pAa-VN-rFD">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="73" id="fgI-pm-7GF" customClass="PostTags" customModule="PeopleConnect" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="284" width="600" height="73"/>
+                                        <rect key="frame" x="0.0" y="312" width="600" height="73"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fgI-pm-7GF" id="Lqr-RA-yVT">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="73"/>
@@ -791,7 +791,7 @@
                             <tableViewSection headerTitle="附近可见" id="MHG-iL-V4j">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="5B2-va-U5c">
-                                        <rect key="frame" x="0.0" y="385" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="413" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5B2-va-U5c" id="sKN-W7-acN">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
