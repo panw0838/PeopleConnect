@@ -48,7 +48,7 @@ func main() {
 	http.HandleFunc("/remfaceusers", user.RemFaceUsersHandler)
 	http.HandleFunc("/possiblecontacts", user.GetSuggestUsersHandler)
 	http.HandleFunc("/photos", user.GetPhotosHandler)
-	http.HandleFunc("/searchcontact", user.SearchContactHandler)
+	http.HandleFunc("/searchusers", user.SearchUsersHandler)
 	http.HandleFunc("/updatetagmember", user.UpdateTagMemberHandler)
 
 	http.HandleFunc("/addcontact", message.AddContactHandler)

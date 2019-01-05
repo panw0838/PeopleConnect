@@ -245,18 +245,19 @@ func GetPhotosHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type SearchContactInput struct {
-	User         uint64   `json:"user"`
-	CountryCodes []int    `json:"codes"`
-	CellNumbers  []string `json:"cells"`
+type SearchUsersInput struct {
+	User        uint64   `json:"user"`
+	CountryCode int      `json:"code"`
+	Names       []string `json:"names"`
+	CellNumbers []string `json:"cells"`
 }
 
-type SearchContactReturn struct {
-	Users []ContactInfo `json:"users"`
+type SearchUsersReturn struct {
+	Users []User `json:"users"`
 }
 
-func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
-	var input SearchContactInput
+func SearchUsersHandler(w http.ResponseWriter, r *http.Request) {
+	var input SearchUsersInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
 		share.WriteErrorCode(w, err)
@@ -270,49 +271,31 @@ func SearchContactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	var response SearchContactReturn
+	var response SearchUsersReturn
 
 	for idx, cell := range input.CellNumbers {
-		cID, err := dbGetUser(input.CountryCodes[idx], cell, c)
+		cID, err := dbGetUser(input.CountryCode, cell, c)
 		if err != nil {
 			share.WriteErrorCode(w, err)
 			return
 		}
 		if cID == 0 {
-			var nilContact ContactInfo
-			nilContact.User = 0
-			nilContact.Flag = 0
-			nilContact.Name = ""
-			response.Users = append(response.Users, nilContact)
 			continue
 		}
 
-		flag, _, err := GetCashFlag(cID, input.User, c)
+		isStranger, err := IsStranger(cID, input.User, c)
 		if err != nil {
 			share.WriteErrorCode(w, err)
 			return
 		}
-		if (flag & BLK_BIT) != 0 {
-			var nilContact ContactInfo
-			nilContact.User = 0
-			nilContact.Flag = 0
-			nilContact.Name = ""
-			response.Users = append(response.Users, nilContact)
+		if !isStranger {
 			continue
 		}
 
-		accountKey := GetAccountKey(cID)
-		name, err := DbGetUserInfoField(accountKey, NameField, c)
-		if err != nil {
-			share.WriteErrorCode(w, err)
-			return
-		}
-
-		var newContact ContactInfo
-		newContact.User = cID
-		newContact.Flag = flag
-		newContact.Name = name
-		response.Users = append(response.Users, newContact)
+		var newUser User
+		newUser.UID = cID
+		newUser.Name = input.Names[idx]
+		response.Users = append(response.Users, newUser)
 	}
 
 	data, err := json.Marshal(&response)
