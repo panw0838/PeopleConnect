@@ -9,24 +9,6 @@
 import UIKit
 import Photos
 
-protocol RemoveAttDelegate {
-    func removeAtt(idx:Int)
-}
-
-class AttachmentCell:UICollectionViewCell {
-
-    @IBOutlet weak var m_preview: UIImageView!
-    @IBOutlet weak var m_delete: UIButton!
-    @IBOutlet weak var m_add: UIImageView!
-    
-    var m_idx = 0
-    var m_delegate:RemoveAttDelegate?
-    
-    @IBAction func deleteAttachment(sender: AnyObject) {
-        m_delegate?.removeAtt(m_idx)
-    }
-}
-
 class PostTagCell:UICollectionViewCell {
     @IBOutlet weak var m_tagName: UILabel!
 }
@@ -100,15 +82,10 @@ class PostGroups:UITableViewCell, UICollectionViewDataSource, UICollectionViewDe
 
 class CreatePostView:
     UITableViewController,
-    UICollectionViewDataSource,
-    UICollectionViewDelegate,
-    ImgPickerDelegate,
     UITextFieldDelegate,
     UINavigationControllerDelegate,
-    RemoveAttDelegate,
     UpdateLocationDelegate {
     
-    @IBOutlet weak var m_attachments: UICollectionView!
     @IBOutlet weak var m_desc: UITextField!
     @IBOutlet weak var m_postTags: UICollectionView!
     @IBOutlet weak var m_postTagsCell: PostTags!
@@ -118,11 +95,8 @@ class CreatePostView:
     @IBOutlet weak var m_createPostBtn: UIBarButtonItem!
     @IBOutlet weak var m_imgsPreview: ImgPreview!
     
-    var m_picker = ImgPicker(maxCount: 9)
-    var m_atts = Array<UIImage>()
-    
     func updateCreateBtn() {
-        m_createPostBtn.enabled = (m_atts.count > 0 || m_desc.text?.characters.count > 0)
+        m_createPostBtn.enabled = (m_imgsPreview.m_picks.count > 0 || m_desc.text?.characters.count > 0)
     }
     
     func UpdateLocationSuccess() {
@@ -147,7 +121,7 @@ class CreatePostView:
         let groups = Array(m_postGroupsCell.m_selectGroups)
         let nearby = m_strangerSee.on
         var datas = Array<NSData>()
-        for image in m_atts {
+        for image in m_imgsPreview.m_picks {
             let data = compressImage(image)
             datas.append(data)
         }
@@ -157,7 +131,6 @@ class CreatePostView:
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        m_picker.m_pickerDelegate = self
         m_postTags.allowsSelection = true
         m_postTags.allowsMultipleSelection = true
         m_postGroups.allowsSelection = true
@@ -174,33 +147,6 @@ class CreatePostView:
     }
     
     func textFieldDidEndEditing(textField: UITextField) {
-        updateCreateBtn()
-    }
-    
-    func removeAtt(idx: Int) {
-        m_atts.removeAtIndex(idx)
-        m_attachments.reloadData()
-    }
-    
-    func didFinishedPickImage(imgs: Array<PHAsset>) {
-        let imgMgr = PHImageManager()
-        let options = PHImageRequestOptions()
-        
-        options.deliveryMode = .HighQualityFormat
-        options.networkAccessAllowed = true
-        options.resizeMode = .Exact
-        options.synchronous = true
-        
-        m_atts.removeAll()
-        
-        for asset in imgs {
-            let tarSize = CGSizeMake(1024*4, 1024*4)
-            imgMgr.requestImageForAsset(asset, targetSize: tarSize, contentMode: .AspectFill, options: options, resultHandler: {(img:UIImage?, info:[NSObject:AnyObject]?)->Void in
-                self.m_atts.append(img!)
-                })
-        }
-        
-        m_attachments.reloadData()
         updateCreateBtn()
     }
     
@@ -225,41 +171,4 @@ class CreatePostView:
         }
         return cell
     }
-    
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return m_atts.count + 1
-    }
-    
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("AttachmentCell", forIndexPath: indexPath) as! AttachmentCell
-        if indexPath.row < m_atts.count {
-            cell.m_preview.image = m_atts[indexPath.row]
-            cell.m_delete.hidden = false
-            cell.m_add.hidden = true
-        }
-        else {
-            cell.m_preview.image = nil
-            cell.m_delete.hidden = true
-            cell.m_add.hidden = false
-        }
-        cell.m_idx = indexPath.row
-        cell.m_delegate = self
-        return cell
-    }
-    
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.row < m_atts.count {
-            
-        }
-        else {
-            let navi = UINavigationController(rootViewController: m_picker)
-            navi.delegate = self
-            self.presentViewController(navi, animated: true, completion: nil)
-        }
-    }
-
 }
