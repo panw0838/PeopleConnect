@@ -134,12 +134,6 @@ func GetFaceUsersHandler(w http.ResponseWriter, r *http.Request) {
 		users = append(users, user)
 	}
 
-	_, err = c.Do("ZREM", face2FaceKey, input.UID)
-	if err != nil {
-		share.WriteErrorCode(w, err)
-		return
-	}
-
 	data, err := json.Marshal(&users)
 	if err != nil {
 		share.WriteErrorCode(w, err)
@@ -148,4 +142,30 @@ func GetFaceUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 	share.WriteErrorCode(w, nil)
 	w.Write(data)
+}
+
+func RemFaceUsersHandler(w http.ResponseWriter, r *http.Request) {
+	var input GetFaceToFaceInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	defer c.Close()
+
+	face2FaceKey := GetFace2FaceKey()
+
+	_, err = c.Do("ZREM", face2FaceKey, input.UID)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	share.WriteErrorCode(w, nil)
 }

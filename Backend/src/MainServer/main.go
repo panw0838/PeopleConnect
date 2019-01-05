@@ -45,6 +45,7 @@ func main() {
 	http.HandleFunc("/nearusers", user.GetNearUsersHandler)
 	http.HandleFunc("/regfaceusers", user.RegFaceUsersHandler)
 	http.HandleFunc("/getfaceusers", user.GetFaceUsersHandler)
+	http.HandleFunc("/remfaceusers", user.RemFaceUsersHandler)
 	http.HandleFunc("/possiblecontacts", user.GetSuggestUsersHandler)
 	http.HandleFunc("/photos", user.GetPhotosHandler)
 	http.HandleFunc("/searchcontact", user.SearchContactHandler)
