@@ -16,9 +16,7 @@ class DelCellView: UIImageView {
     var m_father:ImgPreview?
 
     func del() {
-        m_father?.m_picker?.removeAtIndex(m_index)
-        m_father?.m_picks.removeAtIndex(m_index)
-        m_father?.reloadEdit()
+        m_father?.removeImgAtIndex(m_index)
     }
 }
 
@@ -112,6 +110,13 @@ class ImgPreview: UIView, ImgPickerDelegate {
                 self.addSubview(del)
             }
         }
+    }
+    
+    func removeImgAtIndex(index:Int) {
+        m_picker?.removeAtIndex(index)
+        m_picks.removeAtIndex(index)
+        reloadEdit()
+        m_controller?.updateCreateBtn()
     }
     
     func didFinishedPickImage(imgs: Array<PHAsset>) {
