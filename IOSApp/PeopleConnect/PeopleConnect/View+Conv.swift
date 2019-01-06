@@ -91,7 +91,7 @@ class MsgCell: UITableViewCell {
     var m_status  = MsgStatusView(frame: CGRectZero)
     var m_time    = UILabel(frame: CGRectZero)
     
-    var m_conv:Conversation?
+    var m_msg:MsgInfo?
     var m_index:Int = 0
     var m_father:ConversationView? = nil
     
@@ -122,7 +122,7 @@ class MsgCell: UITableViewCell {
     
     func showContact() {
         m_father?.m_text.endEditing(true)
-        ContactView.ContactID = m_conv!.m_messages[m_index].from
+        ContactView.ContactID = m_msg!.from
         m_father?.performSegueWithIdentifier("ShowContact", sender: self)
     }
     
@@ -143,6 +143,8 @@ class MsgCell: UITableViewCell {
         let textSize = getMsgSize(msg.data, maxSize: maxTextSize, font: msgFont)
         let textBubSize = CGSizeMake(textSize.width + textGap*2, textSize.height + textGap*2)
         
+        m_msg = msg
+        
         m_photo.setImage(getPhoto(msg.from), forState: .Normal)
         m_message.setTitle(msg.data, forState: .Normal)
         
@@ -153,7 +155,7 @@ class MsgCell: UITableViewCell {
             m_photo.frame.origin = CGPointMake(width - pad - pSize, pad)
             m_message.frame.origin = CGPointMake(m_photo.frame.origin.x - textBubSize.width - pad, pad)
 
-            m_message.setTitleColor(UIColor.lightTextColor(), forState: .Normal)
+            m_message.setTitleColor(UIColor.whiteColor(), forState: .Normal)
             m_message.setBackgroundImage(UIImage.resizableImage("chat_send_nor"), forState: .Normal)
             m_message.setBackgroundImage(UIImage.resizableImage("chat_send_press"), forState: .Highlighted)
         }
@@ -161,7 +163,7 @@ class MsgCell: UITableViewCell {
             m_photo.frame.origin = CGPointMake(pad, pad)
             m_message.frame.origin = CGPointMake(m_photo.frame.origin.x + m_photo.frame.width + pad, pad)
 
-            m_message.setTitleColor(UIColor.darkTextColor(), forState: .Normal)
+            m_message.setTitleColor(UIColor.whiteColor(), forState: .Normal)
             m_message.setBackgroundImage(UIImage.resizableImage("chat_receive_nor"), forState: .Normal)
             m_message.setBackgroundImage(UIImage.resizableImage("chat_receive_press"), forState: .Highlighted)
         }
@@ -293,6 +295,7 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     override func viewWillDisappear(animated: Bool) {
         self.viewDidDisappear(animated)
         m_conv?.m_delegate = nil
+        m_conv?.m_newMsg = false
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -316,7 +319,6 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         let msg = m_conv!.m_messages[indexPath.row]
         let sending = m_sendings[indexPath.row] == nil ? false : m_sendings[indexPath.row]
         cell.reload(msg, sending: sending!, width: m_messegesTable.contentSize.width)
-        cell.m_conv = m_conv
         cell.m_father = self
         return cell
     }

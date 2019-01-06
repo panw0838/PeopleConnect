@@ -11,6 +11,9 @@ import Foundation
 let StartTime = NSDate(timeIntervalSinceReferenceDate: 0)
 
 func getTimeString(time:UInt64)->String {
+    if time == 0 {
+        return "发送失败"
+    }
     let tid = NSDate(timeInterval: Double(time), sinceDate: StartTime)
     let now = NSDate(timeIntervalSinceNow: 0)
     let diff = now.timeIntervalSinceDate(tid)

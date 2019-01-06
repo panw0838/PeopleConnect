@@ -6,7 +6,6 @@
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
-        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
     </dependencies>
     <scenes>
         <!--消息-->
@@ -45,14 +44,11 @@
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dDK-93-vGg">
                                             <rect key="frame" x="8" y="4" width="50" height="50"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="50" id="rwi-V7-Fyi"/>
-                                            </constraints>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OS1-y7-7Gf">
                                             <rect key="frame" x="66" y="4" width="356" height="29"/>
                                             <constraints>
-                                                <constraint firstAttribute="width" constant="356" id="ao0-xg-vsB"/>
+                                                <constraint firstAttribute="width" constant="356" id="KVO-4F-8VR"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="0.0" green="0.50196081399917603" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -61,7 +57,7 @@
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="azd-li-F3p">
                                             <rect key="frame" x="517" y="36" width="75" height="14"/>
                                             <constraints>
-                                                <constraint firstAttribute="width" constant="75" id="wFh-O9-jci"/>
+                                                <constraint firstAttribute="width" constant="75" id="m2c-sv-48D"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -73,24 +69,35 @@
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="message_new_message" translatesAutoresizingMaskIntoConstraints="NO" id="YCb-Dc-x9z">
+                                            <rect key="frame" x="38" y="4" width="20" height="20"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="20" id="mcE-Hl-v9b"/>
+                                            </constraints>
+                                        </imageView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="OEj-g4-5jl" firstAttribute="leading" secondItem="OS1-y7-7Gf" secondAttribute="leading" id="EsN-Ok-Jup"/>
-                                        <constraint firstItem="azd-li-F3p" firstAttribute="bottom" secondItem="fxo-tC-UFT" secondAttribute="bottomMargin" id="GHj-Pm-Til"/>
-                                        <constraint firstItem="dDK-93-vGg" firstAttribute="centerY" secondItem="fxo-tC-UFT" secondAttribute="centerY" id="LPW-uf-fT3"/>
-                                        <constraint firstItem="OEj-g4-5jl" firstAttribute="top" secondItem="OS1-y7-7Gf" secondAttribute="bottom" id="PQy-nS-0Ti"/>
-                                        <constraint firstItem="azd-li-F3p" firstAttribute="leading" secondItem="OEj-g4-5jl" secondAttribute="trailing" constant="32" id="QbU-3A-gyG"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="OEj-g4-5jl" secondAttribute="bottom" constant="-3" id="Zsp-Wa-PAg"/>
-                                        <constraint firstItem="OS1-y7-7Gf" firstAttribute="top" secondItem="dDK-93-vGg" secondAttribute="top" id="cX5-oP-5hv"/>
-                                        <constraint firstItem="OS1-y7-7Gf" firstAttribute="leading" secondItem="dDK-93-vGg" secondAttribute="trailing" constant="8" symbolic="YES" id="gHx-mA-ae5"/>
-                                        <constraint firstItem="azd-li-F3p" firstAttribute="trailing" secondItem="fxo-tC-UFT" secondAttribute="trailingMargin" id="lZq-dL-ir6"/>
-                                        <constraint firstItem="dDK-93-vGg" firstAttribute="leading" secondItem="fxo-tC-UFT" secondAttribute="leadingMargin" id="lxS-Jd-pod"/>
-                                        <constraint firstItem="dDK-93-vGg" firstAttribute="top" secondItem="fxo-tC-UFT" secondAttribute="topMargin" constant="-4" id="v14-ls-bTK"/>
-                                        <constraint firstItem="azd-li-F3p" firstAttribute="centerY" secondItem="OEj-g4-5jl" secondAttribute="centerY" id="wn2-CG-Fkh"/>
-                                        <constraint firstItem="azd-li-F3p" firstAttribute="top" secondItem="fxo-tC-UFT" secondAttribute="topMargin" constant="28" id="ygN-Za-9gy"/>
+                                        <constraint firstItem="dDK-93-vGg" firstAttribute="centerY" secondItem="fxo-tC-UFT" secondAttribute="centerY" id="2tp-Tj-v12"/>
+                                        <constraint firstItem="OEj-g4-5jl" firstAttribute="centerY" secondItem="azd-li-F3p" secondAttribute="centerY" id="5Bq-P4-hz4"/>
+                                        <constraint firstItem="OS1-y7-7Gf" firstAttribute="leading" secondItem="OEj-g4-5jl" secondAttribute="leading" id="A8c-Tk-Qu2"/>
+                                        <constraint firstItem="azd-li-F3p" firstAttribute="trailing" secondItem="fxo-tC-UFT" secondAttribute="trailingMargin" id="AD7-Zc-nsM"/>
+                                        <constraint firstItem="OEj-g4-5jl" firstAttribute="top" secondItem="OS1-y7-7Gf" secondAttribute="bottom" id="DgC-3m-Msu"/>
+                                        <constraint firstItem="YCb-Dc-x9z" firstAttribute="leading" secondItem="fxo-tC-UFT" secondAttribute="leadingMargin" constant="30" id="PxH-V2-Brq"/>
+                                        <constraint firstItem="YCb-Dc-x9z" firstAttribute="top" secondItem="dDK-93-vGg" secondAttribute="top" id="Zib-Y7-fav"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="YCb-Dc-x9z" secondAttribute="bottom" constant="26" id="dyt-cE-Jko"/>
+                                        <constraint firstItem="azd-li-F3p" firstAttribute="leading" secondItem="OEj-g4-5jl" secondAttribute="trailing" constant="32" id="grq-R0-oqA"/>
+                                        <constraint firstItem="YCb-Dc-x9z" firstAttribute="top" secondItem="OS1-y7-7Gf" secondAttribute="top" id="hh4-hG-360"/>
+                                        <constraint firstItem="OS1-y7-7Gf" firstAttribute="leading" secondItem="dDK-93-vGg" secondAttribute="trailing" constant="8" symbolic="YES" id="lgN-q3-PAb"/>
+                                        <constraint firstItem="azd-li-F3p" firstAttribute="bottom" secondItem="fxo-tC-UFT" secondAttribute="bottomMargin" id="mV6-cv-6HC"/>
+                                        <constraint firstItem="dDK-93-vGg" firstAttribute="leading" secondItem="fxo-tC-UFT" secondAttribute="leadingMargin" id="mwL-RK-4BT"/>
+                                        <constraint firstItem="dDK-93-vGg" firstAttribute="top" secondItem="fxo-tC-UFT" secondAttribute="topMargin" constant="-4" id="nrl-xy-y8g"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="OEj-g4-5jl" secondAttribute="bottom" constant="-3" id="ok0-kH-wQL"/>
+                                        <constraint firstItem="azd-li-F3p" firstAttribute="top" secondItem="fxo-tC-UFT" secondAttribute="topMargin" constant="28" id="pOU-7y-hLI"/>
+                                        <constraint firstItem="OS1-y7-7Gf" firstAttribute="leading" secondItem="YCb-Dc-x9z" secondAttribute="trailing" constant="8" symbolic="YES" id="uqY-8m-079"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="m_alert" destination="YCb-Dc-x9z" id="akT-4c-WVS"/>
                                     <outlet property="m_messege" destination="OEj-g4-5jl" id="79j-1h-qMY"/>
                                     <outlet property="m_name" destination="OS1-y7-7Gf" id="GHi-Bs-Zee"/>
                                     <outlet property="m_profile" destination="dDK-93-vGg" id="7ew-A7-2mR"/>
@@ -1010,14 +1017,11 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="动态" id="tFb-xH-9Hd">
-                        <rightBarButtonItems>
-                            <barButtonItem systemItem="compose" id="w11-x4-t1Y">
-                                <connections>
-                                    <segue destination="U8x-3C-bqT" kind="show" id="ExE-ej-Ndw"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem systemItem="add" id="hVK-m4-bvi"/>
-                        </rightBarButtonItems>
+                        <barButtonItem key="rightBarButtonItem" systemItem="camera" id="w11-x4-t1Y">
+                            <connections>
+                                <segue destination="U8x-3C-bqT" kind="show" id="ExE-ej-Ndw"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="m_posts" destination="Rgo-PK-W5t" id="TFq-MT-z1T"/>
@@ -1545,6 +1549,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="message_new_message" width="96" height="96"/>
         <image name="photo" width="50" height="50"/>
         <image name="tab_contacts" width="27" height="23"/>
         <image name="tab_contacts_hi" width="27" height="23"/>
@@ -1554,7 +1559,7 @@
         <image name="tab_msg_hi" width="25" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="pWd-Ma-Nx5"/>
-        <segue reference="xrR-La-VIP"/>
+        <segue reference="XOj-qb-4jh"/>
+        <segue reference="ZaN-YB-4fP"/>
     </inferredMetricsTieBreakers>
 </document>

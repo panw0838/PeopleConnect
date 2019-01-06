@@ -190,6 +190,7 @@ class Conversation {
     var m_img:UIImage = UIImage(named: "default_profile")!
     var m_messages:Array<MsgInfo> = Array<MsgInfo>()
     var m_delegate:ConvDelegate?
+    var m_newMsg = false
     
     init(id:UInt64) {
         m_id = id
@@ -224,7 +225,9 @@ class Conversation {
     
     func addMessage(newMessage:MsgInfo) {
         m_messages.append(newMessage)
+        m_newMsg = true
         UpdateDelegate()
+        msgData.UpdateDelegate()
     }
     
     func sendMessage(from:UInt64, message:String, type:MessegeType) {
