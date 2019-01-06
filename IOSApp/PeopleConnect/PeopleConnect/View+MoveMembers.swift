@@ -108,7 +108,7 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         var width = m_table.contentSize.width
         for var num = 1; width > 65; num++ {
-            width = (m_table.contentSize.width - 5*CGFloat(num)) / CGFloat(num)
+            width = m_table.contentSize.width / CGFloat(num)
         }
         return CGSizeMake(width, width+ContactNameHeight)
     }

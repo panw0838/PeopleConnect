@@ -139,6 +139,9 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "LoadingAlert.counting() -&gt; ():View+Loading.swift">
+      </ContextState>
+      <ContextState
          contextName = "ContactsData.loadContacts([ContactInfo], userTags : [TagInfo]) -&gt; ():Contact.swift">
       </ContextState>
       <ContextState
@@ -148,6 +151,12 @@
                value = "m_post?.m_comments.count">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TagLabel.tap() -&gt; ():View+Tags.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactView.viewDidLoad() -&gt; ():View+Contact.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsData.addContact(ContactInfo) -&gt; ():Data+Contact.swift">
@@ -204,6 +213,14 @@
       </ContextState>
       <ContextState
          contextName = "ContactView.viewWillAppear(Bool) -&gt; ():ContactView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "compressImage(UIImage) -&gt; NSData:Data+Image.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "srcImage.size">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "LoginView.login(AnyObject) -&gt; ():LoginView.swift">
@@ -303,6 +320,9 @@
       </ContextState>
       <ContextState
          contextName = "MulImgPicker.viewDidLoad() -&gt; ():View+ImagePicker.swift">
+      </ContextState>
+      <ContextState
+         contextName = "MsgCell.showContact() -&gt; ():View+Conv.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsView.collectionView(UICollectionView, numberOfItemsInSection : Int) -&gt; Int:View+Contacts.swift">
@@ -425,10 +445,10 @@
                value = "self.frame">
             </PersistentString>
             <PersistentString
-               value = "m_post">
+               value = "m_post!.m_width">
             </PersistentString>
             <PersistentString
-               value = "m_post!.m_width">
+               value = "m_post">
             </PersistentString>
             <PersistentString
                value = "m_post?.m_contentHeight">
@@ -562,10 +582,10 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ContactsView.AddNewTag(AnyObject) -&gt; ():ContactsView.swift">
+         contextName = "MsgData.AddNewMsg(MsgInfo) -&gt; ():Data+Msg.swift">
       </ContextState>
       <ContextState
-         contextName = "MsgData.AddNewMsg(MsgInfo) -&gt; ():Data+Msg.swift">
+         contextName = "ContactsView.AddNewTag(AnyObject) -&gt; ():ContactsView.swift">
       </ContextState>
       <ContextState
          contextName = "ImgCellView.tap() -&gt; ():View+PostImgPreview.swift">
@@ -594,6 +614,9 @@
                value = "userInfo.userID">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "(httpGetCellContacts([String], cells : [String]) -&gt; ()).(closure #1):Requests+Contact.swift">
       </ContextState>
       <ContextState
          contextName = "HttpService.loginRequest() -&gt; ():Requests.swift">

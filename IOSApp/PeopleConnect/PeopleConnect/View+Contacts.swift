@@ -44,8 +44,8 @@ class ContactCell: UICollectionViewCell {
         m_id = cID
         m_tag = tag
         let width = self.frame.width
-        m_image.frame = CGRectMake(0, 0, width, width)
-        m_name.frame = CGRectMake(0, width, width, ContactNameHeight)
+        m_image.frame = CGRectMake((width-50)/2, (width-50)/2, 50, 50)
+        m_name.frame = CGRectMake(2, width, width-4, ContactNameHeight)
         switch m_id {
         case MoveMemberID:
             m_image.image = UIImage(named: "group_exchange")
@@ -340,7 +340,7 @@ class ContactsView:
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         var width = m_contacts.contentSize.width
         for var num = 1; width > 65; num++ {
-            width = (m_contacts.contentSize.width - 5*CGFloat(num)) / CGFloat(num)
+            width = m_contacts.contentSize.width / CGFloat(num)
         }
         return CGSizeMake(width, width+ContactNameHeight)
     }

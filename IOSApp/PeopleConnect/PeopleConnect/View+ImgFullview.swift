@@ -14,6 +14,8 @@ class ImgPageView:UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         m_imgView = UIImageView(frame: CGRectZero)
+        m_imgView?.contentMode = .ScaleAspectFill
+        m_imgView?.contentScaleFactor = UIScreen.mainScreen().scale
         addSubview(m_imgView!)
     }
 
