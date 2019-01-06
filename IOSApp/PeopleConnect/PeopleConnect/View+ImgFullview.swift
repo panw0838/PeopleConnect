@@ -108,10 +108,6 @@ class ImgFullview:UIView, UIScrollViewDelegate {
             subView.removeFromSuperview()
         }
         // 添加子视图
-        if numPages == 1 {
-            m_pageCtrl?.removeFromSuperview()
-        }
-        
         for page in m_pages {
             page.removeFromSuperview()
         }

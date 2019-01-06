@@ -24,7 +24,8 @@ class ImgPicker:
     UIViewController,
     UINavigationControllerDelegate,
     UICollectionViewDataSource,
-    UICollectionViewDelegate {
+    UICollectionViewDelegate,
+    UICollectionViewDelegateFlowLayout {
     
     var m_maxCount = 9
     var m_imgMgr = PHCachingImageManager()
@@ -215,5 +216,17 @@ class ImgPicker:
         }
         
         m_doneBtn?.enabled = m_selected.count > 0
+    }
+    
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+        var width = m_imgTable.contentSize.width
+        for var num = 1; width > 100; num++ {
+            width = (m_imgTable.contentSize.width - 5*CGFloat(num)*2) / CGFloat(num)
+        }
+        return CGSizeMake(width, width)
+    }
+    
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
     }
 }
