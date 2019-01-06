@@ -15,7 +15,6 @@ class ContactView: PostsTable, UITableViewDelegate {
     @IBOutlet weak var m_profile: UIImageView!
     @IBOutlet weak var m_background: UIImageView!
     @IBOutlet weak var m_posts: UITableView!
-    @IBOutlet weak var m_reqBtn: UIButton!
     
     static var ContactID:UInt64 = 0
     
@@ -29,8 +28,6 @@ class ContactView: PostsTable, UITableViewDelegate {
         super.viewDidLoad()
         
         m_profile.layer.cornerRadius = 10
-        m_reqBtn.layer.cornerRadius = 10
-        m_reqBtn.hidden = true
         
         m_name.text = getName(ContactView.ContactID)
         m_profile.image = getPhoto(ContactView.ContactID)

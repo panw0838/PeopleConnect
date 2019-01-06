@@ -9,7 +9,7 @@
 import UIKit
 
 let PostPhotoSize:CGFloat = 50
-let PostBtnSize:CGFloat = 30
+let PostBtnSize:CGFloat = 25
 let PostItemGap:CGFloat = 5
 let PostPreViewGap:CGFloat = 3
 

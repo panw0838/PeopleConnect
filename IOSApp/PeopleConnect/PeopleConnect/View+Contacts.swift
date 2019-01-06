@@ -19,7 +19,29 @@ let RecommentID :UInt64 = 5
 let FaceToFaceID:UInt64 = 6
 let NearbyID    :UInt64 = 7
 
+let MaxActionID :UInt64 = 8
+
 let ContactNameHeight:CGFloat = 28
+
+let TagActionsImgs:Dictionary<UInt64, String> = [
+    MoveMemberID:   "group_exchange",
+    AddTagID:       "group_addtag",
+    DeleteTagID:    "group_deltag",
+
+    CellBookID:     "group_cell",
+    RecommentID:    "group_recoment",
+    FaceToFaceID:   "group_facetoface",
+    NearbyID:       "group_near"]
+
+let TagActionsNames:Dictionary<UInt64, String> = [
+    MoveMemberID:   "添加/移出组员",
+    AddTagID:       "添加分组",
+    DeleteTagID:    "删除分组",
+
+    CellBookID:     "搜索手机联系人",
+    RecommentID:    "搜索共同认识的人",
+    FaceToFaceID:   "同时按面对面加好友",
+    NearbyID:       "点击搜索附近的人"]
 
 class ContactCell: UICollectionViewCell {
     var m_image  = UIImageView(frame: CGRectZero)
@@ -51,39 +73,14 @@ class ContactCell: UICollectionViewCell {
         let photoSize:CGFloat = 50
         m_image.frame = CGRectMake((width-photoSize)/2, (width-photoSize)/2, photoSize, photoSize)
         m_name.frame = CGRectMake(2, width, width-4, ContactNameHeight)
-        switch m_id {
-        case MoveMemberID:
-            m_image.image = UIImage(named: "group_exchange")
-            m_name.text   = "添加/移出组员"
-            break
-        case AddTagID:
-            m_image.image = UIImage(named: "group_addtag")
-            m_name.text   = "添加分组"
-            break
-        case DeleteTagID:
-            m_image.image = UIImage(named: "group_deltag")
-            m_name.text   = "删除分组"
-            break
-        case CellBookID:
-            m_image.image = UIImage(named: "group_cell")
-            m_name.text   = "搜索手机联系人"
-            break
-        case RecommentID:
-            m_image.image = UIImage(named: "group_recoment")
-            m_name.text   = "搜索共同认识的人"
-            break
-        case FaceToFaceID:
-            m_image.image = UIImage(named: "group_facetoface")
-            m_name.text   = "同时按面对面加好友"
-            break
-        case NearbyID:
-            m_image.image = UIImage(named: "group_near")
-            m_name.text   = "点击搜索附近的人"
-            break
-        default:
-            m_image.image = getPhoto(cID)
-            m_name.text   = getName(cID)
-            break
+        
+        if m_id < MaxActionID {
+            m_image.image = UIImage(named: TagActionsImgs[m_id]!)
+            m_name.text   = TagActionsNames[m_id]!
+        }
+        else {
+            m_image.image = getPhoto(m_id)
+            m_name.text   = getName(m_id)
         }
     }
     
