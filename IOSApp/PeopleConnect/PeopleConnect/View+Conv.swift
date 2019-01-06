@@ -234,6 +234,8 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     var defaultViewHeight:CGFloat = 0
     var defaultKBY:CGFloat=0
     
+    var originOffset:CGFloat = 0
+    
     func keyboardWillChangeFrame(notify:NSNotification) {
         // 1.取得弹出后的键盘frame
         let keyboardFrame = notify.userInfo![UIKeyboardFrameEndUserInfoKey]?.CGRectValue
@@ -251,13 +253,21 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         if defaultTableHeight == 0 {
             defaultTableHeight = m_messegesTable.frame.height
         }
-        
-        self.scrollToButtom()
 
+        self.scrollToButtom()
+        
+        if originOffset == 0 {
+            originOffset = m_messegesTable.contentOffset.y
+        }
+
+        print(m_messegesTable.contentSize, m_messegesTable.contentOffset)
+        //self.m_messegesTable.contentOffset.y = self.originOffset + transformY
 
         //self.m_messegesTable.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         //m_messegesTable.frame.origin = CGPointMake(m_messegesTable.frame.origin.x, defaultTableY+transformY)
         //m_toolBar.frame.origin = CGPointMake(m_toolBar.frame.origin.x, defaultToolY - transformY)
+        
+        //m_messegesTable.contentOffset.y += transformY
         
         UIView.animateWithDuration(Double(duration!), animations: {()->Void in
             //self.m_messegesTable.frame.size = CGSizeMake(self.m_messegesTable.frame.width, self.defaultTableHeight - keyboardFrame!.height)
@@ -273,6 +283,19 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         self.scrollToButtom()
     }
     
+    func keyboardWillShow(notify:NSNotification) {
+        let kbFrame = notify.userInfo![UIKeyboardFrameEndUserInfoKey]!.CGRectValue
+        let endHeight = m_messegesTable.contentSize.height + kbFrame.size.height
+        m_messegesTable.contentSize = CGSizeMake(m_messegesTable.contentSize.width, endHeight)
+        m_messegesTable.contentOffset = CGPointMake(0, m_toolBar.frame.origin.y)
+    }
+    
+    func keyboardWillHide(notify:NSNotification) {
+        let kbFrame = notify.userInfo![UIKeyboardFrameEndUserInfoKey]!.CGRectValue
+        let endHeight = m_messegesTable.contentSize.height - kbFrame.size.height
+        m_messegesTable.contentSize = CGSizeMake(m_messegesTable.contentSize.width, endHeight)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         m_messegesTable.registerClass(MsgCell.classForCoder(), forCellReuseIdentifier: "MsgCell")
@@ -282,7 +305,7 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         let notifier = NSNotificationCenter.defaultCenter()
         notifier.addObserver(self, selector: Selector("keyboardWillChangeFrame:"), name: UIKeyboardWillChangeFrameNotification, object: nil)
         notifier.addObserver(self, selector: Selector("keyboardDidChangeFrame:"), name: UIKeyboardDidChangeFrameNotification, object: nil)
-        
+
         
         // 设置TextField文字左间距
         m_text.leftView = UIView(frame: CGRectMake(0, 0, 8, 0))

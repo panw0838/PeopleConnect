@@ -177,6 +177,14 @@
          contextName = "LoginView.(registry(LoginView) -&gt; (AnyObject) -&gt; ()).(closure #2):LoginView.swift">
       </ContextState>
       <ContextState
+         contextName = "ConversationView.keyboardWillChangeFrame(NSNotification) -&gt; ():View+Conv.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_messegesTable.contentOffset.y">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "CommentInfo.init(json : [String : AnyObject]) -&gt; CommentInfo?:Data+Post.swift">
       </ContextState>
       <ContextState

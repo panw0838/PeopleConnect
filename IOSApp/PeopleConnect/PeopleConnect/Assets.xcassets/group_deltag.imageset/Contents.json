@@ -2,12 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "icons8-cancel-50.png",
+      "filename" : "icons8-delete-folder-filled-40.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "icons8-cancel-100.png",
+      "filename" : "icons8-delete-folder-filled-80.png",
       "scale" : "2x"
     },
     {

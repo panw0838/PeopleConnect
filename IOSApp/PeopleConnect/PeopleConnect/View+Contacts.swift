@@ -8,14 +8,18 @@
 
 import UIKit
 
-let ContactNameFont = UIFont.systemFontOfSize(13)
+let ContactNameFont = UIFont.systemFontOfSize(11)
 
 let MoveMemberID:UInt64 = 1
 let AddTagID    :UInt64 = 2
 let DeleteTagID :UInt64 = 3
-let RefreshID   :UInt64 = 4
 
-let ContactNameHeight:CGFloat = 32
+let CellBookID  :UInt64 = 4
+let RecommentID :UInt64 = 5
+let FaceToFaceID:UInt64 = 6
+let NearbyID    :UInt64 = 7
+
+let ContactNameHeight:CGFloat = 28
 
 class ContactCell: UICollectionViewCell {
     var m_image  = UIImageView(frame: CGRectZero)
@@ -44,7 +48,8 @@ class ContactCell: UICollectionViewCell {
         m_id = cID
         m_tag = tag
         let width = self.frame.width
-        m_image.frame = CGRectMake((width-50)/2, (width-50)/2, 50, 50)
+        let photoSize:CGFloat = 50
+        m_image.frame = CGRectMake((width-photoSize)/2, (width-photoSize)/2, photoSize, photoSize)
         m_name.frame = CGRectMake(2, width, width-4, ContactNameHeight)
         switch m_id {
         case MoveMemberID:
@@ -59,9 +64,21 @@ class ContactCell: UICollectionViewCell {
             m_image.image = UIImage(named: "group_deltag")
             m_name.text   = "删除分组"
             break
-        case RefreshID:
-            m_image.image = UIImage(named: "group_refresh")
-            m_name.text   = ""
+        case CellBookID:
+            m_image.image = UIImage(named: "group_cell")
+            m_name.text   = "搜索手机联系人"
+            break
+        case RecommentID:
+            m_image.image = UIImage(named: "group_recoment")
+            m_name.text   = "搜索共同认识的人"
+            break
+        case FaceToFaceID:
+            m_image.image = UIImage(named: "group_facetoface")
+            m_name.text   = "同时按面对面加好友"
+            break
+        case NearbyID:
+            m_image.image = UIImage(named: "group_near")
+            m_name.text   = "点击搜索附近的人"
             break
         default:
             m_image.image = getPhoto(cID)
@@ -109,20 +126,17 @@ class ContactCell: UICollectionViewCell {
             alert.addAction(okAction)
             self.m_father?.presentViewController(alert, animated: true, completion: nil)
             break
-        case RefreshID:
-            if m_tag?.m_tagID == CellUsersTag {
-                // todo
-                checkContactsBookPrivacy()
-            }
-            else if m_tag?.m_tagID == SuggestTag {
-                httpGetSuggestContacts()
-            }
-            else if m_tag?.m_tagID == FaceToFaceTag {
-                m_father?.startFaceToFace()
-            }
-            else if m_tag?.m_tagID == StrangerTag {
-                m_father?.RefreshNearby()
-            }
+        case CellBookID:
+            checkContactsBookPrivacy()
+            break
+        case RecommentID:
+            httpGetSuggestContacts()
+            break
+        case FaceToFaceID:
+            m_father?.startFaceToFace()
+            break
+        case NearbyID:
+            m_father?.RefreshNearby()
             break
         default:
             let contact = contactsData.m_contacts[m_id]
@@ -307,7 +321,18 @@ class ContactsView:
                 }
             }
             else {
-                cell.reload(RefreshID, tag: subTag)
+                if subTag.m_tagID == CellUsersTag {
+                    cell.reload(CellBookID, tag: subTag)
+                }
+                if subTag.m_tagID == SuggestTag {
+                    cell.reload(RecommentID, tag: subTag)
+                }
+                if subTag.m_tagID == FaceToFaceTag {
+                    cell.reload(FaceToFaceID, tag: subTag)
+                }
+                if subTag.m_tagID == StrangerTag {
+                    cell.reload(NearbyID, tag: subTag)
+                }
             }
         }
         else {
