@@ -222,7 +222,7 @@
         <!--详细资料-->
         <scene sceneID="bnN-3H-pGg">
             <objects>
-                <viewController id="pv7-Vn-KsV" customClass="ContactView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController hidesBottomBarWhenPushed="YES" id="pv7-Vn-KsV" customClass="ContactView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="bTU-lJ-P0C"/>
                         <viewControllerLayoutGuide type="bottom" id="eZE-cD-2Jc"/>
@@ -238,11 +238,11 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="YNn-b4-cyb">
                                 <rect key="frame" x="20" y="98" width="80" height="80"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="80" id="QNX-pe-bFo"/>
+                                    <constraint firstAttribute="width" constant="80" id="xfd-04-lR7"/>
                                 </constraints>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="DLm-yj-vL3">
-                                <rect key="frame" x="20" y="219" width="560" height="332"/>
+                                <rect key="frame" x="20" y="219" width="560" height="381"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CommentCell" rowHeight="18" id="0gx-x2-lfe" customClass="CommentCell" customModule="PeopleConnect" customModuleProvider="target">
@@ -287,8 +287,8 @@
                                 <rect key="frame" x="498" y="125" width="82" height="25"/>
                                 <color key="backgroundColor" red="1" green="0.80000001192092896" blue="0.40000000596046448" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="25" id="ZbY-oC-DWg"/>
-                                    <constraint firstAttribute="width" constant="82" id="cHg-jq-aXO"/>
+                                    <constraint firstAttribute="width" constant="82" id="qmb-mK-ZqH"/>
+                                    <constraint firstAttribute="height" constant="25" id="zZn-5p-VtF"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <state key="normal" title="申请好友">
@@ -301,22 +301,22 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="DLm-yj-vL3" firstAttribute="centerX" secondItem="Rbb-SL-cyF" secondAttribute="centerX" id="0OH-PD-aLw"/>
-                            <constraint firstItem="lgF-DH-UNA" firstAttribute="top" secondItem="deb-dO-9cf" secondAttribute="bottom" constant="7" id="7sB-9H-UBl"/>
-                            <constraint firstItem="DLm-yj-vL3" firstAttribute="leading" secondItem="4Kn-yx-LJW" secondAttribute="leadingMargin" id="9ue-Ow-5UV"/>
-                            <constraint firstItem="DLm-yj-vL3" firstAttribute="top" secondItem="Rbb-SL-cyF" secondAttribute="bottom" constant="8" symbolic="YES" id="C4F-fL-MIa"/>
-                            <constraint firstItem="Rbb-SL-cyF" firstAttribute="leading" secondItem="4Kn-yx-LJW" secondAttribute="leading" id="MZI-GQ-gDv"/>
-                            <constraint firstItem="Rbb-SL-cyF" firstAttribute="centerY" secondItem="deb-dO-9cf" secondAttribute="centerY" id="OKx-kh-Ubj"/>
-                            <constraint firstAttribute="trailing" secondItem="Rbb-SL-cyF" secondAttribute="trailing" id="PZ1-ex-dX8"/>
-                            <constraint firstItem="DLm-yj-vL3" firstAttribute="bottom" secondItem="eZE-cD-2Jc" secondAttribute="top" id="Tsx-eF-hgv"/>
-                            <constraint firstItem="YNn-b4-cyb" firstAttribute="top" secondItem="bTU-lJ-P0C" secondAttribute="bottom" constant="34" id="TuY-fF-KQx"/>
-                            <constraint firstItem="Rbb-SL-cyF" firstAttribute="top" secondItem="bTU-lJ-P0C" secondAttribute="bottom" id="Xvj-II-yBi"/>
-                            <constraint firstItem="lgF-DH-UNA" firstAttribute="trailing" secondItem="DLm-yj-vL3" secondAttribute="trailing" id="ame-FL-VVp"/>
-                            <constraint firstItem="YNn-b4-cyb" firstAttribute="leading" secondItem="DLm-yj-vL3" secondAttribute="leading" id="ewe-dX-4UF"/>
-                            <constraint firstItem="lgF-DH-UNA" firstAttribute="leading" secondItem="YNn-b4-cyb" secondAttribute="trailing" constant="8" symbolic="YES" id="lAy-Lz-5rI"/>
-                            <constraint firstItem="YNn-b4-cyb" firstAttribute="bottom" secondItem="lgF-DH-UNA" secondAttribute="bottom" id="rwP-Vh-sJ4"/>
-                            <constraint firstItem="lgF-DH-UNA" firstAttribute="trailing" secondItem="deb-dO-9cf" secondAttribute="trailing" id="yhl-3C-i6x"/>
-                            <constraint firstItem="YNn-b4-cyb" firstAttribute="centerY" secondItem="deb-dO-9cf" secondAttribute="centerY" id="zPR-ZT-p2u"/>
+                            <constraint firstItem="DLm-yj-vL3" firstAttribute="top" secondItem="Rbb-SL-cyF" secondAttribute="bottom" constant="8" symbolic="YES" id="1Az-M1-3Nx"/>
+                            <constraint firstAttribute="trailing" secondItem="Rbb-SL-cyF" secondAttribute="trailing" id="8ON-5H-jZm"/>
+                            <constraint firstItem="YNn-b4-cyb" firstAttribute="top" secondItem="bTU-lJ-P0C" secondAttribute="bottom" constant="34" id="CL5-WD-0Hb"/>
+                            <constraint firstItem="deb-dO-9cf" firstAttribute="centerY" secondItem="Rbb-SL-cyF" secondAttribute="centerY" id="JDG-dr-Mbs"/>
+                            <constraint firstItem="Rbb-SL-cyF" firstAttribute="centerX" secondItem="DLm-yj-vL3" secondAttribute="centerX" id="L6p-A3-Q1W"/>
+                            <constraint firstAttribute="bottom" secondItem="DLm-yj-vL3" secondAttribute="bottom" id="OLC-AK-cR8"/>
+                            <constraint firstItem="lgF-DH-UNA" firstAttribute="leading" secondItem="YNn-b4-cyb" secondAttribute="trailing" constant="8" symbolic="YES" id="Vdh-LF-kDI"/>
+                            <constraint firstItem="lgF-DH-UNA" firstAttribute="trailing" secondItem="DLm-yj-vL3" secondAttribute="trailing" id="Wp9-Ze-0tf"/>
+                            <constraint firstItem="lgF-DH-UNA" firstAttribute="top" secondItem="deb-dO-9cf" secondAttribute="bottom" constant="7" id="ZyI-eC-ns8"/>
+                            <constraint firstItem="DLm-yj-vL3" firstAttribute="leading" secondItem="YNn-b4-cyb" secondAttribute="leading" id="cxc-02-pva"/>
+                            <constraint firstItem="deb-dO-9cf" firstAttribute="centerY" secondItem="YNn-b4-cyb" secondAttribute="centerY" id="hh7-R8-c7S"/>
+                            <constraint firstItem="YNn-b4-cyb" firstAttribute="bottom" secondItem="lgF-DH-UNA" secondAttribute="bottom" id="kHz-vj-fPJ"/>
+                            <constraint firstItem="deb-dO-9cf" firstAttribute="trailing" secondItem="lgF-DH-UNA" secondAttribute="trailing" id="oKD-d0-Y4m"/>
+                            <constraint firstItem="Rbb-SL-cyF" firstAttribute="leading" secondItem="4Kn-yx-LJW" secondAttribute="leading" id="ofM-GP-jav"/>
+                            <constraint firstItem="Rbb-SL-cyF" firstAttribute="top" secondItem="bTU-lJ-P0C" secondAttribute="bottom" id="rL9-Bn-Pap"/>
+                            <constraint firstItem="YNn-b4-cyb" firstAttribute="leading" secondItem="4Kn-yx-LJW" secondAttribute="leadingMargin" id="w3Z-cI-i4j"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="详细资料" id="V5i-ih-3we"/>
@@ -335,7 +335,7 @@
         <!--动态通知-->
         <scene sceneID="Y86-yr-irv">
             <objects>
-                <viewController id="G9h-hn-QHp" customClass="PostNotifyView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController hidesBottomBarWhenPushed="YES" id="G9h-hn-QHp" customClass="PostNotifyView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="7zP-5N-E0v"/>
                         <viewControllerLayoutGuide type="bottom" id="sjY-TC-w79"/>
@@ -345,7 +345,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="80" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="cwI-CD-uOn">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="543"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="PostNotifyCell" rowHeight="80" id="kAt-ab-Tee" customClass="PostNotifyCell" customModule="PeopleConnect" customModuleProvider="target">
@@ -415,10 +415,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="cwI-CD-uOn" firstAttribute="top" secondItem="EHh-L2-Gpb" secondAttribute="top" id="6x2-Rr-LGW"/>
-                            <constraint firstAttribute="trailing" secondItem="cwI-CD-uOn" secondAttribute="trailing" id="73X-do-7MB"/>
-                            <constraint firstItem="cwI-CD-uOn" firstAttribute="leading" secondItem="EHh-L2-Gpb" secondAttribute="leading" id="Wn9-SO-vXI"/>
-                            <constraint firstItem="sjY-TC-w79" firstAttribute="top" secondItem="cwI-CD-uOn" secondAttribute="bottom" constant="8" symbolic="YES" id="wNO-Em-hNw"/>
+                            <constraint firstItem="cwI-CD-uOn" firstAttribute="top" secondItem="EHh-L2-Gpb" secondAttribute="top" id="Jnb-Wa-pU2"/>
+                            <constraint firstAttribute="trailing" secondItem="cwI-CD-uOn" secondAttribute="trailing" id="Qye-td-raw"/>
+                            <constraint firstAttribute="bottom" secondItem="cwI-CD-uOn" secondAttribute="bottom" id="YH5-QO-WK2"/>
+                            <constraint firstItem="cwI-CD-uOn" firstAttribute="leading" secondItem="EHh-L2-Gpb" secondAttribute="leading" id="uQG-EW-orM"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="动态通知" id="k7M-bB-q3o"/>
@@ -434,7 +434,7 @@
         <!--互动动态-->
         <scene sceneID="Fgs-iK-vZ0">
             <objects>
-                <viewController id="0pB-ge-6ZV" customClass="SinglePostView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController hidesBottomBarWhenPushed="YES" id="0pB-ge-6ZV" customClass="SinglePostView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="KpB-qX-0Wp"/>
                         <viewControllerLayoutGuide type="bottom" id="ktK-tf-3WV"/>
@@ -444,7 +444,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="16" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="sdr-SX-W6n">
-                                <rect key="frame" x="20" y="0.0" width="560" height="551"/>
+                                <rect key="frame" x="20" y="0.0" width="560" height="600"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CommentCell" rowHeight="18" id="W7m-YS-M6c" customClass="CommentCell" customModule="PeopleConnect" customModuleProvider="target">
@@ -482,10 +482,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="sdr-SX-W6n" firstAttribute="leading" secondItem="myP-La-NZc" secondAttribute="leadingMargin" id="0An-oY-38f"/>
-                            <constraint firstItem="sdr-SX-W6n" firstAttribute="trailing" secondItem="myP-La-NZc" secondAttribute="trailingMargin" id="HV7-dG-BUA"/>
-                            <constraint firstItem="sdr-SX-W6n" firstAttribute="top" secondItem="myP-La-NZc" secondAttribute="top" id="THa-27-9Gt"/>
-                            <constraint firstItem="sdr-SX-W6n" firstAttribute="bottom" secondItem="ktK-tf-3WV" secondAttribute="top" id="mr0-Vp-6Zf"/>
+                            <constraint firstItem="sdr-SX-W6n" firstAttribute="trailing" secondItem="myP-La-NZc" secondAttribute="trailingMargin" id="5x6-jJ-yJ2"/>
+                            <constraint firstItem="sdr-SX-W6n" firstAttribute="top" secondItem="myP-La-NZc" secondAttribute="top" id="lMA-KT-IUe"/>
+                            <constraint firstItem="sdr-SX-W6n" firstAttribute="leading" secondItem="myP-La-NZc" secondAttribute="leadingMargin" id="oTU-NK-LsO"/>
+                            <constraint firstAttribute="bottom" secondItem="sdr-SX-W6n" secondAttribute="bottom" id="qyt-kM-umV"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="互动动态" id="DmS-yH-C1t"/>
@@ -501,7 +501,7 @@
         <!--好友申请-->
         <scene sceneID="QlS-5M-gYo">
             <objects>
-                <viewController id="QEL-Yh-Fg4" customClass="RequestsView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController hidesBottomBarWhenPushed="YES" id="QEL-Yh-Fg4" customClass="RequestsView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="oCQ-k2-RFQ"/>
                         <viewControllerLayoutGuide type="bottom" id="JIi-W8-LLc"/>
@@ -511,7 +511,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="59" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="N8Z-4E-end">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="RequestCell" rowHeight="59" id="cpc-gK-jd6" customClass="RequestCell" customModule="PeopleConnect" customModuleProvider="target">
@@ -610,10 +610,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="N8Z-4E-end" firstAttribute="bottom" secondItem="JIi-W8-LLc" secondAttribute="top" id="NXh-eQ-J6x"/>
-                            <constraint firstAttribute="trailing" secondItem="N8Z-4E-end" secondAttribute="trailing" id="Qau-2D-3FH"/>
-                            <constraint firstItem="N8Z-4E-end" firstAttribute="leading" secondItem="bfb-TG-Asr" secondAttribute="leading" id="fDN-Ot-Cu9"/>
-                            <constraint firstItem="N8Z-4E-end" firstAttribute="top" secondItem="bfb-TG-Asr" secondAttribute="top" id="xb0-3X-27V"/>
+                            <constraint firstAttribute="bottom" secondItem="N8Z-4E-end" secondAttribute="bottom" id="13z-AN-kSz"/>
+                            <constraint firstItem="N8Z-4E-end" firstAttribute="top" secondItem="bfb-TG-Asr" secondAttribute="top" id="Rf3-8s-Ef8"/>
+                            <constraint firstAttribute="trailing" secondItem="N8Z-4E-end" secondAttribute="trailing" id="bT5-gA-1xY"/>
+                            <constraint firstItem="N8Z-4E-end" firstAttribute="leading" secondItem="bfb-TG-Asr" secondAttribute="leading" id="ikR-aN-V29"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="好友申请" id="Krk-U4-wvu"/>
@@ -629,7 +629,7 @@
         <!--会话-->
         <scene sceneID="enG-ND-1uO">
             <objects>
-                <viewController id="ZcU-UV-izl" customClass="ConversationView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController hidesBottomBarWhenPushed="YES" id="ZcU-UV-izl" customClass="ConversationView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="KxF-f2-Zg9"/>
                         <viewControllerLayoutGuide type="bottom" id="cz0-iU-3qv"/>
@@ -639,7 +639,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="61" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lXg-71-86q">
-                                <rect key="frame" x="20" y="72" width="560" height="433"/>
+                                <rect key="frame" x="20" y="72" width="560" height="482"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="separatorColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="sectionIndexBackgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -649,7 +649,7 @@
                                 </connections>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A8h-4F-OZa">
-                                <rect key="frame" x="20" y="513" width="560" height="30"/>
+                                <rect key="frame" x="20" y="562" width="560" height="30"/>
                                 <subviews>
                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="iy3-vu-T8y">
                                         <rect key="frame" x="0.0" y="0.0" width="492" height="30"/>
@@ -661,7 +661,7 @@
                                         <rect key="frame" x="500" y="0.0" width="60" height="30"/>
                                         <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="60" id="OoD-9I-zv4"/>
+                                            <constraint firstAttribute="width" constant="60" id="jO1-eb-F8t"/>
                                         </constraints>
                                         <state key="normal" title="发送">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -673,25 +673,25 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="GYu-9G-jZu" secondAttribute="trailing" id="BY5-af-nGv"/>
-                                    <constraint firstItem="GYu-9G-jZu" firstAttribute="leading" secondItem="iy3-vu-T8y" secondAttribute="trailing" constant="8" symbolic="YES" id="Hcw-tI-Xb6"/>
-                                    <constraint firstItem="iy3-vu-T8y" firstAttribute="top" secondItem="GYu-9G-jZu" secondAttribute="top" id="QmG-yR-xb1"/>
-                                    <constraint firstAttribute="bottom" secondItem="iy3-vu-T8y" secondAttribute="bottom" id="TdB-Mo-7w0"/>
-                                    <constraint firstItem="iy3-vu-T8y" firstAttribute="bottom" secondItem="GYu-9G-jZu" secondAttribute="bottom" id="dtm-dr-XXu"/>
-                                    <constraint firstItem="GYu-9G-jZu" firstAttribute="top" secondItem="A8h-4F-OZa" secondAttribute="top" id="i3L-9r-GkH"/>
-                                    <constraint firstItem="iy3-vu-T8y" firstAttribute="leading" secondItem="A8h-4F-OZa" secondAttribute="leading" id="mDo-bC-g15"/>
+                                    <constraint firstItem="GYu-9G-jZu" firstAttribute="top" secondItem="iy3-vu-T8y" secondAttribute="top" id="6wA-xq-GUD"/>
+                                    <constraint firstAttribute="bottom" secondItem="iy3-vu-T8y" secondAttribute="bottom" id="BCe-x0-cCk"/>
+                                    <constraint firstAttribute="trailing" secondItem="GYu-9G-jZu" secondAttribute="trailing" id="N4u-dQ-r3V"/>
+                                    <constraint firstItem="GYu-9G-jZu" firstAttribute="leading" secondItem="iy3-vu-T8y" secondAttribute="trailing" constant="8" symbolic="YES" id="U9X-eo-0F9"/>
+                                    <constraint firstItem="GYu-9G-jZu" firstAttribute="top" secondItem="A8h-4F-OZa" secondAttribute="top" id="dNd-CV-bwN"/>
+                                    <constraint firstItem="GYu-9G-jZu" firstAttribute="bottom" secondItem="iy3-vu-T8y" secondAttribute="bottom" id="hyJ-8s-ubu"/>
+                                    <constraint firstItem="iy3-vu-T8y" firstAttribute="leading" secondItem="A8h-4F-OZa" secondAttribute="leading" id="tJS-ZS-KyA"/>
                                 </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="A8h-4F-OZa" firstAttribute="top" secondItem="lXg-71-86q" secondAttribute="bottom" constant="8" symbolic="YES" id="28c-fv-RhF"/>
-                            <constraint firstItem="cz0-iU-3qv" firstAttribute="top" secondItem="A8h-4F-OZa" secondAttribute="bottom" constant="8" symbolic="YES" id="6JV-0l-buf"/>
-                            <constraint firstItem="lXg-71-86q" firstAttribute="leading" secondItem="A8h-4F-OZa" secondAttribute="leading" id="MAv-Ab-Qs6"/>
-                            <constraint firstItem="lXg-71-86q" firstAttribute="leading" secondItem="XbN-g0-JbK" secondAttribute="leadingMargin" id="OyO-x0-5mc"/>
-                            <constraint firstItem="lXg-71-86q" firstAttribute="trailing" secondItem="XbN-g0-JbK" secondAttribute="trailingMargin" id="fZ4-jN-JQY"/>
-                            <constraint firstItem="A8h-4F-OZa" firstAttribute="trailing" secondItem="lXg-71-86q" secondAttribute="trailing" id="qgX-ik-LdG"/>
-                            <constraint firstItem="lXg-71-86q" firstAttribute="top" secondItem="KxF-f2-Zg9" secondAttribute="bottom" constant="8" symbolic="YES" id="vun-9f-rvD"/>
+                            <constraint firstItem="lXg-71-86q" firstAttribute="top" secondItem="KxF-f2-Zg9" secondAttribute="bottom" constant="8" symbolic="YES" id="5TL-Ra-cQT"/>
+                            <constraint firstItem="lXg-71-86q" firstAttribute="leading" secondItem="XbN-g0-JbK" secondAttribute="leadingMargin" id="L9B-Am-DSU"/>
+                            <constraint firstItem="lXg-71-86q" firstAttribute="leading" secondItem="A8h-4F-OZa" secondAttribute="leading" id="PkS-nr-ecG"/>
+                            <constraint firstItem="A8h-4F-OZa" firstAttribute="top" secondItem="lXg-71-86q" secondAttribute="bottom" constant="8" symbolic="YES" id="QcH-GC-Kak"/>
+                            <constraint firstItem="A8h-4F-OZa" firstAttribute="trailing" secondItem="XbN-g0-JbK" secondAttribute="trailingMargin" id="hRW-Wx-ZzM"/>
+                            <constraint firstItem="A8h-4F-OZa" firstAttribute="trailing" secondItem="lXg-71-86q" secondAttribute="trailing" id="plp-9y-tu4"/>
+                            <constraint firstAttribute="bottomMargin" secondItem="A8h-4F-OZa" secondAttribute="bottom" constant="8" id="xJj-e7-SU9"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="会话" id="mgo-vx-7fP"/>
@@ -709,7 +709,7 @@
         <!--发布动态-->
         <scene sceneID="87t-6T-shC">
             <objects>
-                <tableViewController id="U8x-3C-bqT" customClass="CreatePostView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController hidesBottomBarWhenPushed="YES" id="U8x-3C-bqT" customClass="CreatePostView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="static" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="pjG-WR-hFa">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -745,7 +745,7 @@
                             </tableViewSection>
                             <tableViewSection headerTitle="选择附件" id="EJO-5p-4fd">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="118" id="rVp-pq-vQA" customClass="PreviewCell" customModule="PeopleConnect" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="118" id="rVp-pq-vQA">
                                         <rect key="frame" x="0.0" y="166" width="600" height="118"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="rVp-pq-vQA" id="Mj0-SW-W0Q">
@@ -769,7 +769,7 @@
                             </tableViewSection>
                             <tableViewSection headerTitle="好友可见" id="pAa-VN-rFD">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="73" id="fgI-pm-7GF" customClass="PostTags" customModule="PeopleConnect" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="73" id="fgI-pm-7GF">
                                         <rect key="frame" x="0.0" y="312" width="600" height="73"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fgI-pm-7GF" id="Lqr-RA-yVT">
@@ -853,7 +853,7 @@
         <!--Title-->
         <scene sceneID="Y73-qc-dZx">
             <objects>
-                <viewController id="lPv-pN-7D4" customClass="MoveMemberView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController hidesBottomBarWhenPushed="YES" id="lPv-pN-7D4" customClass="MoveMemberView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="bLo-ce-2tN"/>
                         <viewControllerLayoutGuide type="bottom" id="4JP-sY-ldf"/>
@@ -863,7 +863,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="S7h-V6-xfG">
-                                <rect key="frame" x="20" y="0.0" width="560" height="551"/>
+                                <rect key="frame" x="20" y="0.0" width="560" height="600"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="345-91-M0Z">
                                     <size key="itemSize" width="84" height="97"/>
@@ -909,12 +909,12 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="Jvo-fo-gRo" firstAttribute="top" secondItem="Hxq-QW-z8g" secondAttribute="top" constant="20" symbolic="YES" id="CBP-Yb-61L"/>
-                            <constraint firstItem="S7h-V6-xfG" firstAttribute="leading" secondItem="Hxq-QW-z8g" secondAttribute="leadingMargin" id="MCj-yN-O0J"/>
-                            <constraint firstItem="S7h-V6-xfG" firstAttribute="top" secondItem="Hxq-QW-z8g" secondAttribute="top" id="jOw-GV-fHV"/>
-                            <constraint firstItem="Jvo-fo-gRo" firstAttribute="trailing" secondItem="Hxq-QW-z8g" secondAttribute="trailingMargin" id="kP6-lB-K3K"/>
-                            <constraint firstItem="S7h-V6-xfG" firstAttribute="bottom" secondItem="4JP-sY-ldf" secondAttribute="top" id="p6b-5Z-7IE"/>
-                            <constraint firstItem="S7h-V6-xfG" firstAttribute="trailing" secondItem="Jvo-fo-gRo" secondAttribute="trailing" id="qze-Ii-9qj"/>
+                            <constraint firstItem="S7h-V6-xfG" firstAttribute="leading" secondItem="Hxq-QW-z8g" secondAttribute="leadingMargin" id="6NM-Zb-CMH"/>
+                            <constraint firstAttribute="bottom" secondItem="S7h-V6-xfG" secondAttribute="bottom" id="DdH-0P-P57"/>
+                            <constraint firstItem="Jvo-fo-gRo" firstAttribute="top" secondItem="Hxq-QW-z8g" secondAttribute="top" constant="20" symbolic="YES" id="XgW-cQ-Usw"/>
+                            <constraint firstItem="S7h-V6-xfG" firstAttribute="trailing" secondItem="Jvo-fo-gRo" secondAttribute="trailing" id="aNx-9f-Wk2"/>
+                            <constraint firstItem="Jvo-fo-gRo" firstAttribute="trailing" secondItem="Hxq-QW-z8g" secondAttribute="trailingMargin" id="dPt-5k-lY3"/>
+                            <constraint firstItem="S7h-V6-xfG" firstAttribute="top" secondItem="Hxq-QW-z8g" secondAttribute="top" id="kvs-fm-CqR"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="XJY-KP-xba">
