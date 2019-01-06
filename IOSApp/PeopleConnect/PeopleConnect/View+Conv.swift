@@ -93,6 +93,7 @@ class MsgCell: UITableViewCell {
     
     var m_conv:Conversation?
     var m_index:Int = 0
+    var m_father:ConversationView? = nil
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -105,6 +106,9 @@ class MsgCell: UITableViewCell {
     }
     
     func initSubviews() {
+        m_photo.layer.cornerRadius = 10
+        m_photo.layer.masksToBounds = true
+        m_photo.addTarget(self, action: Selector("showContact"), forControlEvents: .TouchDown)
         addSubview(m_photo)
         addSubview(m_time)
         addSubview(m_status)
@@ -114,6 +118,12 @@ class MsgCell: UITableViewCell {
         m_message.titleLabel?.lineBreakMode = .ByWordWrapping
         m_message.contentEdgeInsets = UIEdgeInsetsMake(20, 20, 20, 20)
         addSubview(m_message)
+    }
+    
+    func showContact() {
+        m_father?.m_text.endEditing(true)
+        ContactView.ContactID = m_conv!.m_messages[m_index].from
+        m_father?.performSegueWithIdentifier("ShowContact", sender: self)
     }
     
     func startLoading() {
@@ -133,7 +143,7 @@ class MsgCell: UITableViewCell {
         let textSize = getMsgSize(msg.data, maxSize: maxTextSize, font: msgFont)
         let textBubSize = CGSizeMake(textSize.width + textGap*2, textSize.height + textGap*2)
         
-        m_photo.setImage(UIImage(named: "default_profile"), forState: .Normal)
+        m_photo.setImage(getPhoto(msg.from), forState: .Normal)
         m_message.setTitle(msg.data, forState: .Normal)
         
         m_photo.frame.size = CGSizeMake(pSize, pSize)
@@ -251,6 +261,7 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
             //self.m_messegesTable.frame.size = CGSizeMake(self.m_messegesTable.frame.width, self.defaultTableHeight - keyboardFrame!.height)
             //self.m_toolBar.frame.origin = CGPointMake(self.m_toolBar.frame.origin.x, self.defaultToolY - keyboardFrame!.height)
             //self.view.transform = CGAffineTransformMakeTranslation(0, transformY)
+            
             let offset = self.defaultKBY == keyboardFrame!.origin.y ? keyboardFrame!.height : 0
             self.view.frame.size = CGSizeMake(self.view.frame.width, self.defaultViewHeight-offset)
         })
@@ -305,6 +316,8 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         let msg = m_conv!.m_messages[indexPath.row]
         let sending = m_sendings[indexPath.row] == nil ? false : m_sendings[indexPath.row]
         cell.reload(msg, sending: sending!, width: m_messegesTable.contentSize.width)
+        cell.m_conv = m_conv
+        cell.m_father = self
         return cell
     }
     
