@@ -15,10 +15,12 @@ let UserTagMask:    UInt64 = 0xFFFFFFFF
 let RelateTagMask:  UInt64 = (UserTagMask | 0x3E00000000)
 let GroupMask:      UInt64 = (UserTagMask | 0x3C00000000)
 
-let CellUsersTag:   UInt8  = 0xFC
-let SuggestTag:     UInt8  = 0xFD
-let FaceToFaceTag:  UInt8  = 0xFE
-let StrangerTag:    UInt8  = 0xFF
+let CellUsersTag:   UInt8  = 0xFB
+let SuggestTag:     UInt8  = 0xFC
+let FaceToFaceTag:  UInt8  = 0xFD
+let StrangerTag:    UInt8  = 0xFE
+let ActionsTag:     UInt8  = 0xFF
+
 let SysTagOffset:   UInt64 = 32
 
 protocol ContactDataDelegate {
@@ -89,16 +91,43 @@ class ContactsData {
     var m_faceUsers = Tag(id: FaceToFaceTag, father: 0, name: "面对面加好友")
     var m_nearUsers = Tag(id: StrangerTag,   father: 0, name: "附近的陌生人")
     
-    var m_tags: Array<Tag> = Array<Tag>()
+    var m_contactTags = Array<Tag>()
     var m_contacts = Dictionary<UInt64, ContactInfo>()
     var m_delegate:ContactDataDelegate?
+    
+    var m_strangerActTag = Tag(id: ActionsTag, father: 0, name: "搜索新朋友")
+    var m_strangerTags = Array<Tag>()
 
     init() {
         // system tags
-        m_tags.append(Tag(id: 2, father: 0, name: "家人"))
-        m_tags.append(Tag(id: 3, father: 0, name: "同学"))
-        m_tags.append(Tag(id: 4, father: 0, name: "同事"))
-        m_tags.append(Tag(id: 5, father: 0, name: "朋友"))
+        m_contactTags.append(Tag(id: 2, father: 0, name: "家人"))
+        m_contactTags.append(Tag(id: 3, father: 0, name: "同学"))
+        m_contactTags.append(Tag(id: 4, father: 0, name: "同事"))
+        m_contactTags.append(Tag(id: 5, father: 0, name: "朋友"))
+        
+        m_strangerActTag.m_actions.append(.SearchCell)
+        m_strangerActTag.m_actions.append(.SearchConn)
+        m_strangerActTag.m_actions.append(.SearchFace)
+        m_strangerActTag.m_actions.append(.SearchNear)
+        m_strangerTags.append(m_strangerActTag)
+    }
+    
+    func updateStrangerTags(tag:Tag) {
+        var newTags = Array<Tag>()
+        newTags.append(m_strangerActTag)
+        
+        if tag.m_members.count > 0 {
+            newTags.append(tag)
+        }
+        
+        for oldTag in m_strangerTags {
+            if oldTag.m_tagID != ActionsTag && oldTag.m_tagID != tag.m_tagID {
+                newTags.append(oldTag)
+            }
+        }
+        
+        m_strangerTags = newTags
+        updateDelegates()
     }
     
     func setDelegate(delegate:ContactDataDelegate?) {
@@ -109,9 +138,9 @@ class ContactsData {
         m_delegate?.ContactDataUpdate()
     }
     
-    func getPostTags()->Array<Tag> {
+    func getContactTags()->Array<Tag> {
         var tags = Array<Tag>()
-        for tag in m_tags {
+        for tag in m_contactTags {
             tags.append(tag)
             for subTag in tag.m_subTags {
                 tags.append(subTag)
@@ -149,24 +178,24 @@ class ContactsData {
     }
     
     func numMainTags()->Int {
-        return m_tags.count + 2
+        return m_contactTags.count + 2
     }
     
     func numSubTags(idx:Int)->Int {
-        if idx < m_tags.count {
-            return (m_tags[idx].m_subTags.count + 1)
+        if idx < m_contactTags.count {
+            return (m_contactTags[idx].m_subTags.count + 1)
         }
-        else if idx == m_tags.count {
+        else if idx == m_contactTags.count {
             return 1
         }
         else {
-            return 4
+            return m_strangerTags.count
         }
     }
 
     func getSubTag(idx:Int, subIdx:Int)->Tag {
-        if idx < m_tags.count {
-            let tag = m_tags[idx]
+        if idx < m_contactTags.count {
+            let tag = m_contactTags[idx]
             if subIdx == tag.m_subTags.count {
                 return tag
             }
@@ -174,27 +203,16 @@ class ContactsData {
                 return tag.m_subTags[subIdx]
             }
         }
-        else if idx == m_tags.count {
+        else if idx == m_contactTags.count {
             return m_undefine
         }
         else {
-            if subIdx == 0 {
-                return m_cellUsers
-            }
-            else if subIdx == 1 {
-                return m_rcmtUsers
-            }
-            else if subIdx == 2 {
-                return m_faceUsers
-            }
-            else {
-                return m_nearUsers
-            }
+            return m_strangerTags[subIdx]
         }
     }
     
     func addSubTag(newTag: Tag) {
-        let fatherTag: Tag = m_tags[Int(newTag.m_fatherID) - 2]
+        let fatherTag: Tag = m_contactTags[Int(newTag.m_fatherID) - 2]
         fatherTag.addSubTag(newTag)
     }
     
@@ -206,7 +224,7 @@ class ContactsData {
             m_undefine.addMember(contact)
         }
         else {
-            for tag in m_tags {
+            for tag in m_contactTags {
                 tag.addMember(contact)
             }
         }
@@ -219,7 +237,7 @@ class ContactsData {
 
     func remContact(contactID:UInt64) {
         m_undefine.remMember(contactID, inSubTags: true)
-        for tag in m_tags {
+        for tag in m_contactTags {
             tag.remMember(contactID, inSubTags: true)
         }
         var info = m_contacts[contactID]
@@ -260,7 +278,7 @@ class ContactsData {
     }
     
     func clearContacts() {
-        for tag in m_tags {
+        for tag in m_contactTags {
             tag.clearContacts()
         }
         

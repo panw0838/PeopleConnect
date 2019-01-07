@@ -182,24 +182,16 @@ class Post {
     }
 
     func getPermitTags()->Array<Tag> {
-        var tags = Array<Tag>()
+        let tags = contactsData.getContactTags()
+        var permitTags = Array<Tag>()
         
-        for tag in contactsData.m_tags {
+        for tag in tags {
             if tag.m_bit & m_info.flag != 0 {
-                tags.append(tag)
-            }
-            for subTag in tag.m_subTags {
-                if subTag.m_bit & m_info.flag != 0 {
-                    tags.append(subTag)
-                }
+                permitTags.append(tag)
             }
         }
         
-        if contactsData.m_undefine.m_bit & m_info.flag != 0 {
-            tags.append(contactsData.m_undefine)
-        }
-        
-        return tags
+        return permitTags
     }    
 }
 

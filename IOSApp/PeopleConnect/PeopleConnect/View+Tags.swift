@@ -63,7 +63,7 @@ extension ContactsData {
     func getTagsHeight(width:CGFloat)->CGFloat {
         var numLines = 1
         var lineEnd:CGFloat = 0
-        let tags = contactsData.getPostTags()
+        let tags = contactsData.getContactTags()
         
         for tag in tags {
             let tagWidth = getTextWidth(tag.m_tagName, height: EditTagHeight, font: tagEditFont) + EditTagExWidth
@@ -102,7 +102,7 @@ class TagLabel:UILabel {
 
 class TagsView: UIView {
     let MaxTags = 64
-    var m_tags = Array<TagLabel>()
+    var m_tagLabels = Array<TagLabel>()
     // for edit
     var m_controller:CreatePostView? = nil
     
@@ -129,7 +129,7 @@ class TagsView: UIView {
             tag.textAlignment = .Center
             tag.textColor = UIColor.whiteColor()
             tag.m_father = self
-            m_tags.append(tag)
+            m_tagLabels.append(tag)
             addSubview(tag)
         }
     }
@@ -143,7 +143,7 @@ class TagsView: UIView {
     
     func pushEditTag(name:String, data:UInt64, color:UIColor) {
         let tagWidth = getTextWidth(name, height: EditTagHeight, font: tagEditFont) + EditTagExWidth
-        let tagLabel = m_tags[m_curTag]
+        let tagLabel = m_tagLabels[m_curTag]
         
         if tagWidth + m_lineEnd > m_width {
             m_numLines++
@@ -162,8 +162,8 @@ class TagsView: UIView {
     }
     
     func loadContactTags(width:CGFloat) {
-        for tag in m_tags {
-            tag.hidden = true
+        for label in m_tagLabels {
+            label.hidden = true
         }
         
         m_curTag = 0
@@ -171,7 +171,7 @@ class TagsView: UIView {
         m_lineEnd = 0
         m_width = width
 
-        let tags = contactsData.getPostTags()
+        let tags = contactsData.getContactTags()
         
         for (_, tag) in tags.enumerate() {
             let colorTagID = (tag.m_father != nil ? tag.m_father?.m_tagID : tag.m_tagID)
@@ -179,14 +179,14 @@ class TagsView: UIView {
             pushEditTag(tag.m_tagName, data: tag.m_bit, color: color!)
         }
         // init to contacts bit
-        m_tags[m_curTag-1].m_hilighted = true
-        m_tags[m_curTag-1].backgroundColor = m_tags[m_curTag-1].m_hilightColor
+        m_tagLabels[m_curTag-1].m_hilighted = true
+        m_tagLabels[m_curTag-1].backgroundColor = m_tagLabels[m_curTag-1].m_hilightColor
         m_flag = contactsData.m_undefine.m_bit
     }
     
     func load(post:Post, width:CGFloat) {
-        for tag in m_tags {
-            tag.hidden = true
+        for label in m_tagLabels {
+            label.hidden = true
         }
         
         var numLines = 0
@@ -195,7 +195,7 @@ class TagsView: UIView {
         
         for (idx, tag) in tags.enumerate() {
             let tagWidth = getTextWidth(tag.m_tagName, height: 10, font: statusFont) + PostTagSpace
-            let tagLabel = m_tags[idx]
+            let tagLabel = m_tagLabels[idx]
             
             if tagWidth + lineEnd > width {
                 numLines++
@@ -216,7 +216,7 @@ class TagsView: UIView {
         
         if post.m_info.near {
             let tagWidth = getTextWidth("附近", height: 10, font: statusFont) + PostTagSpace
-            let tagLabel = m_tags[tagIdx]
+            let tagLabel = m_tagLabels[tagIdx]
             
             if tagWidth + lineEnd > width {
                 numLines++

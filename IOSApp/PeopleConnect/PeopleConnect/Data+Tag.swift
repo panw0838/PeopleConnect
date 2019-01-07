@@ -106,18 +106,17 @@ class Tag {
                 subTag.addMember(contact)
             }
         }
-        else if m_bit == 0 && contact.flag == 0 ||
-            (m_bit & contact.flag) != 0 && (m_subBits & contact.flag) == 0 {
-                // add to self if stranger or no sub tags
-                var exists = false
-                for member in m_members {
-                    if member == contact.user {
-                        exists = true
-                    }
+        else if m_bit == 0 && contact.flag == 0 || (m_bit & contact.flag) != 0 && (m_subBits & contact.flag) == 0 {
+            // add to self if stranger or no sub tags
+            var exists = false
+            for member in m_members {
+                if member == contact.user {
+                    exists = true
                 }
-                if !exists {
-                    m_members.append(contact.user)
-                }
+            }
+            if !exists {
+                m_members.append(contact.user)
+            }
         }
     }
     
