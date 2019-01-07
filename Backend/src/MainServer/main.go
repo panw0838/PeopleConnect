@@ -58,6 +58,7 @@ func main() {
 	http.HandleFunc("/declinerequest", message.DeclineRequestHandler)
 	http.HandleFunc("/syncrequests", message.SyncRequestsHandler)
 	http.HandleFunc("/sendmessege", message.SendMsgHandler)
+	http.HandleFunc("/likeuser", message.LikeUserHandler)
 
 	http.HandleFunc("/newpost", post.NewPostHandler)
 	http.HandleFunc("/delpost", post.DelPostHandler)

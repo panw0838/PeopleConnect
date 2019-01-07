@@ -18,11 +18,12 @@ const MSG_VID uint8 = 0x02
 // notifications requests
 const NTF_REQ uint8 = 0x10
 const NTF_ADD uint8 = 0x11
+const NTF_LIK uint8 = 0x12
 
 // notifications posts
-const NTF_CMT uint8 = 0x20
-const NTF_LIK uint8 = 0x21
-const NTF_NEW uint8 = 0x22
+const NTF_PST_CMT uint8 = 0x20
+const NTF_PST_LIK uint8 = 0x21
+const NTF_PST_NEW uint8 = 0x22
 
 type Message struct {
 	From uint64 `json:"from"`

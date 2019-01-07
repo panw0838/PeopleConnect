@@ -70,3 +70,51 @@ func RemContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	share.WriteError(w, 0)
 }
+
+type LikeUserInput struct {
+	UID  uint64 `json:"uid"`
+	CID  uint64 `json:"cid"`
+	Like bool   `json:"like"`
+}
+
+func LikeUserHandler(w http.ResponseWriter, r *http.Request) {
+	var input LikeUserInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	defer c.Close()
+
+	likeKey := share.GetUserLikeKey(input.CID)
+	if input.Like {
+		_, err := c.Do("SADD", likeKey, input.UID)
+		if err != nil {
+			share.WriteErrorCode(w, err)
+			return
+		}
+
+		var msg Message
+		msg.From = input.UID
+		msg.Type = NTF_LIK
+		_, err = DbAddMessege(input.CID, msg, c)
+		if err != nil {
+			share.WriteErrorCode(w, err)
+			return
+		}
+	} else {
+		_, err := c.Do("SREM", likeKey, input.UID)
+		if err != nil {
+			share.WriteErrorCode(w, err)
+			return
+		}
+	}
+
+	share.WriteError(w, 0)
+}

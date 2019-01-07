@@ -76,7 +76,7 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, error) {
 	// add to message notification
 	var msg message.Message
 	msg.From = input.UID
-	msg.Type = message.NTF_CMT
+	msg.Type = message.NTF_PST_CMT
 	msg.OID = input.PostOwner
 	msg.PID = input.PostID
 	msg.Src = input.Group
@@ -145,7 +145,7 @@ func dbLikePost(uID uint64, oID uint64, pID uint64, like bool, c redis.Conn) err
 
 		var msg message.Message
 		msg.From = uID
-		msg.Type = message.NTF_LIK
+		msg.Type = message.NTF_PST_LIK
 		msg.OID = oID
 		msg.PID = pID
 		_, err = message.DbAddMessege(oID, msg, c)
