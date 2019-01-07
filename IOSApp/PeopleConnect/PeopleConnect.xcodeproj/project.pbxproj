@@ -10,6 +10,9 @@
 		1801E9B221BFB1ED004C3FE2 /* View+ImgPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1801E9B121BFB1ED004C3FE2 /* View+ImgPreview.swift */; };
 		1806A87821B7F556005A5AF1 /* View+ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1806A87721B7F556005A5AF1 /* View+ImagePicker.swift */; };
 		1806A88221B81D90005A5AF1 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1806A88121B81D90005A5AF1 /* Photos.framework */; };
+		180EC4BF21E2EE8800595495 /* Req+Stranger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180EC4BE21E2EE8800595495 /* Req+Stranger.swift */; };
+		180EC4C121E2F47900595495 /* Widget+ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180EC4C021E2F47900595495 /* Widget+ContactCell.swift */; };
+		180EC4C321E32A0600595495 /* Data+Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180EC4C221E32A0600595495 /* Data+Tag.swift */; };
 		1854304521AC3D99004973E6 /* Requests+Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1854304421AC3D99004973E6 /* Requests+Post.swift */; };
 		1854304721AD78A4004973E6 /* View+CreatePost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1854304621AD78A4004973E6 /* View+CreatePost.swift */; };
 		1854304921B01E27004973E6 /* Data+Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1854304821B01E27004973E6 /* Data+Post.swift */; };
@@ -184,6 +187,9 @@
 		1801E9B121BFB1ED004C3FE2 /* View+ImgPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+ImgPreview.swift"; sourceTree = "<group>"; };
 		1806A87721B7F556005A5AF1 /* View+ImagePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+ImagePicker.swift"; sourceTree = "<group>"; };
 		1806A88121B81D90005A5AF1 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		180EC4BE21E2EE8800595495 /* Req+Stranger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Req+Stranger.swift"; sourceTree = "<group>"; };
+		180EC4C021E2F47900595495 /* Widget+ContactCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Widget+ContactCell.swift"; path = "../Widget+ContactCell.swift"; sourceTree = "<group>"; };
+		180EC4C221E32A0600595495 /* Data+Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Tag.swift"; sourceTree = "<group>"; };
 		1854304421AC3D99004973E6 /* Requests+Post.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Requests+Post.swift"; sourceTree = "<group>"; };
 		1854304621AD78A4004973E6 /* View+CreatePost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+CreatePost.swift"; sourceTree = "<group>"; };
 		1854304821B01E27004973E6 /* Data+Post.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Post.swift"; sourceTree = "<group>"; };
@@ -335,6 +341,7 @@
 				1860EFC221D4BC0B00402460 /* Requests+Cmt.swift */,
 				18DB289321A145410024092C /* Requests+Msg.swift */,
 				18DB289921A3A8BA0024092C /* Requests+Contact.swift */,
+				180EC4BE21E2EE8800595495 /* Req+Stranger.swift */,
 				18DB289B21A3AF750024092C /* Requests+Tag.swift */,
 				18DB28BF21A6CCE60024092C /* Requests+Log.swift */,
 				1897D00C21D888E200E4A02A /* Data+Time.swift */,
@@ -344,6 +351,7 @@
 				18AE420B219AE3AD0008B792 /* Data+User.swift */,
 				1854304821B01E27004973E6 /* Data+Post.swift */,
 				18DB289521A1C2C30024092C /* Data+Msg.swift */,
+				180EC4C221E32A0600595495 /* Data+Tag.swift */,
 				18D3A8E42198061100EB3289 /* Data+Contact.swift */,
 				18FF5DD821C14BF9008DB746 /* View+Settings.swift */,
 				18E08D2821CE7798007AACB4 /* View+Loading.swift */,
@@ -353,6 +361,7 @@
 				18F8622A21DBA6A00089D953 /* View+PostNotifies.swift */,
 				18D3A8DE2197F3CD00EB3289 /* View+Messages.swift */,
 				18DB289121A03FCC0024092C /* View+Contact.swift */,
+				180EC4C021E2F47900595495 /* Widget+ContactCell.swift */,
 				18D3A8E02198015C00EB3289 /* View+Contacts.swift */,
 				18DB2879219D85BF0024092C /* View+MoveMembers.swift */,
 				18F8623421DCB2590089D953 /* View+SinglePost.swift */,
@@ -632,6 +641,7 @@
 				18E08D2921CE7798007AACB4 /* View+Loading.swift in Sources */,
 				1860EFC321D4BC0B00402460 /* Requests+Cmt.swift in Sources */,
 				18E8CBB02193441500E29383 /* Requests.swift in Sources */,
+				180EC4C121E2F47900595495 /* Widget+ContactCell.swift in Sources */,
 				1897D00D21D888E200E4A02A /* Data+Time.swift in Sources */,
 				1897D00B21D5DD1800E4A02A /* View+ImgFullview.swift in Sources */,
 				18DB28C021A6CCE60024092C /* Requests+Log.swift in Sources */,
@@ -639,6 +649,7 @@
 				1854304721AD78A4004973E6 /* View+CreatePost.swift in Sources */,
 				18DEBF3021C512EB004E88DD /* Data+Cell.swift in Sources */,
 				18DB289421A145410024092C /* Requests+Msg.swift in Sources */,
+				180EC4BF21E2EE8800595495 /* Req+Stranger.swift in Sources */,
 				18DB287A219D85BF0024092C /* View+MoveMembers.swift in Sources */,
 				18E08D2721CE573A007AACB4 /* Data+Cache.swift in Sources */,
 				18AE420C219AE3AD0008B792 /* Data+User.swift in Sources */,
@@ -654,6 +665,7 @@
 				1860EFC521D53ED600402460 /* View+Requests.swift in Sources */,
 				1854304521AC3D99004973E6 /* Requests+Post.swift in Sources */,
 				1854304921B01E27004973E6 /* Data+Post.swift in Sources */,
+				180EC4C321E32A0600595495 /* Data+Tag.swift in Sources */,
 				18F8623521DCB2590089D953 /* View+SinglePost.swift in Sources */,
 				18EC43D421C9529700DF18F2 /* View+SingleImage.swift in Sources */,
 			);

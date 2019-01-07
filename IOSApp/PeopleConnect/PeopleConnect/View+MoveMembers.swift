@@ -88,7 +88,7 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ContactCell", forIndexPath: indexPath) as! ContactCell
         let members = indexPath.section == 0 ? m_inTagMembers : m_outTagMembers
-        cell.reload(members[indexPath.row].user, tag: nil)
+        cell.reload(members[indexPath.row].user)
         return cell
     }
     
