@@ -142,7 +142,7 @@
         <!--联系人-->
         <scene sceneID="DFM-uy-UqD">
             <objects>
-                <viewController id="aTw-ZE-vUS" customClass="ContactsView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="aTw-ZE-vUS" customClass="UsersView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="E7d-Y3-UYG"/>
                         <viewControllerLayoutGuide type="bottom" id="ypo-6B-lHr"/>
@@ -1551,7 +1551,7 @@
         <image name="tab_msg_hi" width="25" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="XOj-qb-4jh"/>
-        <segue reference="xrR-La-VIP"/>
+        <segue reference="BOu-Ex-kTg"/>
+        <segue reference="pWd-Ma-Nx5"/>
     </inferredMetricsTieBreakers>
 </document>

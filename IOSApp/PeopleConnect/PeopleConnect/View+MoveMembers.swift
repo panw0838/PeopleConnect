@@ -45,7 +45,7 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        m_table.registerClass(ContactCell.classForCoder(), forCellWithReuseIdentifier: "ContactCell")
+        m_table.registerClass(UserCell.classForCoder(), forCellWithReuseIdentifier: "UserCell")
         m_moveBtn.enabled = false
         reloadData()
     }
@@ -86,7 +86,7 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ContactCell", forIndexPath: indexPath) as! ContactCell
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("UserCell", forIndexPath: indexPath) as! UserCell
         let members = indexPath.section == 0 ? m_inTagMembers : m_outTagMembers
         cell.reload(members[indexPath.row].user)
         return cell

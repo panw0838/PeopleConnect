@@ -8,7 +8,7 @@
 
 import Foundation
 
-func httpGetNearbyUsers() {
+func httpGetNearbyUsers(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
     contactsData.m_nearUsers.clearContacts()
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
@@ -16,7 +16,7 @@ func httpGetNearbyUsers() {
         "y":NSNumber(double: userInfo.y)]
     http.postRequest("nearusers", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let usersData = processErrorCode(response as! NSData, failed: nil)
+            let usersData = processErrorCode(response as! NSData, failed: failed)
             if usersData != nil {
                 if let json = getJson(usersData!) {
                     if let contactObjs = json["users"] as? [AnyObject] {
@@ -31,9 +31,11 @@ func httpGetNearbyUsers() {
                     }
                     contactsData.updateDelegates()
                 }
+                passed?()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            failed?(err: "请求失败")
         }
     )
 }
@@ -97,7 +99,7 @@ func httpDidFaceUsers() {
     )
 }
 
-func httpGetCellContacts(names:Array<String>, cells:Array<String>) {
+func httpGetCellContacts(names:Array<String>, cells:Array<String>, passed: (()->Void)?, failed: ((err:String?)->Void)?) {
     contactsData.m_cellUsers.clearContacts()
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
@@ -106,7 +108,7 @@ func httpGetCellContacts(names:Array<String>, cells:Array<String>) {
         "cells":http.getStringArrayParam(cells)]
     http.postRequest("searchusers", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let usersData = processErrorCode(response as! NSData, failed: nil)
+            let usersData = processErrorCode(response as! NSData, failed: failed)
             if usersData != nil {
                 if let json = getJson(usersData!) {
                     if let contactObjs = json["users"] as? [AnyObject] {
@@ -121,19 +123,20 @@ func httpGetCellContacts(names:Array<String>, cells:Array<String>) {
                     }
                     contactsData.updateDelegates()
                 }
+                passed?()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-            print("请求失败")
+            failed?(err: "请求失败")
     })
 }
 
-func httpGetSuggestContacts() {
+func httpGetSuggestContacts(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
     contactsData.m_rcmtUsers.clearContacts()
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("possiblecontacts", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let usersData = processErrorCode(response as! NSData, failed: nil)
+            let usersData = processErrorCode(response as! NSData, failed: failed)
             if usersData != nil {
                 if let json = getJson(usersData!) {
                     if let usersObjs = json["users"] as? [AnyObject] {
@@ -148,9 +151,11 @@ func httpGetSuggestContacts() {
                     }
                     contactsData.updateDelegates()
                 }
+                passed?()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            failed?(err: "请求失败")
         }
     )
 }

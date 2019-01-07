@@ -22,10 +22,6 @@ struct LoginInfo {
     var pass:String
 }
 
-protocol SearchContactCallback {
-    func SearchUpdateUI(uid:UInt64)->Void
-}
-
 let httpErrMsg:Dictionary<UInt16, String> = [
     1:"服务器错误",
     2:"国家码错误",
@@ -34,8 +30,6 @@ let httpErrMsg:Dictionary<UInt16, String> = [
     5:"头像错误"]
 
 let http: HttpService = HttpService()
-
-var searchCallbacks:Array<SearchContactCallback> = Array<SearchContactCallback>()
 
 func processErrorCode(data:NSData, failed:((String?)->Void)?)->NSData? {
     var errCode:UInt16 = 0

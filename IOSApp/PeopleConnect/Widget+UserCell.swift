@@ -8,11 +8,11 @@
 
 import Foundation
 
-class ContactCell: UICollectionViewCell {
+class UserCell: UICollectionViewCell {
     var m_image  = UIImageView(frame: CGRectZero)
     var m_name   = UILabel(frame: CGRectZero)
     var m_id:UInt64 = 0
-    var m_father:ContactsView?
+    var m_father:UsersView?
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -78,7 +78,7 @@ class ContactCell: UICollectionViewCell {
     }
 }
 
-class ActionCell:ContactCell {
+class ActionCell:UserCell {
     var m_act:TagAction?
     var m_tag:Tag?
     
@@ -131,16 +131,16 @@ class ActionCell:ContactCell {
             self.m_father?.presentViewController(alert, animated: true, completion: nil)
             break
         case .SearchCell:
-            checkContactsBookPrivacy()
+            m_father?.ActionSearchCell()
             break
         case .SearchConn:
-            httpGetSuggestContacts()
+            m_father?.ActionSearchConn()
             break
         case .SearchFace:
-            m_father?.startFaceToFace()
+            m_father?.ActionSearchFace()
             break
         case .SearchNear:
-            m_father?.RefreshNearby()
+            m_father?.ActionSearchNear()
             break
         }
     }

@@ -71,13 +71,14 @@ func checkCNCellNumber(cell:String)->Bool {
     return preYD.evaluateWithObject(cell) || preLT.evaluateWithObject(cell) || preDX.evaluateWithObject(cell)
 }
 
-func checkContactsBookPrivacy() {
+func checkContactsBookPrivacy()->String {
+    var errString = ""
+    
     switch (CNContactStore.authorizationStatusForEntityType(.Contacts))
     {
     case .Authorized:
         //存在权限
         //获取通讯录
-        getContactsBook()
         break
     case .NotDetermined:
         //权限未知
@@ -85,24 +86,25 @@ func checkContactsBookPrivacy() {
         let store = CNContactStore()
         store.requestAccessForEntityType(.Contacts, completionHandler: {(success:Bool, err:NSError?)->Void in
             if success {
-                getContactsBook()
             }
             else {
-                print(err)
+                errString = "请求权限错误"
             }
             })
         break
     case .Restricted:
         //如果没有权限
+        errString = "没有权限"
         break
     case .Denied:
-        //需要提示
-        //self.defendBlock();
+        errString = "没有权限"
         break
     }
+    
+    return errString
 }
 
-func getContactsBook() {
+func getContactsBook()->(names:Array<String>, cells:Array<String>) {
     let store = CNContactStore()
     let request = CNContactFetchRequest(keysToFetch: [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey])
     var names = Array<String>()
@@ -138,6 +140,6 @@ func getContactsBook() {
     catch {
     }
     
-    httpGetCellContacts(names, cells: cells)
+    return (names, cells)
 }
 
