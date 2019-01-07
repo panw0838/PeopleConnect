@@ -59,11 +59,11 @@ func httpRegFaceUsers(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
     )
 }
 
-func httpGetFaceUsers() {
+func httpGetFaceUsers(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
     let params: Dictionary = ["uid":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("getfaceusers", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let usersData = processErrorCode(response as! NSData, failed: nil)
+            let usersData = processErrorCode(response as! NSData, failed: failed)
             if usersData != nil {
                 if let json = getJson(usersData!) {
                     if let contactObjs = json["users"] as? [AnyObject] {
@@ -78,9 +78,11 @@ func httpGetFaceUsers() {
                     }
                     contactsData.updateDelegates()
                 }
+                passed?()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            failed?(err: "请求失败")
         }
     )
 }

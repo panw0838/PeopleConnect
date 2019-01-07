@@ -142,8 +142,6 @@ class ActionCell:ContactCell {
         case .SearchNear:
             m_father?.RefreshNearby()
             break
-        default:
-            break
         }
     }
 }

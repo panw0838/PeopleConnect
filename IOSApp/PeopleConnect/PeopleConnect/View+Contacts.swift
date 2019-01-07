@@ -130,16 +130,40 @@ class ContactsView:
     }
     
     func counterFinished() {
-        httpDidFaceUsers()
+        httpGetFaceUsers(
+            {()->Void in
+                let found = contactsData.m_faceUsers.m_members.count
+                let foundMsg = (found == 0 ? "未找到好友" : "找到" + String(found) + "好友")
+                let alert = UIAlertController(title: "面对面加好友", message: foundMsg, preferredStyle: UIAlertControllerStyle.Alert)
+                let cancelAction = UIAlertAction(title: "退出", style: UIAlertActionStyle.Cancel,
+                    handler: { action in
+                        httpDidFaceUsers()
+                })
+                let okAction = UIAlertAction(title: "继续搜索", style: UIAlertActionStyle.Default,
+                    handler: { action in
+                        gLoadingView.setupCounting(11, invokeSeconds: 11, delegate: self)
+                        gLoadingView.startCounting()
+                })
+                alert.addAction(cancelAction)
+                alert.addAction(okAction)
+                self.presentViewController(alert, animated: true, completion: nil)
+                
+            },
+            failed: {(err:String?)->Void in
+                let alert = UIAlertController(title: "面对面加好友", message: err, preferredStyle: UIAlertControllerStyle.Alert)
+                let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default, handler: nil)
+                alert.addAction(okAction)
+                self.presentViewController(alert, animated: true, completion: nil)
+            })
     }
     
     func counterInvoke() {
-        httpGetFaceUsers()
     }
     
     func startFaceToFace() {
-        gLoadingView.setupCounting(11, invokeSeconds: 4, delegate: self)
+        gLoadingView.setupCounting(11, invokeSeconds: 11, delegate: self)
         userData.startLocate(self)
+        contactsData.m_faceUsers.clearContacts()
     }
     
     func SearchUpdateUI(uid:UInt64) {
