@@ -78,6 +78,53 @@ class ContactsView:
         m_contacts.reloadData()
     }
     
+    var m_noteName:String = ""
+    var m_messege:String = ""
+    var m_nameGood:Bool = false
+    var m_messegeGood:Bool = false
+    
+    func requestNameChanged(sender:UITextField) {
+        let alert:UIAlertController = self.presentedViewController as! UIAlertController
+        let okAction:UIAlertAction = alert.actions.last!
+        m_noteName = (alert.textFields?.first?.text)!
+        let nameSize = m_noteName.characters.count
+        m_nameGood = (nameSize > 0 && nameSize < 18)
+        okAction.enabled = (m_nameGood && m_messegeGood)
+    }
+    
+    func requestMessegeChanged(sender:UITextField) {
+        let alert:UIAlertController = self.presentedViewController as! UIAlertController
+        let okAction:UIAlertAction = alert.actions.last!
+        m_messege = (alert.textFields?.last?.text)!
+        let nameSize = m_messege.characters.count
+        m_messegeGood = (nameSize > 0 && nameSize < 18)
+        okAction.enabled = (m_nameGood && m_messegeGood)
+    }
+    
+    func RequestContact(uID:UInt64) {
+        let alert = UIAlertController(title: "添加联系人", message: "", preferredStyle: UIAlertControllerStyle.Alert)
+        let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
+            handler: { action in
+                httpRequestContact(uID, name: self.m_noteName, messege: self.m_messege)
+        })
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+            let contact = contactsData.m_contacts[uID]
+            textField.placeholder = contact?.name
+            textField.addTarget(self, action: Selector("requestNameChanged:"), forControlEvents: .EditingChanged)
+        }
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "好友请求信息"
+            textField.addTarget(self, action: Selector("requestMessegeChanged:"), forControlEvents: .EditingChanged)
+        }
+        alert.addAction(cancelAction)
+        alert.addAction(okAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+
+    
     func ContactDataUpdate() {
         self.m_contacts.reloadData()
     }

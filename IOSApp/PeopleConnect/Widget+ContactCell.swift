@@ -46,34 +46,35 @@ class ContactCell: UICollectionViewCell {
     
     func tap() {
         let contact = contactsData.m_contacts[m_id]
+        let alert = UIAlertController(title: contact?.name, message: "", preferredStyle: .ActionSheet)
+        let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        alert.addAction(noAction)
+        
         if contact?.flag == 0 {
-            ContactView.ContactID = m_id
-            m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
+            let reqAction = UIAlertAction(title: "请求好友", style: .Default, handler: { action in
+                self.m_father?.RequestContact(self.m_id)
+            })
+            alert.addAction(reqAction)
         }
         else {
-            let alert = UIAlertController(title: contact?.name, message: "", preferredStyle: .ActionSheet)
-            let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
-            
             let msgAction = UIAlertAction(title: "发信息", style: .Default, handler: { action in
                 self.m_father?.m_convID = self.m_id
                 self.m_father?.performSegueWithIdentifier("StartConversation", sender: nil)
             })
+            alert.addAction(msgAction)
             
             let callAction = UIAlertAction(title: "打电话", style: .Default, handler: { action in
             })
-            
-            let detailAction = UIAlertAction(title: "查看资料", style: .Default, handler: { action in
-                ContactView.ContactID = self.m_id
-                self.m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
-            })
-            
-            alert.addAction(noAction)
-            alert.addAction(msgAction)
             alert.addAction(callAction)
-            alert.addAction(detailAction)
-            
-            self.m_father?.presentViewController(alert, animated: true, completion: nil)
         }
+        
+        let detailAction = UIAlertAction(title: "查看资料", style: .Default, handler: { action in
+            ContactView.ContactID = self.m_id
+            self.m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
+        })
+        alert.addAction(detailAction)
+        
+        self.m_father?.presentViewController(alert, animated: true, completion: nil)
     }
 }
 
