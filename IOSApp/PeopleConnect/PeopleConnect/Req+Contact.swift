@@ -121,25 +121,20 @@ func httpRemContact(contact:UInt64) {
     })
 }
 
-func httpMoveContacts(tag:Tag, addMembers:Array<UInt64>, remMembers:Array<UInt64>) {
-    let adds:NSMutableArray = http.getUInt64ArrayParam(addMembers)
-    let rems:NSMutableArray = http.getUInt64ArrayParam(remMembers)
-    let params:Dictionary = [
-        "user":NSNumber(unsignedLongLong: userInfo.userID),
-        "tag":NSNumber(unsignedChar: tag.m_tagID),
-        "sys":NSNumber(bool: (tag.m_fatherID == 0)),
-        "add":adds,
-        "rem":rems]
-    http.postRequest("updatetagmember", params: params,
+func httpLikeUser(cID:UInt64, like:Bool, btn:UIButton) {
+    let params: Dictionary = [
+        "uid":NSNumber(unsignedLongLong: userInfo.userID),
+        "cid":NSNumber(unsignedLongLong: cID),
+        "like":NSNumber(bool: like)]
+    http.postRequest("likeuser", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if getErrorCode(response as! NSData) == 0 {
-                contactsData.moveContactsInTag(addMembers, tag: tag)
-                contactsData.moveContactsOutTag(remMembers, tag: tag)
-                contactsData.updateDelegates()
+                btn.highlighted = like
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
             print("请求失败")
-    })
+        }
+    )
 }
 

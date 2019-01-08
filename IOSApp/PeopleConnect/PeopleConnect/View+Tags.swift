@@ -119,9 +119,6 @@ class TagsView: UIView {
     func initSubViews(edit:Bool) {
         for _ in 0...MaxTags-1 {
             let tag = TagLabel(frame: CGRectZero)
-            let tap = UITapGestureRecognizer(target: tag, action: Selector("tap"))
-            tag.userInteractionEnabled = true
-            tag.addGestureRecognizer(tap)
             tag.font = edit ? tagEditFont : statusFont
             tag.layer.cornerRadius = 8
             tag.layer.masksToBounds = true
@@ -129,6 +126,13 @@ class TagsView: UIView {
             tag.textAlignment = .Center
             tag.textColor = UIColor.whiteColor()
             tag.m_father = self
+
+            if edit {
+                let tap = UITapGestureRecognizer(target: tag, action: Selector("tap"))
+                tag.userInteractionEnabled = true
+                tag.addGestureRecognizer(tap)
+            }
+            
             m_tagLabels.append(tag)
             addSubview(tag)
         }

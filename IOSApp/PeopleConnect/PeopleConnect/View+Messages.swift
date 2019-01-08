@@ -93,7 +93,7 @@ class MessegesView: UITableViewController, MsgDelegate {
         }
         if segue.identifier == "ShowNotify" {
             let to = segue.destinationViewController as! PostNotifyView
-            to.m_data = conversation
+            to.m_data = conversation as! PostNotifies
         }
         if segue.identifier == "ShowConversation" {
             let to = segue.destinationViewController as! ConversationView

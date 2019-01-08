@@ -192,6 +192,9 @@ class Conversation {
     var m_delegate:ConvDelegate?
     var m_newMsg = false
     
+    init() {
+    }
+    
     init(id:UInt64) {
         m_id = id
         
@@ -261,6 +264,45 @@ class Conversation {
     }
 }
 
+class Requests:Conversation {
+    
+}
+
+class PostNotifies:Conversation {
+    
+    var m_posts = Array<Post>()
+    
+    override init() {
+        super.init()
+        m_id = ConvType.ConvPostNTF.rawValue
+        m_name = "动态通知"
+        m_img = UIImage(named: "messages_notify")!
+    }
+    
+    override func addMessage(newMessage:MsgInfo) {
+        super.addMessage(newMessage)
+        
+        if let postData = getPostData(newMessage.src, oID: newMessage.oID) {
+            postData.m_needSync = true
+            if let post = postData.getPost(newMessage.pID, oID: newMessage.oID) {
+                for (idx, oldPost) in m_posts.enumerate() {
+                    if oldPost.m_father?.m_sorce == post.m_father?.m_sorce &&
+                        oldPost.m_info.id == post.m_info.id &&
+                        oldPost.m_info.user == post.m_info.user {
+                        m_posts.removeAtIndex(idx)
+                    }
+                }
+                m_posts.append(post)
+                post.m_actors.append(newMessage.from)
+            }
+        }
+    }
+
+    override func lastMessage() -> String? {
+        return String(m_messages.count) + "个动态通知"
+    }
+}
+
 protocol MsgDelegate {
     func MsgUpdated()
 }
@@ -278,7 +320,7 @@ class MsgData {
     init() {
         // add system conversations
         m_conversations.append(Conversation(id: 1))
-        m_conversations.append(Conversation(id: 2))
+        m_conversations.append(PostNotifies())
         
         loadMsgFromCache()
     }

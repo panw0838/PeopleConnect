@@ -20,7 +20,7 @@ func httpAddTag(father:UInt8, name:String) {
                 let jsonObj = try? NSJSONSerialization.JSONObjectWithData(tagData!, options: .MutableContainers)
                 if (jsonObj != nil) {
                     let dict: NSDictionary = jsonObj as! NSDictionary
-                    let tagID: UInt8 = (UInt8)((dict["tag"]?.integerValue)!)
+                    let tagID: UInt8 = UInt8((dict["tag"]?.integerValue)!)
                     contactsData.addSubTag(Tag(id: tagID, father: father, name: name))
                     contactsData.updateDelegates()
                 }
@@ -39,6 +39,28 @@ func httpRemTag(tag:Tag) {
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if getErrorCode(response as! NSData) == 0 {
                 tag.m_father?.remSubTag(tag)
+                contactsData.updateDelegates()
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+    })
+}
+
+func httpMoveContacts(tag:Tag, addMembers:Array<UInt64>, remMembers:Array<UInt64>) {
+    let adds:NSMutableArray = http.getUInt64ArrayParam(addMembers)
+    let rems:NSMutableArray = http.getUInt64ArrayParam(remMembers)
+    let params:Dictionary = [
+        "user":NSNumber(unsignedLongLong: userInfo.userID),
+        "tag":NSNumber(unsignedChar: tag.m_tagID),
+        "sys":NSNumber(bool: (tag.m_fatherID == 0)),
+        "add":adds,
+        "rem":rems]
+    http.postRequest("updatetagmember", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            if getErrorCode(response as! NSData) == 0 {
+                contactsData.moveContactsInTag(addMembers, tag: tag)
+                contactsData.moveContactsOutTag(remMembers, tag: tag)
                 contactsData.updateDelegates()
             }
         },

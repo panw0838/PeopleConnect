@@ -9,10 +9,9 @@
 import UIKit
 
 class PostNotifyCell:UITableViewCell {
-    @IBOutlet weak var m_photo: UIImageView!
-    @IBOutlet weak var m_name: UILabel!
-    @IBOutlet weak var m_notify: UILabel!
-    @IBOutlet weak var m_post: UIImageView!
+    @IBOutlet weak var m_postImg: UIImageView!
+    @IBOutlet weak var m_postText: UILabel!
+    @IBOutlet var m_actors: [UIImageView]!
 }
 
 
@@ -20,7 +19,7 @@ class PostNotifyView:UIViewController, MsgDelegate, UITableViewDataSource, UITab
     
     @IBOutlet weak var m_table: UITableView!
     
-    var m_data:Conversation?
+    var m_data:PostNotifies?
     
     func MsgUpdated() {
         m_table.reloadData()
@@ -49,25 +48,45 @@ class PostNotifyView:UIViewController, MsgDelegate, UITableViewDataSource, UITab
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return m_data!.m_messages.count
+        return m_data!.m_posts.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("PostNotifyCell") as! PostNotifyCell
-        let notify = m_data?.m_messages[indexPath.row]
-        cell.m_photo.image = getPhoto(notify!.from)
-        cell.m_photo.layer.masksToBounds = true
-        cell.m_photo.layer.cornerRadius = 10
-        cell.m_name.text = getName(notify!.from)
-        cell.m_notify.text = notify?.getMessage()
+        let post = m_data?.m_posts[indexPath.row]
+        
+        if post?.numImages() > 0 {
+            cell.m_postImg.hidden = false
+            cell.m_postText.hidden = true
+            cell.m_postImg.image = post?.getPreview(0)
+        }
+        else {
+            cell.m_postImg.hidden = true
+            cell.m_postText.hidden = false
+            cell.m_postText.text = post?.m_info.content
+        }
+        
+        for img in cell.m_actors {
+            img.hidden = true
+        }
+        
+        for (idx, actor) in post!.m_actors.enumerate() {
+            cell.m_actors[idx].hidden = false
+            cell.m_actors[idx].image = getPhoto(actor)
+            if idx == cell.m_actors.count-1 {
+                cell.m_actors[idx].image = UIImage(named: "more")
+                break
+            }
+        }
+        
         return cell
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let notify = m_data?.m_messages[indexPath.row]
-        let postData = getPostData(notify!.src, oID: notify!.oID)
+        let post = m_data?.m_posts[indexPath.row]
+        let postData = post?.m_father
         
-        if postData != nil && postData!.lockPost(notify!.pID, oID: notify!.oID) {
+        if postData != nil && postData!.lockPost(post!.m_info.id, oID: post!.m_info.user) {
             SinglePostView.postData = postData
             performSegueWithIdentifier("ShowPost", sender: nil)
         }

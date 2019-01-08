@@ -138,6 +138,7 @@ class Post {
     var m_info:PostInfo = PostInfo()
     var m_father:PostData?
     var m_comments = Array<CommentInfo>()
+    var m_actors = Array<UInt64>()
     
     init(info:PostInfo) {
         m_info = info

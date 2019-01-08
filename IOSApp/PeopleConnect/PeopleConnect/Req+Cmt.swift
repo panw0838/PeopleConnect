@@ -63,8 +63,7 @@ func httpDelComment(post:Post, cmt:CommentInfo) {
         "pid":NSNumber(unsignedLongLong: post.m_info.id)]
     http.postRequest("delcmt", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let err = getErrorCode(response as! NSData)
-            if err == 0 {
+            if getErrorCode(response as! NSData) == 0 {
                 for (idx, comment) in post.m_comments.enumerate() {
                     if comment.id == cmt.id && comment.from == cmt.from {
                         post.m_comments.removeAtIndex(idx)

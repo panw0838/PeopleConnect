@@ -125,30 +125,6 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
                                         contactsData.updateDelegates()
                                     }
                                 }
-                                
-                                if msg.type == .Ntf_New {
-                                    friendPosts.m_needSync = true
-                                }
-                                if msg.type == .Ntf_Lik {
-                                    selfPosts.m_needSync = true
-                                }
-                                if msg.type == .Ntf_Cmt {
-                                    if msg.oID == userInfo.userID {
-                                        selfPosts.m_needSync = true
-                                    }
-                                    else {
-                                        if msg.src == FriPosts {
-                                            friendPosts.m_needSync = true
-                                        }
-                                        else if msg.src == StrPosts {
-                                            nearPosts.m_needSync = true
-                                        }
-                                        else {
-                                            let groupPosts = groupsPosts[msg.src]
-                                            groupPosts?.m_needSync = true
-                                        }
-                                    }
-                                }
                             }
                         }
                         msgData.UpdateDelegate()
