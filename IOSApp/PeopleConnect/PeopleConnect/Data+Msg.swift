@@ -297,6 +297,12 @@ class PostNotifies:Conversation {
             }
         }
     }
+    
+    func getMessage(idx:Int)->String {
+        let post = m_posts[idx]
+        let src = post.m_father?.m_sorce
+        return String(post.m_actors.count) + "个人" + (src == UsrPosts ?  "评论了你的动态" : "回复了你的评论")
+    }
 
     override func lastMessage() -> String? {
         return String(m_messages.count) + "个动态通知"

@@ -9,9 +9,49 @@
 import UIKit
 
 class PostNotifyCell:UITableViewCell {
-    @IBOutlet weak var m_postImg: UIImageView!
+    @IBOutlet weak var m_postPreview: ImgPreview!
     @IBOutlet weak var m_postText: UILabel!
-    @IBOutlet var m_actors: [UIImageView]!
+    @IBOutlet var m_actorPhotos: [UIImageView]!
+    @IBOutlet weak var m_message: UILabel!
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    func reload(post:Post, msg:String) {
+        m_message.text = msg
+        if post.numImages() > 0 {
+            m_postText.hidden = true
+            m_postPreview.hidden = false
+            m_postPreview.reload(post)
+        }
+        else {
+            m_postPreview.hidden = true
+            m_postText.hidden = false
+            m_postText.text = post.m_info.content
+        }
+        
+        for img in m_actorPhotos {
+            img.hidden = true
+        }
+        
+        for (idx, actor) in post.m_actors.enumerate() {
+            m_actorPhotos[idx].hidden = false
+            m_actorPhotos[idx].image = getPhoto(actor)
+            m_actorPhotos[idx].layer.cornerRadius = 10
+            m_actorPhotos[idx].layer.masksToBounds = true
+            m_actorPhotos[idx].layer.borderWidth = 1
+            m_actorPhotos[idx].layer.borderColor = UIColor.whiteColor().CGColor
+            if idx == m_actorPhotos.count-1 {
+                break
+            }
+        }
+        
+    }
 }
 
 
@@ -54,30 +94,8 @@ class PostNotifyView:UIViewController, MsgDelegate, UITableViewDataSource, UITab
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("PostNotifyCell") as! PostNotifyCell
         let post = m_data?.m_posts[indexPath.row]
-        
-        if post?.numImages() > 0 {
-            cell.m_postImg.hidden = false
-            cell.m_postText.hidden = true
-            cell.m_postImg.image = post?.getPreview(0)
-        }
-        else {
-            cell.m_postImg.hidden = true
-            cell.m_postText.hidden = false
-            cell.m_postText.text = post?.m_info.content
-        }
-        
-        for img in cell.m_actors {
-            img.hidden = true
-        }
-        
-        for (idx, actor) in post!.m_actors.enumerate() {
-            cell.m_actors[idx].hidden = false
-            cell.m_actors[idx].image = getPhoto(actor)
-            if idx == cell.m_actors.count-1 {
-                cell.m_actors[idx].image = UIImage(named: "more")
-                break
-            }
-        }
+        let msg = m_data?.getMessage(indexPath.row)
+        cell.reload(post!, msg: msg!)
         
         return cell
     }

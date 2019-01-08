@@ -18,7 +18,7 @@ class CreatePostView:
     @IBOutlet weak var m_desc: UITextField!
     @IBOutlet weak var m_strangerSee: UISwitch!
     @IBOutlet weak var m_createPostBtn: UIBarButtonItem!
-    @IBOutlet weak var m_imgsPreview: ImgPreview!
+    @IBOutlet weak var m_imgsPreview: ImgEditPreview!
     @IBOutlet weak var m_visibleTags: TagsView!
     
     func updateCreateBtn() {
