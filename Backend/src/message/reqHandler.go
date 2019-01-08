@@ -92,9 +92,27 @@ func LikeUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	likeKey := share.GetUserLikeKey(input.CID)
+	uLikeKey := share.GetUserLikeKey(input.UID)
+	likeUkey := share.GetLikeUserKey(input.CID)
 	if input.Like {
-		_, err := c.Do("SADD", likeKey, input.UID)
+		_, err := c.Do("MULTI")
+		if err != nil {
+			share.WriteErrorCode(w, err)
+			return
+		}
+
+		_, err = c.Do("SADD", likeUkey, input.UID)
+		if err != nil {
+			share.WriteErrorCode(w, err)
+			return
+		}
+		_, err = c.Do("SADD", uLikeKey, input.CID)
+		if err != nil {
+			share.WriteErrorCode(w, err)
+			return
+		}
+
+		_, err = c.Do("EXEC")
 		if err != nil {
 			share.WriteErrorCode(w, err)
 			return
@@ -109,7 +127,25 @@ func LikeUserHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		_, err := c.Do("SREM", likeKey, input.UID)
+		_, err := c.Do("MULTI")
+		if err != nil {
+			share.WriteErrorCode(w, err)
+			return
+		}
+
+		_, err = c.Do("SREM", likeUkey, input.UID)
+		if err != nil {
+			share.WriteErrorCode(w, err)
+			return
+		}
+
+		_, err = c.Do("SREM", uLikeKey, input.CID)
+		if err != nil {
+			share.WriteErrorCode(w, err)
+			return
+		}
+
+		_, err = c.Do("EXEC")
 		if err != nil {
 			share.WriteErrorCode(w, err)
 			return

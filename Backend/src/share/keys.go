@@ -25,3 +25,7 @@ func GetPostLikeKey(uID uint64, pID uint64) string {
 func GetUserLikeKey(uID uint64) string {
 	return "ulike:" + strconv.FormatUint(uID, 10)
 }
+
+func GetLikeUserKey(uID uint64) string {
+	return "likeu:" + strconv.FormatUint(uID, 10)
+}
