@@ -207,6 +207,8 @@ class ImgEditPreview:ImgPreview, ImgPickerDelegate {
     var m_controller:CreatePostView?
     
     override func initSubviews() {
+        super.initSubviews()
+        
         m_picker = ImgPicker(maxCount: 9)
         m_picker?.m_pickerDelegate = self
         

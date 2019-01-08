@@ -24,6 +24,7 @@ class PostNotifyCell:UITableViewCell {
     
     func reload(post:Post, msg:String) {
         m_message.text = msg
+        m_postPreview.userInteractionEnabled = false
         if post.numImages() > 0 {
             m_postText.hidden = true
             m_postPreview.hidden = false
@@ -42,9 +43,9 @@ class PostNotifyCell:UITableViewCell {
         for (idx, actor) in post.m_actors.enumerate() {
             m_actorPhotos[idx].hidden = false
             m_actorPhotos[idx].image = getPhoto(actor)
-            m_actorPhotos[idx].layer.cornerRadius = 10
+            m_actorPhotos[idx].layer.cornerRadius = 20
             m_actorPhotos[idx].layer.masksToBounds = true
-            m_actorPhotos[idx].layer.borderWidth = 1
+            m_actorPhotos[idx].layer.borderWidth = 2
             m_actorPhotos[idx].layer.borderColor = UIColor.whiteColor().CGColor
             if idx == m_actorPhotos.count-1 {
                 break

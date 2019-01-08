@@ -38,10 +38,11 @@ enum MessegeType : Int {
     
     case Ntf_Req = 0x10
     case Ntf_Add = 0x11
+    case Ntf_Lik = 0x12
     
-    case Ntf_Cmt = 0x20
-    case Ntf_Lik = 0x21
-    case Ntf_New = 0x22
+    case Ntf_Pst_Cmt = 0x20
+    case Ntf_Pst_Lik = 0x21
+    case Ntf_Pst_New = 0x22
 }
 
 let GroupBit:UInt64 = 0x8000000000000000
@@ -62,7 +63,7 @@ struct MsgInfo {
         if type == .Ntf_Req {
             return 1
         }
-        if type == .Ntf_Cmt || type == .Ntf_Lik {
+        if type == .Ntf_Pst_Cmt || type == .Ntf_Pst_Lik {
             return 2
         }
         if group != 0 {
@@ -78,12 +79,7 @@ struct MsgInfo {
         if type == .Ntf_Add {
             return "我已添加你为好友，我们可以对话了"
         }
-        if type == .Ntf_Cmt {
-            return "给你留言"
-        }
-        if type == .Ntf_Lik {
-            return "为你点赞"
-        }
+
         return data
     }
 }
@@ -293,6 +289,11 @@ class PostNotifies:Conversation {
                     }
                 }
                 m_posts.append(post)
+                for actor in post.m_actors {
+                    if actor == newMessage.from {
+                        return
+                    }
+                }
                 post.m_actors.append(newMessage.from)
             }
         }
@@ -415,6 +416,18 @@ class MsgData {
             let conversation = popConversation(convID)
             conversation.addMessage(newMsg)
             UpdateDelegate()    // data changed
+        }
+        else {
+            switch newMsg.type {
+            case .Ntf_Lik:
+                break
+            case .Ntf_Pst_New:
+                friendPosts.m_needSync = true
+                break
+            default:
+                print("unhandled message ", newMsg.type)
+                break
+            }
         }
     }
     
