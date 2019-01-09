@@ -1,6 +1,7 @@
 package message
 
 import (
+	"fmt"
 	"net/http"
 	"share"
 	"user"
@@ -82,6 +83,11 @@ func LikeUserHandler(w http.ResponseWriter, r *http.Request) {
 	err := share.ReadInput(r, &input)
 	if err != nil {
 		share.WriteErrorCode(w, err)
+		return
+	}
+
+	if input.UID == input.CID {
+		share.WriteErrorCode(w, fmt.Errorf("like self"))
 		return
 	}
 
