@@ -74,6 +74,7 @@ class MessegesView: UITableViewController, MsgDelegate {
             self.performSegueWithIdentifier("ShowRequests", sender: cell.m_conv!)
         }
         else if cell.m_conv!.m_id == ConvType.ConvPostNTF.rawValue {
+            cell.m_conv!.m_messages.removeAll()
             self.performSegueWithIdentifier("ShowNotify", sender: cell.m_conv!)
         }
         else if cell.m_conv!.m_id == ConvType.ConvLikeUsr.rawValue {
@@ -89,9 +90,8 @@ class MessegesView: UITableViewController, MsgDelegate {
         let conv = sender as! Conversation
         conv.m_newMsg = false
         if segue.identifier == "ShowRequests" {
-            let to = segue.destinationViewController as! RequestsView
+            let to = segue.destinationViewController as! UserNotifyView
             to.m_conv = conv
-            // clean notifications
         }
         if segue.identifier == "ShowNotify" {
             let to = segue.destinationViewController as! PostNotifyView

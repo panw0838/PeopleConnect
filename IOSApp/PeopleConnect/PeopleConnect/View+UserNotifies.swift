@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class RequestCell:UITableViewCell {
+class UNotifyCell:UITableViewCell {
     @IBOutlet weak var m_photo: UIImageView!
     @IBOutlet weak var m_name: UILabel!
     @IBOutlet weak var m_message: UILabel!
@@ -85,7 +85,7 @@ class RequestCell:UITableViewCell {
     }
 }
 
-class RequestsView:UIViewController, ConvDelegate, UITableViewDataSource, UITableViewDelegate {
+class UserNotifyView:UIViewController, ConvDelegate, UITableViewDataSource, UITableViewDelegate {
     
     @IBOutlet weak var m_table: UITableView!
     var m_conv:Conversation?
@@ -114,7 +114,7 @@ class RequestsView:UIViewController, ConvDelegate, UITableViewDataSource, UITabl
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("RequestCell") as! RequestCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("UNotifyCell") as! UNotifyCell
         let contact = m_conv!.getUserAt(indexPath.row)
         let message = m_conv!.getMessage(indexPath.row)
         cell.reload(contact, msg: message, father: self)

@@ -269,6 +269,16 @@ class RequestNotifies:Conversation {
     
     var m_requests = Array<RequestInfo>()
     
+    func addRequest(request:RequestInfo) {
+        for msg in m_messages {
+            if request.from == msg.from {
+                m_requests.insert(request, atIndex: 0)
+                return
+            }
+        }
+        m_requests.append(request)
+    }
+    
     func remRequest(uid:UInt64) {
         for (idx, req) in m_requests.enumerate() {
             if req.from == uid {
@@ -319,6 +329,16 @@ class LikeNotifies:Conversation {
         m_id = ConvType.ConvLikeUsr.rawValue
         m_name = "点赞通知"
         m_img = UIImage(named: "group_like")!
+    }
+    
+    func addLiker(liker:UInt64) {
+        for msg in m_messages {
+            if liker == msg.from {
+                m_likers.insert(liker, atIndex: 0)
+                return
+            }
+        }
+        m_likers.append(liker)
     }
     
     override func getUserAt(index:Int)->UInt64 {

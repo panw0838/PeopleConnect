@@ -57,7 +57,7 @@ func httpSyncRequests() {
                             if let request = RequestInfo(json: reqObj) {
                                 let newContact = ContactInfo(id: request.from, f: 0, n: request.name)
                                 contactsData.addUser(newContact)
-                                reqNotify!.m_requests.append(request)
+                                reqNotify!.addRequest(request)
                                 ids.append(request.from)
                             }
                         }
@@ -70,7 +70,8 @@ func httpSyncRequests() {
                                 },
                                 failed: nil)                            
                         }
-                        reqNotify!.UpdateDelegate()
+                        reqNotify?.m_messages.removeAll()
+                        reqNotify?.UpdateDelegate()
                     }
                 }
             }
@@ -91,7 +92,7 @@ func httpGetLikeUsers() {
                     if let usersObjs = json["users"] as? [AnyObject] {
                         for case let userObj in (usersObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: userObj) {
-                                likeNotify?.m_likers.append(contact.user)
+                                likeNotify?.addLiker(contact.user)
                                 contactsData.addUser(contact)
                             }
                         }
@@ -107,6 +108,7 @@ func httpGetLikeUsers() {
                         likeNotify!.UpdateDelegate()
                         
                     }
+                    likeNotify?.m_messages.removeAll()
                     likeNotify?.UpdateDelegate()
                 }
             }

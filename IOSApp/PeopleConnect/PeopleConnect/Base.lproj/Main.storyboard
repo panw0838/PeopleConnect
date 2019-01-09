@@ -525,7 +525,7 @@
         <!--好友申请-->
         <scene sceneID="QlS-5M-gYo">
             <objects>
-                <viewController hidesBottomBarWhenPushed="YES" id="QEL-Yh-Fg4" customClass="RequestsView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController hidesBottomBarWhenPushed="YES" id="QEL-Yh-Fg4" customClass="UserNotifyView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="oCQ-k2-RFQ"/>
                         <viewControllerLayoutGuide type="bottom" id="JIi-W8-LLc"/>
@@ -538,7 +538,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="RequestCell" rowHeight="59" id="cpc-gK-jd6" customClass="RequestCell" customModule="PeopleConnect" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="UNotifyCell" rowHeight="59" id="cpc-gK-jd6" customClass="UNotifyCell" customModule="PeopleConnect" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="92" width="600" height="59"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cpc-gK-jd6" id="Pnh-Ms-Slk">
@@ -562,7 +562,7 @@
                                                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
                                                     <connections>
-                                                        <action selector="reject:" destination="cpc-gK-jd6" eventType="touchUpInside" id="8EC-X0-Rqn"/>
+                                                        <action selector="reject:" destination="cpc-gK-jd6" eventType="touchUpInside" id="Q7O-cc-I4u"/>
                                                     </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KLB-dN-F1t">
@@ -582,7 +582,7 @@
                                                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
                                                     <connections>
-                                                        <action selector="accept:" destination="cpc-gK-jd6" eventType="touchUpInside" id="ooB-q4-dP4"/>
+                                                        <action selector="accept:" destination="cpc-gK-jd6" eventType="touchUpInside" id="dzg-ez-nDn"/>
                                                     </connections>
                                                 </button>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Zea-mh-yAG">
@@ -614,11 +614,11 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="m_acceptBtn" destination="w8P-ud-qXt" id="Roo-C6-0I1"/>
-                                            <outlet property="m_message" destination="KLB-dN-F1t" id="wXh-Je-Zj8"/>
-                                            <outlet property="m_name" destination="K2m-al-NDf" id="r2n-PC-FiK"/>
-                                            <outlet property="m_photo" destination="Zea-mh-yAG" id="b56-QE-Gfx"/>
-                                            <outlet property="m_rejectBtn" destination="hxj-IF-it7" id="JzW-GW-9er"/>
+                                            <outlet property="m_acceptBtn" destination="w8P-ud-qXt" id="9Pg-PS-VKN"/>
+                                            <outlet property="m_message" destination="KLB-dN-F1t" id="mgy-gJ-Og3"/>
+                                            <outlet property="m_name" destination="K2m-al-NDf" id="3Ax-km-msz"/>
+                                            <outlet property="m_photo" destination="Zea-mh-yAG" id="sqc-SR-pyC"/>
+                                            <outlet property="m_rejectBtn" destination="hxj-IF-it7" id="4tP-bX-wgK"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
