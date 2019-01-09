@@ -52,6 +52,7 @@ func main() {
 	http.HandleFunc("/updatetagmember", user.UpdateTagMemberHandler)
 	http.HandleFunc("/getuserdetail", user.GetUserDetailHandler)
 	http.HandleFunc("/getbothlikeusers", user.GetBothLikeStrangersHandler)
+	http.HandleFunc("/getlikemeusers", user.GetLikeMeUsersHandler)
 
 	http.HandleFunc("/addcontact", message.AddContactHandler)
 	http.HandleFunc("/remcontact", message.RemContactHandler)
