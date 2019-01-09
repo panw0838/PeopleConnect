@@ -197,6 +197,14 @@
          contextName = "addPost(PostData, postObjs : [AnyObject]) -&gt; ():Requests+Post.swift">
       </ContextState>
       <ContextState
+         contextName = "ContactView.DetailUpdate() -&gt; ():View+Contact.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "ContactView.Detail.m_detail">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ConversationView.viewDidLoad() -&gt; ():View+Conversation.swift">
       </ContextState>
       <ContextState

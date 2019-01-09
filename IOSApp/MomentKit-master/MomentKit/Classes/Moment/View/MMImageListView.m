@@ -18,7 +18,7 @@
 // 预览视图
 @property (nonatomic, strong) MMImagePreviewView *previewView;
 
-@end    
+@end
 
 @implementation MMImageListView
 

@@ -9,19 +9,37 @@
 import UIKit
 
 
-class ContactView: PostsTable, UITableViewDelegate {
+class ContactView: PostsTable, UITableViewDelegate, DetailDelegate {
     
     @IBOutlet weak var m_name: UILabel!
     @IBOutlet weak var m_profile: UIImageView!
     @IBOutlet weak var m_background: UIImageView!
     @IBOutlet weak var m_posts: UITableView!
+    @IBOutlet weak var m_likeBtn: UIButton!
     
     static var ContactID:UInt64 = 0
+    static var Detail = DetailData()
     
     var m_preDelegate:PostDataDelegate?
     
+    @IBAction func likeUser(sender:AnyObject) {
+        if !m_likeBtn.selected {
+            httpLikeUser(ContactView.ContactID, like: true, btn: m_likeBtn)
+        }
+    }
+    
+    func DetailUpdate() {
+        m_likeBtn.selected = ContactView.Detail.m_detail!.like
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        m_likeBtn.setImage(UIImage(named: "post_like"), forState: .Normal)
+        m_likeBtn.setImage(UIImage(named: "post_like_hi"), forState: .Selected)
+        
+        ContactView.Detail.m_delegate = self
+        httpGetUserDetails(ContactView.ContactID)
         
         m_profile.layer.cornerRadius = 10
         
@@ -61,9 +79,6 @@ class ContactView: PostsTable, UITableViewDelegate {
         super.viewWillDisappear(animated)
         m_data?.setDelegate(m_preDelegate)
         ContactView.ContactID = 0
-    }
-    
-    @IBAction func RemContact(sender: AnyObject) {
     }
 }
 

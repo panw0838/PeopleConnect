@@ -9,6 +9,28 @@
 import Foundation
 import CoreLocation
 
+struct UserDetail {
+    var like:Bool = false
+    
+    init?(json: [String: AnyObject]) {
+        guard
+            let like = json["like"] as? NSNumber
+        else {
+            return nil
+        }
+        self.like = Bool(like.boolValue)
+    }
+}
+
+protocol DetailDelegate {
+    func DetailUpdate()
+}
+
+class DetailData {
+    var m_detail:UserDetail?
+    var m_delegate:DetailDelegate?
+}
+
 struct GroupInfo {
     var id:UInt32 = 0
     var name:String = ""

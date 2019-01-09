@@ -51,6 +51,12 @@ class UserCell: UICollectionViewCell {
         alert.addAction(noAction)
         
         if contact?.flag == 0 {
+            let detailAction = UIAlertAction(title: "查看资料", style: .Default, handler: { action in
+                ContactView.ContactID = self.m_id
+                self.m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
+            })
+            alert.addAction(detailAction)
+
             let reqAction = UIAlertAction(title: "请求好友", style: .Default, handler: { action in
                 self.m_father?.RequestContact(self.m_id)
             })
@@ -63,16 +69,17 @@ class UserCell: UICollectionViewCell {
             })
             alert.addAction(msgAction)
             
-            let callAction = UIAlertAction(title: "打电话", style: .Default, handler: { action in
+            let detailAction = UIAlertAction(title: "查看资料", style: .Default, handler: { action in
+                ContactView.ContactID = self.m_id
+                self.m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
+            })
+            alert.addAction(detailAction)
+
+            let callAction = UIAlertAction(title: "删除好友", style: .Default, handler: { action in
+                httpRemContact(self.m_id)
             })
             alert.addAction(callAction)
         }
-        
-        let detailAction = UIAlertAction(title: "查看资料", style: .Default, handler: { action in
-            ContactView.ContactID = self.m_id
-            self.m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
-        })
-        alert.addAction(detailAction)
         
         self.m_father?.presentViewController(alert, animated: true, completion: nil)
     }

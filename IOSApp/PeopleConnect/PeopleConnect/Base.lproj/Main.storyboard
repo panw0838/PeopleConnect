@@ -240,7 +240,7 @@
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Rbb-SL-cyF">
                                 <rect key="frame" x="0.0" y="64" width="600" height="172"/>
-                                <color key="backgroundColor" red="1" green="1" blue="0.40000000596046448" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="0.40000000596046448" green="0.80000001192092896" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="DLm-yj-vL3">
                                 <rect key="frame" x="20" y="244" width="560" height="356"/>
@@ -287,40 +287,45 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C9p-VF-k7s">
                                 <rect key="frame" x="530" y="153" width="50" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="4gM-Gk-jXA"/>
+                                    <constraint firstAttribute="width" constant="50" id="BkG-OC-W6e"/>
                                 </constraints>
-                                <state key="normal" title="Button" image="post_like"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="likeUser:" destination="pv7-Vn-KsV" eventType="touchUpInside" id="qnd-Eh-j4p"/>
+                                </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="YNn-b4-cyb">
                                 <rect key="frame" x="20" y="138" width="80" height="80"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="80" id="ehX-8x-tDW"/>
+                                    <constraint firstAttribute="width" constant="80" id="7ov-81-rLy"/>
                                 </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="Rbb-SL-cyF" firstAttribute="leading" secondItem="4Kn-yx-LJW" secondAttribute="leading" id="0sh-nJ-L6r"/>
-                            <constraint firstItem="DLm-yj-vL3" firstAttribute="top" secondItem="YNn-b4-cyb" secondAttribute="bottom" constant="26" id="2VC-YN-mHp"/>
-                            <constraint firstItem="C9p-VF-k7s" firstAttribute="trailing" secondItem="lgF-DH-UNA" secondAttribute="trailing" id="A1f-u8-YVX"/>
-                            <constraint firstItem="DLm-yj-vL3" firstAttribute="leading" secondItem="YNn-b4-cyb" secondAttribute="leading" id="Db0-cU-YAE"/>
-                            <constraint firstItem="Rbb-SL-cyF" firstAttribute="top" secondItem="bTU-lJ-P0C" secondAttribute="bottom" id="DdP-kt-TeT"/>
-                            <constraint firstItem="DLm-yj-vL3" firstAttribute="trailing" secondItem="lgF-DH-UNA" secondAttribute="trailing" id="Eyg-do-thy"/>
-                            <constraint firstItem="C9p-VF-k7s" firstAttribute="bottom" secondItem="lgF-DH-UNA" secondAttribute="bottom" id="KEQ-kC-gKz"/>
-                            <constraint firstAttribute="bottom" secondItem="DLm-yj-vL3" secondAttribute="bottom" id="NLz-aN-aIu"/>
-                            <constraint firstItem="DLm-yj-vL3" firstAttribute="top" secondItem="lgF-DH-UNA" secondAttribute="bottom" constant="41" id="WNd-3X-tJK"/>
-                            <constraint firstItem="DLm-yj-vL3" firstAttribute="centerX" secondItem="Rbb-SL-cyF" secondAttribute="centerX" id="YgL-Yt-2nL"/>
-                            <constraint firstItem="YNn-b4-cyb" firstAttribute="centerY" secondItem="C9p-VF-k7s" secondAttribute="centerY" id="bhX-c4-Bhl"/>
-                            <constraint firstItem="YNn-b4-cyb" firstAttribute="top" secondItem="bTU-lJ-P0C" secondAttribute="bottom" constant="74" id="e3p-zo-Jn5"/>
-                            <constraint firstItem="DLm-yj-vL3" firstAttribute="leading" secondItem="4Kn-yx-LJW" secondAttribute="leadingMargin" id="eZz-R3-Fbf"/>
-                            <constraint firstItem="lgF-DH-UNA" firstAttribute="leading" secondItem="YNn-b4-cyb" secondAttribute="trailing" constant="8" symbolic="YES" id="fTf-l7-mX0"/>
-                            <constraint firstAttribute="trailing" secondItem="Rbb-SL-cyF" secondAttribute="trailing" id="m0E-DA-dLl"/>
-                            <constraint firstItem="DLm-yj-vL3" firstAttribute="top" secondItem="Rbb-SL-cyF" secondAttribute="bottom" constant="8" symbolic="YES" id="qmc-rH-DyB"/>
+                            <constraint firstItem="DLm-yj-vL3" firstAttribute="centerX" secondItem="Rbb-SL-cyF" secondAttribute="centerX" id="2gO-IA-Jw3"/>
+                            <constraint firstItem="YNn-b4-cyb" firstAttribute="centerY" secondItem="C9p-VF-k7s" secondAttribute="centerY" id="80u-wj-iyN"/>
+                            <constraint firstItem="lgF-DH-UNA" firstAttribute="leading" secondItem="YNn-b4-cyb" secondAttribute="trailing" constant="8" symbolic="YES" id="9Zc-Qn-Bva"/>
+                            <constraint firstItem="YNn-b4-cyb" firstAttribute="top" secondItem="bTU-lJ-P0C" secondAttribute="bottom" constant="74" id="J68-7W-wws"/>
+                            <constraint firstItem="YNn-b4-cyb" firstAttribute="leading" secondItem="DLm-yj-vL3" secondAttribute="leading" id="JGs-2D-hs2"/>
+                            <constraint firstItem="lgF-DH-UNA" firstAttribute="top" secondItem="bTU-lJ-P0C" secondAttribute="bottom" constant="118" id="Ldy-SP-Nz1"/>
+                            <constraint firstItem="DLm-yj-vL3" firstAttribute="trailing" secondItem="lgF-DH-UNA" secondAttribute="trailing" id="Nu5-Lo-acv"/>
+                            <constraint firstItem="DLm-yj-vL3" firstAttribute="top" secondItem="lgF-DH-UNA" secondAttribute="bottom" constant="41" id="Pcg-Qh-7eT"/>
+                            <constraint firstItem="Rbb-SL-cyF" firstAttribute="top" secondItem="bTU-lJ-P0C" secondAttribute="bottom" id="XV5-9f-E0F"/>
+                            <constraint firstItem="DLm-yj-vL3" firstAttribute="top" secondItem="Rbb-SL-cyF" secondAttribute="bottom" constant="8" symbolic="YES" id="jE4-KD-NYe"/>
+                            <constraint firstItem="DLm-yj-vL3" firstAttribute="top" secondItem="YNn-b4-cyb" secondAttribute="bottom" constant="26" id="jWh-rE-HEJ"/>
+                            <constraint firstAttribute="trailing" secondItem="Rbb-SL-cyF" secondAttribute="trailing" id="kDI-I7-vMr"/>
+                            <constraint firstAttribute="bottom" secondItem="DLm-yj-vL3" secondAttribute="bottom" id="lap-k9-X6j"/>
+                            <constraint firstItem="lgF-DH-UNA" firstAttribute="bottom" secondItem="C9p-VF-k7s" secondAttribute="bottom" id="uda-vM-q1M"/>
+                            <constraint firstItem="Rbb-SL-cyF" firstAttribute="leading" secondItem="4Kn-yx-LJW" secondAttribute="leading" id="vPN-lL-nb7"/>
+                            <constraint firstItem="YNn-b4-cyb" firstAttribute="leading" secondItem="4Kn-yx-LJW" secondAttribute="leadingMargin" id="xBa-LD-3PU"/>
+                            <constraint firstItem="C9p-VF-k7s" firstAttribute="trailing" secondItem="lgF-DH-UNA" secondAttribute="trailing" id="zpk-XR-mbB"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="详细资料" id="V5i-ih-3we"/>
                     <connections>
                         <outlet property="m_background" destination="Rbb-SL-cyF" id="2nL-qn-WJg"/>
+                        <outlet property="m_likeBtn" destination="C9p-VF-k7s" id="DiO-VX-dIF"/>
                         <outlet property="m_name" destination="lgF-DH-UNA" id="I15-sq-qWa"/>
                         <outlet property="m_posts" destination="DLm-yj-vL3" id="6o4-Sv-baG"/>
                         <outlet property="m_profile" destination="YNn-b4-cyb" id="Fyh-Ao-9Xt"/>
@@ -1563,7 +1568,6 @@
     <resources>
         <image name="message_new_message" width="96" height="96"/>
         <image name="photo" width="50" height="50"/>
-        <image name="post_like" width="50" height="50"/>
         <image name="tab_contacts" width="27" height="23"/>
         <image name="tab_contacts_hi" width="27" height="23"/>
         <image name="tab_moment" width="23" height="23"/>
@@ -1572,7 +1576,7 @@
         <image name="tab_msg_hi" width="25" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="BOu-Ex-kTg"/>
+        <segue reference="ZaN-YB-4fP"/>
         <segue reference="pWd-Ma-Nx5"/>
     </inferredMetricsTieBreakers>
 </document>

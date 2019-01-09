@@ -121,6 +121,28 @@ func httpRemContact(contact:UInt64) {
     })
 }
 
+func httpGetUserDetails(cID:UInt64) {
+    let params: Dictionary = [
+        "uid":NSNumber(unsignedLongLong: userInfo.userID),
+        "cid":NSNumber(unsignedLongLong: cID)]
+    http.postRequest("getuserdetail", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let userData = processErrorCode(response as! NSData, failed: nil)
+            if userData != nil {
+                if let json = getJson(userData!) {
+                    if let detail = UserDetail(json: json) {
+                        ContactView.Detail.m_detail = detail
+                        ContactView.Detail.m_delegate?.DetailUpdate()
+                    }
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+        }
+    )
+}
+
 func httpLikeUser(cID:UInt64, like:Bool, btn:UIButton) {
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
@@ -129,7 +151,7 @@ func httpLikeUser(cID:UInt64, like:Bool, btn:UIButton) {
     http.postRequest("likeuser", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if getErrorCode(response as! NSData) == 0 {
-                btn.highlighted = like
+                btn.selected = like
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
