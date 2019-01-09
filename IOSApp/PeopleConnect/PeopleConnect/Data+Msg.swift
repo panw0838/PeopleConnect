@@ -9,6 +9,8 @@
 import Foundation
 
 var msgData = MsgData()
+var reqNotify:RequestNotifies?
+var likeNotify:LikeNotifies?
 
 struct RequestInfo {
     var from:UInt64 = 0
@@ -61,10 +63,13 @@ struct MsgInfo {
     
     func getConversationID()->UInt64 {
         if type == .Ntf_Req {
-            return 1
+            return ConvType.ConvRequest.rawValue
+        }
+        if type == .Ntf_Lik {
+            return ConvType.ConvLikeUsr.rawValue
         }
         if type == .Ntf_Pst_Cmt || type == .Ntf_Pst_Lik {
-            return 2
+            return ConvType.ConvPostNTF.rawValue
         }
         if group != 0 {
             return UInt64(group) + GroupBit
@@ -171,13 +176,15 @@ class MsgInfoCoder:NSObject, NSCoding {
 enum ConvType: UInt64 {
     case ConvRequest = 1
     case ConvPostNTF = 2
+    case ConvLikeUsr = 3
 }
 
-protocol ConvDelegate {
+@objc protocol ConvDelegate {
     func ConvUpdated()
-    func MsgSend(idx:Int)
-    func MsgSentSuccess(idx:Int)
-    func MsgSentFail(idx:Int)
+    
+    optional func MsgSend(idx:Int)
+    optional func MsgSentSuccess(idx:Int)
+    optional func MsgSentFail(idx:Int)
 }
 
 class Conversation {
@@ -194,16 +201,7 @@ class Conversation {
     init(id:UInt64) {
         m_id = id
         
-        // new requests
-        if id == ConvType.ConvRequest.rawValue {
-            m_name = "好友申请"
-            m_img = UIImage(named: "messages_requests")!
-        }
-        else if id == ConvType.ConvPostNTF.rawValue {
-            m_name = "动态通知"
-            m_img = UIImage(named: "messages_notify")!
-        }
-        else if (m_id & GroupBit) != 0 {
+        if (m_id & GroupBit) != 0 {
         }
         else {
             let contact = contactsData.m_contacts[m_id]
@@ -237,31 +235,111 @@ class Conversation {
         selfMessege.data = message
         selfMessege.type = type
         addMessage(selfMessege)
-        m_delegate?.MsgSend(idx)
+        m_delegate?.MsgSend!(idx)
         httpSendMessege(m_id, messege: message,
             passed: {(timeID:UInt64)->Void in
                 self.m_messages[idx].time = timeID
-                self.m_delegate?.MsgSentSuccess(idx)
+                self.m_delegate?.MsgSentSuccess!(idx)
             },
             failed: {()->Void in
-                self.m_delegate?.MsgSentFail(idx)
+                self.m_delegate?.MsgSentFail!(idx)
             }
         )
     }
     
+    func getUserAt(index:Int)->UInt64 {
+        return m_messages[index].from
+    }
+    
+    func numMessages()->Int {
+        return m_messages.count
+    }
+    
+    func getMessage(idx:Int)->String {
+        let msg = m_messages[idx]
+        return msg.data
+    }
+    
     func lastMessage()->String? {
-        if m_id == ConvType.ConvRequest.rawValue {
-            return String(m_messages.count) + "个新申请"
-        }
-        else if m_id == ConvType.ConvPostNTF.rawValue {
-            return String(m_messages.count) + "个动态通知"
-        }
         return m_messages.last?.getMessage()
     }
 }
 
-class Requests:Conversation {
+class RequestNotifies:Conversation {
     
+    var m_requests = Array<RequestInfo>()
+    
+    func remRequest(uid:UInt64) {
+        for (idx, req) in m_requests.enumerate() {
+            if req.from == uid {
+                m_requests.removeAtIndex(idx)
+                break
+            }
+        }
+    }
+
+    override init() {
+        super.init()
+        m_id = ConvType.ConvRequest.rawValue
+        m_name = "好友通知"
+        m_img = UIImage(named: "messages_requests")!
+    }
+    
+    func UpdateRequests() {
+        httpSyncRequests()
+    }
+    
+    override func getUserAt(index:Int)->UInt64 {
+        return m_requests[index].from
+    }
+    
+    override func addMessage(newMessage:MsgInfo) {
+        super.addMessage(newMessage)
+    }
+    
+    override func numMessages() -> Int {
+        return m_requests.count
+    }
+    
+    override func getMessage(idx:Int)->String {
+        return m_requests[idx].messege
+    }
+    
+    override func lastMessage() -> String? {
+        return String(m_messages.count) + "个新申请"
+    }
+}
+
+class LikeNotifies:Conversation {
+    
+    var m_likers = Array<UInt64>()
+    
+    override init() {
+        super.init()
+        m_id = ConvType.ConvLikeUsr.rawValue
+        m_name = "点赞通知"
+        m_img = UIImage(named: "group_like")!
+    }
+    
+    override func getUserAt(index:Int)->UInt64 {
+        return m_likers[index]
+    }
+    
+    override func addMessage(newMessage:MsgInfo) {
+        super.addMessage(newMessage)
+    }
+    
+    override func numMessages() -> Int {
+        return m_likers.count
+    }
+    
+    override func getMessage(idx:Int)->String {
+        return "为你点赞"
+    }
+    
+    override func lastMessage() -> String? {
+        return String(m_messages.count) + "个新点赞"
+    }
 }
 
 class PostNotifies:Conversation {
@@ -299,7 +377,11 @@ class PostNotifies:Conversation {
         }
     }
     
-    func getMessage(idx:Int)->String {
+    override func numMessages() -> Int {
+        return m_posts.count
+    }
+    
+    override func getMessage(idx:Int)->String {
         let post = m_posts[idx]
         let src = post.m_father?.m_sorce
         return String(post.m_actors.count) + "个人" + (src == UsrPosts ?  "评论了你的动态" : "回复了你的评论")
@@ -314,20 +396,18 @@ protocol MsgDelegate {
     func MsgUpdated()
 }
 
-protocol ReqDelegate {
-    func ReqUpdated()
-}
-
 class MsgData {
-    var m_requests = Array<RequestInfo>()
     var m_conversations = Array<Conversation>()
     var m_delegate:MsgDelegate?
-    var m_requestDelegate:ReqDelegate?
     
     init() {
         // add system conversations
-        m_conversations.append(Conversation(id: 1))
+        reqNotify = RequestNotifies()
+        likeNotify = LikeNotifies()
+    
+        m_conversations.append(reqNotify!)
         m_conversations.append(PostNotifies())
+        m_conversations.append(likeNotify!)
         
         loadMsgFromCache()
     }
@@ -378,16 +458,8 @@ class MsgData {
         httpSyncMessege(nil, failed: nil)
     }
     
-    func UpdateRequests() {
-        httpSyncRequests()
-    }
-    
     func UpdateDelegate() {
         m_delegate?.MsgUpdated()
-    }
-    
-    func UpdateRequestsDelegate() {
-        m_requestDelegate?.ReqUpdated()
     }
 
     func popConversation(id:UInt64)->Conversation {
@@ -426,15 +498,6 @@ class MsgData {
                 break
             default:
                 print("unhandled message ", newMsg.type)
-                break
-            }
-        }
-    }
-    
-    func remRequest(uid:UInt64) {
-        for (idx, req) in m_requests.enumerate() {
-            if req.from == uid {
-                m_requests.removeAtIndex(idx)
                 break
             }
         }

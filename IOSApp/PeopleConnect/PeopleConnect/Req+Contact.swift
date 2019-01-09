@@ -96,8 +96,8 @@ func httpAddContact(contact:UInt64, name:String) {
                 contactsData.addContact(ContactInfo(id: contact, f: UndefineBit, n: name))
                 contactsData.updateDelegates()
 
-                msgData.remRequest(contact)
-                msgData.UpdateRequestsDelegate()
+                reqNotify!.remRequest(contact)
+                reqNotify!.UpdateDelegate()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in

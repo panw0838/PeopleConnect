@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 class RequestCell:UITableViewCell {
-    @IBOutlet weak var m_photoBtn: UIButton!
+    @IBOutlet weak var m_photo: UIImageView!
     @IBOutlet weak var m_name: UILabel!
     @IBOutlet weak var m_message: UILabel!
     @IBOutlet weak var m_acceptBtn: UIButton!
@@ -19,9 +19,31 @@ class RequestCell:UITableViewCell {
     var m_uid:UInt64 = 0
     var m_father:UIViewController?
     
-    @IBAction func showContact(sender:AnyObject) {
+    func reload(uID:UInt64, msg:String, father:UIViewController) {
+        m_uid = uID
+        m_name.text = getName(uID)
+        m_photo.image = getPhoto(uID)
+        m_message.text = msg
+        m_father = father
+        
+        let tap = UITapGestureRecognizer(target: self, action: Selector("tapPhoto"))
+        m_photo.addGestureRecognizer(tap)
+        m_photo.userInteractionEnabled = true
+        
+        m_photo.layer.cornerRadius = 10
+        m_photo.layer.masksToBounds = true
+        m_acceptBtn.layer.cornerRadius = 10
+        m_rejectBtn.layer.cornerRadius = 10
+    }
+    
+    func tapPhoto() {
         ContactView.ContactID = m_uid
         m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
+    }
+    
+    func showReqBtns(show:Bool) {
+        m_acceptBtn.hidden = !show
+        m_rejectBtn.hidden = !show
     }
     
     func nameChanged(sender:UITextField) {
@@ -63,22 +85,24 @@ class RequestCell:UITableViewCell {
     }
 }
 
-class RequestsView:UIViewController, ReqDelegate, UITableViewDataSource, UITableViewDelegate {
+class RequestsView:UIViewController, ConvDelegate, UITableViewDataSource, UITableViewDelegate {
     
     @IBOutlet weak var m_table: UITableView!
+    var m_conv:Conversation?
     
-    func ReqUpdated() {
+    func ConvUpdated() {
         m_table.reloadData()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        msgData.m_requestDelegate = self
+        m_conv!.m_delegate = self
+        self.title = m_conv?.m_name
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        msgData.m_requestDelegate = nil
+        m_conv!.m_delegate = nil
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -86,21 +110,22 @@ class RequestsView:UIViewController, ReqDelegate, UITableViewDataSource, UITable
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return msgData.m_requests.count
+        return m_conv!.numMessages()
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("RequestCell") as! RequestCell
-        let request = msgData.m_requests[indexPath.row]
-        let contact = contactsData.m_contacts[request.from]
-        cell.m_uid = request.from
-        cell.m_name.text = contact?.name
-        cell.m_photoBtn.setImage(getPhoto(cell.m_uid), forState: .Normal)
-        cell.m_message.text = request.messege
-        cell.m_father = self
-        cell.m_photoBtn.layer.cornerRadius = 10
-        cell.m_acceptBtn.layer.cornerRadius = 10
-        cell.m_rejectBtn.layer.cornerRadius = 10
+        let contact = m_conv!.getUserAt(indexPath.row)
+        let message = m_conv!.getMessage(indexPath.row)
+        cell.reload(contact, msg: message, father: self)
+
+        if m_conv?.m_id == ConvType.ConvLikeUsr.rawValue {
+            cell.showReqBtns(false)
+        }
+        else {
+            cell.showReqBtns(true)
+        }
+        
         return cell
     }
 }

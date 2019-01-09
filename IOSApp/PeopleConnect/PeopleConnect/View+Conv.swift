@@ -228,7 +228,7 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         self.m_messegesTable.reloadData()
         scrollToButtom()
     }
-    
+
     var defaultTableY:CGFloat = 0
     var defaultTableHeight:CGFloat = 0
     var defaultViewHeight:CGFloat = 0

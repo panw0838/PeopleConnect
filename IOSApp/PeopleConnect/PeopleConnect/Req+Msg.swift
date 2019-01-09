@@ -33,8 +33,8 @@ func httpDeclineRequest(contact:UInt64) {
     http.postRequest("declinerequest", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if getErrorCode(response as! NSData) == 0 {
-                msgData.remRequest(contact)
-                msgData.UpdateRequestsDelegate()
+                reqNotify!.remRequest(contact)
+                reqNotify!.UpdateDelegate()
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
@@ -44,20 +44,20 @@ func httpDeclineRequest(contact:UInt64) {
 }
 
 func httpSyncRequests() {
-    msgData.m_requests.removeAll()
+    reqNotify!.m_requests.removeAll()
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("syncrequests", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let reqData = processErrorCode(response as! NSData, failed: nil)
-            if reqData != nil {
-                if let json = getJson(reqData!) {
+            let jsonData = processErrorCode(response as! NSData, failed: nil)
+            if jsonData != nil {
+                if let json = getJson(jsonData!) {
                     if let reqObjs = json["requests"] as? [AnyObject] {
                         var ids = Array<UInt64>()
                         for case let reqObj in (reqObjs as? [[String:AnyObject]])! {
                             if let request = RequestInfo(json: reqObj) {
                                 let newContact = ContactInfo(id: request.from, f: 0, n: request.name)
                                 contactsData.addUser(newContact)
-                                msgData.m_requests.append(request)
+                                reqNotify!.m_requests.append(request)
                                 ids.append(request.from)
                             }
                         }
@@ -66,12 +66,11 @@ func httpSyncRequests() {
                         if photoList.count > 0 {
                             httpGetPhotos(photoList,
                                 passed: {()->Void in
-                                    msgData.UpdateRequestsDelegate()
+                                    reqNotify!.UpdateDelegate()
                                 },
                                 failed: nil)                            
                         }
-
-                        msgData.UpdateRequestsDelegate()
+                        reqNotify!.UpdateDelegate()
                     }
                 }
             }
@@ -79,6 +78,42 @@ func httpSyncRequests() {
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
             print("请求失败")
     })
+}
+
+func httpGetLikeUsers() {
+    likeNotify?.m_likers.removeAll()
+    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
+    http.postRequest("getlikemeusers", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let usersData = processErrorCode(response as! NSData, failed: nil)
+            if usersData != nil {
+                if let json = getJson(usersData!) {
+                    if let usersObjs = json["users"] as? [AnyObject] {
+                        for case let userObj in (usersObjs as? [[String:AnyObject]])! {
+                            if let contact = ContactInfo(json: userObj) {
+                                likeNotify?.m_likers.append(contact.user)
+                                contactsData.addUser(contact)
+                            }
+                        }
+                        
+                        let photoList = getPhotoMissingList(likeNotify!.m_likers)
+                        if photoList.count > 0 {
+                            httpGetPhotos(photoList,
+                                passed: {()->Void in
+                                    likeNotify!.UpdateDelegate()
+                                },
+                                failed: nil)
+                        }
+                        likeNotify!.UpdateDelegate()
+                        
+                    }
+                    likeNotify?.UpdateDelegate()
+                }
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+        }
+    )
 }
 
 func httpSendMessege(to:UInt64, messege:String, passed:((UInt64)->Void)?, failed:(()->Void)?) {

@@ -89,7 +89,7 @@ class PostNotifyView:UIViewController, MsgDelegate, UITableViewDataSource, UITab
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return m_data!.m_posts.count
+        return m_data!.numMessages()
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {

@@ -70,10 +70,15 @@ class MessegesView: UITableViewController, MsgDelegate {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let cell = tableView.cellForRowAtIndexPath(indexPath) as! MessegeCell
         if cell.m_conv!.m_id == ConvType.ConvRequest.rawValue {
+            httpSyncRequests()
             self.performSegueWithIdentifier("ShowRequests", sender: cell.m_conv!)
         }
         else if cell.m_conv!.m_id == ConvType.ConvPostNTF.rawValue {
             self.performSegueWithIdentifier("ShowNotify", sender: cell.m_conv!)
+        }
+        else if cell.m_conv!.m_id == ConvType.ConvLikeUsr.rawValue {
+            httpGetLikeUsers()
+            self.performSegueWithIdentifier("ShowRequests", sender: cell.m_conv!)
         }
         else {
             self.performSegueWithIdentifier("ShowConversation", sender: cell.m_conv!)
@@ -81,23 +86,20 @@ class MessegesView: UITableViewController, MsgDelegate {
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let conversation = sender as! Conversation
-        conversation.m_newMsg = false
+        let conv = sender as! Conversation
+        conv.m_newMsg = false
         if segue.identifier == "ShowRequests" {
-            // sync new requests
-            if conversation.m_messages.count > 0 || msgData.m_requests.count == 0 {
-                msgData.UpdateRequests()
-            }
+            let to = segue.destinationViewController as! RequestsView
+            to.m_conv = conv
             // clean notifications
-            conversation.m_messages.removeAll()
         }
         if segue.identifier == "ShowNotify" {
             let to = segue.destinationViewController as! PostNotifyView
-            to.m_data = conversation as? PostNotifies
+            to.m_data = conv as? PostNotifies
         }
         if segue.identifier == "ShowConversation" {
             let to = segue.destinationViewController as! ConversationView
-            to.m_conv = conversation
+            to.m_conv = conv
         }
     }
 }
