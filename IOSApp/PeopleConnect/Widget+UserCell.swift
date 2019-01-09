@@ -146,6 +146,9 @@ class ActionCell:UserCell {
         case .SearchFace:
             m_father?.ActionSearchFace()
             break
+        case .SearchLike:
+            m_father?.ActionSearchLike()
+            break
         case .SearchNear:
             m_father?.ActionSearchNear()
             break

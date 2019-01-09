@@ -159,3 +159,32 @@ func httpGetSuggestContacts(passed: (()->Void)?, failed: ((err:String?)->Void)?)
         }
     )
 }
+
+func httpGetBothLikeUsers(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
+    contactsData.m_likeUsers.clearContacts()
+    let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
+    http.postRequest("getbothlikeusers", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let usersData = processErrorCode(response as! NSData, failed: failed)
+            if usersData != nil {
+                if let json = getJson(usersData!) {
+                    if let usersObjs = json["users"] as? [AnyObject] {
+                        for case let userObj in (usersObjs as? [[String:AnyObject]])! {
+                            if let contact = ContactInfo(json: userObj) {
+                                contactsData.m_likeUsers.addMember(contact)
+                                contactsData.addUser(contact)
+                            }
+                        }
+                        contactsData.updateStrangerTags(contactsData.m_likeUsers)
+                        contactsData.getPhotos(contactsData.m_likeUsers.m_members)
+                    }
+                    contactsData.updateDelegates()
+                }
+                passed?()
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            failed?(err: "请求失败")
+        }
+    )
+}

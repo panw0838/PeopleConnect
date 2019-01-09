@@ -15,11 +15,14 @@ let UserTagMask:    UInt64 = 0xFFFFFFFF
 let RelateTagMask:  UInt64 = (UserTagMask | 0x3E00000000)
 let GroupMask:      UInt64 = (UserTagMask | 0x3C00000000)
 
-let CellUsersTag:   UInt8  = 0xFB
-let SuggestTag:     UInt8  = 0xFC
-let FaceToFaceTag:  UInt8  = 0xFD
-let StrangerTag:    UInt8  = 0xFE
-let ActionsTag:     UInt8  = 0xFF
+enum StrangerTag:UInt8 {
+    case ActionsTag   = 0xff
+    case CellUsersTag = 0xfe
+    case ConnUsersTag = 0xfd
+    case FaceUsersTag = 0xfc
+    case LikeUsersTag = 0xfb
+    case NearUsersTag = 0xfa
+}
 
 let SysTagOffset:   UInt64 = 32
 
@@ -86,17 +89,19 @@ class ContactsData {
     var m_blacklist  = Tag(id: 0, father: 0, name: "黑名单")
     var m_undefine   = Tag(id: 1, father: 0, name: "联系人")
 
-    var m_cellUsers = Tag(id: CellUsersTag,  father: 0, name: "手机通讯录")
-    var m_rcmtUsers = Tag(id: SuggestTag,    father: 0, name: "推荐联系人")
-    var m_faceUsers = Tag(id: FaceToFaceTag, father: 0, name: "面对面加好友")
-    var m_nearUsers = Tag(id: StrangerTag,   father: 0, name: "附近的陌生人")
+    var m_cellUsers = Tag(id: StrangerTag.CellUsersTag.rawValue, father: 0, name: "手机通讯录")
+    var m_rcmtUsers = Tag(id: StrangerTag.ConnUsersTag.rawValue, father: 0, name: "推荐联系人")
+    var m_faceUsers = Tag(id: StrangerTag.FaceUsersTag.rawValue, father: 0, name: "面对面加好友")
+    var m_likeUsers = Tag(id: StrangerTag.LikeUsersTag.rawValue, father: 0, name: "互赞的陌生人")
+    var m_nearUsers = Tag(id: StrangerTag.NearUsersTag.rawValue, father: 0, name: "附近的陌生人")
+
+    var m_strangerActTag = Tag(id: StrangerTag.ActionsTag.rawValue, father: 0, name: "搜索新朋友")
+    var m_strangerTags = Array<Tag>()
     
     var m_contactTags = Array<Tag>()
     var m_contacts = Dictionary<UInt64, ContactInfo>()
     var m_delegate:ContactDataDelegate?
     
-    var m_strangerActTag = Tag(id: ActionsTag, father: 0, name: "搜索新朋友")
-    var m_strangerTags = Array<Tag>()
 
     init() {
         // system tags
@@ -108,6 +113,7 @@ class ContactsData {
         m_strangerActTag.m_actions.append(.SearchCell)
         m_strangerActTag.m_actions.append(.SearchConn)
         m_strangerActTag.m_actions.append(.SearchFace)
+        m_strangerActTag.m_actions.append(.SearchLike)
         m_strangerActTag.m_actions.append(.SearchNear)
         m_strangerTags.append(m_strangerActTag)
     }
@@ -121,7 +127,7 @@ class ContactsData {
         }
         
         for oldTag in m_strangerTags {
-            if oldTag.m_tagID != ActionsTag && oldTag.m_tagID != tag.m_tagID {
+            if oldTag.m_tagID != StrangerTag.ActionsTag.rawValue && oldTag.m_tagID != tag.m_tagID {
                 newTags.append(oldTag)
             }
         }

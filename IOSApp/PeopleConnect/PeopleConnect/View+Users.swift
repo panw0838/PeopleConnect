@@ -19,6 +19,7 @@ let TagActionsImgs:Dictionary<TagAction, String> = [
     .SearchCell:    "group_cell",
     .SearchConn:    "group_recoment",
     .SearchFace:    "group_facetoface",
+    .SearchLike:    "group_like",
     .SearchNear:    "group_near"]
 
 let TagActionsNames:Dictionary<TagAction, String> = [
@@ -29,6 +30,7 @@ let TagActionsNames:Dictionary<TagAction, String> = [
     .SearchCell:    "搜索手机联系人",
     .SearchConn:    "搜索共同认识的人",
     .SearchFace:    "同时按面对面加好友",
+    .SearchLike:    "搜索互赞的陌生人",
     .SearchNear:    "搜索附近的人"]
 
 class SubTagHeader: UICollectionReusableView {

@@ -53,6 +53,18 @@ extension UsersView {
         contactsData.m_faceUsers.clearContacts()
     }
     
+    func ActionSearchLike() {
+        gLoadingView.startLoading()
+        contactsData.m_likeUsers.clearContacts()
+        httpGetBothLikeUsers(
+            {()->Void in
+                gLoadingView.stopLoading()
+            },
+            failed: {(err:String?)->Void in
+                gLoadingView.stopLoading()
+        })
+    }
+    
     func ActionSearchNear() {
         gLoadingView.startLoading()
         userData.startLocate(self)

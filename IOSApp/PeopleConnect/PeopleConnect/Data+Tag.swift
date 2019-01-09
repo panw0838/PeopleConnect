@@ -16,6 +16,7 @@ enum TagAction {
     case SearchCell
     case SearchConn
     case SearchFace
+    case SearchLike
     case SearchNear
 }
 
