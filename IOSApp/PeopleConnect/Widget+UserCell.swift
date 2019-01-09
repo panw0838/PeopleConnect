@@ -12,6 +12,7 @@ class UserCell: UICollectionViewCell {
     var m_image  = UIImageView(frame: CGRectZero)
     var m_name   = UILabel(frame: CGRectZero)
     var m_id:UInt64 = 0
+    var m_tag:Tag?
     var m_father:UsersView?
     
     required init?(coder aDecoder: NSCoder) {
@@ -37,8 +38,9 @@ class UserCell: UICollectionViewCell {
         m_name.frame = CGRectMake(0, width, width, ContactNameHeight)
     }
     
-    func reload(cID:UInt64) {
+    func reload(cID:UInt64, tag:Tag?) {
         m_id = cID
+        m_tag = tag
         setupSubViews()
         m_image.image = getPhoto(m_id)
         m_name.text   = getName(m_id)
@@ -50,35 +52,41 @@ class UserCell: UICollectionViewCell {
         let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         alert.addAction(noAction)
         
-        if contact?.flag == 0 {
-            let detailAction = UIAlertAction(title: "查看资料", style: .Default, handler: { action in
-                ContactView.ContactID = self.m_id
-                self.m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
-            })
-            alert.addAction(detailAction)
+        let detailAction = UIAlertAction(title: "查看资料", style: .Default, handler: { action in
+            ContactView.ContactID = self.m_id
+            self.m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
+        })
 
-            let reqAction = UIAlertAction(title: "请求好友", style: .Default, handler: { action in
-                self.m_father?.RequestContact(self.m_id)
-            })
+        let msgAction = UIAlertAction(title: "发信息", style: .Default, handler: { action in
+            self.m_father?.m_convID = self.m_id
+            self.m_father?.performSegueWithIdentifier("StartConversation", sender: nil)
+        })
+        
+        let delAction = UIAlertAction(title: "删除好友", style: .Default, handler: { action in
+            httpRemContact(self.m_id)
+        })
+
+        let reqAction = UIAlertAction(title: "请求好友", style: .Default, handler: { action in
+            self.m_father?.RequestContact(self.m_id)
+        })
+        
+        if contact?.flag != 0 {
+            // friends
+            alert.addAction(msgAction)
+            alert.addAction(detailAction)
+            alert.addAction(delAction)
+        }
+        else if m_tag?.m_tagID == StrangerTag.LikeUsersTag.rawValue {
+            alert.addAction(msgAction)
+            alert.addAction(detailAction)
             alert.addAction(reqAction)
         }
-        else {
-            let msgAction = UIAlertAction(title: "发信息", style: .Default, handler: { action in
-                self.m_father?.m_convID = self.m_id
-                self.m_father?.performSegueWithIdentifier("StartConversation", sender: nil)
-            })
-            alert.addAction(msgAction)
-            
-            let detailAction = UIAlertAction(title: "查看资料", style: .Default, handler: { action in
-                ContactView.ContactID = self.m_id
-                self.m_father?.performSegueWithIdentifier("ShowContact", sender: nil)
-            })
+        else if m_tag?.m_tagID == StrangerTag.NearUsersTag.rawValue {
             alert.addAction(detailAction)
-
-            let callAction = UIAlertAction(title: "删除好友", style: .Default, handler: { action in
-                httpRemContact(self.m_id)
-            })
-            alert.addAction(callAction)
+        }
+        else {
+            alert.addAction(detailAction)
+            alert.addAction(reqAction)            
         }
         
         self.m_father?.presentViewController(alert, animated: true, completion: nil)
@@ -87,7 +95,6 @@ class UserCell: UICollectionViewCell {
 
 class ActionCell:UserCell {
     var m_act:TagAction?
-    var m_tag:Tag?
     
     func reloadAction(action:TagAction, tag:Tag?) {
         m_act = action

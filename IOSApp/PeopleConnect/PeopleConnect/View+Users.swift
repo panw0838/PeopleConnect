@@ -152,7 +152,7 @@ class UsersView:
         else {
             let cell = collectionView.dequeueReusableCellWithReuseIdentifier("UserCell", forIndexPath: indexPath) as! UserCell
             let contact = subTag.m_members[indexPath.row - subTag.m_actions.count]
-            cell.reload(contact)
+            cell.reload(contact, tag: subTag)
             cell.m_father = self
             return cell
         }
