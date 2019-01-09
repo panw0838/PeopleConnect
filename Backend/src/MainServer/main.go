@@ -50,6 +50,7 @@ func main() {
 	http.HandleFunc("/photos", user.GetPhotosHandler)
 	http.HandleFunc("/searchusers", user.SearchUsersHandler)
 	http.HandleFunc("/updatetagmember", user.UpdateTagMemberHandler)
+	http.HandleFunc("/getuserdetail", user.GetUserDetailHandler)
 
 	http.HandleFunc("/addcontact", message.AddContactHandler)
 	http.HandleFunc("/remcontact", message.RemContactHandler)
