@@ -17,7 +17,7 @@ type SendMsgInput struct {
 	Type uint8  `json:"type"`
 }
 
-func SendMsgHandler(w http.ResponseWriter, r *http.Request) {
+func SendFriendMsgHandler(w http.ResponseWriter, r *http.Request) {
 	var input SendMsgInput
 	err := share.ReadInput(r, &input)
 	if err != nil {
@@ -39,6 +39,64 @@ func SendMsgHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if !friend {
 		share.WriteErrorCode(w, fmt.Errorf("Msg not friend"))
+		return
+	}
+
+	var msg Message
+	msg.From = input.From
+	msg.Content = input.Msg
+	msg.Type = input.Type
+	timeID, err := DbAddMessege(input.To, msg, c)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	var response share.TimeID
+	response.Time = timeID
+	data, err := json.Marshal(response)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	share.WriteErrorCode(w, nil)
+	w.Write(data)
+}
+
+func SendStrangerMsgHandler(w http.ResponseWriter, r *http.Request) {
+	var input SendMsgInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	defer c.Close()
+
+	isBlack, err := user.IsBlacklist(input.From, input.To, c)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	if isBlack {
+		share.WriteErrorCode(w, fmt.Errorf("in blacklist"))
+		return
+	}
+
+	likeKey := share.GetUserLikeKey(input.To)
+	like, err := redis.Int(c.Do("SISMEMBER", likeKey, input.From))
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	if like == 0 {
+		share.WriteErrorCode(w, fmt.Errorf("not liked"))
 		return
 	}
 

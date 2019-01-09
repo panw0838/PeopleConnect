@@ -60,7 +60,8 @@ func main() {
 	http.HandleFunc("/requestcontact", message.RequestContactHandler)
 	http.HandleFunc("/declinerequest", message.DeclineRequestHandler)
 	http.HandleFunc("/syncrequests", message.SyncRequestsHandler)
-	http.HandleFunc("/sendmessege", message.SendMsgHandler)
+	http.HandleFunc("/sendfmsg", message.SendFriendMsgHandler)
+	http.HandleFunc("/sendsmsg", message.SendStrangerMsgHandler)
 	http.HandleFunc("/likeuser", message.LikeUserHandler)
 
 	http.HandleFunc("/newpost", post.NewPostHandler)
