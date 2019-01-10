@@ -264,10 +264,10 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         self.scrollToButtom()
         
         if originOffset == 0 {
-            originOffset = m_messegesTable.contentOffset.y
+            originOffset = m_messegesTable.contentInset.top
         }
 
-        print(m_messegesTable.contentSize, m_messegesTable.contentOffset)
+        print(m_messegesTable.contentSize, m_messegesTable.contentOffset, m_messegesTable.contentInset)
         //self.m_messegesTable.contentOffset.y = self.originOffset + transformY
 
         //self.m_messegesTable.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -275,14 +275,17 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         //m_toolBar.frame.origin = CGPointMake(m_toolBar.frame.origin.x, defaultToolY - transformY)
         
         //m_messegesTable.contentOffset.y += transformY
+        let newOffset = originOffset - transformY
+        m_messegesTable.contentInset = UIEdgeInsetsMake(newOffset, 0, 0, 0)
+        m_messegesTable.contentOffset.y = -newOffset
         
         UIView.animateWithDuration(Double(duration!), animations: {()->Void in
             //self.m_messegesTable.frame.size = CGSizeMake(self.m_messegesTable.frame.width, self.defaultTableHeight - keyboardFrame!.height)
             //self.m_toolBar.frame.origin = CGPointMake(self.m_toolBar.frame.origin.x, self.defaultToolY - keyboardFrame!.height)
-            //self.view.transform = CGAffineTransformMakeTranslation(0, transformY)
+            self.view.transform = CGAffineTransformMakeTranslation(0, transformY)
             
-            let offset = self.defaultKBY == keyboardFrame!.origin.y ? keyboardFrame!.height : 0
-            self.view.frame.size = CGSizeMake(self.view.frame.width, self.defaultViewHeight-offset)
+            //let offset = self.defaultKBY == keyboardFrame!.origin.y ? keyboardFrame!.height : 0
+            //self.view.frame.size = CGSizeMake(self.view.frame.width, self.defaultViewHeight-offset)
         })
     }
     
