@@ -85,6 +85,8 @@ class MsgStatusView: UIView {
     }
 }
 
+let MsgTimeFont = UIFont.systemFontOfSize(13)
+
 class MsgCell: UITableViewCell {
     var m_photo = UIButton(frame: CGRectZero)
     var m_message = UIButton(frame: CGRectZero)
@@ -110,9 +112,14 @@ class MsgCell: UITableViewCell {
         m_photo.layer.masksToBounds = true
         m_photo.addTarget(self, action: Selector("showContact"), forControlEvents: .TouchDown)
         addSubview(m_photo)
+
+        m_time.textAlignment = .Center
+        m_time.textColor = UIColor.grayColor()
+        m_time.font = MsgTimeFont
         addSubview(m_time)
+
         addSubview(m_status)
-        
+
         m_message.titleLabel?.font = msgFont
         m_message.titleLabel?.numberOfLines = 0
         m_message.titleLabel?.lineBreakMode = .ByWordWrapping

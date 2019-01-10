@@ -124,7 +124,8 @@ func httpSendMessege(to:UInt64, messege:String, passed:((UInt64)->Void)?, failed
         "to":NSNumber(unsignedLongLong: to),
         "msg":messege,
         "type":NSNumber(integer: MessegeType.Msg_Str.rawValue)]
-    http.postRequest("sendmessege", params: params,
+    let handler = contactsData.m_contacts[to]!.flag == 0 ? "sendsmsg" : "sendfmsg"
+    http.postRequest(handler, params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if let retData = processErrorCode(response as! NSData, failed: nil) {
                 if let json = getJson(retData) {
