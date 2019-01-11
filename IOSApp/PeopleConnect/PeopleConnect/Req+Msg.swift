@@ -52,24 +52,19 @@ func httpSyncRequests() {
             if jsonData != nil {
                 if let json = getJson(jsonData!) {
                     if let reqObjs = json["requests"] as? [AnyObject] {
-                        var ids = Array<UInt64>()
                         for case let reqObj in (reqObjs as? [[String:AnyObject]])! {
                             if let request = RequestInfo(json: reqObj) {
-                                let newContact = ContactInfo(id: request.from, f: 0, n: request.name)
-                                contactsData.addUser(newContact)
+                                contactsData.addUser(request.from, name: request.name, flag: 0)
                                 reqNotify!.addRequest(request)
-                                ids.append(request.from)
                             }
                         }
                         
-                        let photoList = getPhotoMissingList(ids)
-                        if photoList.count > 0 {
-                            httpGetPhotos(photoList,
-                                passed: {()->Void in
-                                    reqNotify!.UpdateDelegate()
-                                },
-                                failed: nil)                            
-                        }
+                        contactsData.getUsers(
+                            {()->Void in
+                                reqNotify!.UpdateDelegate()
+                            },
+                            failed: nil)
+
                         reqNotify?.m_messages.removeAll()
                         reqNotify?.UpdateDelegate()
                     }
@@ -93,18 +88,15 @@ func httpGetLikeUsers() {
                         for case let userObj in (usersObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: userObj) {
                                 likeNotify?.addLiker(contact.user)
-                                contactsData.addUser(contact)
+                                contactsData.addUser(contact.user, name: "", flag: 0)
                             }
                         }
                         
-                        let photoList = getPhotoMissingList(likeNotify!.m_likers)
-                        if photoList.count > 0 {
-                            httpGetPhotos(photoList,
-                                passed: {()->Void in
-                                    likeNotify!.UpdateDelegate()
-                                },
-                                failed: nil)
-                        }
+                        contactsData.getUsers(
+                            {()->Void in
+                                likeNotify!.UpdateDelegate()
+                            },
+                            failed: nil)
                         likeNotify!.UpdateDelegate()
                         
                     }
@@ -124,7 +116,7 @@ func httpSendMessege(to:UInt64, messege:String, passed:((UInt64)->Void)?, failed
         "to":NSNumber(unsignedLongLong: to),
         "msg":messege,
         "type":NSNumber(integer: MessegeType.Msg_Str.rawValue)]
-    let handler = contactsData.m_contacts[to]!.flag == 0 ? "sendsmsg" : "sendfmsg"
+    let handler = contactsData.getUser(to)!.flag == 0 ? "sendsmsg" : "sendfmsg"
     http.postRequest(handler, params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if let retData = processErrorCode(response as! NSData, failed: nil) {
@@ -150,22 +142,23 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
             if let msgJson = processErrorCode(response as! NSData, failed: failed) {
                 if let json = getJson(msgJson) {
                     if let messObjs = json["mess"] as? [AnyObject] {
+                        var ids = Array<UInt64>()
                         for case let messObj in (messObjs as? [[String:AnyObject]])! {
                             if let msg = MsgInfo(json: messObj) {
                                 msgData.AddNewMsg(msg)
-                                
-                                // process notifications
-                                if msg.type == .Ntf_Add {
-                                    var contact = contactsData.m_contacts[msg.from]
-                                    if contact?.flag == 0 {
-                                        contact?.flag = UndefineBit
-                                        contactsData.addContact(contact!)
-                                        contactsData.updateDelegates()
-                                    }
-                                }
+                                ids.append(msg.from)
                             }
                         }
                         msgData.UpdateDelegate()
+                        
+                        let photoList = getPhotoMissingList(ids)
+                        if photoList.count > 0 {
+                            httpGetPhotos(photoList,
+                                passed: {()->Void in
+                                    msgData.UpdateDelegate()
+                                },
+                                failed: nil)
+                        }
                     }
                     let newSyncID = (UInt64)((json["sync"]?.unsignedLongLongValue)!)
                     userData.setMsgSyncID(newSyncID)

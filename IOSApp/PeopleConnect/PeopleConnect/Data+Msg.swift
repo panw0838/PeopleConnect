@@ -204,11 +204,8 @@ class Conversation {
         if (m_id & GroupBit) != 0 {
         }
         else {
-            let contact = contactsData.m_contacts[m_id]
-            if contact != nil {
-                m_name = getName(m_id)
-                m_img = getPhoto(m_id)
-            }
+            m_name = getName(m_id)
+            m_img = getPhoto(m_id)
         }
     }
     
@@ -511,10 +508,20 @@ class MsgData {
         }
         else {
             switch newMsg.type {
-            case .Ntf_Lik:
-                break
             case .Ntf_Pst_New:
                 friendPosts.m_needSync = true
+                break
+            case .Ntf_Add:
+                var contact = contactsData.getUser(newMsg.from)
+                if contact == nil {
+                    contactsData.addUser(newMsg.from, name: "", flag: UndefineBit)
+                    contactsData.updateDelegates()
+                }
+                else if contact!.flag == 0 {
+                    contact!.flag = UndefineBit
+                    contactsData.addContact(contact!)
+                    contactsData.updateDelegates()
+                }
                 break
             default:
                 print("unhandled message ", newMsg.type)

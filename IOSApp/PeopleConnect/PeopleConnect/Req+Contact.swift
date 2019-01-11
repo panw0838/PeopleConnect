@@ -24,7 +24,11 @@ func httpGetFriends() {
                         }
                     }
                     contactsData.updateDelegates()
-                    contactsData.getPhotos()
+                    contactsData.getUsers(
+                        { () -> Void in
+                            contactsData.updateDelegates()
+                        },
+                        failed: nil)
                 }
             }
         },

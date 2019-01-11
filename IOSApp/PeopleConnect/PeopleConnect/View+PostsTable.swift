@@ -62,10 +62,9 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
         var ranges = Array<String>()
         
         for cID in post.m_info.likes {
-            let name = contactsData.m_contacts[cID]?.name
-            
+            let name = contactsData.getUser(cID)?.name
             if name != nil {
-                let range = NSMakeRange(str.characters.count, (name?.characters.count)! + 2)
+                let range = NSMakeRange(str.characters.count, name!.characters.count + 2)
                 str += " " + name! + " "
                 ranges.append(NSStringFromRange(range))
             }

@@ -104,7 +104,7 @@ class UsersView:
         })
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
-            let contact = contactsData.m_contacts[uID]
+            let contact = contactsData.getUser(uID)
             textField.placeholder = contact?.name
             textField.addTarget(self, action: Selector("requestNameChanged:"), forControlEvents: .EditingChanged)
         }

@@ -10,7 +10,7 @@ import Foundation
 
 func getName(cID:UInt64)->String {
     var name = ""
-    let data = contactsData.m_contacts[cID]
+    let data = contactsData.getUser(cID)
     if data != nil {
         name = data!.name
     }

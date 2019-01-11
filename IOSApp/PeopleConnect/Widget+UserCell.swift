@@ -47,7 +47,7 @@ class UserCell: UICollectionViewCell {
     }
     
     func tap() {
-        let contact = contactsData.m_contacts[m_id]
+        let contact = contactsData.getUser(m_id)
         let alert = UIAlertController(title: contact?.name, message: "", preferredStyle: .ActionSheet)
         let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         alert.addAction(noAction)

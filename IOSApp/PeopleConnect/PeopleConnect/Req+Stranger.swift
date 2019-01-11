@@ -23,11 +23,15 @@ func httpGetNearbyUsers(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
                         for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: contactObj) {
                                 contactsData.m_nearUsers.addMember(contact)
-                                contactsData.m_contacts[contact.user] = contact
+                                contactsData.addUser(contact)
                             }
                         }
                         contactsData.updateStrangerTags(contactsData.m_nearUsers)
-                        contactsData.getPhotos(contactsData.m_nearUsers.m_members)
+                        contactsData.getUsers(
+                            { () -> Void in
+                                contactsData.updateDelegates()
+                            },
+                            failed: nil)
                     }
                     contactsData.updateDelegates()
                 }
@@ -72,11 +76,15 @@ func httpGetFaceUsers(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
                         for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: contactObj) {
                                 contactsData.m_faceUsers.addMember(contact)
-                                contactsData.m_contacts[contact.user] = contact
+                                contactsData.addUser(contact)
                             }
                         }
                         contactsData.updateStrangerTags(contactsData.m_faceUsers)
-                        contactsData.getPhotos(contactsData.m_faceUsers.m_members)
+                        contactsData.getUsers(
+                            { () -> Void in
+                                contactsData.updateDelegates()
+                            },
+                            failed: nil)
                     }
                     contactsData.updateDelegates()
                 }
@@ -115,11 +123,15 @@ func httpGetCellContacts(names:Array<String>, cells:Array<String>, passed: (()->
                         for case let contactObj in (contactObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: contactObj) {
                                 contactsData.m_cellUsers.addMember(contact)
-                                contactsData.m_contacts[contact.user] = contact
+                                contactsData.addUser(contact)
                             }
                         }
                         contactsData.updateStrangerTags(contactsData.m_cellUsers)
-                        contactsData.getPhotos(contactsData.m_cellUsers.m_members)
+                        contactsData.getUsers(
+                            { () -> Void in
+                                contactsData.updateDelegates()
+                            },
+                            failed: nil)
                     }
                     contactsData.updateDelegates()
                 }
@@ -147,7 +159,11 @@ func httpGetSuggestContacts(passed: (()->Void)?, failed: ((err:String?)->Void)?)
                             }
                         }
                         contactsData.updateStrangerTags(contactsData.m_rcmtUsers)
-                        contactsData.getPhotos(contactsData.m_rcmtUsers.m_members)
+                        contactsData.getUsers(
+                            { () -> Void in
+                                contactsData.updateDelegates()
+                            },
+                            failed: nil)
                     }
                     contactsData.updateDelegates()
                 }
@@ -176,7 +192,11 @@ func httpGetBothLikeUsers(passed: (()->Void)?, failed: ((err:String?)->Void)?) {
                             }
                         }
                         contactsData.updateStrangerTags(contactsData.m_likeUsers)
-                        contactsData.getPhotos(contactsData.m_likeUsers.m_members)
+                        contactsData.getUsers(
+                            { () -> Void in
+                                contactsData.updateDelegates()
+                            },
+                            failed: nil)
                     }
                     contactsData.updateDelegates()
                 }

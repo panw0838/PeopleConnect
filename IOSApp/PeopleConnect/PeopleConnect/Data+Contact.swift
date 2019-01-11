@@ -99,9 +99,42 @@ class ContactsData {
     var m_strangerTags = Array<Tag>()
     
     var m_contactTags = Array<Tag>()
-    var m_contacts = Dictionary<UInt64, ContactInfo>()
     var m_delegate:ContactDataDelegate?
     
+    var m_users = Dictionary<UInt64, ContactInfo>()
+    var m_missNameUsers = Array<UInt64>()
+    var m_missPhotoUsers = Array<UInt64>()
+    
+    func addUser(uID:UInt64, name:String, flag:UInt64) {
+        if m_users[uID] == nil {
+            m_users[uID] = ContactInfo(id: uID, f: flag, n: name)
+            if name.characters.count == 0 {
+                m_missNameUsers.append(uID)
+            }
+        }
+        else if name.characters.count > 0 || flag != 0 {
+            // update info
+            m_users[uID] = ContactInfo(id: uID, f: flag, n: name)
+        }
+        
+        if getContactPhoto(uID) == nil {
+            m_missPhotoUsers.append(uID)
+        }
+    }
+    
+    func addUser(info:ContactInfo) {
+        m_users[info.user] = info
+        if info.name.characters.count == 0 {
+            m_missNameUsers.append(info.user)
+        }
+        if getContactPhoto(info.user) == nil {
+            m_missPhotoUsers.append(info.user)
+        }
+    }
+
+    func getUser(uID:UInt64)->ContactInfo? {
+        return m_users[uID]
+    }
 
     init() {
         // system tags
@@ -156,30 +189,24 @@ class ContactsData {
         return tags
     }
     
-    func getPhotos() {
-        var ids = Array<UInt64>()
-        for (_, contact) in m_contacts.enumerate() {
-            if getContactPhoto(contact.0) == nil {
-                ids.append(contact.0)
-            }
-        }
-        if ids.count > 0 {
-            httpGetPhotos(ids,
+    func getUsers(passed:(()->Void)?, failed:((err:String?)->Void)?) {
+        if m_missNameUsers.count > 0 {
+            httpGetUsers(m_missNameUsers,
                 passed: {()->Void in
-                    contactsData.updateDelegates()
+                    passed?()
                 },
-                failed: nil)
+                failed: {(err:String?)->Void in
+                    failed?(err: err)
+                })
         }
-    }
-    
-    func getPhotos(members:Array<UInt64>) {
-        let photoList = getPhotoMissingList(members)
-        if photoList.count > 0 {
-            httpGetPhotos(photoList,
+        if m_missPhotoUsers.count > 0 {
+            httpGetPhotos(m_missPhotoUsers,
                 passed: {()->Void in
-                    contactsData.updateDelegates()
+                    passed?()
                 },
-                failed: nil)
+                failed: {(err:String?)->Void in
+                    failed?(err: err)
+                })
         }
     }
     
@@ -234,52 +261,48 @@ class ContactsData {
                 tag.addMember(contact)
             }
         }
-        m_contacts[contact.user] = contact
+        addUser(contact)
     }
     
-    func addUser(contact:ContactInfo) {
-        m_contacts[contact.user] = contact
-    }
-
     func remContact(contactID:UInt64) {
         m_undefine.remMember(contactID, inSubTags: true)
         for tag in m_contactTags {
             tag.remMember(contactID, inSubTags: true)
         }
-        var info = m_contacts[contactID]
+        var info = m_users[contactID]
         if info != nil {
             info?.flag = 0
-            m_contacts[contactID] = info
+            m_users[contactID] = info
         }
     }
     
     func getContact(contactID:UInt64)->ContactInfo? {
-        return m_contacts[contactID]
+        return m_users[contactID]
     }
     
     func moveContactsInTag(cIDs:Array<UInt64>, tag:Tag) {
         for cID in cIDs {
-            var contact = m_contacts[cID]!
+            var contact = m_users[cID]!
             tag.m_father?.remMember(cID, inSubTags: false)
             if contact.isUndefine() {
                 m_undefine.remMember(cID, inSubTags: false)
             }
             contact.flag |= (tag.m_bit | tag.m_fatherBit)
             tag.addMember(contact)
-            m_contacts[cID] = contact
+            m_users[cID] = contact
         }
     }
     
     func moveContactsOutTag(cIDs:Array<UInt64>, tag:Tag) {
         for cID in cIDs {
-            var contact = m_contacts[cID]!
+            var contact = m_users[cID]!
             tag.remMember(cID, inSubTags: true)
             contact.flag &= ~(tag.m_bit | tag.m_subBits)
             tag.m_father?.addMember(contact)
             if contact.isUndefine() {
                 m_undefine.addMember(contact)
             }
-            m_contacts[cID] = contact
+            m_users[cID] = contact
         }
     }
     

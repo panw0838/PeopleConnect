@@ -52,7 +52,7 @@ class MoveMemberView: UIViewController, UICollectionViewDataSource, UICollection
     
     func reloadData() {
         let bit = m_tag!.m_bit
-        for contact in contactsData.m_contacts.values {
+        for contact in contactsData.m_users.values {
             if contact.isContact() {
                 if contact.flag & bit == 0 {
                     m_outTagMembers.append(contact)

@@ -172,8 +172,7 @@ class Post {
         var str:String = "[❤]"
         
         for cID in m_info.likes {
-            let name = contactsData.m_contacts[cID]?.name
-            
+            let name = contactsData.getUser(cID)?.name
             if name != nil {
                 str += " " + name! + " "
             }
@@ -306,43 +305,22 @@ class PostData {
     }
     
     func getContacts() {
-        var contactIDs = Set<UInt64>()
-        var photoIDs = Set<UInt64>()
         for post in m_posts {
-            if contactsData.m_contacts[post.m_info.user] == nil {
-                contactIDs.insert(post.m_info.user)
-                photoIDs.insert(post.m_info.user)
-            }
-            else if getContactPhoto(post.m_info.user) == nil {
-                photoIDs.insert(post.m_info.user)
-            }
+            contactsData.addUser(post.m_info.user, name: "", flag: 0)
             
             for like in post.m_info.likes {
-                if contactsData.m_contacts[like] == nil {
-                    contactIDs.insert(like)
-                }
+                contactsData.addUser(like, name: "", flag: 0)
             }
             
             for comment in post.m_comments {
-                if contactsData.m_contacts[comment.from] == nil {
-                    contactIDs.insert(comment.from)
-                }
+                contactsData.addUser(comment.from, name: "", flag: 0)
             }
         }
-        if contactIDs.count > 0 {
-            httpGetUsers(Array<UInt64>(contactIDs),
-                passed: {()->Void in
-                    self.UpdateDelegate()
-                },
-                failed: nil)
-        }
-        if photoIDs.count > 0 {
-            httpGetPhotos(Array<UInt64>(photoIDs),
-                passed: {()->Void in
-                    self.UpdateDelegate()
-                },
-                failed: nil)
-        }
+        contactsData.getUsers(
+            { () -> Void in
+                self.UpdateDelegate()
+            },
+            failed: nil)
     }
     
     func getPreviews() {

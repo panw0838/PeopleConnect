@@ -35,9 +35,8 @@ func httpRegistry(name:String, code:Int, cell:String, pass:String, photo:NSData,
                     userInfo.countryCode = code
                     userInfo.cellNumber = cell
                     userInfo.password = pass
-                    let newContact = ContactInfo(id: userInfo.userID, f: 0, n: userInfo.userName)
-                    setContactPhoto(newContact.user, photo: photo)
-                    contactsData.m_contacts[newContact.user] = newContact
+                    contactsData.addUser(userInfo.userID, name: userInfo.userName, flag: 0)
+                    setContactPhoto(userInfo.userID, photo: photo)
                     userData.setCurUser()
                 }
                 passed?()
@@ -69,8 +68,7 @@ func httpLogon(code:Int, cell:String, pass:String, passed:(()->Void)?, failed:((
                     userInfo.countryCode = code
                     userInfo.cellNumber = cell
                     userInfo.password = pass
-                    let newContact = ContactInfo(id: userInfo.userID, f: 0, n: userInfo.userName)
-                    contactsData.m_contacts[newContact.user] = newContact
+                    contactsData.addUser(userInfo.userID, name: userInfo.userName, flag: 0)
                     userData.setCurUser()
                     
                     if let tagObjs = dict["tags"] as? [AnyObject] {
