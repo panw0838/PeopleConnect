@@ -189,8 +189,6 @@ enum ConvType: UInt64 {
 
 class Conversation {
     var m_id:UInt64 = 0
-    var m_name:String = "未知对话"
-    var m_img:UIImage = UIImage(named: "default_profile")!
     var m_messages:Array<MsgInfo> = Array<MsgInfo>()
     var m_delegate:ConvDelegate?
     var m_newMsg = false
@@ -200,17 +198,18 @@ class Conversation {
     
     init(id:UInt64) {
         m_id = id
-        
-        if (m_id & GroupBit) != 0 {
-        }
-        else {
-            m_name = getName(m_id)
-            m_img = getPhoto(m_id)
-        }
     }
     
     init(gid:UInt32) {
         m_id = UInt64(gid) + GroupBit
+    }
+    
+    func getConvName()->String {
+        return getName(m_id)
+    }
+    
+    func getConvPhoto()->UIImage {
+        return getPhoto(m_id)
     }
     
     func UpdateDelegate() {
@@ -288,8 +287,14 @@ class RequestNotifies:Conversation {
     override init() {
         super.init()
         m_id = ConvType.ConvRequest.rawValue
-        m_name = "好友通知"
-        m_img = UIImage(named: "messages_requests")!
+    }
+    
+    override func getConvName()->String {
+        return "好友通知"
+    }
+    
+    override func getConvPhoto()->UIImage {
+        return UIImage(named: "messages_requests")!
     }
     
     func UpdateRequests() {
@@ -324,8 +329,14 @@ class LikeNotifies:Conversation {
     override init() {
         super.init()
         m_id = ConvType.ConvLikeUsr.rawValue
-        m_name = "点赞通知"
-        m_img = UIImage(named: "group_like")!
+    }
+    
+    override func getConvName()->String {
+        return "点赞通知"
+    }
+    
+    override func getConvPhoto()->UIImage {
+        return UIImage(named: "group_like")!
     }
     
     func addLiker(liker:UInt64) {
@@ -366,8 +377,14 @@ class PostNotifies:Conversation {
     override init() {
         super.init()
         m_id = ConvType.ConvPostNTF.rawValue
-        m_name = "动态通知"
-        m_img = UIImage(named: "messages_notify")!
+    }
+    
+    override func getConvName()->String {
+        return "动态通知"
+    }
+    
+    override func getConvPhoto()->UIImage {
+        return UIImage(named: "messages_notify")!
     }
     
     override func addMessage(newMessage:MsgInfo) {

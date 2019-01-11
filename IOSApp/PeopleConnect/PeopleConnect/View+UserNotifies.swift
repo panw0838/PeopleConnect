@@ -97,7 +97,7 @@ class UserNotifyView:UIViewController, ConvDelegate, UITableViewDataSource, UITa
     override func viewDidLoad() {
         super.viewDidLoad()
         m_conv!.m_delegate = self
-        self.title = m_conv?.m_name
+        self.title = m_conv?.getConvName()
     }
     
     override func viewWillDisappear(animated: Bool) {

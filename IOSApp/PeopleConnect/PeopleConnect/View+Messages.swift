@@ -23,8 +23,8 @@ class MessegeCell: UITableViewCell {
         let last = conv.m_messages.last
         
         self.m_messege.text = conv.lastMessage()
-        self.m_name.text = conv.m_name
-        self.m_profile.image = conv.m_img
+        self.m_name.text = conv.getConvName()
+        self.m_profile.image = conv.getConvPhoto()
         self.m_profile.layer.cornerRadius = 10
         self.m_profile.layer.masksToBounds = true
         self.m_time.hidden = (conv.m_id < 10)

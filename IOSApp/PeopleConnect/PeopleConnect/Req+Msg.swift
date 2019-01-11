@@ -142,23 +142,19 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
             if let msgJson = processErrorCode(response as! NSData, failed: failed) {
                 if let json = getJson(msgJson) {
                     if let messObjs = json["mess"] as? [AnyObject] {
-                        var ids = Array<UInt64>()
                         for case let messObj in (messObjs as? [[String:AnyObject]])! {
                             if let msg = MsgInfo(json: messObj) {
                                 msgData.AddNewMsg(msg)
-                                ids.append(msg.from)
+                                contactsData.addUser(msg.from, name: "", flag: 0)
                             }
                         }
                         msgData.UpdateDelegate()
                         
-                        let photoList = getPhotoMissingList(ids)
-                        if photoList.count > 0 {
-                            httpGetPhotos(photoList,
-                                passed: {()->Void in
-                                    msgData.UpdateDelegate()
-                                },
-                                failed: nil)
-                        }
+                        contactsData.getUsers(
+                            {()->Void in
+                                msgData.UpdateDelegate()
+                            },
+                            failed: nil)
                     }
                     let newSyncID = (UInt64)((json["sync"]?.unsignedLongLongValue)!)
                     userData.setMsgSyncID(newSyncID)

@@ -120,7 +120,7 @@
          contextName = "(httpLogon(Int, cell : String, pass : String, passed : () -&gt; ()?, failed : (String?) -&gt; ()?) -&gt; ()).(closure #1):Requests+Log.swift">
       </ContextState>
       <ContextState
-         contextName = "ContactsView.(httpGetContacts(ContactsView) -&gt; () -&gt; ()).(closure #1):ContactRequests.swift">
+         contextName = "(httpGetLikeUsers() -&gt; ()).(closure #1):Req+Msg.swift">
       </ContextState>
       <ContextState
          contextName = "getTimeString(UInt64) -&gt; String:Data+Utility.swift">
@@ -131,7 +131,7 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "MessegeData.AddNewMessege(UInt64, newMessege : MessegeInfo) -&gt; ():Messege.swift">
+         contextName = "ContactsView.(httpGetContacts(ContactsView) -&gt; () -&gt; ()).(closure #1):ContactRequests.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsData.loadContacts([ContactInfo], userTags : [TagInfo]) -&gt; ():Contact.swift">
@@ -145,18 +145,13 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "MessegeData.AddNewMessege(UInt64, newMessege : MessegeInfo) -&gt; ():Messege.swift">
+      </ContextState>
+      <ContextState
          contextName = "MoveMemberView.reloadData() -&gt; ():MoveMemberView.swift">
          <PersistentStrings>
             <PersistentString
                value = "contactsData">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "ConversationView.keyboardWillChangeFrame(NSNotification) -&gt; ():View+Conv.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "m_messegesTable.contentOffset.y">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -179,13 +174,10 @@
          contextName = "LoginView.(registry(LoginView) -&gt; (AnyObject) -&gt; ()).(closure #2):LoginView.swift">
       </ContextState>
       <ContextState
-         contextName = "PostHeader.reload(Post) -&gt; ():View+PostHeader.swift">
+         contextName = "ConversationView.keyboardWillChangeFrame(NSNotification) -&gt; ():View+Conv.swift">
          <PersistentStrings>
             <PersistentString
-               value = "post.m_info.content">
-            </PersistentString>
-            <PersistentString
-               value = "self.frame.width">
+               value = "m_messegesTable.contentOffset.y">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -202,10 +194,18 @@
          contextName = "addPost(PostData, postObjs : [AnyObject]) -&gt; ():Requests+Post.swift">
       </ContextState>
       <ContextState
-         contextName = "MsgInfo.getConversationID() -&gt; UInt64:Data+Msg.swift">
+         contextName = "PostHeader.reload(Post) -&gt; ():View+PostHeader.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "post.m_info.content">
+            </PersistentString>
+            <PersistentString
+               value = "self.frame.width">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "(httpGetLikeUsers() -&gt; ()).(closure #1):Req+Msg.swift">
+         contextName = "MsgInfo.getConversationID() -&gt; UInt64:Data+Msg.swift">
       </ContextState>
       <ContextState
          contextName = "ConversationView.viewDidLoad() -&gt; ():View+Conversation.swift">
@@ -259,6 +259,18 @@
          contextName = "MessegesView.tableView(UITableView, cellForRowAtIndexPath : NSIndexPath) -&gt; UITableViewCell:View+Messeges.swift">
       </ContextState>
       <ContextState
+         contextName = "RequestsView.tableView(UITableView, numberOfRowsInSection : Int) -&gt; Int:View+Requests.swift">
+      </ContextState>
+      <ContextState
+         contextName = "(httpSyncContactPost(UInt64) -&gt; ()).(closure #1):Requests+Post.swift">
+      </ContextState>
+      <ContextState
+         contextName = "(httpGetPhotos([UInt64], success : () -&gt; ()?, fail : (err : String?) -&gt; ()?) -&gt; ()).(closure #1):Requests+Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ContactsData.moveContactsOutTag([UInt64], tag : Tag) -&gt; ():Data+Contact.swift">
+      </ContextState>
+      <ContextState
          contextName = "PostsView.tableView(UITableView, viewForHeaderInSection : Int) -&gt; UIView?:View+Posts.swift">
          <PersistentStrings>
             <PersistentString
@@ -273,15 +285,6 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "(httpSyncContactPost(UInt64) -&gt; ()).(closure #1):Requests+Post.swift">
-      </ContextState>
-      <ContextState
-         contextName = "(httpGetPhotos([UInt64], success : () -&gt; ()?, fail : (err : String?) -&gt; ()?) -&gt; ()).(closure #1):Requests+Contact.swift">
-      </ContextState>
-      <ContextState
-         contextName = "ContactsData.moveContactsOutTag([UInt64], tag : Tag) -&gt; ():Data+Contact.swift">
-      </ContextState>
-      <ContextState
          contextName = "ContactsData.addUser(ContactInfo) -&gt; ():Data+Contact.swift">
       </ContextState>
       <ContextState
@@ -291,9 +294,6 @@
                value = "font.lineHeight">
             </PersistentString>
          </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "MoveMemberView.(httpMoveMembers(MoveMemberView) -&gt; (UInt8, addMembers : [UInt64], remMembers : [UInt64]) -&gt; ()).(closure #1):ContactRequests.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsView.httpRemTag(UInt8) -&gt; ():ContactRequests.swift">
@@ -335,13 +335,16 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "MoveMemberView.(httpMoveMembers(MoveMemberView) -&gt; (UInt8, addMembers : [UInt64], remMembers : [UInt64]) -&gt; ()).(closure #1):ContactRequests.swift">
+      </ContextState>
+      <ContextState
          contextName = "(httpAddComment(Post, to : UInt64, pub : UInt8, re : UInt16, cmt : String) -&gt; ()).(closure #1):Requests+Post.swift">
       </ContextState>
       <ContextState
-         contextName = "RequestsView.tableView(UITableView, numberOfRowsInSection : Int) -&gt; Int:View+Requests.swift">
+         contextName = "MulImgPicker.viewDidLoad() -&gt; ():View+ImagePicker.swift">
       </ContextState>
       <ContextState
-         contextName = "MulImgPicker.viewDidLoad() -&gt; ():View+ImagePicker.swift">
+         contextName = "ContactsData.getUsers(() -&gt; ()?, failed : (err : String?) -&gt; ()?) -&gt; ():Data+Contact.swift">
       </ContextState>
       <ContextState
          contextName = "MsgCell.showContact() -&gt; ():View+Conv.swift">
@@ -378,6 +381,14 @@
       </ContextState>
       <ContextState
          contextName = "(httpDelComment(Post, cmt : CommentInfo) -&gt; ()).(closure #1):Requests+Cmt.swift">
+      </ContextState>
+      <ContextState
+         contextName = "(httpSyncMessege(() -&gt; ()?, failed : (String?) -&gt; ()?) -&gt; ()).(closure #1):Req+Msg.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "msgData">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "SingleImgView.init(asset : PHAsset) -&gt; SingleImgView:View+SingleImage.swift">
@@ -475,10 +486,10 @@
                value = "self.frame">
             </PersistentString>
             <PersistentString
-               value = "m_post">
+               value = "m_post!.m_width">
             </PersistentString>
             <PersistentString
-               value = "m_post!.m_width">
+               value = "m_post">
             </PersistentString>
             <PersistentString
                value = "m_post?.m_contentHeight">
