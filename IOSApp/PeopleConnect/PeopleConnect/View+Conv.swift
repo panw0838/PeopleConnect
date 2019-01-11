@@ -310,6 +310,7 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         super.viewDidLoad()
         m_messegesTable.registerClass(MsgCell.classForCoder(), forCellReuseIdentifier: "MsgCell")
         m_conv?.m_delegate = self
+        self.title = m_conv?.getConvName()
         
         // 设置虚拟键盘监听器
         let notifier = NSNotificationCenter.defaultCenter()
