@@ -64,7 +64,6 @@ func dbGetUser(contryCode int, cellNumber string, c redis.Conn) (uint64, error) 
 func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 	exists, err := dbGetUser(info.CountryCode, info.CellNumber, c)
 	if err != nil {
-		fmt.Println(err)
 		return 0, err
 	}
 	if exists != 0 {
@@ -73,13 +72,11 @@ func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 
 	newID, err := redis.Uint64(c.Do("INCR", NewUIDKey))
 	if err != nil {
-		fmt.Println(err)
 		return 0, err
 	}
 
 	_, err = c.Do("MULTI")
 	if err != nil {
-		fmt.Println(err)
 		return 0, err
 	}
 
@@ -95,7 +92,6 @@ func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 		PassField, info.Password,
 		IPField, "")
 	if err != nil {
-		fmt.Println(err)
 		return 0, err
 	}
 
@@ -103,13 +99,11 @@ func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 	searchTable := getSearchTable(info.CountryCode)
 	_, err = c.Do("ZADD", searchTable, newID, info.CellNumber)
 	if err != nil {
-		fmt.Println(err)
 		return 0, err
 	}
 
 	_, err = c.Do("EXEC")
 	if err != nil {
-		fmt.Println(err)
 		return 0, err
 	}
 

@@ -37,6 +37,18 @@ func GetUint64(reply interface{}, err error) (uint64, error) {
 	return value, nil
 }
 
+func GetInt64(reply interface{}, err error) (int64, error) {
+	str, err := redis.String(reply, err)
+	if err != nil {
+		return 0, err
+	}
+	value, err := strconv.ParseInt(str, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	return value, nil
+}
+
 func ReadInput(r *http.Request, v interface{}) error {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {

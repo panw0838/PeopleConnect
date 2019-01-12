@@ -2,8 +2,14 @@ package share
 
 import "strconv"
 
+const NewUnivKey = "newuniv"
+
 func GetRequestsKey(user uint64) string {
 	return "requests:" + strconv.FormatUint(user, 10)
+}
+
+func GetUnviKey() string {
+	return "univ"
 }
 
 func GetGroupKey(gID uint32) string {
