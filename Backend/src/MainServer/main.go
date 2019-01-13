@@ -6,6 +6,7 @@ import (
 	"message"
 	"net/http"
 	"post"
+	"share"
 	"strings"
 	"user"
 )
@@ -31,6 +32,7 @@ func syncHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	user.InitRelationCash()
+	share.BuildSearchTree()
 
 	http.HandleFunc("/sync", syncHandler)
 
@@ -53,6 +55,8 @@ func main() {
 	http.HandleFunc("/getuserdetail", user.GetUserDetailHandler)
 	http.HandleFunc("/getbothlikeusers", user.GetBothLikeStrangersHandler)
 	http.HandleFunc("/getlikemeusers", user.GetLikeMeUsersHandler)
+	http.HandleFunc("/addgroup", user.AddGroupHandler)
+	http.HandleFunc("/searchgroup", user.SearchGroupHandler)
 
 	http.HandleFunc("/addcontact", message.AddContactHandler)
 	http.HandleFunc("/remcontact", message.RemContactHandler)

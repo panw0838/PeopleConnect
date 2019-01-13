@@ -168,11 +168,16 @@ type OutputTag struct {
 	Index  uint8  `json:"id"`
 }
 
+type OutputGroup struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
 type LoginResponse struct {
-	UserID uint64      `json:"user"`
-	Name   string      `json:"name"`
-	Tags   []OutputTag `json:"tags,omitempty"`
-	Groups []uint64    `json:"groups,omitempty"`
+	UserID uint64        `json:"user"`
+	Name   string        `json:"name"`
+	Tags   []OutputTag   `json:"tags,omitempty"`
+	Groups []OutputGroup `json:"groups,omitempty"`
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -223,6 +228,22 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	groups, err := DbGetUserGroups(userID, c)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	for _, group := range groups {
+		var newGroup OutputGroup
+		newGroup.ID = group
+		newGroup.Name, err = dbGetGroupName(group, c)
+		if err != nil {
+			share.WriteErrorCode(w, err)
+			return
+		}
+		feedback.Groups = append(feedback.Groups, newGroup)
+	}
+
 	data, err := json.Marshal(&feedback)
 	if err != nil {
 		share.WriteErrorCode(w, err)
@@ -231,5 +252,69 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("%d %s\n", userID, r.RemoteAddr)
 	share.WriteError(w, 0)
+	w.Write(data)
+}
+
+type AddGroupInput struct {
+	UID uint64 `json:"uid"`
+	GID int64  `json:"gid"`
+}
+
+func AddGroupHandler(w http.ResponseWriter, r *http.Request) {
+	var input AddGroupInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	defer c.Close()
+
+	err = dbAddGroup(input.UID, input.GID, c)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	share.WriteErrorCode(w, nil)
+}
+
+type SearchGroupInput struct {
+	UID  uint64 `json:"uid"`
+	Name string `json:"name"`
+}
+
+type SearchGroupReturn struct {
+	Names []string `json:"names"`
+}
+
+func SearchGroupHandler(w http.ResponseWriter, r *http.Request) {
+	var input SearchGroupInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	defer c.Close()
+
+	var response SearchGroupReturn
+	response.Names = share.Search(input.Name)
+	data, err := json.Marshal(&response)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	share.WriteErrorCode(w, nil)
 	w.Write(data)
 }
