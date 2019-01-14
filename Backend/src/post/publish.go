@@ -14,8 +14,8 @@ func getFPubKey(uID uint64) string {
 	return "fposts:" + strconv.FormatUint(uID, 10)
 }
 
-func getGPubKey(gID uint32) string {
-	return "gposts:" + strconv.FormatUint(uint64(gID), 10)
+func getGPubKey(group string) string {
+	return "gposts:" + group
 }
 
 func getNearKey(geoID uint64) string {
@@ -97,7 +97,7 @@ func dbGetFriendPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]Pos
 				return nil, err
 			}
 			// get friends comments
-			post.Comments, err = dbGetComments(oID, post.ID, uID, FriendGroup, 0, c)
+			post.Comments, err = dbGetComments(oID, post.ID, uID, FriendPosts, 0, c)
 			if err != nil {
 				return nil, err
 			}
@@ -137,7 +137,7 @@ func dbGetNearbyPublish(uID uint64, geoID uint64, from uint64, to uint64, c redi
 						return nil, err
 					}
 					// get strangers comments
-					post.Comments, err = dbGetComments(oID, post.ID, uID, StrangerGroup, 0, c)
+					post.Comments, err = dbGetComments(oID, post.ID, uID, NearPosts, 0, c)
 					if err != nil {
 						return nil, err
 					}
@@ -149,8 +149,8 @@ func dbGetNearbyPublish(uID uint64, geoID uint64, from uint64, to uint64, c redi
 	return results, nil
 }
 
-func dbGetGroupPublish(uID uint64, gID uint32, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
-	key := getGPubKey(gID)
+func dbGetGroupPublish(uID uint64, group string, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
+	key := getGPubKey(group)
 	publishes, err := redis.Strings(c.Do("ZRANGEBYSCORE", key, from, to))
 	if err != nil {
 		return nil, err
@@ -178,7 +178,7 @@ func dbGetGroupPublish(uID uint64, gID uint32, from uint64, to uint64, c redis.C
 						return nil, err
 					}
 					// get group comments
-					post.Comments, err = dbGetComments(oID, post.ID, uID, gID, 0, c)
+					post.Comments, err = dbGetComments(oID, post.ID, uID, GroupPosts, 0, c)
 					if err != nil {
 						return nil, err
 					}

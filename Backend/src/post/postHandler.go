@@ -136,7 +136,7 @@ type NewPostInput struct {
 	X       float64  `json:"X"`
 	Y       float64  `json:"Y"`
 	Nearby  bool     `json:"near"`
-	Groups  []uint32 `json:"group"`
+	Groups  []string `json:"groups"`
 }
 
 type NewPostReturn struct {
@@ -278,7 +278,7 @@ func SyncFriendsPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	if len(input.PIDs) > 0 {
 		pubKey := getFPubKey(input.User)
-		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, FriendGroup, c)
+		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, FriendPosts, c)
 		if err != nil {
 			share.WriteErrorCode(w, err)
 			return
@@ -412,6 +412,15 @@ func SyncNearPostsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(input.PIDs) > 0 {
+		nearKey := getNearKey(input.GID)
+		response.Cmts, err = dbUpdatePubCmts(input.UID, nearKey, input.PIDs, input.OIDs, input.CIDs, NearPosts, c)
+		if err != nil {
+			share.WriteErrorCode(w, err)
+			return
+		}
+	}
+
 	bytes, err := json.Marshal(response)
 	if err != nil {
 		share.WriteErrorCode(w, err)
@@ -424,7 +433,7 @@ func SyncNearPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 type SyncGroupPublishInput struct {
 	User     uint64   `json:"uid"`
-	Group    uint32   `json:"gid"`
+	Group    string   `json:"group"`
 	LastPost uint64   `json:"last"`
 	OIDs     []uint64 `json:"oids,omitempty"`
 	PIDs     []uint64 `json:"pids,omitempty"`
@@ -456,7 +465,7 @@ func SyncGroupPublishHandler(w http.ResponseWriter, r *http.Request) {
 
 	if len(input.PIDs) > 0 {
 		pubKey := getGPubKey(input.Group)
-		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, input.Group, c)
+		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, GroupPosts, c)
 		if err != nil {
 			share.WriteErrorCode(w, err)
 			return

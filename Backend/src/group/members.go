@@ -22,8 +22,8 @@ func GetUnivName(uID uint64, c redis.Conn) (string, error) {
 	return values[0], nil
 }
 
-func DbIsGroupMember(gID uint32, uID uint64, c redis.Conn) (bool, error) {
-	groupKey := share.GetGroupKey(gID)
+func DbIsGroupMember(group string, uID uint64, c redis.Conn) (bool, error) {
+	groupKey := share.GetGroupKey(group)
 	isMember, err := redis.Int(c.Do("SISMEMBER", groupKey, uID))
 	if err != nil {
 		return false, err

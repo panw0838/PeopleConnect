@@ -1,9 +1,9 @@
 package user
 
 import (
+	"encoding/json"
 	"fmt"
 	"share"
-	"strconv"
 	"strings"
 
 	"github.com/garyburd/redigo/redis"
@@ -12,10 +12,10 @@ import (
 const Max_Groups int = 3
 
 type UserGroups struct {
-	Groups []uint64 `json:"groups"`
+	Groups []string `json:"groups"`
 }
 
-func DbGetUserGroups(uID uint64, c redis.Conn) ([]int64, error) {
+func DbGetUserGroups(uID uint64, c redis.Conn) ([]string, error) {
 	userKey := GetAccountKey(uID)
 	value, err := c.Do("HGET", userKey, GroupsFiled)
 	if err != nil {
@@ -25,44 +25,37 @@ func DbGetUserGroups(uID uint64, c redis.Conn) ([]int64, error) {
 		return nil, nil
 	}
 
-	groupsStr, err := redis.String(value, err)
+	bytes, err := redis.Bytes(value, err)
+	if err != nil {
+		return nil, err
+	}
+	if len(bytes) == 0 {
+		return nil, nil
+	}
+
+	var groups UserGroups
+	err = json.Unmarshal(bytes, &groups)
 	if err != nil {
 		return nil, err
 	}
 
-	var groups []int64
-	groupStrs := strings.Split(groupsStr, ",")
-	for _, str := range groupStrs {
-		group, err := strconv.ParseInt(str, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		groups = append(groups, group)
-	}
-
-	return groups, nil
+	return groups.Groups, nil
 }
 
-func DbSetUserGroups(uID uint64, groups []int64, c redis.Conn) error {
-	var groupsStr = ""
-	for idx, group := range groups {
-		if idx == 0 {
-			groupsStr += string(group)
-		} else {
-			groupsStr += "," + string(group)
-		}
-	}
-
-	userKey := GetAccountKey(uID)
-	_, err := c.Do("HSET", userKey, GroupsFiled, groupsStr)
+func DbSetUserGroups(uID uint64, groups []string, c redis.Conn) error {
+	var data UserGroups
+	data.Groups = groups
+	bytes, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	userKey := GetAccountKey(uID)
+	_, err = c.Do("HSET", userKey, GroupsFiled, bytes)
+	return err
 }
 
-func dbAddGroup(uID uint64, group int64, c redis.Conn) error {
+func dbAddGroup(uID uint64, newGroup string, c redis.Conn) error {
 	groups, err := DbGetUserGroups(uID, c)
 	if err != nil {
 		return err
@@ -72,42 +65,24 @@ func dbAddGroup(uID uint64, group int64, c redis.Conn) error {
 		return fmt.Errorf("Reach max groups")
 	}
 
-	for _, gID := range groups {
-		if gID == group {
+	for _, group := range groups {
+		if strings.Compare(group, newGroup) == 0 {
 			return fmt.Errorf("Already in group")
 		}
 	}
 
 	// check if groups valid
 	univKey := share.GetUnviKey()
-	values, err := redis.Strings(c.Do("ZRANGEBYSCORE", univKey, group, group))
+	exists, err := redis.Int(c.Do("SISMEMBER", univKey, newGroup))
 	if err != nil {
 		return err
 	}
-	if len(values) == 0 {
+	if exists == 0 {
 		return fmt.Errorf("No such group")
 	}
-	if len(values) > 1 {
-		return fmt.Errorf("Conflict groups")
-	}
 
-	groups = append(groups, group)
+	groups = append(groups, newGroup)
 	err = DbSetUserGroups(uID, groups, c)
 
 	return err
-}
-
-func dbGetGroupName(group int64, c redis.Conn) (string, error) {
-	univKey := share.GetUnviKey()
-	values, err := redis.Strings(c.Do("ZRANGEBYSCORE", univKey, group, group))
-	if err != nil {
-		return "", err
-	}
-	if len(values) == 0 {
-		return "", fmt.Errorf("No such group")
-	}
-	if len(values) > 1 {
-		return "", fmt.Errorf("Conflict groups")
-	}
-	return values[0], nil
 }

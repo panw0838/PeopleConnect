@@ -174,10 +174,10 @@ type OutputGroup struct {
 }
 
 type LoginResponse struct {
-	UserID uint64        `json:"user"`
-	Name   string        `json:"name"`
-	Tags   []OutputTag   `json:"tags,omitempty"`
-	Groups []OutputGroup `json:"groups,omitempty"`
+	UserID uint64      `json:"user"`
+	Name   string      `json:"name"`
+	Tags   []OutputTag `json:"tags,omitempty"`
+	Groups []string    `json:"groups,omitempty"`
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -228,20 +228,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	groups, err := DbGetUserGroups(userID, c)
+	feedback.Groups, err = DbGetUserGroups(userID, c)
 	if err != nil {
 		share.WriteErrorCode(w, err)
 		return
-	}
-	for _, group := range groups {
-		var newGroup OutputGroup
-		newGroup.ID = group
-		newGroup.Name, err = dbGetGroupName(group, c)
-		if err != nil {
-			share.WriteErrorCode(w, err)
-			return
-		}
-		feedback.Groups = append(feedback.Groups, newGroup)
 	}
 
 	data, err := json.Marshal(&feedback)
@@ -256,8 +246,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type AddGroupInput struct {
-	UID uint64 `json:"uid"`
-	GID int64  `json:"gid"`
+	UID  uint64 `json:"uid"`
+	Name string `json:"name"`
 }
 
 func AddGroupHandler(w http.ResponseWriter, r *http.Request) {
@@ -275,7 +265,7 @@ func AddGroupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	err = dbAddGroup(input.UID, input.GID, c)
+	err = dbAddGroup(input.UID, input.Name, c)
 	if err != nil {
 		share.WriteErrorCode(w, err)
 		return

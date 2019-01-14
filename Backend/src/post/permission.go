@@ -7,8 +7,9 @@ import (
 )
 
 const AllGroups uint32 = 0
-const FriendGroup uint32 = 1
-const StrangerGroup uint32 = 2
+const FriendPosts uint32 = 1
+const NearPosts uint32 = 2
+const GroupPosts uint32 = 3
 
 func PostVisibleForFriend(uFlag uint64, pFlag uint64) bool {
 	return ((uFlag & pFlag & user.FriendMask) != 0)
@@ -68,7 +69,7 @@ func canSeeNCmt(uID uint64, cmt Comment, c redis.Conn) (bool, error) {
 	return canSee, nil
 }
 
-func canSeeGCmt(uID uint64, gID uint32, cmt Comment, c redis.Conn) (bool, error) {
+func canSeeGCmt(uID uint64, cmt Comment, c redis.Conn) (bool, error) {
 	if uID == cmt.From || uID == cmt.To {
 		return true, nil
 	}
@@ -96,15 +97,15 @@ func canSeeComment(uID uint64, oID uint64, src uint32, cmt Comment, c redis.Conn
 	} else if src != cmt.Group {
 		return false, nil
 	} else {
-		if src == FriendGroup {
+		if src == FriendPosts {
 			// friends publish
 			return canSeeFCmt(uID, cmt, c)
-		} else if src == StrangerGroup {
+		} else if src == NearPosts {
 			// stranger publish
 			return canSeeNCmt(uID, cmt, c)
 		} else {
 			// group publish
-			return canSeeGCmt(uID, src, cmt, c)
+			return canSeeGCmt(uID, cmt, c)
 		}
 	}
 }

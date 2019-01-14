@@ -19,7 +19,7 @@ type PostData struct {
 	X        float64   `json:"x"`
 	Y        float64   `json:"y"`
 	Files    []string  `json:"file,omitempty"`
-	Groups   []uint32  `json:"group,omitempty"`
+	Groups   []string  `json:"group,omitempty"`
 	Comments []Comment `json:"cmt,omitempty"` // for output
 	Liked    bool      `json:"liked,omitempty"`
 	Likes    []int64   `json:"likes,omitempty"`
