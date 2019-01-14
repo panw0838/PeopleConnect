@@ -68,20 +68,6 @@ class PostNotifyView:UIViewController, MsgDelegate, UITableViewDataSource, UITab
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        var cIDs = Array<UInt64>()
-        for message in m_data!.m_messages {
-            if getContactPhoto(message.from) == nil {
-                cIDs.append(message.from)
-            }
-        }
-        // sync photos
-        if cIDs.count > 0 {
-            httpGetPhotos(cIDs,
-                passed: {()->Void in
-                    self.m_table.reloadData()
-                },
-                failed: nil)
-        }
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {

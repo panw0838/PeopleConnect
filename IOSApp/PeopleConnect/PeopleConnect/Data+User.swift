@@ -36,6 +36,19 @@ struct GroupInfo {
     var name:String = ""
 }
 
+extension GroupInfo {
+    init?(json: [String: AnyObject]) {
+        guard
+            let id = json["id"] as? NSNumber,
+            let name = json["name"] as? String
+            else {
+                return nil
+        }
+        self.id = UInt32(id.unsignedIntValue)
+        self.name = name
+    }
+}
+
 struct UserInfo {
     var userID : UInt64 = 0
     var countryCode: Int = 0

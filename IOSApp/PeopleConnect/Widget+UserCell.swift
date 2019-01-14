@@ -70,7 +70,7 @@ class UserCell: UICollectionViewCell {
             self.m_father?.RequestContact(self.m_id)
         })
         
-        if contact?.flag != 0 {
+        if contact!.flag != 0 {
             // friends
             alert.addAction(msgAction)
             alert.addAction(detailAction)

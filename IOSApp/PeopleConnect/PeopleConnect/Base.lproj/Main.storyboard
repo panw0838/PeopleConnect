@@ -972,6 +972,7 @@
                                     <segment title="我的动态"/>
                                     <segment title="好友动态"/>
                                     <segment title="附近动态"/>
+                                    <segment title="我的大学"/>
                                 </segments>
                                 <connections>
                                     <action selector="switchPosts:" destination="YL6-cw-Vsr" eventType="valueChanged" id="xO7-vN-Lee"/>
@@ -1572,7 +1573,7 @@
         <image name="tab_msg_hi" width="25" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Amz-rz-fHZ"/>
         <segue reference="pWd-Ma-Nx5"/>
+        <segue reference="ZaN-YB-4fP"/>
     </inferredMetricsTieBreakers>
 </document>

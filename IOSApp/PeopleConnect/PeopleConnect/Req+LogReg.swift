@@ -80,7 +80,13 @@ func httpLogon(code:Int, cell:String, pass:String, passed:(()->Void)?, failed:((
                         }
                     }
                     
-                    // todo process groups
+                    if let groupObjs = dict["groups"] as? [AnyObject] {
+                        for case let groupObj in (groupObjs as? [[String:AnyObject]])! {
+                            if let group = GroupInfo(json: groupObj) {
+                                userInfo.groups.append(group)
+                            }
+                        }
+                    }
                 }
                 passed?()
             }

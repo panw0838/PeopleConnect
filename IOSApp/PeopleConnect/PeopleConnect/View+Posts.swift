@@ -40,6 +40,9 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
                 userData.startLocate(self)
             }
         }
+        else if select == 3 {
+            
+        }
         m_posts.reloadData()
     }
     

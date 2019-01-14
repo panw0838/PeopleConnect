@@ -198,6 +198,7 @@ class ContactsData {
                 failed: {(err:String?)->Void in
                     failed?(err: err)
                 })
+            m_missNameUsers.removeAll()
         }
         if m_missPhotoUsers.count > 0 {
             httpGetPhotos(m_missPhotoUsers,
@@ -207,6 +208,7 @@ class ContactsData {
                 failed: {(err:String?)->Void in
                     failed?(err: err)
                 })
+            m_missPhotoUsers.removeAll()
         }
     }
     
