@@ -17,13 +17,21 @@ type UserGroups struct {
 
 func DbGetUserGroups(uID uint64, c redis.Conn) ([]int64, error) {
 	userKey := GetAccountKey(uID)
-	bytes, err := redis.Bytes(c.Do("HGET", userKey, GroupsFiled))
+	value, err := c.Do("HGET", userKey, GroupsFiled)
+	if err != nil {
+		return nil, err
+	}
+	if value == nil {
+		return nil, nil
+	}
+
+	groupsStr, err := redis.String(value, err)
 	if err != nil {
 		return nil, err
 	}
 
 	var groups []int64
-	groupStrs := strings.Split(string(bytes), ",")
+	groupStrs := strings.Split(groupsStr, ",")
 	for _, str := range groupStrs {
 		group, err := strconv.ParseInt(str, 10, 64)
 		if err != nil {
