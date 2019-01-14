@@ -1,6 +1,9 @@
 package share
 
 import (
+	"fmt"
+	"unicode/utf8"
+
 	"github.com/garyburd/redigo/redis"
 )
 
@@ -16,47 +19,54 @@ type SearchNode struct {
 func InsertKey(key string) {
 	var pPre *SearchNode = nil
 	var pNode *SearchNode = &head
-	for _, ch := range []rune(key) {
-		for {
-			if pNode == nil {
-				pNode = new(SearchNode)
-				pNode.ch = ch
-				pNode.pChild = nil
-				pNode.pSid = nil
-				pNode.str = ""
-				pPre.pSid = pNode
-			} else if pNode.ch != ch {
-				pPre = pNode
-				pNode = pNode.pSid
-			} else {
-				// found, go to next ch
-				if pNode.pChild == nil {
-					pNode.pChild = new(SearchNode)
-					pNode.pChild.pSid = nil
-					pNode.pChild.pChild = nil
-					pNode.pChild.ch = ch
-					pNode.pChild.str = ""
+	for _, ch := range key {
+		if pNode == nil {
+			pPre.pChild = new(SearchNode)
+			pPre.pChild.pSid = nil
+			pPre.pChild.pChild = nil
+			pPre.pChild.ch = ch
+			pPre.pChild.str = ""
+			pPre = pPre.pChild
+			pNode = pPre.pChild
+		} else {
+			for {
+				if pNode == nil {
+					pNode = new(SearchNode)
+					pNode.ch = ch
+					pNode.pChild = nil
+					pNode.pSid = nil
+					pNode.str = ""
+					pPre.pSid = pNode
+					pPre = pNode
+					pNode = pNode.pChild
+					break
+				} else if pNode.ch != ch {
+					pPre = pNode
+					pNode = pNode.pSid
+				} else {
+					// found, go to next ch
+					pPre = pNode
+					pNode = pNode.pChild
+					break
 				}
-				pPre = pNode
-				pNode = pNode.pChild
-				break
 			}
 		}
 	}
-	pNode.str = key
+	println(key, utf8.RuneCountInString(key))
+	pPre.str = key
 }
 
 func printSearcTree(pNode *SearchNode) {
 	if pNode == nil {
 		return
 	}
+	fmt.Printf("%c ", pNode.ch)
 	printSearcTree(pNode.pChild)
-	println(pNode.ch, pNode.pChild, pNode.pSid)
 	printSearcTree(pNode.pSid)
 }
 
 func BuildSearchTree() {
-	head.ch = 0
+	head.ch = -1
 	head.pSid = nil
 	head.pChild = nil
 
@@ -77,7 +87,7 @@ func BuildSearchTree() {
 	}
 
 	// print tree
-	printSearcTree(&head)
+	//printSearcTree(head.pSid)
 }
 
 func getResult(pNode *SearchNode) []string {
@@ -102,8 +112,7 @@ func getResult(pNode *SearchNode) []string {
 func Search(key string) []string {
 	var pPre *SearchNode = nil
 	var pNode *SearchNode = &head
-	for _, ch := range []rune(key) {
-		println(ch)
+	for _, ch := range key {
 		for {
 			if pNode == nil {
 				return nil
@@ -113,11 +122,6 @@ func Search(key string) []string {
 				pPre = pNode
 				pNode = pNode.pChild
 				break
-			}
-			if pNode != nil {
-				print(pNode.ch, " ")
-			} else {
-				print("null pointer")
 			}
 		}
 	}
