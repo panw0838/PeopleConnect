@@ -1,11 +1,10 @@
 package main
 
 import (
-	"encoding/csv"
-	"os"
 	"share"
 
 	"github.com/garyburd/redigo/redis"
+	"github.com/tealeg/xlsx"
 )
 
 func getUniv(name string, c redis.Conn) (int64, error) {
@@ -42,18 +41,12 @@ func addUniv(name string, c redis.Conn) (int64, error) {
 	return newID, nil
 }
 
-const xlsPath = "C:/Users/panwang/PeopleConnect/Backend/china_univ_1.csv"
+const xlsPath = "C:/Users/panwang/PeopleConnect/Backend/china_univ_1.xlsx"
 
 func initUnivs() error {
-	file, err := os.Open(xlsPath)
+	xlFile, err := xlsx.OpenFile(xlsPath)
 	if err != nil {
-		return err
-	}
-	reader := csv.NewReader(file)
-
-	rows, err := reader.ReadAll()
-	if err != nil {
-		return err
+		panic(err)
 	}
 
 	c, err := redis.Dial("tcp", share.ContactDB)
@@ -62,13 +55,13 @@ func initUnivs() error {
 	}
 	defer c.Close()
 
-	for _, row := range rows {
-		name := row[1]
+	for _, row := range xlFile.Sheets[0].Rows {
+		println(row.Cells[1].String())
+		name := row.Cells[1].String()
 		if len(name) > 0 {
-			println(name)
 			uID, err := getUniv(name, c)
 			if err != nil {
-				return err
+				panic(err)
 			}
 			if uID == 0 {
 				addUniv(name, c)

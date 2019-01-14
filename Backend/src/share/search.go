@@ -103,6 +103,7 @@ func Search(key string) []string {
 	var pPre *SearchNode = nil
 	var pNode *SearchNode = &head
 	for _, ch := range []rune(key) {
+		println(ch)
 		for {
 			if pNode == nil {
 				return nil
@@ -112,6 +113,11 @@ func Search(key string) []string {
 				pPre = pNode
 				pNode = pNode.pChild
 				break
+			}
+			if pNode != nil {
+				print(pNode.ch, " ")
+			} else {
+				print("null pointer")
 			}
 		}
 	}
