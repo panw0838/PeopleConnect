@@ -55,11 +55,13 @@ struct MsgInfo {
 
     var from:UInt64 = 0
     var data:String = ""
-    var group:UInt32 = 0
+    var cGroup:UInt32 = 0
     
+    // for posts notifies
     var oID:UInt64 = 0
     var pID:UInt64 = 0
-    var src:UInt32 = 0
+    var chan:UInt32 = 0
+    var pGroup:String = ""
     
     func getConversationID()->UInt64 {
         if type == .Ntf_Req {
@@ -71,8 +73,8 @@ struct MsgInfo {
         if type == .Ntf_Pst_Cmt || type == .Ntf_Pst_Lik {
             return ConvType.ConvPostNTF.rawValue
         }
-        if group != 0 {
-            return UInt64(group) + GroupBit
+        if cGroup != 0 {
+            return UInt64(cGroup) + GroupBit
         }
         if from != 0 {
             return from
@@ -105,8 +107,8 @@ extension MsgInfo {
         if let data = json["cont"] as? String {
             self.data = data
         }
-        if let group = json["group"] as? NSNumber {
-            self.group = UInt32(group.unsignedIntValue)
+        if let cGroup = json["gchat"] as? NSNumber {
+            self.cGroup = UInt32(cGroup.unsignedIntValue)
         }
         
         if let oID = json["oid"] as? NSNumber {
@@ -115,8 +117,11 @@ extension MsgInfo {
         if let pID = json["pid"] as? NSNumber {
             self.pID = UInt64(pID.unsignedLongLongValue)
         }
-        if let src = json["src"] as? NSNumber {
-            self.src = UInt32(src.unsignedIntValue)
+        if let chan = json["chan"] as? NSNumber {
+            self.chan = UInt32(chan.unsignedIntValue)
+        }
+        if let pGroup = json["gpost"] as? String {
+            self.pGroup = pGroup
         }
     }
 }
@@ -145,17 +150,7 @@ class MsgInfoCoder:NSObject, NSCoding {
             m_info.data = data
         }
         if let group = aDecoder.decodeObjectForKey("group") as? NSNumber {
-            m_info.group = UInt32(group.unsignedIntValue)
-        }
-        
-        if let oID = aDecoder.decodeObjectForKey("oid") as? NSNumber {
-            m_info.oID = UInt64(oID.unsignedLongLongValue)
-        }
-        if let pID = aDecoder.decodeObjectForKey("pid") as? NSNumber {
-            m_info.pID = UInt64(pID.unsignedLongLongValue)
-        }
-        if let src = aDecoder.decodeObjectForKey("src") as? NSNumber {
-            m_info.src = UInt32(src.unsignedIntValue)
+            m_info.cGroup = UInt32(group.unsignedIntValue)
         }
     }
     
@@ -165,11 +160,7 @@ class MsgInfoCoder:NSObject, NSCoding {
         aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.time), forKey: "time")
 
         aCoder.encodeObject(m_info.data, forKey: "cont")
-        aCoder.encodeObject(NSNumber(unsignedInt: m_info.group), forKey: "group")
-        
-        aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.oID), forKey: "oid")
-        aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.pID), forKey: "pid")
-        aCoder.encodeObject(NSNumber(unsignedInt: m_info.src), forKey: "src")
+        aCoder.encodeObject(NSNumber(unsignedInt: m_info.cGroup), forKey: "group")
     }
 }
 
@@ -390,11 +381,11 @@ class PostNotifies:Conversation {
     override func addMessage(newMessage:MsgInfo) {
         super.addMessage(newMessage)
         
-        if let postData = getPostData(newMessage.src, oID: newMessage.oID) {
+        if let postData = getPostData(newMessage.chan, group: newMessage.pGroup, oID: newMessage.oID) {
             postData.m_needSync = true
             if let post = postData.getPost(newMessage.pID, oID: newMessage.oID) {
                 for (idx, oldPost) in m_posts.enumerate() {
-                    if oldPost.m_father?.m_sorce == post.m_father?.m_sorce &&
+                    if oldPost.m_father?.getChannel() == post.m_father?.getChannel() &&
                         oldPost.m_info.id == post.m_info.id &&
                         oldPost.m_info.user == post.m_info.user {
                         m_posts.removeAtIndex(idx)
@@ -417,8 +408,8 @@ class PostNotifies:Conversation {
     
     override func getMessage(idx:Int)->String {
         let post = m_posts[idx]
-        let src = post.m_father?.m_sorce
-        return String(post.m_actors.count) + "个人" + (src == UsrPosts ?  "评论了你的动态" : "回复了你的评论")
+        let selfPost = (post.m_father?.getChannel() == PostChannel.AllChannel.rawValue)
+        return String(post.m_actors.count) + "个人" + (selfPost ? "评论了你的动态" : "回复了你的评论")
     }
 
     override func lastMessage() -> String? {

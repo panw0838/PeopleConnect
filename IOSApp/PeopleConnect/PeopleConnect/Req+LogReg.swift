@@ -25,12 +25,9 @@ func httpRegistry(name:String, code:Int, cell:String, pass:String, photo:NSData,
         },
         progress: nil,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let regData = processErrorCode(response as! NSData, failed: failed)
-            if regData != nil {
-                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(regData!, options: .MutableContainers)
-                if (jsonObj != nil) {
-                    let dict: NSDictionary = jsonObj as! NSDictionary
-                    userInfo.userID = (UInt64)((dict["user"]?.unsignedLongLongValue)!)
+            if let regData = processErrorCode(response as! NSData, failed: failed) {
+                if let json = getJson(regData) {
+                    userInfo.userID = (UInt64)((json["user"]?.unsignedLongLongValue)!)
                     userInfo.userName = name
                     userInfo.countryCode = code
                     userInfo.cellNumber = cell
@@ -58,20 +55,17 @@ func httpLogon(code:Int, cell:String, pass:String, passed:(()->Void)?, failed:((
 
     http.postRequest("login", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let logData = processErrorCode(response as! NSData, failed: failed)
-            if logData != nil {
-                let jsonObj = try? NSJSONSerialization.JSONObjectWithData(logData!, options: .MutableContainers)
-                if (jsonObj != nil) {
-                    let dict: NSDictionary = jsonObj as! NSDictionary
-                    userInfo.userID = (UInt64)((dict["user"]?.unsignedLongLongValue)!)
-                    userInfo.userName = dict["name"] as! String
+            if let logData = processErrorCode(response as! NSData, failed: failed) {
+                if let json = getJson(logData) {
+                    userInfo.userID = (UInt64)((json["user"]?.unsignedLongLongValue)!)
+                    userInfo.userName = json["name"] as! String
                     userInfo.countryCode = code
                     userInfo.cellNumber = cell
                     userInfo.password = pass
                     contactsData.addUser(userInfo.userID, name: userInfo.userName, flag: 0)
                     userData.setCurUser()
                     
-                    if let tagObjs = dict["tags"] as? [AnyObject] {
+                    if let tagObjs = json["tags"] as? [AnyObject] {
                         for case let tagObj in (tagObjs as? [[String:AnyObject]])! {
                             if let tag = TagInfo(json: tagObj) {
                                 let newTag = Tag(id: tag.tagID, father: tag.fatherID, name: tag.tagName)
@@ -80,10 +74,10 @@ func httpLogon(code:Int, cell:String, pass:String, passed:(()->Void)?, failed:((
                         }
                     }
                     
-                    if let groupObjs = dict["groups"] as? [AnyObject] {
+                    if let groupObjs = json["groups"] as? [AnyObject] {
                         for case let groupObj in (groupObjs as? [[String:AnyObject]])! {
                             if let group = GroupInfo(json: groupObj) {
-                                userInfo.groups.append(group)
+                                addGroup(group)
                             }
                         }
                     }

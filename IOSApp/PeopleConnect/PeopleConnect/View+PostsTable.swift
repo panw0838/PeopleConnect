@@ -53,7 +53,7 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
         if !m_showMsg {
             return 0
         }
-        return m_data!.postAtIdx(section).m_comments.count + (m_data?.m_sorce == 0 ? 1 : 0)
+        return m_data!.postAtIdx(section).m_comments.count + (m_data?.getChannel() == PostChannel.AllChannel.rawValue ? 1 : 0)
     }
     
     func setupLikeCell(cell:CommentCell, post:Post) {
@@ -105,8 +105,7 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
             let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
             let okAction = UIAlertAction(title: "确定", style: .Default,
                 handler: { action in
-                    let src = (self.m_data?.m_sorce != 0 ? (self.m_data?.m_sorce)! : comment.src)
-                    httpAddComment(post, to: (comment.from), src: src, cmt: (alert.textFields?.first?.text)!)
+                    post.replyComment(comment, content:alert.textFields!.first!.text!)
             })
             alert.addTextFieldWithConfigurationHandler {
                 (textField: UITextField!) -> Void in
@@ -180,8 +179,8 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("CommentCell", forIndexPath: indexPath) as! CommentCell
         let post = m_data!.postAtIdx(indexPath.section)
-        let isSelf = m_data?.m_sorce == 0
-        
+        let isSelf = (m_data?.getChannel() == PostChannel.AllChannel.rawValue)
+
         if isSelf {
             if indexPath.row == 0 {
                 setupLikeCell(cell, post: post)
@@ -203,7 +202,7 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
         let header = tableView.dequeueReusableHeaderFooterViewWithIdentifier("PostHeader") as! PostHeader
         let post = m_data!.postAtIdx(section)
         header.m_father = self
-        header.reload(post, data: m_data!, width:m_table!.contentSize.width, showPhoto: m_showPhoto, showTool: m_showMsg)
+        header.reload(post, width:m_table!.contentSize.width, showPhoto: m_showPhoto, showTool: m_showMsg)
         return header
     }
     
@@ -216,7 +215,7 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let post = m_data!.postAtIdx(indexPath.section)
         let width = m_table!.contentSize.width
-        let isSelf = m_data?.m_sorce == 0
+        let isSelf = (m_data?.getChannel() == PostChannel.AllChannel.rawValue)
         
         if isSelf {
             if indexPath.row == 0 {

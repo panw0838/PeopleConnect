@@ -20,6 +20,7 @@ class CreatePostView:
     @IBOutlet weak var m_createPostBtn: UIBarButtonItem!
     @IBOutlet weak var m_imgsPreview: ImgEditPreview!
     @IBOutlet weak var m_visibleTags: TagsView!
+    @IBOutlet weak var m_visibleGroups: TagsView!
     
     func updateCreateBtn() {
         let writed = (m_imgsPreview.m_picks.count > 0 || m_desc.text?.characters.count > 0)
@@ -46,7 +47,7 @@ class CreatePostView:
     @IBAction func CreatePost(sender: AnyObject) {
         let desc = m_desc.text!
         let flag = m_visibleTags.m_flag
-        let groups = Array<UInt32>()
+        let groups = Array<String>() // todo
         let nearby = m_strangerSee.on
         var datas = Array<NSData>()
         for image in m_imgsPreview.m_picks {

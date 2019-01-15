@@ -18,14 +18,15 @@ func addComment(post:Post, cmtObjs:[AnyObject]) {
     }
 }
 
-func httpAddComment(post:Post, to:UInt64, src:UInt32, cmt:String) {
+func httpAddComment(post:Post, to:UInt64, chan:UInt32, cmt:String) {
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "to":NSNumber(unsignedLongLong: to),
         "oid":NSNumber(unsignedLongLong: post.m_info.user),
         "pid":NSNumber(unsignedLongLong: post.m_info.id),
         "cmt":cmt,
-        "src":NSNumber(unsignedInt: src),
+        "chan":NSNumber(unsignedInt: chan),
+        "group":getGroup(chan),
         "last":NSNumber(unsignedLongLong: (post.m_comments.count == 0 ? 0 : post.m_comments.last!.id))]
     http.postRequest("comment", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
@@ -42,7 +43,7 @@ func httpAddComment(post:Post, to:UInt64, src:UInt32, cmt:String) {
                         newComment.to   = to
                         newComment.id   = id.unsignedLongLongValue
                         newComment.cmt  = cmt
-                        newComment.src  = src
+                        newComment.chan  = chan
                         post.m_comments.append(newComment)
                         post.m_father?.UpdateDelegate()
                     }

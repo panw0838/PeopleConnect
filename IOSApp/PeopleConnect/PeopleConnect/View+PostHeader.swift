@@ -145,7 +145,7 @@ class PostHeader: UITableViewHeaderFooterView {
         let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Default,
             handler: { action in
-                httpAddComment(self.m_post!, to:0, src: self.m_data!.m_sorce, cmt: (alert.textFields?.first?.text)!)
+                self.m_post!.sendComment(alert.textFields!.first!.text!)
         })
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
@@ -176,9 +176,8 @@ class PostHeader: UITableViewHeaderFooterView {
         self.m_father!.presentViewController(alert, animated: true, completion: nil)
     }
 
-    func reload(post:Post, data:PostData, width:CGFloat, showPhoto: Bool, showTool:Bool) {
+    func reload(post:Post, width:CGFloat, showPhoto: Bool, showTool:Bool) {
         m_post = post
-        m_data = data
         let selfPost = (m_post?.m_info.user == userInfo.userID)
         var buttom:CGFloat = 0.0
         

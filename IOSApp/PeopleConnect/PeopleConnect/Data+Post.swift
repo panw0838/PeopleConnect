@@ -10,29 +10,51 @@ import Foundation
 import UIKit
 import AFNetworking
 
-let UsrPosts:UInt32 = 0
-let FriPosts:UInt32 = 1
-let StrPosts:UInt32 = 2
+enum PostChannel:UInt32 {
+    case AllChannel = 0
+    case FriendChannel = 1
+    case NearChannel = 2
+    case GroupChannel = 3
+}
 
 var SrcNames:Dictionary<UInt32, String> = [0:"全部", 1:"好友", 2:"附近"]
 
-var selfPosts    = PostData(cid: userInfo.userID)
-var friendPosts  = PostData(src: FriPosts)
-var nearPosts    = NearPostData(src: StrPosts)
-var groupsPosts   = Dictionary<UInt32, PostData>()
+var selfPosts    = UserPostData(uID:userInfo.userID)
+var friendPosts  = FriendPostData()
+var nearPosts    = NearPostData()
+var groupsPosts   = Dictionary<String, PostData>()
 var contactsPosts = Dictionary<UInt64, PostData>()
 
-func getPostData(src:UInt32, oID:UInt64)->PostData? {
+func getPostData(channel:UInt32, group:String, oID:UInt64)->PostData? {
     if oID == userInfo.userID {
         return selfPosts
     }
-    if src == FriPosts {
+    if channel == PostChannel.FriendChannel.rawValue {
         return friendPosts
     }
-    if src == StrPosts {
+    if channel == PostChannel.NearChannel.rawValue {
         return nearPosts
     }
-    return groupsPosts[src]
+    if group.characters.count > 0 {
+        return groupsPosts[group]
+    }
+    return contactsPosts[oID]
+}
+
+func getContactPost(cID:UInt64)->PostData {
+    var postData:PostData?
+    if contactsPosts[cID] == nil {
+        postData = UserPostData(uID: cID)
+        contactsPosts[cID] = postData
+    }
+    else {
+        postData = contactsPosts[cID]
+    }
+    return postData!
+}
+
+func getGroupPost(group:String)->PostData {
+    return groupsPosts[group]!
 }
 
 var previews = Dictionary<String, UIImage>()
@@ -86,7 +108,7 @@ struct CommentInfo {
     var to:UInt64 = 0
     var id:UInt64 = 0
     var cmt:String = ""
-    var src:UInt32 = 0
+    var chan:UInt32 = 0
     
     func getUserName(uID:UInt64)->String {
         if uID == 0 {
@@ -99,7 +121,7 @@ struct CommentInfo {
     }
 
     func getString(showSrc:Bool)->String {
-        let srcName = "[" + SrcNames[src]! + "]"
+        let srcName = "[" + SrcNames[chan]! + "]"
         let fromName = getUserName(from)
         var str = showSrc ? srcName : ""
         
@@ -122,7 +144,7 @@ extension CommentInfo {
         let to   = json["to"] as? NSNumber,
         let id   = json["id"] as? NSNumber,
         let cmt  = json["msg"] as? String,
-        let src  = json["src"] as? NSNumber
+        let chan  = json["chan"] as? NSNumber
         else {
             return nil
         }
@@ -130,7 +152,7 @@ extension CommentInfo {
         self.to   = UInt64(to.unsignedLongLongValue)
         self.id   = UInt64(id.unsignedLongLongValue)
         self.cmt  = cmt
-        self.src  = UInt32(src.unsignedIntValue)
+        self.chan  = UInt32(chan.unsignedIntValue)
     }
 }
 
@@ -142,6 +164,14 @@ class Post {
     
     init(info:PostInfo) {
         m_info = info
+    }
+    
+    func sendComment(content:String) {
+        httpAddComment(self, to:0, chan:m_father!.getChannel(), cmt:content)
+    }
+    
+    func replyComment(cmt:CommentInfo, content:String) {
+        httpAddComment(self, to:cmt.from, chan:cmt.chan, cmt:content)
     }
     
     func numImages()->Int {
@@ -200,22 +230,10 @@ protocol PostDataDelegate {
 }
 
 class PostData {
-    var m_sorce:UInt32 = 0
-    var m_contact:UInt64 = 0
     var m_posts = Array<Post>()
     var m_delegate:PostDataDelegate? = nil
     var m_needSync:Bool = false
     var m_lockAt:Int = -1
-    
-    
-    init(src:UInt32) {
-        m_sorce = src
-    }
-    
-    init(cid:UInt64) {
-        m_sorce = UsrPosts
-        m_contact = cid
-    }
     
     func setDelegate(delegate:PostDataDelegate?) {
         m_delegate = delegate
@@ -263,39 +281,16 @@ class PostData {
         return m_posts.count == 0 ? 0 : m_posts.last!.m_info.id
     }
     
+    func getChannel()->UInt32 {
+        return PostChannel.AllChannel.rawValue
+    }
+    
     func Update() {
-        var pIDs = Array<UInt64>()
-        var oIDs = Array<UInt64>()
-        var cIDs = Array<UInt64>()
-        
-        for post in m_posts {
-            pIDs.append(post.m_info.id)
-            oIDs.append(post.m_info.user)
-            cIDs.append((post.m_comments.count == 0 ? 0 : post.m_comments.last!.id))
-        }
-        
-        switch m_sorce {
-        case UsrPosts:
-            httpSyncContactPost(m_contact, pIDs: pIDs, oIDs: oIDs, cIDs: cIDs)
-            break
-        case FriPosts:
-            httpSyncFriendsPost(pIDs, oIDs: oIDs, cIDs: cIDs)
-            break
-        case StrPosts:
-            httpSyncNearbyPost()
-            break
-        default:
-            httpSyncGroupPost(m_sorce, pIDs: pIDs, oIDs: oIDs, cIDs: cIDs)
-            break
-        }
     }
     
     func numOfPosts()->Int {
         if m_lockAt >= 0 {
             return 1
-        }
-        if m_lockAt == -2 {
-            return 0
         }
         return m_posts.count
     }
@@ -343,6 +338,81 @@ class PostData {
     }
 }
 
+class FriendPostData:PostData {
+    
+    override init() {
+        super.init()
+    }
+    
+    override func getChannel()->UInt32 {
+        return PostChannel.FriendChannel.rawValue
+    }
+    
+    override func Update() {
+        var pIDs = Array<UInt64>()
+        var oIDs = Array<UInt64>()
+        var cIDs = Array<UInt64>()
+        
+        for post in m_posts {
+            pIDs.append(post.m_info.id)
+            oIDs.append(post.m_info.user)
+            cIDs.append((post.m_comments.count == 0 ? 0 : post.m_comments.last!.id))
+        }
+        
+        httpSyncFriendsPost(pIDs, oIDs: oIDs, cIDs: cIDs)
+    }
+}
+
+class UserPostData:PostData {
+    var m_uID:UInt64 = 0
+    
+    init(uID:UInt64) {
+        m_uID = uID
+    }
+
+    override func Update() {
+        var pIDs = Array<UInt64>()
+        var oIDs = Array<UInt64>()
+        var cIDs = Array<UInt64>()
+        
+        for post in m_posts {
+            pIDs.append(post.m_info.id)
+            oIDs.append(post.m_info.user)
+            cIDs.append((post.m_comments.count == 0 ? 0 : post.m_comments.last!.id))
+        }
+        
+        httpSyncContactPost(m_uID, pIDs: pIDs, oIDs: oIDs, cIDs: cIDs)
+    }
+}
+
+class GroupPostData:PostData {
+    var m_group = ""
+    var m_chan:UInt32 = 0
+    
+    init(group:String, chan:UInt32) {
+        m_group = group
+        m_chan = chan
+    }
+    
+    override func getChannel()->UInt32 {
+        return m_chan
+    }
+    
+    override func Update() {
+        var pIDs = Array<UInt64>()
+        var oIDs = Array<UInt64>()
+        var cIDs = Array<UInt64>()
+        
+        for post in m_posts {
+            pIDs.append(post.m_info.id)
+            oIDs.append(post.m_info.user)
+            cIDs.append((post.m_comments.count == 0 ? 0 : post.m_comments.last!.id))
+        }
+        
+        httpSyncGroupPost(m_group, pIDs: pIDs, oIDs: oIDs, cIDs: cIDs)
+    }
+}
+
 class NearPostData:PostData {
     // for nearby posts
     var m_gIDs = Array<UInt64>()
@@ -353,11 +423,19 @@ class NearPostData:PostData {
         posts?.AddPost(info)
     }
     
+    override func getChannel()->UInt32 {
+        return PostChannel.NearChannel.rawValue
+    }
+    
+    override func Update() {
+        httpSyncNearbyPost()
+    }
+    
     func UpdateSquares() {
         for gid in m_gIDs {
             let geoPosts = m_geoPosts[gid]
             if geoPosts == nil {
-                let newSubPostsData = PostData(src: StrPosts)
+                let newSubPostsData = PostData()
                 let nilIDs = Array<UInt64>()
                 newSubPostsData.setDelegate(m_delegate)
                 m_geoPosts[gid] = newSubPostsData

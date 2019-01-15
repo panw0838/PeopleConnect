@@ -51,14 +51,14 @@ func syncPosts(data:PostData, json:[String:AnyObject]) {
     data.m_needSync = false
 }
 
-func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>, groups:Array<UInt32>, nearby:Bool) {
+func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>, groups:Array<String>, nearby:Bool) {
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
         "flag":NSNumber(unsignedLongLong: flag),
         "cont":desc,
         "X":NSNumber(double: userInfo.x),
         "Y":NSNumber(double: userInfo.y),
-        "group":http.getUInt32ArrayParam(groups),
+        "groups":http.getStringArrayParam(groups),
         "near":NSNumber(bool: nearby)]
     http.postDataRequest("newpost", params: params,
         constructingBodyWithBlock: { (formData: AFMultipartFormData) -> Void in
@@ -107,7 +107,7 @@ func httpDeletePost(post:Post) {
                     if p.m_info.id == post.m_info.id && p.m_info.user == post.m_info.user {
                         selfPosts.m_posts.removeAtIndex(idx)
                         if selfPosts.m_lockAt == idx {
-                            selfPosts.m_lockAt = -2
+                            selfPosts.unLock()
                         }
                         selfPosts.UpdateDelegate()
                         break
@@ -228,11 +228,11 @@ func httpSyncNearbyPost() {
     )
 }
 
-func httpSyncGroupPost(gID:UInt32, pIDs:Array<UInt64>, oIDs:Array<UInt64>, cIDs:Array<UInt64>) {
-    let postData = groupsPosts[gID]!
+func httpSyncGroupPost(group:String, pIDs:Array<UInt64>, oIDs:Array<UInt64>, cIDs:Array<UInt64>) {
+    let postData = groupsPosts[group]!
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
-        "gid":NSNumber(unsignedInt: gID),
+        "group":group,
         "last":NSNumber(unsignedLongLong: postData.getLast()),
         "pids":http.getUInt64ArrayParam(pIDs),
         "oids":http.getUInt64ArrayParam(oIDs),

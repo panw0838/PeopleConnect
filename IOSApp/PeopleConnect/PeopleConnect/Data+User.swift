@@ -34,6 +34,9 @@ class DetailData {
 struct GroupInfo {
     var id:UInt32 = 0
     var name:String = ""
+    
+    init () {
+    }
 }
 
 extension GroupInfo {
@@ -68,6 +71,21 @@ struct UserInfo {
     var y : Double = 0
     
     var groups = Array<GroupInfo>()
+}
+
+func addGroup(info:GroupInfo) {
+    userInfo.groups.append(info)
+    SrcNames[info.id] = info.name
+    groupsPosts[info.name] = GroupPostData(group: info.name, chan: info.id)
+}
+
+func getGroup(chan:UInt32)->String {
+    for group in userInfo.groups {
+        if group.id == chan {
+            return group.name
+        }
+    }
+    return ""
 }
 
 var userInfo:UserInfo = UserInfo()

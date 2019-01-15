@@ -41,7 +41,22 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
             }
         }
         else if select == 3 {
-            
+            if userInfo.groups.count == 0 {
+                let alert = UIAlertController(title: "添加大学", message: "你尚未加入大学，点击确定搜索你的大学", preferredStyle: .Alert)
+                let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+                let okAction = UIAlertAction(title: "确定", style: .Default,
+                    handler: { action in
+                        self.performSegueWithIdentifier("ShowSearch", sender: nil)
+                })
+                alert.addAction(noAction)
+                alert.addAction(okAction)
+                self.presentViewController(alert, animated: true, completion: nil)
+            }
+            else {
+                let group = userInfo.groups[0]
+                let postData = getGroupPost(group.name)
+                setTable(m_posts, data: postData, showPhoto: true, showMsg: true)
+            }
         }
         m_posts.reloadData()
     }
@@ -52,43 +67,5 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
         friendPosts.Update()
         selfPosts.Update()
     }
-    /*
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let isSelf = m_data?.m_sorce == 0
-        let post = m_data?.postAtIdx(indexPath.section)
-        let comment = (isSelf ? post?.m_comments[indexPath.row-1] : post?.m_comments[indexPath.row])
-        
-        if comment!.from == userInfo.userID {
-            let alert = UIAlertController(title: "删除评论", message: comment!.cmt, preferredStyle: .Alert)
-            let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
-            let okAction = UIAlertAction(title: "确定", style: .Destructive,
-                handler: { action in
-                    httpDelComment(post!, cmt: comment!)
-            })
-            alert.addAction(noAction)
-            alert.addAction(okAction)
-            self.presentViewController(alert, animated: true, completion: nil)
-        }
-        else {
-            let userName = contactsData.getContact((comment!.from))?.name
-            let alert = UIAlertController(title: "回复 "+userName!, message: comment!.cmt, preferredStyle: .Alert)
-            let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
-            let okAction = UIAlertAction(title: "确定", style: .Default,
-                handler: { action in
-                    let src = (self.m_data?.m_sorce != 0 ? (self.m_data?.m_sorce)! : comment!.src)
-                    httpAddComment(post!, to: comment!.from, src: src, cmt: (alert.textFields?.first?.text)!)
-                })
-            alert.addTextFieldWithConfigurationHandler {
-                (textField: UITextField!) -> Void in
-                textField.placeholder = "最多输入50个字"
-                textField.addTarget(self, action: Selector("commentChanged:"), forControlEvents: .EditingChanged)
-                }
-            okAction.enabled = false
-            alert.addAction(noAction)
-            alert.addAction(okAction)
-            self.presentViewController(alert, animated: true, completion: nil)
-        }
-    }
-*/
 }
 

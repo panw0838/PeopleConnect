@@ -61,15 +61,9 @@ class ContactView: PostsTable, UITableViewDelegate, DetailDelegate {
             postData = selfPosts
         }
         else {
-            if contactsPosts[ContactView.ContactID] == nil {
-                postData = PostData(cid: ContactView.ContactID)
-                contactsPosts[ContactView.ContactID] = postData
-            }
-            else {
-                postData = contactsPosts[ContactView.ContactID]
-            }
+            postData = getContactPost(ContactView.ContactID)
         }
-            
+        
         m_preDelegate = postData?.m_delegate
         setTable(m_posts, data: postData!, showPhoto: false, showMsg: false)
         postData?.Update()
