@@ -55,19 +55,19 @@ func DbSetUserGroups(uID uint64, groups []string, c redis.Conn) error {
 	return err
 }
 
-func dbAddGroup(uID uint64, newGroup string, c redis.Conn) error {
+func dbAddGroup(uID uint64, newGroup string, c redis.Conn) (uint32, error) {
 	groups, err := DbGetUserGroups(uID, c)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	if len(groups) >= Max_Groups {
-		return fmt.Errorf("Reach max groups")
+		return 0, fmt.Errorf("Reach max groups")
 	}
 
 	for _, group := range groups {
 		if strings.Compare(group, newGroup) == 0 {
-			return fmt.Errorf("Already in group")
+			return 0, fmt.Errorf("Already in group")
 		}
 	}
 
@@ -75,14 +75,14 @@ func dbAddGroup(uID uint64, newGroup string, c redis.Conn) error {
 	univKey := share.GetUnviKey()
 	exists, err := redis.Int(c.Do("SISMEMBER", univKey, newGroup))
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if exists == 0 {
-		return fmt.Errorf("No such group")
+		return 0, fmt.Errorf("No such group")
 	}
 
 	groups = append(groups, newGroup)
 	err = DbSetUserGroups(uID, groups, c)
 
-	return err
+	return 0, err
 }

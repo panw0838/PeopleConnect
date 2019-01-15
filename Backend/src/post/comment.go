@@ -3,7 +3,6 @@ package post
 import (
 	"encoding/json"
 	"fmt"
-	"hash/crc32"
 	"message"
 	"share"
 	"time"
@@ -23,15 +22,6 @@ type Comment struct {
 	Msg  string `json:"msg"`
 	ID   uint64 `json:"id"`
 	Chan uint32 `json:"chan"`
-}
-
-func GetChannel(channel uint32, group string) uint32 {
-	// channel 0 - 2 used for system channel only
-	if len(group) > 0 {
-		return crc32.ChecksumIEEE([]byte(group))
-	} else {
-		return channel
-	}
 }
 
 func dbGetComments(oID uint64, pID uint64, uID uint64, channel uint32, from uint64, c redis.Conn) ([]Comment, error) {
@@ -71,7 +61,7 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, uint32, error) {
 	comment.To = input.To
 	comment.Msg = input.Msg
 	comment.ID = share.GetTimeID(time.Now())
-	comment.Chan = GetChannel(input.Chan, input.Group)
+	comment.Chan = share.GetChannel(input.Chan, input.Group)
 	bytes, err := json.Marshal(comment)
 	if err != nil {
 		return 0, 0, err
@@ -90,7 +80,6 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, uint32, error) {
 	msg.OID = input.PostOwner
 	msg.PID = input.PostID
 	msg.Chan = comment.Chan
-	msg.Group = input.Group
 	var to = input.PostOwner
 	if input.To != 0 {
 		to = input.To

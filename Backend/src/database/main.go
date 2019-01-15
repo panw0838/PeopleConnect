@@ -1,7 +1,6 @@
 package main
 
 import (
-	"post"
 	"share"
 
 	"github.com/garyburd/redigo/redis"
@@ -35,7 +34,7 @@ func initUnivs() error {
 		if len(name) == 0 {
 			continue
 		}
-		channel := post.GetChannel(0, name)
+		channel := share.GetChannel(0, name)
 		value, exists := m[channel]
 		if exists || channel == 0 || channel == 1 || channel == 2 {
 			panic(value)

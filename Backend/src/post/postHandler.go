@@ -465,7 +465,7 @@ func SyncGroupPublishHandler(w http.ResponseWriter, r *http.Request) {
 
 	if len(input.PIDs) > 0 {
 		pubKey := getGPubKey(input.Group)
-		channel := GetChannel(0, input.Group)
+		channel := share.GetChannel(0, input.Group)
 		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, channel, c)
 		if err != nil {
 			share.WriteErrorCode(w, err)

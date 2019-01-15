@@ -156,7 +156,7 @@ func dbGetGroupPublish(uID uint64, group string, from uint64, to uint64, c redis
 		return nil, err
 	}
 
-	channel := GetChannel(0, group)
+	channel := share.GetChannel(0, group)
 	var results []PostData
 	for _, publish := range publishes {
 		var oID uint64

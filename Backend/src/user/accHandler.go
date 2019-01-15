@@ -250,6 +250,10 @@ type AddGroupInput struct {
 	Name string `json:"name"`
 }
 
+type AddGroupReturn struct {
+	GID uint32 `json:"id"`
+}
+
 func AddGroupHandler(w http.ResponseWriter, r *http.Request) {
 	var input AddGroupInput
 	err := share.ReadInput(r, &input)
@@ -265,13 +269,21 @@ func AddGroupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	err = dbAddGroup(input.UID, input.Name, c)
+	var response AddGroupReturn
+	response.GID, err = dbAddGroup(input.UID, input.Name, c)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	data, err := json.Marshal(&response)
 	if err != nil {
 		share.WriteErrorCode(w, err)
 		return
 	}
 
 	share.WriteErrorCode(w, nil)
+	w.Write(data)
 }
 
 type SearchGroupInput struct {
