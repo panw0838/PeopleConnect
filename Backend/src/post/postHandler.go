@@ -57,6 +57,10 @@ func getFormInput(form *multipart.Form, param *NewPostInput) error {
 				return err
 			}
 			param.Nearby = value
+		} else if strings.Compare(k, "groups[]") == 0 {
+			for _, value := range v {
+				param.Groups = append(param.Groups, value)
+			}
 		}
 	}
 

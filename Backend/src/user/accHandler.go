@@ -177,7 +177,7 @@ type LoginResponse struct {
 	UserID uint64      `json:"user"`
 	Name   string      `json:"name"`
 	Tags   []OutputTag `json:"tags,omitempty"`
-	Groups []string    `json:"groups,omitempty"`
+	Groups []UserGroup `json:"groups,omitempty"`
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -214,9 +214,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var feedback LoginResponse
-	feedback.UserID = userID
-	feedback.Name = name
+	var response LoginResponse
+	response.UserID = userID
+	response.Name = name
 
 	for idx, tag := range tags.Tags {
 		if tag.Father != 0 {
@@ -224,17 +224,23 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			newTag.Father = tag.Father
 			newTag.Name = tag.Name
 			newTag.Index = uint8(idx)
-			feedback.Tags = append(feedback.Tags, newTag)
+			response.Tags = append(response.Tags, newTag)
 		}
 	}
 
-	feedback.Groups, err = DbGetUserGroups(userID, c)
+	groups, err := DbGetUserGroups(userID, c)
 	if err != nil {
 		share.WriteErrorCode(w, err)
 		return
 	}
+	for _, group := range groups {
+		var groupInfo UserGroup
+		groupInfo.Name = group
+		groupInfo.ID = share.GetChannel(0, group)
+		response.Groups = append(response.Groups, groupInfo)
+	}
 
-	data, err := json.Marshal(&feedback)
+	data, err := json.Marshal(&response)
 	if err != nil {
 		share.WriteErrorCode(w, err)
 		return

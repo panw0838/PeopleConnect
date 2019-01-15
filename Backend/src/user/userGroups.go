@@ -11,6 +11,11 @@ import (
 
 const Max_Groups int = 3
 
+type UserGroup struct {
+	ID   uint32 `json:"id"`
+	Name string `json:"name"`
+}
+
 type UserGroups struct {
 	Groups []string `json:"groups"`
 }
