@@ -97,7 +97,7 @@ func dbGetFriendPublish(uID uint64, from uint64, to uint64, c redis.Conn) ([]Pos
 				return nil, err
 			}
 			// get friends comments
-			post.Comments, err = dbGetComments(oID, post.ID, uID, FriendPosts, 0, c)
+			post.Comments, err = dbGetComments(oID, post.ID, uID, FriendChannel, 0, c)
 			if err != nil {
 				return nil, err
 			}
@@ -137,7 +137,7 @@ func dbGetNearbyPublish(uID uint64, geoID uint64, from uint64, to uint64, c redi
 						return nil, err
 					}
 					// get strangers comments
-					post.Comments, err = dbGetComments(oID, post.ID, uID, NearPosts, 0, c)
+					post.Comments, err = dbGetComments(oID, post.ID, uID, NearChannel, 0, c)
 					if err != nil {
 						return nil, err
 					}
@@ -156,6 +156,7 @@ func dbGetGroupPublish(uID uint64, group string, from uint64, to uint64, c redis
 		return nil, err
 	}
 
+	channel := GetChannel(0, group)
 	var results []PostData
 	for _, publish := range publishes {
 		var oID uint64
@@ -178,7 +179,7 @@ func dbGetGroupPublish(uID uint64, group string, from uint64, to uint64, c redis
 						return nil, err
 					}
 					// get group comments
-					post.Comments, err = dbGetComments(oID, post.ID, uID, GroupPosts, 0, c)
+					post.Comments, err = dbGetComments(oID, post.ID, uID, channel, 0, c)
 					if err != nil {
 						return nil, err
 					}

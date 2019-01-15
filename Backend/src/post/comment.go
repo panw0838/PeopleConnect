@@ -3,6 +3,7 @@ package post
 import (
 	"encoding/json"
 	"fmt"
+	"hash/crc32"
 	"message"
 	"share"
 	"time"
@@ -10,21 +11,30 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
+const (
+	AllChannel    = 0
+	FriendChannel = 1
+	NearChannel   = 2
+)
+
 type Comment struct {
-	From  uint64 `json:"from"`
-	To    uint64 `json:"to"`
-	Msg   string `json:"msg"`
-	ID    uint64 `json:"id"`
-	Group uint32 `json:"src"`
+	From uint64 `json:"from"`
+	To   uint64 `json:"to"`
+	Msg  string `json:"msg"`
+	ID   uint64 `json:"id"`
+	Chan uint32 `json:"chan"`
 }
 
-type CommentsData struct {
-	Owner    uint64    `json:"user"`
-	Post     uint64    `json:"post"`
-	Comments []Comment `json:"cmts"`
+func GetChannel(channel uint32, group string) uint32 {
+	// channel 0 - 2 used for system channel only
+	if len(group) > 0 {
+		return crc32.ChecksumIEEE([]byte(group))
+	} else {
+		return channel
+	}
 }
 
-func dbGetComments(oID uint64, pID uint64, uID uint64, src uint32, from uint64, c redis.Conn) ([]Comment, error) {
+func dbGetComments(oID uint64, pID uint64, uID uint64, channel uint32, from uint64, c redis.Conn) ([]Comment, error) {
 	cmtKey := share.GetPostCmtKey(oID, pID)
 	values, err := redis.Values(c.Do("ZRANGEBYSCORE", cmtKey, from, share.MAX_TIME))
 	if err != nil {
@@ -43,7 +53,7 @@ func dbGetComments(oID uint64, pID uint64, uID uint64, src uint32, from uint64, 
 			return nil, err
 		}
 
-		canSee, err := canSeeComment(uID, oID, src, comment, c)
+		canSee, err := canSeeComment(uID, oID, channel, comment, c)
 		if err != nil {
 			return nil, err
 		}
@@ -55,22 +65,22 @@ func dbGetComments(oID uint64, pID uint64, uID uint64, src uint32, from uint64, 
 	return results, nil
 }
 
-func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, error) {
+func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, uint32, error) {
 	var comment Comment
 	comment.From = input.UID
 	comment.To = input.To
 	comment.Msg = input.Msg
 	comment.ID = share.GetTimeID(time.Now())
-	comment.Group = input.Group
+	comment.Chan = GetChannel(input.Chan, input.Group)
 	bytes, err := json.Marshal(comment)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
 	cmtKey := share.GetPostCmtKey(input.PostOwner, input.PostID)
 	_, err = c.Do("ZADD", cmtKey, comment.ID, bytes)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
 	// add to message notification
@@ -79,17 +89,17 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, error) {
 	msg.Type = message.NTF_PST_CMT
 	msg.OID = input.PostOwner
 	msg.PID = input.PostID
-	msg.Src = input.Group
+	msg.Chan = comment.Chan
 	var to = input.PostOwner
 	if input.To != 0 {
 		to = input.To
 	}
 	_, err = message.DbAddMessege(to, msg, c)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
-	return comment.ID, nil
+	return comment.ID, comment.Chan, nil
 }
 
 func dbDelComment(input DelCmtInput, c redis.Conn) error {
@@ -115,8 +125,6 @@ func dbDelComment(input DelCmtInput, c redis.Conn) error {
 			if err != nil {
 				return err
 			}
-		} else {
-			return fmt.Errorf("Fail delete")
 		}
 	}
 
@@ -162,7 +170,7 @@ type UpdateComment struct {
 	Cmts []Comment `json:"cmts"`
 }
 
-func dbUpdatePubCmts(uID uint64, pubKey string, pIDs []uint64, oIDs []uint64, cIDs []uint64, src uint32, c redis.Conn) ([]UpdateComment, error) {
+func dbUpdatePubCmts(uID uint64, pubKey string, pIDs []uint64, oIDs []uint64, cIDs []uint64, channel uint32, c redis.Conn) ([]UpdateComment, error) {
 	var cmts []UpdateComment
 
 	oldDay := share.GetTimeID(time.Now()) - 3600*24*3
@@ -184,7 +192,7 @@ func dbUpdatePubCmts(uID uint64, pubKey string, pIDs []uint64, oIDs []uint64, cI
 
 			if curOID == oIDs[idx] && curPID == pIDs[idx] {
 				// get friends comments
-				comments, err := dbGetComments(oIDs[idx], pIDs[idx], uID, src, cIDs[idx], c)
+				comments, err := dbGetComments(oIDs[idx], pIDs[idx], uID, channel, cIDs[idx], c)
 				if err != nil {
 					return nil, err
 				}
@@ -212,7 +220,7 @@ func dbUpdateSelfCmts(uID uint64, pIDs []uint64, cIDs []uint64, c redis.Conn) ([
 		if pID < oldDay {
 			continue
 		}
-		comments, err := dbGetComments(uID, pID, uID, AllGroups, cIDs[idx], c)
+		comments, err := dbGetComments(uID, pID, uID, AllChannel, cIDs[idx], c)
 		if err != nil {
 			return nil, err
 		}

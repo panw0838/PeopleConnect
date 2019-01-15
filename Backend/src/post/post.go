@@ -102,7 +102,7 @@ func dbGetSelfPosts(uID uint64, from uint64, to uint64, c redis.Conn) ([]PostDat
 		}
 		post.Owner = uID
 
-		post.Comments, err = dbGetComments(uID, post.ID, uID, AllGroups, 0, c)
+		post.Comments, err = dbGetComments(uID, post.ID, uID, AllChannel, 0, c)
 		if err != nil {
 			return nil, err
 		}

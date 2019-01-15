@@ -1,6 +1,7 @@
 package main
 
 import (
+	"post"
 	"share"
 
 	"github.com/garyburd/redigo/redis"
@@ -27,11 +28,20 @@ func initUnivs() error {
 	}
 	defer c.Close()
 
+	m := map[uint32]string{}
 	var first = true
 	for _, row := range xlFile.Sheets[0].Rows {
-		println(row.Cells[1].String())
 		name := row.Cells[1].String()
-		if len(name) > 0 && !first {
+		if len(name) == 0 {
+			continue
+		}
+		channel := post.GetChannel(0, name)
+		value, exists := m[channel]
+		if exists || channel == 0 || channel == 1 || channel == 2 {
+			panic(value)
+		}
+		m[channel] = name
+		if !first {
 			addUniv(name, c)
 		}
 		first = false

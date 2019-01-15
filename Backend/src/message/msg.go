@@ -32,9 +32,9 @@ type Message struct {
 	// for message
 	Content string `json:"cont,omitempty"`
 	// for post notify
-	OID uint64 `json:"oid,omitempty"`
-	PID uint64 `json:"pid,omitempty"`
-	Src uint32 `json:"src,omitempty"`
+	OID  uint64 `json:"oid,omitempty"`
+	PID  uint64 `json:"pid,omitempty"`
+	Chan uint32 `json:"chan,omitempty"`
 }
 
 func getMsgKey(userID uint64) string {

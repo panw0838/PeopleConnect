@@ -6,11 +6,6 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-const AllGroups uint32 = 0
-const FriendPosts uint32 = 1
-const NearPosts uint32 = 2
-const GroupPosts uint32 = 3
-
 func PostVisibleForFriend(uFlag uint64, pFlag uint64) bool {
 	return ((uFlag & pFlag & user.FriendMask) != 0)
 }
@@ -91,16 +86,16 @@ func canSeeGCmt(uID uint64, cmt Comment, c redis.Conn) (bool, error) {
 	return canSee, nil
 }
 
-func canSeeComment(uID uint64, oID uint64, src uint32, cmt Comment, c redis.Conn) (bool, error) {
-	if src == AllGroups || cmt.Group == AllGroups {
+func canSeeComment(uID uint64, oID uint64, channel uint32, cmt Comment, c redis.Conn) (bool, error) {
+	if channel == AllChannel || cmt.Chan == AllChannel {
 		return true, nil
-	} else if src != cmt.Group {
+	} else if channel != cmt.Chan {
 		return false, nil
 	} else {
-		if src == FriendPosts {
+		if channel == FriendChannel {
 			// friends publish
 			return canSeeFCmt(uID, cmt, c)
-		} else if src == NearPosts {
+		} else if channel == NearChannel {
 			// stranger publish
 			return canSeeNCmt(uID, cmt, c)
 		} else {

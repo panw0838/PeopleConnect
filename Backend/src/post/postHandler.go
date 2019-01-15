@@ -278,7 +278,7 @@ func SyncFriendsPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	if len(input.PIDs) > 0 {
 		pubKey := getFPubKey(input.User)
-		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, FriendPosts, c)
+		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, FriendChannel, c)
 		if err != nil {
 			share.WriteErrorCode(w, err)
 			return
@@ -414,7 +414,7 @@ func SyncNearPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	if len(input.PIDs) > 0 {
 		nearKey := getNearKey(input.GID)
-		response.Cmts, err = dbUpdatePubCmts(input.UID, nearKey, input.PIDs, input.OIDs, input.CIDs, NearPosts, c)
+		response.Cmts, err = dbUpdatePubCmts(input.UID, nearKey, input.PIDs, input.OIDs, input.CIDs, NearChannel, c)
 		if err != nil {
 			share.WriteErrorCode(w, err)
 			return
@@ -465,7 +465,8 @@ func SyncGroupPublishHandler(w http.ResponseWriter, r *http.Request) {
 
 	if len(input.PIDs) > 0 {
 		pubKey := getGPubKey(input.Group)
-		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, GroupPosts, c)
+		channel := GetChannel(0, input.Group)
+		response.Cmts, err = dbUpdatePubCmts(input.User, pubKey, input.PIDs, input.OIDs, input.CIDs, channel, c)
 		if err != nil {
 			share.WriteErrorCode(w, err)
 			return

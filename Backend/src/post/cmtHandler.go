@@ -16,7 +16,8 @@ type AddCmtInput struct {
 	PostOwner uint64 `json:"oid"`
 	PostID    uint64 `json:"pid"`
 	Msg       string `json:"cmt"`
-	Group     uint32 `json:"src"`
+	Chan      uint32 `json:"chan"`
+	Group     string `json:"group"`
 	LastCMT   uint64 `json:"last"`
 }
 
@@ -40,7 +41,7 @@ func NewCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	cmtID, err := dbAddComment(input, c)
+	cmtID, channel, err := dbAddComment(input, c)
 	if err != nil {
 		share.WriteErrorCode(w, err)
 		return
@@ -48,7 +49,7 @@ func NewCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response CommentResponse
 	response.CmtID = cmtID
-	response.Comments, err = dbGetComments(input.PostOwner, input.PostID, input.UID, input.Group, input.LastCMT, c)
+	response.Comments, err = dbGetComments(input.PostOwner, input.PostID, input.UID, channel, input.LastCMT, c)
 	if err != nil {
 		share.WriteErrorCode(w, err)
 		return
