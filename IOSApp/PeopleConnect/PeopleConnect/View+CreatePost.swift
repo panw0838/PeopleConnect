@@ -24,7 +24,7 @@ class CreatePostView:
     
     func updateCreateBtn() {
         let writed = (m_imgsPreview.m_picks.count > 0 || m_desc.text?.characters.count > 0)
-        let shared = (m_visibleTags.m_flag != 0 || m_strangerSee.on)
+        let shared = (m_visibleTags.getFlag() != 0 || m_visibleGroups.getGroups().count > 0 || m_strangerSee.on)
         m_createPostBtn.enabled = (writed && shared)
     }
     
@@ -46,8 +46,8 @@ class CreatePostView:
     
     @IBAction func CreatePost(sender: AnyObject) {
         let desc = m_desc.text!
-        let flag = m_visibleTags.m_flag
-        let groups = Array<String>() // todo
+        let flag = m_visibleTags.getFlag()
+        let groups = m_visibleGroups.getGroups()
         let nearby = m_strangerSee.on
         var datas = Array<NSData>()
         for image in m_imgsPreview.m_picks {
@@ -63,6 +63,7 @@ class CreatePostView:
         m_createPostBtn.enabled = false
         m_imgsPreview.m_controller = self
         m_visibleTags.m_controller = self
+        m_visibleGroups.m_controller = self
     }
     
     @IBAction func didEndTexting(sender: AnyObject) {
@@ -81,6 +82,10 @@ class CreatePostView:
             let width = tableView.contentSize.width - space * 2
             return contactsData.getTagsHeight(width) + space * 2
         }
+        if indexPath.section == 3 && indexPath.row == 0 {
+            let width = tableView.contentSize.width - space * 2
+            return userInfo.getGroupsHeight(width) + space * 2
+        }
         return super.tableView(tableView, heightForRowAtIndexPath: indexPath)
     }
     
@@ -97,6 +102,12 @@ class CreatePostView:
             let height = contactsData.getTagsHeight(width)
             m_visibleTags.frame = CGRectMake(space, space, width, height)
             m_visibleTags.loadContactTags(width)
+        }
+        if indexPath.section == 3 && indexPath.row == 0 {
+            let width = tableView.contentSize.width - space * 2
+            let height = userInfo.getGroupsHeight(width)
+            m_visibleGroups.frame = CGRectMake(space, space, width, height)
+            m_visibleGroups.loadUserGroups(width)
         }
         return cell
     }

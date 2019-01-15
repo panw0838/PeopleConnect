@@ -79,6 +79,7 @@ func httpSendPost(flag:UInt64, desc:String, datas:Array<NSData>, groups:Array<St
                     postInfo.flag = flag
                     postInfo.content = desc
                     postInfo.near = nearby
+                    postInfo.groups = groups
                     for (idx, data) in datas.enumerate() {
                         postInfo.files.append(String(idx)+".png")
                         let previewKey = getPreviewKey(postInfo, i: idx)

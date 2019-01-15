@@ -15,6 +15,10 @@ let TagColors = [
     4:UIColor(red: 139.0/255.0, green: 0.0, blue: 139.0/255.0, alpha: 1.0),
     5:UIColor(red: 139.0/255.0, green: 139.0/255.0, blue: 0.0, alpha: 1.0)]
 
+let GroupColors = [
+    UIColor(red: 34.0/255.0, green: 178.0/255.0, blue: 34.0/255.0, alpha: 1.0),
+    UIColor(red: 34.0/255.0, green: 34.0/255.0, blue: 178.0/255.0, alpha: 1.0)]
+
 let nearColor = UIColor(red: 199.0/255.0, green: 21.0/255.0, blue: 133.0/255.0, alpha: 1.0)
 
 let tagEditFont = UIFont.systemFontOfSize(16)
@@ -35,7 +39,7 @@ extension Post {
         let tags = getPermitTags()
         
         for tag in tags {
-            let tagWidth = getTextWidth(tag.m_tagName, height: 10, font: statusFont) + PostTagSpace
+            let tagWidth = getTextWidth(tag.m_tagName, height: PostTagHeight, font: statusFont) + PostTagSpace
             
             if tagWidth + lineEnd > width {
                 numLines++
@@ -46,12 +50,23 @@ extension Post {
         }
         
         if m_info.near {
-            let tagWidth = getTextWidth("附近", height: 10, font: statusFont) + PostTagSpace
+            let tagWidth = getTextWidth("附近", height: PostTagHeight, font: statusFont) + PostTagSpace
             
             if tagWidth + lineEnd > width {
                 numLines++
                 lineEnd = 0
             }
+            lineEnd += (tagWidth + PostItemGap)
+        }
+        
+        for group in m_info.groups {
+            let tagWidth = getTextWidth(group, height: PostTagHeight, font: statusFont) + PostTagSpace
+            
+            if tagWidth + lineEnd > width {
+                numLines++
+                lineEnd = 0
+            }
+            
             lineEnd += (tagWidth + PostItemGap)
         }
         
@@ -80,6 +95,26 @@ extension ContactsData {
     }
 }
 
+extension UserInfo {
+    func getGroupsHeight(width:CGFloat)->CGFloat {
+        var numLines = 1
+        var lineEnd:CGFloat = 0
+        
+        for group in groups {
+            let groupWidth = getTextWidth(group.name, height: EditTagHeight, font: tagEditFont) + EditTagExWidth
+            
+            if groupWidth + lineEnd > width {
+                numLines++
+                lineEnd = 0
+            }
+            
+            lineEnd += (groupWidth + EditTagSpace)
+        }
+        
+        return CGFloat(numLines) * EditTagHeight + CGFloat(numLines-1) * EditTagLineSpace
+    }
+}
+
 class TagLabel:UILabel {
     var m_data:UInt64 = 0
     var m_hilighted = false
@@ -90,11 +125,11 @@ class TagLabel:UILabel {
         m_hilighted = !m_hilighted
         if m_hilighted {
             backgroundColor = m_hilightColor
-            m_father?.m_flag |= m_data
+            m_father?.m_selected.insert(m_data)
         }
         else {
             backgroundColor = UIColor.grayColor()
-            m_father?.m_flag &= ~m_data
+            m_father?.m_selected.remove(m_data)
         }
         m_father!.m_controller!.updateCreateBtn()
     }
@@ -143,7 +178,23 @@ class TagsView: UIView {
     var m_lineEnd:CGFloat = 0
     var m_width:CGFloat = 0
     
-    var m_flag:UInt64 = 0
+    var m_selected = Set<UInt64>()
+    
+    func getFlag()->UInt64 {
+        var flag:UInt64 = 0
+        for item in m_selected {
+            flag |= item
+        }
+        return flag
+    }
+    
+    func getGroups()->Array<String> {
+        var groups = Array<String>()
+        for item in m_selected {
+            groups.append(userInfo.groups[Int(item)].name)
+        }
+        return groups
+    }
     
     func pushEditTag(name:String, data:UInt64, color:UIColor) {
         let tagWidth = getTextWidth(name, height: EditTagHeight, font: tagEditFont) + EditTagExWidth
@@ -165,6 +216,22 @@ class TagsView: UIView {
         m_curTag++
     }
     
+    func loadUserGroups(width:CGFloat) {
+        for label in m_tagLabels {
+            label.hidden = true
+        }
+        
+        m_curTag = 0
+        m_numLines = 0
+        m_lineEnd = 0
+        m_width = width
+        
+        for (i, group) in userInfo.groups.enumerate() {
+            let color = GroupColors[i]
+            pushEditTag(group.name, data: UInt64(i), color: color)
+        }
+    }
+    
     func loadContactTags(width:CGFloat) {
         for label in m_tagLabels {
             label.hidden = true
@@ -177,7 +244,7 @@ class TagsView: UIView {
 
         let tags = contactsData.getContactTags()
         
-        for (_, tag) in tags.enumerate() {
+        for tag in tags {
             let colorTagID = (tag.m_father != nil ? tag.m_father?.m_tagID : tag.m_tagID)
             let color = TagColors[Int(colorTagID!)]
             pushEditTag(tag.m_tagName, data: tag.m_bit, color: color!)
@@ -185,7 +252,25 @@ class TagsView: UIView {
         // init to contacts bit
         m_tagLabels[m_curTag-1].m_hilighted = true
         m_tagLabels[m_curTag-1].backgroundColor = m_tagLabels[m_curTag-1].m_hilightColor
-        m_flag = contactsData.m_undefine.m_bit
+        m_selected.insert(contactsData.m_undefine.m_bit)
+    }
+    
+    func pushTag(name:String, color:UIColor) {
+        let tagWidth = getTextWidth(name, height: PostTagHeight, font: statusFont) + PostTagSpace
+        let tagLabel = m_tagLabels[m_curTag]
+        
+        if tagWidth + m_lineEnd > m_width {
+            m_numLines++
+            m_lineEnd = 0
+        }
+        
+        tagLabel.hidden = false
+        tagLabel.text = name
+        tagLabel.backgroundColor = color
+        tagLabel.frame = CGRectMake(m_lineEnd, CGFloat(m_numLines)*(PostTagHeight+PostTagSpace), tagWidth, PostTagHeight)
+        
+        m_lineEnd += (tagWidth + PostItemGap)
+        m_curTag++
     }
     
     func load(post:Post, width:CGFloat) {
@@ -193,49 +278,25 @@ class TagsView: UIView {
             label.hidden = true
         }
         
-        var numLines = 0
-        var lineEnd:CGFloat = 0
+        m_curTag = 0
+        m_numLines = 0
+        m_lineEnd = 0
+        m_width = width
+        
         let tags = post.getPermitTags()
-        
-        for (idx, tag) in tags.enumerate() {
-            let tagWidth = getTextWidth(tag.m_tagName, height: 10, font: statusFont) + PostTagSpace
-            let tagLabel = m_tagLabels[idx]
-            
-            if tagWidth + lineEnd > width {
-                numLines++
-                lineEnd = 0
-            }
-            
-            tagLabel.hidden = false
-            tagLabel.frame = CGRectMake(lineEnd, CGFloat(numLines)*(PostTagHeight+PostPreViewGap), tagWidth, PostTagHeight)
-            tagLabel.text = tag.m_tagName
-            
+        for tag in tags {
             let fatherTagID = (tag.m_father != nil ? tag.m_father?.m_tagID : tag.m_tagID)
-            tagLabel.backgroundColor = TagColors[Int(fatherTagID!)]
-            
-            lineEnd += (tagWidth + PostItemGap)
+            let color = TagColors[Int(fatherTagID!)]
+            pushTag(tag.m_tagName, color: color!)
         }
-        
-        var tagIdx = tags.count
         
         if post.m_info.near {
-            let tagWidth = getTextWidth("附近", height: 10, font: statusFont) + PostTagSpace
-            let tagLabel = m_tagLabels[tagIdx]
-            
-            if tagWidth + lineEnd > width {
-                numLines++
-                lineEnd = 0
-            }
-
-            tagLabel.hidden = false
-            tagLabel.frame = CGRectMake(lineEnd, CGFloat(numLines)*(PostTagHeight+PostPreViewGap), tagWidth, PostTagHeight)
-            tagLabel.text = "附近"
-            tagLabel.backgroundColor = nearColor
-
-            lineEnd += (tagWidth + PostItemGap)
-            tagIdx++
+            pushTag("附近", color: nearColor)
         }
 
-        // for groups
+        for group in post.m_info.groups {
+            let color = getGroupColor(group)
+            pushTag(group, color: color)
+        }
     }
 }

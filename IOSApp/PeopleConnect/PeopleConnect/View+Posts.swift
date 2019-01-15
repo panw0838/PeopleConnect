@@ -20,6 +20,14 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
     func UpdateLocationFail() {
     }
     
+    func NewGroupAdded() {
+        let group = userInfo.groups[0]
+        let postData = getGroupPost(group.name)
+        postData.Update()
+        setTable(m_posts, data: postData, showPhoto: true, showMsg: true)
+        m_tabs.setTitle(group.name, forSegmentAtIndex: 3)
+    }
+    
     @IBAction func switchPosts(sender: AnyObject) {
         let select = (sender as! UISegmentedControl).selectedSegmentIndex
         if select == 0 {
@@ -55,6 +63,7 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
             else {
                 let group = userInfo.groups[0]
                 let postData = getGroupPost(group.name)
+                postData.Update()
                 setTable(m_posts, data: postData, showPhoto: true, showMsg: true)
             }
         }
@@ -72,6 +81,13 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
         setTable(m_posts, data: friendPosts, showPhoto: true, showMsg: true)
         friendPosts.Update()
         selfPosts.Update()
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "ShowSearch" {
+            let to = segue.destinationViewController as! SearchGroupView
+            to.m_preController = self
+        }
     }
 }
 

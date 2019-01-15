@@ -88,6 +88,15 @@ func getGroup(chan:UInt32)->String {
     return ""
 }
 
+func getGroupColor(group:String)->UIColor {
+    for (idx, info) in userInfo.groups.enumerate() {
+        if group == info.name {
+            return GroupColors[idx]
+        }
+    }
+    return UIColor.blackColor()
+}
+
 var userInfo:UserInfo = UserInfo()
 var userData = User()
 

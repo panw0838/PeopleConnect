@@ -11,8 +11,10 @@ import UIKit
 class SearchGroupView:UIViewController, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var m_editor: UITextField!
     @IBOutlet weak var m_resultsTable: UITableView!
-    
+
     static var results = Array<String>()
+    
+    var m_preController:PostsView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,10 +57,10 @@ class SearchGroupView:UIViewController, UITextFieldDelegate, UITableViewDataSour
                     passed: {()->Void in
                         gLoadingView.stopLoading()
                         self.navigationController?.popViewControllerAnimated(true)
+                        self.m_preController?.NewGroupAdded()
                     },
                     failed: {(err:String?)->Void in
                         gLoadingView.stopLoading()
-                        self.navigationController?.popViewControllerAnimated(true)
                     })
         })
         alert.addAction(noAction)

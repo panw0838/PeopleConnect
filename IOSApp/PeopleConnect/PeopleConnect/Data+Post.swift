@@ -68,6 +68,7 @@ struct PostInfo {
     var liked = false
     var files = Array<String>()
     var likes = Array<UInt64>()
+    var groups = Array<String>()
 }
 
 extension PostInfo {
@@ -87,15 +88,20 @@ extension PostInfo {
         self.near = Bool(near.boolValue)
         self.content = content
         
-        let files = json["file"] as? [String]
-        self.files = (files == nil ? Array<String>() : files!)
+        if let files = json["file"] as? [String] {
+            self.files = files
+        }
         
-        let liked = json["liked"] as? NSNumber
-        self.liked = (liked == nil ? false : Bool(liked!.boolValue))
+        if let groups = json["group"] as? [String] {
+            self.groups = groups
+        }
         
-        let likes = json["likes"] as? [NSNumber]
-        if likes != nil {
-            for like in likes! {
+        if let liked = json["liked"] as? NSNumber {
+            self.liked = Bool(liked.boolValue)
+        }
+        
+        if let likes = json["likes"] as? [NSNumber] {
+            for like in likes {
                 let uID = UInt64(like.unsignedLongLongValue)
                 self.likes.append(uID)
             }
@@ -144,7 +150,7 @@ extension CommentInfo {
         let to   = json["to"] as? NSNumber,
         let id   = json["id"] as? NSNumber,
         let cmt  = json["msg"] as? String,
-        let chan  = json["chan"] as? NSNumber
+        let chan = json["chan"] as? NSNumber
         else {
             return nil
         }
