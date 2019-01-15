@@ -84,5 +84,5 @@ func dbAddGroup(uID uint64, newGroup string, c redis.Conn) (uint32, error) {
 	groups = append(groups, newGroup)
 	err = DbSetUserGroups(uID, groups, c)
 
-	return 0, err
+	return share.GetChannel(0, newGroup), err
 }
