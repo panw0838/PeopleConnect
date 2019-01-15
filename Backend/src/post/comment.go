@@ -90,6 +90,7 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, uint32, error) {
 	msg.OID = input.PostOwner
 	msg.PID = input.PostID
 	msg.Chan = comment.Chan
+	msg.Group = input.Group
 	var to = input.PostOwner
 	if input.To != 0 {
 		to = input.To
