@@ -63,6 +63,12 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if userInfo.groups.count > 0 {
+            let name = userInfo.groups[0].name
+            m_tabs.setTitle(name, forSegmentAtIndex: 3)
+        }
+        
         setTable(m_posts, data: friendPosts, showPhoto: true, showMsg: true)
         friendPosts.Update()
         selfPosts.Update()

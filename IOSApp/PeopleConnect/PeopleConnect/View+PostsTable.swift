@@ -121,9 +121,10 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
     
     
     func setupCommentCell(cell:CommentCell, isSelf:Bool, post:Post, comment:CommentInfo) {
-        let offset = isSelf ? 4 : 0
+        let srcName  = (isSelf ? "[" + SrcNames[comment.chan]! + "]" : "")
         let fromName = comment.getUserName(comment.from)
         let toName   = comment.getUserName(comment.to)
+        let offset   = srcName.characters.count
         
         let str = comment.getString(isSelf)
         let attStr = NSMutableAttributedString(string: str)
@@ -132,7 +133,8 @@ class PostsTable: UIViewController, PostDataDelegate, UITableViewDataSource {
         attStr.setAttributes(attDic, range: NSMakeRange(0, str.characters.count))
         
         if isSelf {
-            attStr.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, 4))
+            let srcRange = NSMakeRange(0, srcName.characters.count)
+            attStr.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: srcRange)
         }
         
         let fromRange = NSMakeRange(offset, fromName.characters.count)
