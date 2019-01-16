@@ -126,6 +126,7 @@ class User: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
+        manager.stopUpdatingLocation()
         m_delegate?.UpdateLocationFail()
     }
         

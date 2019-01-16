@@ -997,7 +997,7 @@
                                     <segment title="我的动态"/>
                                     <segment title="好友动态"/>
                                     <segment title="附近动态"/>
-                                    <segment title="我的大学"/>
+                                    <segment title="添加我的大学"/>
                                 </segments>
                                 <connections>
                                     <action selector="switchPosts:" destination="YL6-cw-Vsr" eventType="valueChanged" id="xO7-vN-Lee"/>
@@ -1073,7 +1073,7 @@
             </objects>
             <point key="canvasLocation" x="2332" y="1242"/>
         </scene>
-        <!--Search Group View-->
+        <!--搜索学校-->
         <scene sceneID="hFD-pX-Tqx">
             <objects>
                 <viewController hidesBottomBarWhenPushed="YES" id="iKq-y3-bgB" customClass="SearchGroupView" customModule="PeopleConnect" customModuleProvider="target" sceneMemberID="viewController">
@@ -1088,16 +1088,16 @@
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="QC8-Tg-k08">
                                 <rect key="frame" x="20" y="72" width="560" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="ECf-xF-FZI"/>
+                                    <constraint firstAttribute="height" constant="30" id="qX9-Jg-jIK"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" returnKeyType="done"/>
                                 <connections>
                                     <outlet property="delegate" destination="iKq-y3-bgB" id="SV8-W2-pfJ"/>
                                 </connections>
                             </textField>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="CpB-xH-of1">
-                                <rect key="frame" x="20" y="110" width="560" height="433"/>
+                                <rect key="frame" x="20" y="110" width="560" height="266"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SearchCell" textLabel="hVV-Zc-Sg3" style="IBUITableViewCellStyleDefault" id="Onv-FO-HDD">
@@ -1123,21 +1123,40 @@
                                     <outlet property="delegate" destination="iKq-y3-bgB" id="Xie-CS-RtS"/>
                                 </connections>
                             </tableView>
+                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UAs-BA-wty">
+                                <rect key="frame" x="0.0" y="384" width="600" height="216"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="iKq-y3-bgB" id="K39-ao-8dQ"/>
+                                    <outlet property="delegate" destination="iKq-y3-bgB" id="Ewg-Pv-LXg"/>
+                                </connections>
+                            </pickerView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="CpB-xH-of1" firstAttribute="leading" secondItem="HWE-Sy-jT8" secondAttribute="leadingMargin" id="BDH-Or-cNZ"/>
-                            <constraint firstItem="CpB-xH-of1" firstAttribute="trailing" secondItem="QC8-Tg-k08" secondAttribute="trailing" id="BW3-5i-6P2"/>
-                            <constraint firstItem="uz8-x9-3Ud" firstAttribute="top" secondItem="CpB-xH-of1" secondAttribute="bottom" constant="8" symbolic="YES" id="FKZ-kx-kFo"/>
-                            <constraint firstItem="CpB-xH-of1" firstAttribute="top" secondItem="QC8-Tg-k08" secondAttribute="bottom" constant="8" symbolic="YES" id="FSj-tE-zsu"/>
-                            <constraint firstItem="CpB-xH-of1" firstAttribute="leading" secondItem="QC8-Tg-k08" secondAttribute="leading" id="YYr-jU-FRf"/>
-                            <constraint firstItem="QC8-Tg-k08" firstAttribute="top" secondItem="hJr-zl-BWu" secondAttribute="bottom" constant="8" symbolic="YES" id="lqq-yn-xNZ"/>
-                            <constraint firstItem="QC8-Tg-k08" firstAttribute="trailing" secondItem="HWE-Sy-jT8" secondAttribute="trailingMargin" id="vbz-I6-dPw"/>
+                            <constraint firstItem="CpB-xH-of1" firstAttribute="leading" secondItem="QC8-Tg-k08" secondAttribute="leading" id="9HC-Ot-Gle"/>
+                            <constraint firstAttribute="bottom" secondItem="UAs-BA-wty" secondAttribute="bottom" id="A78-uc-s2n"/>
+                            <constraint firstItem="UAs-BA-wty" firstAttribute="leading" secondItem="HWE-Sy-jT8" secondAttribute="leading" id="C8B-xF-bEl"/>
+                            <constraint firstItem="UAs-BA-wty" firstAttribute="top" secondItem="CpB-xH-of1" secondAttribute="bottom" constant="8" symbolic="YES" id="Dmv-ry-OIP"/>
+                            <constraint firstItem="UAs-BA-wty" firstAttribute="centerX" secondItem="CpB-xH-of1" secondAttribute="centerX" id="PdD-vp-mhp"/>
+                            <constraint firstItem="CpB-xH-of1" firstAttribute="top" secondItem="QC8-Tg-k08" secondAttribute="bottom" constant="8" symbolic="YES" id="dOw-Vm-3lO"/>
+                            <constraint firstAttribute="trailing" secondItem="UAs-BA-wty" secondAttribute="trailing" id="dju-Af-7Mk"/>
+                            <constraint firstItem="QC8-Tg-k08" firstAttribute="leading" secondItem="HWE-Sy-jT8" secondAttribute="leadingMargin" id="efP-fA-pke"/>
+                            <constraint firstItem="QC8-Tg-k08" firstAttribute="top" secondItem="hJr-zl-BWu" secondAttribute="bottom" constant="8" symbolic="YES" id="gb4-8G-4Fw"/>
+                            <constraint firstItem="QC8-Tg-k08" firstAttribute="trailing" secondItem="CpB-xH-of1" secondAttribute="trailing" id="vc2-4P-1aa"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="搜索学校" id="Dih-Ox-h7G">
+                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="done" id="cna-QK-aAH">
+                            <connections>
+                                <action selector="joinUniv" destination="iKq-y3-bgB" id="zgZ-BU-PUU"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
+                        <outlet property="m_doneBtn" destination="cna-QK-aAH" id="KY1-N6-qvn"/>
                         <outlet property="m_editor" destination="QC8-Tg-k08" id="aYe-aZ-fso"/>
                         <outlet property="m_resultsTable" destination="CpB-xH-of1" id="oyD-Qw-BmZ"/>
+                        <outlet property="m_yearPicker" destination="UAs-BA-wty" id="1T8-PV-kNf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ySy-iF-vC3" userLabel="First Responder" sceneMemberID="firstResponder"/>

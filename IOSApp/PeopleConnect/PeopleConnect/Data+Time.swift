@@ -21,14 +21,9 @@ func getTimeString(time:UInt64)->String {
     let minites = diff / 60
     let hours   = minites / 60
     let days    = hours / 24
-    let months  = days / 30
-    let years   = days / 365
     
-    if Int(years) > 0 {
-        return String(Int(years)) + "年前"
-    }
-    if Int(months) > 0 {
-        return String(Int(months)) + "月前"
+    if Int(days) > 7 {
+        return getFormatTime(time)
     }
     if Int(days) > 0 {
         return String(Int(days)) + "天前"
@@ -49,4 +44,11 @@ func getFormatTime(time:UInt64)->String {
     format.setLocalizedDateFormatFromTemplate("yyyy-MM-dd HH:mm:ss")
     
     return format.stringFromDate(date)
+}
+
+func getCurYear()->Int {
+    let now = NSDate(timeIntervalSinceNow: 0)
+    let calendar = NSCalendar.currentCalendar()
+    let year = calendar.component(.Year, fromDate: now)
+    return year
 }

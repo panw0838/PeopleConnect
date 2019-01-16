@@ -28,14 +28,14 @@ func httpSearchGroup(name:String, passed:(()->Void)?, failed:((String?)->Void)?)
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
             failed?("请求失败")
-    })
-
+        })
 }
 
-func httpAddGroup(name:String, passed:(()->Void)?, failed:((String?)->Void)?) {
+func httpAddGroup(name:String, year:Int, passed:(()->Void)?, failed:((String?)->Void)?) {
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
-        "name":name]
+        "name":name,
+        "year":NSNumber(integer: year)]
     http.postRequest("addgroup", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if let groupData = processErrorCode(response as! NSData, failed: failed) {

@@ -104,7 +104,7 @@ extension UsersView {
         if m_searchNear {
             httpGetNearbyUsers(
                 {()->Void in
-                    gLoadingView.startCounting()
+                    gLoadingView.stopLoading()
                 },
                 failed: nil)
             m_searchNear = false
@@ -121,6 +121,7 @@ extension UsersView {
     }
     
     func UpdateLocationFail() {
+        gLoadingView.stopLoading()
         m_searchNear = false
     }
 }

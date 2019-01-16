@@ -50,15 +50,7 @@ class PostsView: PostsTable, UpdateLocationDelegate, UITableViewDelegate {
         }
         else if select == 3 {
             if userInfo.groups.count == 0 {
-                let alert = UIAlertController(title: "添加大学", message: "你尚未加入大学，点击确定搜索你的大学", preferredStyle: .Alert)
-                let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
-                let okAction = UIAlertAction(title: "确定", style: .Default,
-                    handler: { action in
-                        self.performSegueWithIdentifier("ShowSearch", sender: nil)
-                })
-                alert.addAction(noAction)
-                alert.addAction(okAction)
-                self.presentViewController(alert, animated: true, completion: nil)
+                self.performSegueWithIdentifier("ShowSearch", sender: nil)
             }
             else {
                 let group = userInfo.groups[0]
