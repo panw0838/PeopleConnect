@@ -5,6 +5,7 @@ import (
 	"message"
 	"share"
 	"strconv"
+	"univ"
 	"user"
 
 	"github.com/garyburd/redigo/redis"
@@ -56,7 +57,12 @@ func dbPublishPost(uID uint64, post PostData, c redis.Conn) error {
 	// add to group timeline
 	for _, group := range post.Groups {
 		groupKey := getGPubKey(group)
-		_, err := c.Do("ZADD", groupKey, post.ID, publishStr)
+		year, err := univ.DbGetUnivYear(group, post.Owner, c)
+		if err != nil {
+			return err
+		}
+		gPubStr := fmt.Sprintf("%d:%d:%d", uID, post.ID, year)
+		_, err = c.Do("ZADD", groupKey, post.ID, gPubStr)
 		if err != nil {
 			return err
 		}
@@ -150,6 +156,11 @@ func dbGetNearbyPublish(uID uint64, geoID uint64, from uint64, to uint64, c redi
 }
 
 func dbGetGroupPublish(uID uint64, group string, from uint64, to uint64, c redis.Conn) ([]PostData, error) {
+	uYear, err := univ.DbGetUnivYear(group, uID, c)
+	if err != nil {
+		return nil, err
+	}
+
 	key := getGPubKey(group)
 	publishes, err := redis.Strings(c.Do("ZRANGEBYSCORE", key, from, to))
 	if err != nil {
@@ -161,31 +172,38 @@ func dbGetGroupPublish(uID uint64, group string, from uint64, to uint64, c redis
 	for _, publish := range publishes {
 		var oID uint64
 		var pID uint64
-		fmt.Sscanf(publish, "%d:%d", &oID, &pID)
+		var year int
+		fmt.Sscanf(publish, "%d:%d:%d", &oID, &pID, &year)
+
+		if year > uYear+4 || year+4 < uYear {
+			continue
+		}
 
 		if uID != oID {
 			isBlacklist, err := user.IsBlacklist(uID, oID, c)
 			if err != nil {
 				return nil, err
 			}
-			if !isBlacklist {
-				success, post, err := dbGetPost(oID, pID, c)
-				if err != nil {
-					return nil, err
-				}
-				if success {
-					post.Liked, err = dbGetLike(uID, oID, pID, c)
-					if err != nil {
-						return nil, err
-					}
-					// get group comments
-					post.Comments, err = dbGetComments(oID, post.ID, uID, channel, 0, c)
-					if err != nil {
-						return nil, err
-					}
-					results = append(results, post)
-				}
+			if isBlacklist {
+				continue
 			}
+			success, post, err := dbGetPost(oID, pID, c)
+			if err != nil {
+				return nil, err
+			}
+			if !success {
+				continue
+			}
+			post.Liked, err = dbGetLike(uID, oID, pID, c)
+			if err != nil {
+				return nil, err
+			}
+			// get group comments
+			post.Comments, err = dbGetComments(oID, post.ID, uID, channel, 0, c)
+			if err != nil {
+				return nil, err
+			}
+			results = append(results, post)
 		}
 	}
 

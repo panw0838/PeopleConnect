@@ -254,6 +254,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 type AddGroupInput struct {
 	UID  uint64 `json:"uid"`
 	Name string `json:"name"`
+	Year int    `json:"year"`
 }
 
 type AddGroupReturn struct {
@@ -276,7 +277,7 @@ func AddGroupHandler(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	var response AddGroupReturn
-	response.GID, err = dbAddGroup(input.UID, input.Name, c)
+	response.GID, err = dbAddGroup(input.UID, input.Name, input.Year, c)
 	if err != nil {
 		share.WriteErrorCode(w, err)
 		return

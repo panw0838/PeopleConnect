@@ -2,9 +2,9 @@ package post
 
 import (
 	"encoding/json"
-	"group"
 	"share"
 	"strconv"
+	"univ"
 	"user"
 
 	"github.com/garyburd/redigo/redis"
@@ -163,7 +163,7 @@ func dbGetUserPosts(uID uint64, cID uint64, from uint64, to uint64, c redis.Conn
 		// check group posts
 		if !canSee && len(post.Groups) > 0 {
 			for _, gID := range post.Groups {
-				isMember, err := group.DbIsGroupMember(gID, uID, c)
+				isMember, err := univ.DbIsUnivMember(gID, uID, c)
 				if err != nil {
 					return results, err
 				}

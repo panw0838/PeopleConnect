@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"share"
 	"strings"
+	"time"
+	"univ"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -47,20 +49,7 @@ func DbGetUserGroups(uID uint64, c redis.Conn) ([]string, error) {
 	return groups.Groups, nil
 }
 
-func DbSetUserGroups(uID uint64, groups []string, c redis.Conn) error {
-	var data UserGroups
-	data.Groups = groups
-	bytes, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-
-	userKey := GetAccountKey(uID)
-	_, err = c.Do("HSET", userKey, GroupsFiled, bytes)
-	return err
-}
-
-func dbAddGroup(uID uint64, newGroup string, c redis.Conn) (uint32, error) {
+func dbAddGroup(uID uint64, newGroup string, year int, c redis.Conn) (uint32, error) {
 	groups, err := DbGetUserGroups(uID, c)
 	if err != nil {
 		return 0, err
@@ -86,8 +75,38 @@ func dbAddGroup(uID uint64, newGroup string, c redis.Conn) (uint32, error) {
 		return 0, fmt.Errorf("No such group")
 	}
 
-	groups = append(groups, newGroup)
-	err = DbSetUserGroups(uID, groups, c)
+	// check year
+	now := time.Now()
+	thisYear, _, _ := now.Date()
+	if year < 1930 || year > thisYear {
+		return 0, fmt.Errorf("Wrong entry year")
+	}
 
-	return share.GetChannel(0, newGroup), err
+	groups = append(groups, newGroup)
+	var data UserGroups
+	data.Groups = groups
+	bytes, err := json.Marshal(data)
+	if err != nil {
+		return 0, err
+	}
+
+	_, err = c.Do("MULTI")
+	if err != nil {
+		return 0, err
+	}
+
+	err = univ.DbAddUnivMember(newGroup, uID, year, c)
+	if err != nil {
+		return 0, err
+	}
+
+	userKey := GetAccountKey(uID)
+	_, err = c.Do("HSET", userKey, GroupsFiled, bytes)
+
+	_, err = c.Do("EXEC")
+	if err != nil {
+		return 0, err
+	}
+
+	return share.GetChannel(0, newGroup), nil
 }
