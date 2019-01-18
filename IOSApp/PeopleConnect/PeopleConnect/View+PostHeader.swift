@@ -117,7 +117,7 @@ class PostHeader: UITableViewHeaderFooterView {
         self.addSubview(m_status)
 
         m_likeBtn.setImage(UIImage(named: "post_like"), forState: .Normal)
-        m_likeBtn.setImage(UIImage(named: "post_like_hi"), forState: .Highlighted)
+        m_likeBtn.setImage(UIImage(named: "post_like_hi"), forState: .Selected)
         m_likeBtn.addTarget(self, action: Selector("actLike:"), forControlEvents: .TouchDown)
         self.addSubview(m_likeBtn)
         
@@ -159,7 +159,7 @@ class PostHeader: UITableViewHeaderFooterView {
     }
     
     @IBAction func actLike(sender: AnyObject) {
-        if m_post?.m_info.user != userInfo.userID {
+        if m_post!.m_info.user != userInfo.userID && !m_post!.m_info.liked {
             httpLikePost(m_post!, btn: m_likeBtn)
         }
     }
@@ -226,7 +226,7 @@ class PostHeader: UITableViewHeaderFooterView {
             m_commentBtn.frame = CGRectMake(self.frame.width - PostBtnSize, buttom, PostBtnSize, PostBtnSize)
             
             m_likeBtn.hidden = selfPost
-            m_likeBtn.highlighted = (m_post?.m_info.liked)!
+            m_likeBtn.selected = m_post!.m_info.liked
             m_likeBtn.frame = CGRectMake(self.frame.width - PostBtnSize - 50, buttom, PostBtnSize, PostBtnSize)
             
             m_deleteBtn.hidden = !selfPost

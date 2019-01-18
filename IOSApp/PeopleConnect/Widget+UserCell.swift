@@ -63,7 +63,15 @@ class UserCell: UICollectionViewCell {
         })
         
         let delAction = UIAlertAction(title: "删除好友", style: .Default, handler: { action in
-            httpRemContact(self.m_id)
+            let subAlert = UIAlertController(title: contact?.name, message: "", preferredStyle: .Alert)
+            let subNoAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+            let subOkAction = UIAlertAction(title: "确定", style: .Destructive,
+                handler: { action in
+                    httpRemContact(self.m_id)
+                }
+            )
+            subAlert.addAction(subNoAction)
+            subAlert.addAction(subOkAction)
         })
 
         let reqAction = UIAlertAction(title: "请求好友", style: .Default, handler: { action in

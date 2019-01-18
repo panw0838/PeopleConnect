@@ -93,7 +93,7 @@ func httpLikePost(post:Post, btn:UIButton) {
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if getErrorCode(response as! NSData) == 0 {
                 post.m_info.liked = !post.m_info.liked
-                btn.highlighted = post.m_info.liked
+                btn.selected = post.m_info.liked
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
