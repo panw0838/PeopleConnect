@@ -201,7 +201,7 @@ class UsersView:
         }
         if segue.identifier == "StartConversation" {
             let to = segue.destinationViewController as! ConversationView
-            to.m_conv = msgData.popConversation(self.m_convID)
+            to.m_conv = MsgData.shared.popConversation(self.m_convID)
         }
     }
 }

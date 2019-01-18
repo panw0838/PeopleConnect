@@ -41,7 +41,7 @@ class MessegesView: UITableViewController, MsgDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        msgData.m_delegate = self
+        MsgData.shared.m_delegate = self
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -54,13 +54,13 @@ class MessegesView: UITableViewController, MsgDelegate {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return msgData.m_conversations.count
+        return MsgData.shared.m_conversations.count
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("MessegeCell") as! MessegeCell
-        let index = msgData.m_conversations.count - 1 - indexPath.row
-        let conv = msgData.m_conversations[index]
+        let index = MsgData.shared.m_conversations.count - 1 - indexPath.row
+        let conv = MsgData.shared.m_conversations[index]
 
         cell.reload(conv)
         return cell

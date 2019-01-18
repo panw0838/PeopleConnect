@@ -8,7 +8,6 @@
 
 import Foundation
 
-var msgData = MsgData()
 var reqNotify:RequestNotifies?
 var likeNotify:LikeNotifies?
 
@@ -180,7 +179,7 @@ class Conversation {
             m_newMsg = true
         }
         UpdateDelegate()
-        msgData.UpdateDelegate()
+        MsgData.shared.UpdateDelegate()
     }
     
     func sendMessage(from:UInt64, message:String, type:MessegeType) {
@@ -390,6 +389,8 @@ protocol MsgDelegate {
 class MsgData {
     var m_conversations = Array<Conversation>()
     var m_delegate:MsgDelegate?
+    
+    static let shared = MsgData()
     
     init() {
         // add system conversations
