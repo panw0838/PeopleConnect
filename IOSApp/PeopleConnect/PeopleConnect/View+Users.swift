@@ -23,7 +23,7 @@ let TagActionsImgs:Dictionary<TagAction, String> = [
     .SearchNear:    "group_near"]
 
 let TagActionsNames:Dictionary<TagAction, String> = [
-    .MoveMember:    "添加/移出组员",
+    .MoveMember:    "增减组员",
     .AddTag:        "添加分组",
     .DelTag:        "删除分组",
 
@@ -95,25 +95,37 @@ class UsersView:
         okAction.enabled = (m_nameGood && m_messegeGood)
     }
     
+    func RemoveContact(uID:UInt64) {
+        let alert = UIAlertController(title: "删除联系人", message: getName(uID), preferredStyle: .Alert)
+        let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .Destructive,
+            handler: { action in
+                httpRemContact(uID)
+            }
+        )
+        alert.addAction(noAction)
+        alert.addAction(okAction)
+    }
+    
     func RequestContact(uID:UInt64) {
-        let alert = UIAlertController(title: "添加联系人", message: "", preferredStyle: UIAlertControllerStyle.Alert)
-        let cancelAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
+        let alert = UIAlertController(title: "添加联系人", message: getName(uID), preferredStyle: .Alert)
+        let noAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
             handler: { action in
                 httpRequestContact(uID, name: self.m_noteName, messege: self.m_messege)
         })
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
-            let contact = contactsData.getUser(uID)
-            textField.placeholder = contact?.name
+            textField.placeholder = "设置好友备注名，18个字以内"
             textField.addTarget(self, action: Selector("requestNameChanged:"), forControlEvents: .EditingChanged)
         }
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
-            textField.placeholder = "好友请求信息"
+            textField.placeholder = "好友请求信息，18个字以内"
             textField.addTarget(self, action: Selector("requestMessegeChanged:"), forControlEvents: .EditingChanged)
         }
-        alert.addAction(cancelAction)
+        okAction.enabled = false
+        alert.addAction(noAction)
         alert.addAction(okAction)
         self.presentViewController(alert, animated: true, completion: nil)
     }
