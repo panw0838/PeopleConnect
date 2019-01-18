@@ -200,7 +200,7 @@ class Conversation {
         }
         let msgFrame = MsgFrame(info: newMessage)
         if newMessage.time != 0 &&
-           (m_messages.count == 0 || (newMessage.time > (m_messages.last!.m_info.time + UInt64(60*5)))) {
+           (m_messages.count == 0 || (newMessage.time > (m_messages.last!.m_info.time + UInt64(60*30)))) {
             msgFrame.m_showTime = true
         }
         m_messages.append(msgFrame)

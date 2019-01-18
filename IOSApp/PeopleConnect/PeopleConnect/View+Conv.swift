@@ -257,8 +257,6 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     
         // 3.键盘变化时，view的位移，包括了上移/恢复下移
         let transformY = keyboardFrame!.origin.y - self.view.frame.size.height;
-
-        self.scrollToButtom()
         
         if originOffset == 0 {
             originOffset = m_messegesTable.contentInset.top
@@ -276,7 +274,7 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         })
     }
     
-    func keyboardDidChangeFrame(notify:NSNotification) {
+    func keyboardDidShow(notify:NSNotification) {
         self.scrollToButtom()
     }
     
@@ -302,7 +300,7 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         // 设置虚拟键盘监听器
         let notifier = NSNotificationCenter.defaultCenter()
         notifier.addObserver(self, selector: Selector("keyboardWillChangeFrame:"), name: UIKeyboardWillChangeFrameNotification, object: nil)
-        notifier.addObserver(self, selector: Selector("keyboardDidChangeFrame:"), name: UIKeyboardDidChangeFrameNotification, object: nil)
+        notifier.addObserver(self, selector: Selector("keyboardDidShow:"), name: UIKeyboardDidShowNotification, object: nil)
         
         // 设置TextField文字左间距
         m_text.leftView = UIView(frame: CGRectMake(0, 0, 8, 0))
@@ -310,6 +308,8 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         
         // 设置信息输入框的代理
         m_text.delegate = self;
+        
+        scrollToButtom()
     }
     
     override func viewWillDisappear(animated: Bool) {
