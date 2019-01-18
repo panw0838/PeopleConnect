@@ -47,21 +47,21 @@ class CoreDataManager: NSObject {
     }
     
     // 增加数据
-    func saveMessage(info:MsgInfo) {
+    func saveMessage(conv:UInt64, info:MsgInfo) {
         let req = MsgDB.fetchRequest()
         req.predicate = NSPredicate(format: "conv == %d AND time == %d AND from = %d and data == %s",
-            info.getConversationID(), info.time, info.from, info.data)
+            conv, info.time, info.from, info.data)
         do {
             let result = try context.executeFetchRequest(req) as! [MsgDB]
             if result.count == 0 {
                 let msg = NSEntityDescription.insertNewObjectForEntityForName("Message", inManagedObjectContext: context) as! MsgDB
-                msg.conv = NSNumber(unsignedLongLong: info.getConversationID())
+                msg.conv = NSNumber(unsignedLongLong: conv)
                 msg.time = NSNumber(unsignedLongLong: info.time)
                 msg.type = NSNumber(integer: info.type.rawValue)
                 msg.from = NSNumber(unsignedLongLong: info.from)
                 msg.data = info.data
                 saveContext()
-                saveConversation(info.getConversationID())
+                saveConversation(conv)
             }
         } catch {
             fatalError();

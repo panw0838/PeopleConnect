@@ -195,6 +195,7 @@ class Conversation {
         httpSendMessege(m_id, messege: message,
             passed: {(timeID:UInt64)->Void in
                 self.m_messages[idx].time = timeID
+                CoreDataManager.shared.saveMessage(self.m_id, info:self.m_messages[idx])
                 self.m_delegate?.MsgSentSuccess!(idx)
             },
             failed: {()->Void in
@@ -219,7 +220,11 @@ class Conversation {
     func lastMessage()->String? {
         return m_messages.last?.getMessage()
     }
-}
+    
+    func lastetTime()->UInt64 {
+        return (m_messages.count == 0 ? 0 : m_messages.last!.time)
+    }
+ }
 
 class RequestNotifies:Conversation {
     
@@ -398,26 +403,26 @@ class MsgData {
     
     func loadMsgFromDB() {
         let convs = CoreDataManager.shared.getAllConvs()
-        print(convs.count)
         for conv in convs {
             let msgs = CoreDataManager.shared.getMessages(conv.id!.unsignedLongLongValue)
-            print(msgs.count)
             for msg in msgs {
+                let conv = msg.conv!.unsignedLongLongValue
                 var info = MsgInfo()
-                
                 info.type = MessegeType(rawValue: msg.type!.integerValue)!
                 info.time = msg.time!.unsignedLongLongValue
                 info.from = msg.from!.unsignedLongLongValue
                 info.data = msg.data!
                 info.cGroup = 0
                 
-                if (msg.conv!.unsignedLongLongValue & GroupBit) != 0 {
-                    info.cGroup = UInt32(msg.conv!.unsignedLongLongValue - GroupBit)
+                if (conv & GroupBit) != 0 {
+                    info.cGroup = UInt32(conv - GroupBit)
                 }
-                print(info)
-                AddNewMsg(info, save: false)
+                
+                let conversation = popConversation(conv)
+                conversation.addMessage(info, newMsg: false)
             }
         }
+        m_conversations.sortInPlace({$0.lastetTime() < $1.lastetTime()})
     }
     
     func Update() {
@@ -447,15 +452,15 @@ class MsgData {
         return conv!
     }
     
-    func AddNewMsg(newMsg:MsgInfo, save:Bool) {
+    func AddNewMsg(newMsg:MsgInfo) {
         let convID = newMsg.getConversationID()
         
         if convID != 0 {
             let conversation = popConversation(convID)
-            conversation.addMessage(newMsg, newMsg: save)
+            conversation.addMessage(newMsg, newMsg: true)
             UpdateDelegate()    // data changed
-            if save && (newMsg.type == .Msg_Str || newMsg.type == .Msg_Pic || newMsg.type == .Msg_Vid) {
-                CoreDataManager.shared.saveMessage(newMsg)
+            if newMsg.type == .Msg_Str || newMsg.type == .Msg_Pic || newMsg.type == .Msg_Vid {
+                CoreDataManager.shared.saveMessage(convID, info:newMsg)
             }
         }
         else {
