@@ -28,7 +28,7 @@ class MessegeCell: UITableViewCell {
         self.m_profile.layer.cornerRadius = 10
         self.m_profile.layer.masksToBounds = true
         self.m_time.hidden = (conv.m_id < 10)
-        self.m_time.text = (last == nil ? "" : getTimeString(last!.time))
+        self.m_time.text = (last == nil ? "" : getTimeString(last!.m_info.time))
         self.m_alert.hidden = !m_conv!.m_newMsg
     }
 }

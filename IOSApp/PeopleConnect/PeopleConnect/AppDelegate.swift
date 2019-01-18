@@ -14,34 +14,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
-    // MARK: - CoreData
-    lazy var context: NSManagedObjectContext = {
-        //1、创建模型对象
-        //获取模型路径
-        let modelURL = NSBundle.mainBundle().URLForResource("Model", withExtension: "momd")
-        //根据模型文件创建模型对象
-        let model = NSManagedObjectModel(contentsOfURL: modelURL!)
-        //2、创建持久化存储助理：数据库
-        //利用模型对象创建助理对象
-        let store = NSPersistentStoreCoordinator(managedObjectModel: model!)
-        //数据库的名称和路径
-        let docStr = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).last
-        let sqlPath = docStr?.stringByAppendingString("/coreData.sqlite")
-        let sqlUrl = NSURL(fileURLWithPath: sqlPath!)
-        
-        //设置数据库相关信息 添加一个持久化存储库并设置类型和路径，NSSQLiteStoreType：SQLite作为存储库
-        let options = [NSMigratePersistentStoresAutomaticallyOption : true, NSInferMappingModelAutomaticallyOption : true]
-        do {
-            try store.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: sqlUrl, options: options)
-        }
-        catch {
-        }
-        
-        let context = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
-        context.persistentStoreCoordinator = store
-        return context
-    }()
-
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         return true

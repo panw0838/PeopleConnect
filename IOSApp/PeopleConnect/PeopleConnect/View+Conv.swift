@@ -141,44 +141,54 @@ class MsgCell: UITableViewCell {
         m_status.stopLoading(success)
     }
     
-    func reload(msg:MsgInfo, sending:Bool, width:CGFloat) {
+    func reload(msg:MsgFrame, sending:Bool, width:CGFloat) {
         let pad:CGFloat = 8
         let pSize:CGFloat = 40
         let textGap:CGFloat = 20
         let statusSize:CGFloat = 20
         let maxTextSize = CGSizeMake(width - pSize*2 - pad * 4, CGFloat(MAXFLOAT))
-        let textSize = getMsgSize(msg.data, maxSize: maxTextSize, font: msgFont)
+        let textSize = getMsgSize(msg.m_info.data, maxSize: maxTextSize, font: msgFont)
         let textBubSize = CGSizeMake(textSize.width + textGap*2, textSize.height + textGap*2)
+        let timeHeight:CGFloat = 15
         
-        m_msg = msg
+        m_msg = msg.m_info
         
-        m_photo.setImage(getPhoto(msg.from), forState: .Normal)
-        m_message.setTitle(msg.data, forState: .Normal)
+        var buttom = pad
+        
+        if msg.m_info.time != 0 && msg.m_showTime {
+            m_time.hidden = false
+            m_time.text = getTimeString(msg.m_info.time)
+            m_time.frame = CGRectMake(0, buttom, width, timeHeight)
+            buttom += timeHeight
+        }
+        
+        m_photo.setImage(getPhoto(msg.m_info.from), forState: .Normal)
+        m_message.setTitle(msg.m_info.data, forState: .Normal)
         
         m_photo.frame.size = CGSizeMake(pSize, pSize)
-        m_message.frame.size = CGSizeMake(textBubSize.width, (textBubSize.height > 40 ? textBubSize.height : 40))
+        m_message.frame.size = CGSizeMake(textBubSize.width, (textBubSize.height > pSize ? textBubSize.height : pSize))
         
-        if msg.from == userInfo.userID {
-            m_photo.frame.origin = CGPointMake(width - pad - pSize, pad)
-            m_message.frame.origin = CGPointMake(m_photo.frame.origin.x - textBubSize.width - pad, pad)
+        if msg.m_info.from == userInfo.userID {
+            m_photo.frame.origin = CGPointMake(width - pad - pSize, buttom)
+            m_message.frame.origin = CGPointMake(m_photo.frame.origin.x - textBubSize.width - pad, buttom)
 
             m_message.setTitleColor(UIColor.whiteColor(), forState: .Normal)
             m_message.setBackgroundImage(UIImage.resizableImage("chat_send_nor"), forState: .Normal)
             m_message.setBackgroundImage(UIImage.resizableImage("chat_send_press"), forState: .Highlighted)
         }
         else {
-            m_photo.frame.origin = CGPointMake(pad, pad)
-            m_message.frame.origin = CGPointMake(m_photo.frame.origin.x + m_photo.frame.width + pad, pad)
+            m_photo.frame.origin = CGPointMake(pad, buttom)
+            m_message.frame.origin = CGPointMake(m_photo.frame.origin.x + m_photo.frame.width + pad, buttom)
 
             m_message.setTitleColor(UIColor.whiteColor(), forState: .Normal)
             m_message.setBackgroundImage(UIImage.resizableImage("chat_receive_nor"), forState: .Normal)
             m_message.setBackgroundImage(UIImage.resizableImage("chat_receive_press"), forState: .Highlighted)
         }
         
-        if msg.time == 0 {
+        if msg.m_info.time == 0 {
             m_status.hidden = false
             m_status.frame.size = CGSizeMake(statusSize, statusSize)
-            m_status.frame.origin = CGPointMake(m_message.frame.origin.x - statusSize, pad + m_message.frame.height/2-statusSize/2)
+            m_status.frame.origin = CGPointMake(m_message.frame.origin.x - statusSize, buttom + m_message.frame.height/2-statusSize/2)
             m_status.reloadStatus(sending ? .Sending : .Fail)
         }
         else {
@@ -224,8 +234,8 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     }
     
     func scrollToButtom() {
-        if m_conv!.m_messages.count > 0 {
-            let lastMsg = m_conv!.m_messages.count - 1
+        if m_conv!.numMessages() > 0 {
+            let lastMsg = m_conv!.numMessages() - 1
             let lastIdx = NSIndexPath(forRow: lastMsg, inSection: 0)
             self.m_messegesTable.scrollToRowAtIndexPath(lastIdx, atScrollPosition: .Bottom, animated: true)
         }
@@ -235,11 +245,6 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         self.m_messegesTable.reloadData()
         scrollToButtom()
     }
-
-    var defaultTableY:CGFloat = 0
-    var defaultTableHeight:CGFloat = 0
-    var defaultViewHeight:CGFloat = 0
-    var defaultKBY:CGFloat=0
     
     var originOffset:CGFloat = 0
     
@@ -252,14 +257,6 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     
         // 3.键盘变化时，view的位移，包括了上移/恢复下移
         let transformY = keyboardFrame!.origin.y - self.view.frame.size.height;
-        
-        if defaultViewHeight == 0 {
-            defaultViewHeight = self.view.frame.height
-            defaultKBY = keyboardFrame!.origin.y
-        }
-        if defaultTableHeight == 0 {
-            defaultTableHeight = m_messegesTable.frame.height
-        }
 
         self.scrollToButtom()
         
@@ -268,11 +265,6 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         }
 
         print(m_messegesTable.contentSize, m_messegesTable.contentOffset, m_messegesTable.contentInset)
-        //self.m_messegesTable.contentOffset.y = self.originOffset + transformY
-
-        //self.m_messegesTable.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        //m_messegesTable.frame.origin = CGPointMake(m_messegesTable.frame.origin.x, defaultTableY+transformY)
-        //m_toolBar.frame.origin = CGPointMake(m_toolBar.frame.origin.x, defaultToolY - transformY)
         
         //m_messegesTable.contentOffset.y += transformY
         let newOffset = originOffset - transformY
@@ -280,12 +272,7 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         m_messegesTable.contentOffset.y = -newOffset
         
         UIView.animateWithDuration(Double(duration!), animations: {()->Void in
-            //self.m_messegesTable.frame.size = CGSizeMake(self.m_messegesTable.frame.width, self.defaultTableHeight - keyboardFrame!.height)
-            //self.m_toolBar.frame.origin = CGPointMake(self.m_toolBar.frame.origin.x, self.defaultToolY - keyboardFrame!.height)
             self.view.transform = CGAffineTransformMakeTranslation(0, transformY)
-            
-            //let offset = self.defaultKBY == keyboardFrame!.origin.y ? keyboardFrame!.height : 0
-            //self.view.frame.size = CGSizeMake(self.view.frame.width, self.defaultViewHeight-offset)
         })
     }
     
@@ -316,7 +303,6 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
         let notifier = NSNotificationCenter.defaultCenter()
         notifier.addObserver(self, selector: Selector("keyboardWillChangeFrame:"), name: UIKeyboardWillChangeFrameNotification, object: nil)
         notifier.addObserver(self, selector: Selector("keyboardDidChangeFrame:"), name: UIKeyboardDidChangeFrameNotification, object: nil)
-
         
         // 设置TextField文字左间距
         m_text.leftView = UIView(frame: CGRectMake(0, 0, 8, 0))
@@ -337,15 +323,11 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return m_conv!.m_messages.count
+        return m_conv!.numMessages()
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let msg = m_conv?.m_messages[indexPath.row]
-        let maxTextSize = CGSizeMake(m_messegesTable.contentSize.width - 40*2 - 8*4, CGFloat(MAXFLOAT))
-        let textSize = getMsgSize((msg?.data)!, maxSize: maxTextSize, font: msgFont)
-        let textHeight = textSize.height + 20 * 2
-        return (textHeight > 40 ? textHeight : 40) + 8
+        return m_conv!.m_messages[indexPath.row].getHeight(m_messegesTable.contentSize.width)
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -359,20 +341,5 @@ class ConversationView: UIViewController, UITableViewDataSource, UITableViewDele
     
     func scrollViewWillBeginDragging(scrollView: UIScrollView) {
         m_text.endEditing(true)
-    }
-    
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        // 我方发出信息
-        //[self sendMessageWithContent:textField.text andType:MessageTypeMe];
-        
-        // 消除消息框内容
-        self.m_text.text = nil;
-        self.m_messegesTable.reloadData()
-        
-        // 滚动到最新的消息
-        let lastIndex = NSIndexPath(forRow: m_conv!.m_messages.count-1, inSection: 0)
-        m_messegesTable.scrollToRowAtIndexPath(lastIndex, atScrollPosition: .Bottom, animated: true)
-        
-        return true // 返回值意义不明
     }
 }

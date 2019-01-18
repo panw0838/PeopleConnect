@@ -61,33 +61,6 @@ struct MsgInfo {
     var pID:UInt64 = 0
     var chan:UInt32 = 0
     var pGroup:String = ""
-    
-    func getConversationID()->UInt64 {
-        if type == .Ntf_Req {
-            return ConvType.ConvRequest.rawValue
-        }
-        if type == .Ntf_Lik {
-            return ConvType.ConvLikeUsr.rawValue
-        }
-        if type == .Ntf_Pst_Cmt || type == .Ntf_Pst_Lik {
-            return ConvType.ConvPostNTF.rawValue
-        }
-        if cGroup != 0 {
-            return UInt64(cGroup) + GroupBit
-        }
-        if from != 0 {
-            return from
-        }
-        return 0
-    }
-    
-    func getMessage()->String {
-        if type == .Ntf_Add {
-            return "我已添加你为好友，我们可以对话了"
-        }
-
-        return data
-    }
 }
 
 extension MsgInfo {
@@ -125,6 +98,55 @@ extension MsgInfo {
     }
 }
 
+class MsgFrame {
+    var m_info = MsgInfo()
+    var m_height:CGFloat = 0
+    var m_showTime = false
+    
+    init(info:MsgInfo) {
+        m_info = info
+    }
+    
+    func getConversationID()->UInt64 {
+        if m_info.type == .Ntf_Req {
+            return ConvType.ConvRequest.rawValue
+        }
+        if m_info.type == .Ntf_Lik {
+            return ConvType.ConvLikeUsr.rawValue
+        }
+        if m_info.type == .Ntf_Pst_Cmt || m_info.type == .Ntf_Pst_Lik {
+            return ConvType.ConvPostNTF.rawValue
+        }
+        if m_info.cGroup != 0 {
+            return UInt64(m_info.cGroup) + GroupBit
+        }
+        if m_info.from != 0 {
+            return m_info.from
+        }
+        return 0
+    }
+    
+    func getMessage()->String {
+        if m_info.type == .Ntf_Add {
+            return "我已添加你为好友，我们可以对话了"
+        }
+        
+        return m_info.data
+    }
+    
+    func getHeight(width:CGFloat)->CGFloat {
+        if m_height == 0 {
+            let maxTextSize = CGSizeMake(width - 40*2 - 8*4, CGFloat(MAXFLOAT))
+            let textSize = getMsgSize(m_info.data, maxSize: maxTextSize, font: msgFont)
+            let textHeight = textSize.height + 20 * 2
+            let timeHeight:CGFloat = (m_showTime ? (8 + 15) : 0)
+            m_height = (textHeight > 40 ? textHeight : 40) + 8 + timeHeight
+        }
+        
+        return m_height
+    }
+}
+
 enum ConvType: UInt64 {
     case ConvRequest = 1
     case ConvPostNTF = 2
@@ -141,7 +163,7 @@ enum ConvType: UInt64 {
 
 class Conversation {
     var m_id:UInt64 = 0
-    var m_messages:Array<MsgInfo> = Array<MsgInfo>()
+    var m_messages = Array<MsgFrame>()
     var m_delegate:ConvDelegate?
     var m_newMsg = false
     
@@ -170,11 +192,18 @@ class Conversation {
     
     func addMessage(newMessage:MsgInfo, newMsg:Bool) {
         for msg in m_messages {
-            if msg.time == newMessage.time && msg.from == newMessage.from && msg.data == newMessage.data {
+            if msg.m_info.time == newMessage.time &&
+               msg.m_info.from == newMessage.from &&
+               msg.m_info.data == newMessage.data {
                 return
             }
         }
-        m_messages.append(newMessage)
+        let msgFrame = MsgFrame(info: newMessage)
+        if newMessage.time != 0 &&
+           (m_messages.count == 0 || (newMessage.time > (m_messages.last!.m_info.time + UInt64(60*5)))) {
+            msgFrame.m_showTime = true
+        }
+        m_messages.append(msgFrame)
         if newMsg {
             m_newMsg = true
         }
@@ -193,8 +222,8 @@ class Conversation {
         m_delegate?.MsgSend!(idx)
         httpSendMessege(m_id, messege: message,
             passed: {(timeID:UInt64)->Void in
-                self.m_messages[idx].time = timeID
-                CoreDataManager.shared.saveMessage(self.m_id, info:self.m_messages[idx])
+                self.m_messages[idx].m_info.time = timeID
+                CoreDataManager.shared.saveMessage(self.m_id, info:self.m_messages[idx].m_info)
                 self.m_delegate?.MsgSentSuccess!(idx)
             },
             failed: {()->Void in
@@ -204,7 +233,7 @@ class Conversation {
     }
     
     func getUserAt(index:Int)->UInt64 {
-        return m_messages[index].from
+        return m_messages[index].m_info.from
     }
     
     func numMessages()->Int {
@@ -213,7 +242,7 @@ class Conversation {
     
     func getMessage(idx:Int)->String {
         let msg = m_messages[idx]
-        return msg.data
+        return msg.m_info.data
     }
     
     func lastMessage()->String? {
@@ -221,164 +250,7 @@ class Conversation {
     }
     
     func lastetTime()->UInt64 {
-        return (m_messages.count == 0 ? 0 : m_messages.last!.time)
-    }
- }
-
-class RequestNotifies:Conversation {
-    
-    var m_requests = Array<RequestInfo>()
-    
-    func addRequest(request:RequestInfo) {
-        for msg in m_messages {
-            if request.from == msg.from {
-                m_requests.insert(request, atIndex: 0)
-                return
-            }
-        }
-        m_requests.append(request)
-    }
-    
-    func remRequest(uid:UInt64) {
-        for (idx, req) in m_requests.enumerate() {
-            if req.from == uid {
-                m_requests.removeAtIndex(idx)
-                break
-            }
-        }
-    }
-
-    override init() {
-        super.init()
-        m_id = ConvType.ConvRequest.rawValue
-    }
-    
-    override func getConvName()->String {
-        return "好友通知"
-    }
-    
-    override func getConvPhoto()->UIImage {
-        return UIImage(named: "messages_requests")!
-    }
-    
-    func UpdateRequests() {
-        httpSyncRequests()
-    }
-    
-    override func getUserAt(index:Int)->UInt64 {
-        return m_requests[index].from
-    }
-    
-    override func numMessages() -> Int {
-        return m_requests.count
-    }
-    
-    override func getMessage(idx:Int)->String {
-        return m_requests[idx].messege
-    }
-    
-    override func lastMessage() -> String? {
-        return String(m_messages.count) + "个新申请"
-    }
-}
-
-class LikeNotifies:Conversation {
-    
-    var m_likers = Array<UInt64>()
-    
-    override init() {
-        super.init()
-        m_id = ConvType.ConvLikeUsr.rawValue
-    }
-    
-    override func getConvName()->String {
-        return "点赞通知"
-    }
-    
-    override func getConvPhoto()->UIImage {
-        return UIImage(named: "group_like")!
-    }
-    
-    func addLiker(liker:UInt64) {
-        for msg in m_messages {
-            if liker == msg.from {
-                m_likers.insert(liker, atIndex: 0)
-                return
-            }
-        }
-        m_likers.append(liker)
-    }
-    
-    override func getUserAt(index:Int)->UInt64 {
-        return m_likers[index]
-    }
-
-    override func numMessages() -> Int {
-        return m_likers.count
-    }
-    
-    override func getMessage(idx:Int)->String {
-        return "为你点赞"
-    }
-    
-    override func lastMessage() -> String? {
-        return String(m_messages.count) + "个新点赞"
-    }
-}
-
-class PostNotifies:Conversation {
-    
-    var m_posts = Array<Post>()
-    
-    override init() {
-        super.init()
-        m_id = ConvType.ConvPostNTF.rawValue
-    }
-    
-    override func getConvName()->String {
-        return "动态通知"
-    }
-    
-    override func getConvPhoto()->UIImage {
-        return UIImage(named: "messages_notify")!
-    }
-    
-    override func addMessage(newMessage:MsgInfo, newMsg:Bool) {
-        super.addMessage(newMessage, newMsg: newMsg)
-        
-        if let postData = getPostData(newMessage.chan, group: newMessage.pGroup, oID: newMessage.oID) {
-            postData.m_needSync = true
-            if let post = postData.getPost(newMessage.pID, oID: newMessage.oID) {
-                for (idx, oldPost) in m_posts.enumerate() {
-                    if oldPost.m_father?.getChannel() == post.m_father?.getChannel() &&
-                        oldPost.m_info.id == post.m_info.id &&
-                        oldPost.m_info.user == post.m_info.user {
-                        m_posts.removeAtIndex(idx)
-                    }
-                }
-                m_posts.append(post)
-                for actor in post.m_actors {
-                    if actor == newMessage.from {
-                        return
-                    }
-                }
-                post.m_actors.append(newMessage.from)
-            }
-        }
-    }
-    
-    override func numMessages() -> Int {
-        return m_posts.count
-    }
-    
-    override func getMessage(idx:Int)->String {
-        let post = m_posts[idx]
-        let selfPost = (post.m_father?.getChannel() == PostChannel.AllChannel.rawValue)
-        return String(post.m_actors.count) + "个人" + (selfPost ? "评论了你的动态" : "回复了你的评论")
-    }
-
-    override func lastMessage() -> String? {
-        return String(m_messages.count) + "个动态通知"
+        return (m_messages.count == 0 ? 0 : m_messages.last!.m_info.time)
     }
 }
 
@@ -454,7 +326,8 @@ class MsgData {
     }
     
     func AddNewMsg(newMsg:MsgInfo) {
-        let convID = newMsg.getConversationID()
+        let msgFrame = MsgFrame(info: newMsg)
+        let convID = msgFrame.getConversationID()
         
         if convID != 0 {
             let conversation = popConversation(convID)

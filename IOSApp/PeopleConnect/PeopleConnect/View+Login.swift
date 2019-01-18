@@ -207,7 +207,7 @@ class LogView: BaseLogRegView {
         tcp.logon()
         gLoadingView.stopLoading()
         MsgData.shared.loadMsgFromDB()
-        httpSyncMessege(nil, failed: nil)
+        MsgData.shared.Update()
         m_father?.performSegueWithIdentifier("ShowMainMenu", sender: nil)
     }
 
@@ -393,7 +393,7 @@ class LoginView: UIViewController {
         tcp.logon()
         gLoadingView.stopLoading()
         MsgData.shared.loadMsgFromDB()
-        httpSyncMessege(nil, failed: nil)
+        MsgData.shared.Update()
         performSegueWithIdentifier("ShowMainMenu", sender: nil)
     }
     
