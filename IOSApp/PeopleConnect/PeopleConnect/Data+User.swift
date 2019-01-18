@@ -158,9 +158,7 @@ class User: NSObject, CLLocationManagerDelegate {
     func setMsgSyncID(syncID:UInt64) {
         let user = NSUserDefaults()
         userInfo.msgSyncID = syncID
-        // todo, always sync messages for testing
-        //user.setObject(NSNumber(unsignedLongLong: syncID), forKey: "msgSyncID")
-        user.setObject(NSNumber(unsignedLongLong: 0), forKey: "msgSyncID")
+        user.setObject(NSNumber(unsignedLongLong: syncID), forKey: "msgSyncID")
     }
     
     func getCurUser()->Bool {

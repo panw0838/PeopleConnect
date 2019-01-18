@@ -41,7 +41,7 @@ func getFormatTime(time:UInt64)->String {
     let date = NSDate(timeInterval: Double(time), sinceDate: StartTime)
     let format = NSDateFormatter()
     
-    format.setLocalizedDateFormatFromTemplate("yyyy-MM-dd HH:mm:ss")
+    format.setLocalizedDateFormatFromTemplate("yyyy-MM-dd HH:mm")
     
     return format.stringFromDate(date)
 }

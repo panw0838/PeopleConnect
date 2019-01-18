@@ -144,7 +144,7 @@ func httpSyncMessege(passed:(()->Void)?, failed:((String?)->Void)?) {
                     if let messObjs = json["mess"] as? [AnyObject] {
                         for case let messObj in (messObjs as? [[String:AnyObject]])! {
                             if let msg = MsgInfo(json: messObj) {
-                                msgData.AddNewMsg(msg)
+                                msgData.AddNewMsg(msg, save: true)
                                 contactsData.addUser(msg.from, name: "", flag: 0)
                             }
                         }

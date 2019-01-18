@@ -347,6 +347,20 @@
          contextName = "ContactsData.getUsers(() -&gt; ()?, failed : (err : String?) -&gt; ()?) -&gt; ():Data+Contact.swift">
       </ContextState>
       <ContextState
+         contextName = "ContactInfo.init(json : [String : AnyObject]) -&gt; ContactInfo?:Data+Contact.swift">
+      </ContextState>
+      <ContextState
+         contextName = "CommentInfo.getString(Bool) -&gt; String:Data+Post.swift">
+      </ContextState>
+      <ContextState
+         contextName = "MsgData.loadMsgFromCache() -&gt; ():Data+Msg.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "conv.id">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "MsgCell.showContact() -&gt; ():View+Conv.swift">
       </ContextState>
       <ContextState
@@ -453,6 +467,9 @@
          contextName = "HttpService.(loginRequest(HttpService) -&gt; () -&gt; ()).(closure #1):Requests.swift">
       </ContextState>
       <ContextState
+         contextName = "httpSendPost(UInt64, desc : String, datas : [NSData], groups : [String], nearby : Bool) -&gt; ():Req+Post.swift">
+      </ContextState>
+      <ContextState
          contextName = "splitData(NSData) -&gt; [NSData]:Requests.swift">
          <PersistentStrings>
             <PersistentString
@@ -470,6 +487,9 @@
                value = "userInfo">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "(httpGetUsers([UInt64], passed : () -&gt; ()?, failed : (err : String?) -&gt; ()?) -&gt; ()).(closure #1):Req+Contact.swift">
       </ContextState>
       <ContextState
          contextName = "MulImgPicker.collectionView(UICollectionView, shouldSelectItemAtIndexPath : NSIndexPath) -&gt; Bool:View+ImagePicker.swift">
@@ -522,6 +542,9 @@
                value = "msgData">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "User.locationManager(CLLocationManager, didFailWithError : NSError) -&gt; ():Data+User.swift">
       </ContextState>
       <ContextState
          contextName = "ContactsView.numberOfSectionsInCollectionView(UICollectionView) -&gt; Int:ContactsView.swift">
@@ -582,6 +605,9 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "getCurYear() -&gt; Int:Data+Time.swift">
+      </ContextState>
+      <ContextState
          contextName = "(httpGetPostsUsers([UInt64], post : PostData) -&gt; ()).(closure #1):Requests+Post.swift">
       </ContextState>
       <ContextState
@@ -633,6 +659,9 @@
       </ContextState>
       <ContextState
          contextName = "ImgCellView.tap() -&gt; ():View+PostImgPreview.swift">
+      </ContextState>
+      <ContextState
+         contextName = "CoreDataManager.getAllConvs() -&gt; [ConvDB]:Data+Msg+DB.swift">
       </ContextState>
       <ContextState
          contextName = "Tag.addMember(ContactInfo) -&gt; ():Contact.swift">

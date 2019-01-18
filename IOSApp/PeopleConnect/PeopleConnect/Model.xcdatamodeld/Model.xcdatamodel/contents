@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="14F2511" minimumToolsVersion="Xcode 7.0">
+    <entity name="Conversation" representedClassName=".ConvDB" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <relationship name="relationship" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Message" syncable="YES"/>
+    </entity>
+    <entity name="Message" representedClassName=".MsgDB" syncable="YES">
+        <attribute name="conv" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="data" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="from" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="time" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+    </entity>
+    <fetchRequest name="FetchConvs" entity="Conversation"/>
+    <fetchRequest name="FetchMsgs" entity="Message" predicateString="conv == 0"/>
+    <elements>
+        <element name="Message" positionX="234" positionY="-127" width="135" height="118"/>
+        <element name="Conversation" positionX="423" positionY="-117" width="128" height="73"/>
+    </elements>
+</model>

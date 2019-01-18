@@ -126,44 +126,6 @@ extension MsgInfo {
     }
 }
 
-class MsgInfoCoder:NSObject, NSCoding {
-    var m_info = MsgInfo()
-    
-    init(info:MsgInfo) {
-        self.m_info = info
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init()
-        guard
-            let from = aDecoder.decodeObjectForKey("from") as? NSNumber,
-            let type = aDecoder.decodeObjectForKey("type") as? NSNumber,
-            let time = aDecoder.decodeObjectForKey("time") as? NSNumber
-        else {
-            return nil
-        }
-        m_info.from = UInt64(from.unsignedLongLongValue)
-        m_info.type = MessegeType(rawValue: type.integerValue)!
-        m_info.time = UInt64(time.unsignedLongLongValue)
-
-        if let data = aDecoder.decodeObjectForKey("cont") as? String {
-            m_info.data = data
-        }
-        if let group = aDecoder.decodeObjectForKey("group") as? NSNumber {
-            m_info.cGroup = UInt32(group.unsignedIntValue)
-        }
-    }
-    
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.from), forKey: "from")
-        aCoder.encodeObject(NSNumber(integer: m_info.type.rawValue), forKey: "type")
-        aCoder.encodeObject(NSNumber(unsignedLongLong: m_info.time), forKey: "time")
-
-        aCoder.encodeObject(m_info.data, forKey: "cont")
-        aCoder.encodeObject(NSNumber(unsignedInt: m_info.cGroup), forKey: "group")
-    }
-}
-
 enum ConvType: UInt64 {
     case ConvRequest = 1
     case ConvPostNTF = 2
@@ -207,9 +169,16 @@ class Conversation {
         m_delegate?.ConvUpdated()
     }
     
-    func addMessage(newMessage:MsgInfo) {
+    func addMessage(newMessage:MsgInfo, newMsg:Bool) {
+        for msg in m_messages {
+            if msg.time == newMessage.time && msg.from == newMessage.from && msg.data == newMessage.data {
+                return
+            }
+        }
         m_messages.append(newMessage)
-        m_newMsg = true
+        if newMsg {
+            m_newMsg = true
+        }
         UpdateDelegate()
         msgData.UpdateDelegate()
     }
@@ -221,7 +190,7 @@ class Conversation {
         selfMessege.time = 0
         selfMessege.data = message
         selfMessege.type = type
-        addMessage(selfMessege)
+        addMessage(selfMessege, newMsg: false)
         m_delegate?.MsgSend!(idx)
         httpSendMessege(m_id, messege: message,
             passed: {(timeID:UInt64)->Void in
@@ -296,10 +265,6 @@ class RequestNotifies:Conversation {
         return m_requests[index].from
     }
     
-    override func addMessage(newMessage:MsgInfo) {
-        super.addMessage(newMessage)
-    }
-    
     override func numMessages() -> Int {
         return m_requests.count
     }
@@ -343,11 +308,7 @@ class LikeNotifies:Conversation {
     override func getUserAt(index:Int)->UInt64 {
         return m_likers[index]
     }
-    
-    override func addMessage(newMessage:MsgInfo) {
-        super.addMessage(newMessage)
-    }
-    
+
     override func numMessages() -> Int {
         return m_likers.count
     }
@@ -378,8 +339,8 @@ class PostNotifies:Conversation {
         return UIImage(named: "messages_notify")!
     }
     
-    override func addMessage(newMessage:MsgInfo) {
-        super.addMessage(newMessage)
+    override func addMessage(newMessage:MsgInfo, newMsg:Bool) {
+        super.addMessage(newMessage, newMsg: newMsg)
         
         if let postData = getPostData(newMessage.chan, group: newMessage.pGroup, oID: newMessage.oID) {
             postData.m_needSync = true
@@ -433,50 +394,30 @@ class MsgData {
         m_conversations.append(reqNotify!)
         m_conversations.append(PostNotifies())
         m_conversations.append(likeNotify!)
-        
-        loadMsgFromCache()
     }
     
-    func loadMsgFromCache() {
-        let docDir = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-        let fileName = String(userInfo.userID) + ".msg"
-        let path = docDir + "/msgs/" + fileName
-        
-        let savedData = NSKeyedUnarchiver.unarchiveObjectWithFile(path) as? [MsgInfoCoder]
-        if savedData != nil {
-            for coder in savedData! {
-                let info = coder.m_info
-                AddNewMsg(info)
+    func loadMsgFromDB() {
+        let convs = CoreDataManager.shared.getAllConvs()
+        print(convs.count)
+        for conv in convs {
+            let msgs = CoreDataManager.shared.getMessages(conv.id!.unsignedLongLongValue)
+            print(msgs.count)
+            for msg in msgs {
+                var info = MsgInfo()
+                
+                info.type = MessegeType(rawValue: msg.type!.integerValue)!
+                info.time = msg.time!.unsignedLongLongValue
+                info.from = msg.from!.unsignedLongLongValue
+                info.data = msg.data!
+                info.cGroup = 0
+                
+                if (msg.conv!.unsignedLongLongValue & GroupBit) != 0 {
+                    info.cGroup = UInt32(msg.conv!.unsignedLongLongValue - GroupBit)
+                }
+                print(info)
+                AddNewMsg(info, save: false)
             }
         }
-    }
-    
-    func saveMsgToCache() {
-        let fileMgr = NSFileManager.defaultManager()
-        let docDir = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-        let fileName = String(userInfo.userID) + ".msg"
-        let folder = docDir + "/msgs"
-        let path = docDir + "/msgs/" + fileName
-
-        if !fileMgr.fileExistsAtPath(folder) {
-            do {
-                try fileMgr.createDirectoryAtPath(folder, withIntermediateDirectories: true, attributes: nil)
-            } catch {}
-        }
-        
-        var saveData = Array<MsgInfoCoder>()
-        
-        for conversation in m_conversations {
-            // skip notifications
-            if conversation.m_id < 10 {
-                continue
-            }
-            for msgInfo in conversation.m_messages {
-                saveData.append(MsgInfoCoder(info: msgInfo))
-            }
-        }
-
-        NSKeyedArchiver.archiveRootObject(saveData, toFile: path)
     }
     
     func Update() {
@@ -506,13 +447,16 @@ class MsgData {
         return conv!
     }
     
-    func AddNewMsg(newMsg:MsgInfo) {
+    func AddNewMsg(newMsg:MsgInfo, save:Bool) {
         let convID = newMsg.getConversationID()
         
         if convID != 0 {
             let conversation = popConversation(convID)
-            conversation.addMessage(newMsg)
+            conversation.addMessage(newMsg, newMsg: save)
             UpdateDelegate()    // data changed
+            if save && (newMsg.type == .Msg_Str || newMsg.type == .Msg_Pic || newMsg.type == .Msg_Vid) {
+                CoreDataManager.shared.saveMessage(newMsg)
+            }
         }
         else {
             switch newMsg.type {

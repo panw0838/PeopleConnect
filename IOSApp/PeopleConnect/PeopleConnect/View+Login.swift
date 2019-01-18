@@ -198,16 +198,16 @@ class LogView: BaseLogRegView {
 
     func logFail(msg:String?) {
         // show error
-        m_logStage = 0
         gLoadingView.stopLoading()
         m_father?.showError(msg)
     }
     
-    var m_logStage = 0
     func logSuccess() {
         tcp.start("192.168.0.104", port: 8888)
         tcp.logon()
         gLoadingView.stopLoading()
+        msgData.loadMsgFromDB()
+        httpSyncMessege(nil, failed: nil)
         m_father?.performSegueWithIdentifier("ShowMainMenu", sender: nil)
     }
 
@@ -392,6 +392,8 @@ class LoginView: UIViewController {
         tcp.start("192.168.0.104", port: 8888)
         tcp.logon()
         gLoadingView.stopLoading()
+        msgData.loadMsgFromDB()
+        httpSyncMessege(nil, failed: nil)
         performSegueWithIdentifier("ShowMainMenu", sender: nil)
     }
     
