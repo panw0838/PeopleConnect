@@ -278,6 +278,15 @@ class ContactsData {
         }
     }
     
+    func remLikeUser(uID:UInt64) {
+        for (idx, member) in m_likeUsers.m_members.enumerate() {
+            if uID == member {
+                m_likeUsers.m_members.removeAtIndex(idx)
+                break
+            }
+        }
+    }
+    
     func getContact(contactID:UInt64)->ContactInfo? {
         return m_users[contactID]
     }

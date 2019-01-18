@@ -70,6 +70,10 @@ class UserCell: UICollectionViewCell {
             self.m_father?.RequestContact(self.m_id)
         })
         
+        let disAction = UIAlertAction(title: "取消互赞", style: .Default, handler: { action in
+            self.m_father?.DislikeContact(self.m_id)
+        })
+        
         if contact!.flag != 0 {
             // friends
             alert.addAction(msgAction)
@@ -80,6 +84,7 @@ class UserCell: UICollectionViewCell {
             alert.addAction(msgAction)
             alert.addAction(detailAction)
             alert.addAction(reqAction)
+            alert.addAction(disAction)
         }
         else if m_tag?.m_tagID == StrangerTag.NearUsersTag.rawValue {
             alert.addAction(detailAction)

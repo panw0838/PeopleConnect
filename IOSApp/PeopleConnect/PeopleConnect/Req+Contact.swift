@@ -147,7 +147,7 @@ func httpGetUserDetails(cID:UInt64) {
     )
 }
 
-func httpLikeUser(cID:UInt64, like:Bool, btn:UIButton) {
+func httpLikeUser(cID:UInt64, like:Bool, btn:UIButton?) {
     let params: Dictionary = [
         "uid":NSNumber(unsignedLongLong: userInfo.userID),
         "cid":NSNumber(unsignedLongLong: cID),
@@ -155,7 +155,11 @@ func httpLikeUser(cID:UInt64, like:Bool, btn:UIButton) {
     http.postRequest("likeuser", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if getErrorCode(response as! NSData) == 0 {
-                btn.selected = like
+                btn?.selected = like
+                if !like {
+                    contactsData.remLikeUser(cID)
+                    contactsData.updateDelegates()
+                }
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in

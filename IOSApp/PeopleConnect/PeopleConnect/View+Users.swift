@@ -129,6 +129,19 @@ class UsersView:
         alert.addAction(okAction)
         self.presentViewController(alert, animated: true, completion: nil)
     }
+    
+    func DislikeContact(uID:UInt64) {
+        let alert = UIAlertController(title: "取消互赞", message: getName(uID), preferredStyle: .Alert)
+        let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .Destructive,
+            handler: { action in
+                httpLikeUser(uID, like: false, btn: nil)
+            }
+        )
+        alert.addAction(noAction)
+        alert.addAction(okAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
 
     @IBAction func DoneContactsTable(sender: AnyObject) {
         m_showEdits = false
