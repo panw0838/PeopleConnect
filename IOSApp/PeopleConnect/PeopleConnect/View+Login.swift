@@ -303,7 +303,8 @@ class LogView: BaseLogRegView {
     }
     
     override func updateNextButton() {
-        m_logBtn.enabled = m_cellNumber.characters.count != 0 && m_password.characters.count != 0
+        let passCode = (m_usePassword ? m_password.characters.count > 0 : m_code.characters.count > 0)
+        m_logBtn.enabled = m_cellNumber.characters.count != 0 && passCode
         m_logBtn.backgroundColor = m_logBtn.enabled ? m_enableColor : UIColor.grayColor()
     }
 }
