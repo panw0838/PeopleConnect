@@ -85,6 +85,10 @@ func GetBothLikeStrangersHandler(w http.ResponseWriter, r *http.Request) {
 	for _, user := range users {
 		uID := uint64(user)
 
+		if uID == input.UserID {
+			continue
+		}
+
 		isStranger, err := IsStranger(input.UserID, uID, c)
 		if err != nil {
 			share.WriteErrorCode(w, err)
@@ -140,6 +144,10 @@ func GetLikeMeUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, user := range users {
 		uID := uint64(user)
+
+		if uID == input.UserID {
+			continue
+		}
 
 		isBlacklist, err := IsBlacklist(input.UserID, uID, c)
 		if err != nil {
