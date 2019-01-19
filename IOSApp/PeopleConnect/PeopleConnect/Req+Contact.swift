@@ -156,6 +156,7 @@ func httpLikeUser(cID:UInt64, like:Bool, btn:UIButton?) {
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if getErrorCode(response as! NSData) == 0 {
                 btn?.selected = like
+                ContactView.Detail.m_detail?.like = like
                 if !like {
                     contactsData.remLikeUser(cID)
                     contactsData.updateDelegates()

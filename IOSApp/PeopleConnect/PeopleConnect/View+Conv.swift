@@ -155,11 +155,14 @@ class MsgCell: UITableViewCell {
         
         var buttom = pad
         
-        if msg.m_info.time != 0 && msg.m_showTime {
+        if msg.m_showTime {
             m_time.hidden = false
             m_time.text = getTimeString(msg.m_info.time)
             m_time.frame = CGRectMake(0, buttom, width, timeHeight)
             buttom += timeHeight
+        }
+        else {
+            m_time.hidden = true
         }
         
         m_photo.setImage(getPhoto(msg.m_info.from), forState: .Normal)

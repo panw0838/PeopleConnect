@@ -61,6 +61,7 @@ class BaseLogRegView: UITableViewController {
 
     var m_basePassBtn: UIButton?
     var m_baseCodeBtn: UIButton?
+    var m_father:LoginView? = nil
 
     var m_countryCode:Int = 86
     var m_cellNumber:String = ""
@@ -222,7 +223,6 @@ class LogView: BaseLogRegView {
     
     var m_usePassword = true
     var m_enableColor:UIColor? = nil
-    var m_father:LoginView? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -259,11 +259,12 @@ class LogView: BaseLogRegView {
         if m_usePassword {
             m_basePassBtn = m_passCodeBtn
             m_baseCodeBtn = nil
+            m_code = ""
             
             m_passCodeBtn.removeTarget(self, action: Selector("inputCode:"), forControlEvents: .TouchDown)
             m_passCodeBtn.addTarget(self, action: Selector("inputPassword:"), forControlEvents: .TouchDown)
-            
             m_passCodeBtn.setTitle("请输入密码", forState: .Normal)
+            
             m_getCodeBtn.hidden = true
             m_logSwitchBtn.setTitle("忘记密码", forState: .Normal)
             m_passLabel.text = "密码"
@@ -271,15 +272,17 @@ class LogView: BaseLogRegView {
         else {
             m_basePassBtn = nil
             m_baseCodeBtn = m_passCodeBtn
+            m_password = ""
             
             m_passCodeBtn.removeTarget(self, action: Selector("inputPassword:"), forControlEvents: .TouchDown)
             m_passCodeBtn.addTarget(self, action: Selector("inputCode:"), forControlEvents: .TouchDown)
-
             m_passCodeBtn.setTitle("请输入验证码", forState: .Normal)
+            
             m_getCodeBtn.hidden = false
             m_logSwitchBtn.setTitle("返回密码登陆", forState: .Normal)
             m_passLabel.text = "验证码"
         }
+        updateNextButton()
     }
 
     func logFail(msg:String?) {
@@ -320,7 +323,6 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
     var m_nickName:String = ""
     var m_picker = ImgPicker(maxCount: 1)
     var m_enableColor:UIColor? = nil
-    var m_father:LoginView? = nil
     
     @IBAction func reg(sender: AnyObject) {
         httpRegistry(m_nickName, code: m_countryCode, cell: m_cellNumber, pass: m_password, photo: m_photo!,
@@ -441,13 +443,8 @@ class LoginView: UIViewController {
         m_regView.hidden = true
         
         for child in self.childViewControllers {
-            let logView = child as? LogView
-            if logView != nil {
-                logView?.m_father = self
-            }
-            let regView = child as? RegView
-            if regView != nil {
-                regView?.m_father = self
+            if let baseView = child as? BaseLogRegView {
+                baseView.m_father = self
             }
         }
     }

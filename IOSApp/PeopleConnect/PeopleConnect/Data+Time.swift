@@ -22,11 +22,8 @@ func getTimeString(time:UInt64)->String {
     let hours   = minites / 60
     let days    = hours / 24
     
-    if Int(days) > 7 {
-        return getFormatTime(time)
-    }
     if Int(days) > 0 {
-        return String(Int(days)) + "天前"
+        return getFormatTime(time)
     }
     if Int(hours) > 0 {
         return String(Int(hours)) + "小时前"

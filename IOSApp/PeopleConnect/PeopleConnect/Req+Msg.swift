@@ -81,9 +81,8 @@ func httpGetLikeUsers() {
     let params: Dictionary = ["user":NSNumber(unsignedLongLong: userInfo.userID)]
     http.postRequest("getlikemeusers", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let usersData = processErrorCode(response as! NSData, failed: nil)
-            if usersData != nil {
-                if let json = getJson(usersData!) {
+            if let usersData = processErrorCode(response as! NSData, failed: nil) {
+                if let json = getJson(usersData) {
                     if let usersObjs = json["users"] as? [AnyObject] {
                         for case let userObj in (usersObjs as? [[String:AnyObject]])! {
                             if let contact = ContactInfo(json: userObj) {

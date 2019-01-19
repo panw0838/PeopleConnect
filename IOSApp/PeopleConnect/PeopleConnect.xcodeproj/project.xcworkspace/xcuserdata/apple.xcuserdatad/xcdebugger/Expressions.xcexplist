@@ -208,6 +208,9 @@
          contextName = "MsgInfo.getConversationID() -&gt; UInt64:Data+Msg.swift">
       </ContextState>
       <ContextState
+         contextName = "MsgData.loadMsgFromDB() -&gt; ():Data+Msg.swift">
+      </ContextState>
+      <ContextState
          contextName = "ConversationView.viewDidLoad() -&gt; ():View+Conversation.swift">
       </ContextState>
       <ContextState
@@ -361,6 +364,12 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "PostHeader.actLike(AnyObject) -&gt; ():View+PostHeader.swift">
+      </ContextState>
+      <ContextState
+         contextName = "CoreDataManager.getMessages(UInt64) -&gt; [MsgDB]:Data+Msg+DB.swift">
+      </ContextState>
+      <ContextState
          contextName = "MsgCell.showContact() -&gt; ():View+Conv.swift">
       </ContextState>
       <ContextState
@@ -376,6 +385,9 @@
                value = "header.m_refreshBtn.hidden">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "PostHeader.reload(Post, width : CGFloat, showPhoto : Bool, showTool : Bool) -&gt; ():View+PostHeader.swift">
       </ContextState>
       <ContextState
          contextName = "TagTable.numberOfSectionsInTableView(UITableView) -&gt; Int:View+CreatePost.swift">
@@ -496,6 +508,14 @@
          <PersistentStrings>
             <PersistentString
                value = "cell.selected">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ContactView.likeUser(AnyObject) -&gt; ():View+Contact.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "ContactView.Detail">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

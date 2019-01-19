@@ -39,7 +39,7 @@ class ContactView: PostsTable, UITableViewDelegate, DetailDelegate {
         m_likeBtn.setImage(UIImage(named: "post_like_hi"), forState: .Selected)
         
         let user = contactsData.getUser(ContactView.ContactID)
-        m_likeBtn.hidden = (user?.flag != 0)
+        m_likeBtn.hidden = (user?.flag != 0 || userInfo.userID == ContactView.ContactID)
         
         ContactView.Detail.m_delegate = self
         httpGetUserDetails(ContactView.ContactID)
