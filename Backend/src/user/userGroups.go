@@ -67,11 +67,11 @@ func dbAddGroup(uID uint64, newGroup string, year int, c redis.Conn) (uint32, er
 
 	// check if groups valid
 	univKey := share.GetUnviKey()
-	exists, err := redis.Int(c.Do("SISMEMBER", univKey, newGroup))
+	val, err := c.Do("ZSCORE", univKey, newGroup)
 	if err != nil {
 		return 0, err
 	}
-	if exists == 0 {
+	if val == nil {
 		return 0, fmt.Errorf("No such group")
 	}
 

@@ -77,7 +77,7 @@ func BuildSearchTree() {
 	defer c.Close()
 
 	univKey := GetUnviKey()
-	names, err := redis.Strings(c.Do("SMEMBERS", univKey))
+	names, err := redis.Strings(c.Do("ZRANGE", univKey, 0, -1))
 	if err != nil {
 		panic(err)
 	}

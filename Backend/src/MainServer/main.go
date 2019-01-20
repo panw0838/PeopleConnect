@@ -12,8 +12,8 @@ import (
 	"user"
 )
 
-const crtPath = "$GOPATH/server.crt"
-const keyPath = "$GOPATH/server.key"
+const crtPath = share.MainPath + "server.crt"
+const keyPath = share.MainPath + "server.key"
 
 type SyncInput struct {
 	Mess uint32 `json:"messID"`

@@ -77,6 +77,14 @@ func getPhoto(uID uint64, form *multipart.Form) error {
 				return err
 			}
 
+			photoFolder := "photos"
+			if _, err := os.Stat(photoFolder); os.IsNotExist(err) {
+				err = os.MkdirAll(photoFolder, os.ModeDir)
+				if err != nil {
+					return err
+				}
+			}
+
 			fileName := strconv.FormatUint(uID, 10) + fileEndings[0]
 			filePath := filepath.Join("photos", fileName)
 			fmt.Printf("FileType: %s, Path: %s\n", fileType, filePath)
@@ -139,7 +147,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = getPhoto(uID, r.MultipartForm)
 	if err != nil {
-		share.WriteError(w, 5)
+		share.WriteErrorCode(w, err)
 		return
 	}
 

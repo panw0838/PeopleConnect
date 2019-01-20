@@ -2,6 +2,7 @@ package setup
 
 import (
 	"share"
+	"strings"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/tealeg/xlsx"
@@ -12,10 +13,8 @@ func addUniv(unvKey string, name string, channel int, c redis.Conn) error {
 	return err
 }
 
-const xlsPath = "$GOPATH/china_univ_1.xlsx"
-
 func InitUnivs() {
-	xlFile, err := xlsx.OpenFile(xlsPath)
+	xlFile, err := xlsx.OpenFile(share.MainPath + "china_univ_1.xlsx")
 	if err != nil {
 		panic(err)
 	}
@@ -34,18 +33,16 @@ func InitUnivs() {
 
 	var newChannel int = 10000 + numUnvs
 
-	var first = true
 	for _, row := range xlFile.Sheets[0].Rows {
 		name := row.Cells[1].String()
-		if len(name) == 0 || first {
-			first = false
+		if len(name) == 0 || strings.Compare(name, "学校名称") == 0 {
 			continue
 		}
-		channel, err := share.GetChannel(name, c)
+		val, err := c.Do("ZSCORE", unvKey, name)
 		if err != nil {
 			panic(err)
 		}
-		if channel == 0 {
+		if val == nil {
 			addUniv(unvKey, name, newChannel, c)
 			newChannel++
 		}

@@ -17,6 +17,7 @@ const ZERO_64 uint64 = 0x0
 const MAX_U64 uint64 = 0x7fffffffffffffff
 const MAX_TIME uint64 = MAX_U64
 
+const MainPath = "/usr/panw/PeopleConnect/Backend/"
 const ContactDB = "127.0.0.1:6379"
 
 const MaxUploadSize = 20 * 1024 * 1024
