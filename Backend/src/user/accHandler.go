@@ -236,7 +236,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	for _, group := range groups {
 		var groupInfo UserGroup
 		groupInfo.Name = group
-		groupInfo.ID = share.GetChannel(0, group)
+		groupInfo.ID, err = share.GetChannel(group, c)
+		if err != nil {
+			share.WriteErrorCode(w, err)
+			return
+		}
 		response.Groups = append(response.Groups, groupInfo)
 	}
 

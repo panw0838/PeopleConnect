@@ -61,7 +61,7 @@ func dbAddComment(input AddCmtInput, c redis.Conn) (uint64, uint32, error) {
 	comment.To = input.To
 	comment.Msg = input.Msg
 	comment.ID = share.GetTimeID(time.Now())
-	comment.Chan = share.GetChannel(input.Chan, input.Group)
+	comment.Chan = input.Chan
 	bytes, err := json.Marshal(comment)
 	if err != nil {
 		return 0, 0, err

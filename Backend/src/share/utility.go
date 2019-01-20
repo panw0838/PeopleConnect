@@ -166,3 +166,16 @@ func WriteErrorCode(w http.ResponseWriter, err error) {
 		WriteError(w, 0)
 	}
 }
+
+func GetChannel(group string, c redis.Conn) (uint32, error) {
+	unvKey := GetUnviKey()
+	val, err := c.Do("ZSCORE", unvKey, group)
+	if err != nil {
+		return 0, err
+	}
+	if val == nil {
+		return 0, fmt.Errorf("No group %s", group)
+	}
+	channel, err := GetInt64(val, err)
+	return uint32(channel), err
+}

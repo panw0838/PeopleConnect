@@ -108,5 +108,10 @@ func dbAddGroup(uID uint64, newGroup string, year int, c redis.Conn) (uint32, er
 		return 0, err
 	}
 
-	return share.GetChannel(0, newGroup), nil
+	channel, err := share.GetChannel(newGroup, c)
+	if err != nil {
+		return 0, err
+	}
+
+	return channel, nil
 }

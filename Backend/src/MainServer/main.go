@@ -6,13 +6,14 @@ import (
 	"message"
 	"net/http"
 	"post"
+	"setup"
 	"share"
 	"strings"
 	"user"
 )
 
-const crtPath = "C:/Users/panwang/PeopleConnect/Backend/src/server.crt"
-const keyPath = "C:/Users/panwang/PeopleConnect/Backend/src/server.key"
+const crtPath = "$GOPATH/server.crt"
+const keyPath = "$GOPATH/server.key"
 
 type SyncInput struct {
 	Mess uint32 `json:"messID"`
@@ -31,6 +32,8 @@ func syncHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	setup.InitNewUID()
+	setup.InitUnivs()
 	user.InitRelationCash()
 	share.BuildSearchTree()
 
@@ -84,7 +87,7 @@ func main() {
 	fs := http.FileServer(http.Dir("files"))
 	http.Handle("/files/", http.StripPrefix("/files/", fs))
 
-	e := http.ListenAndServeTLS(":8080", crtPath, keyPath, nil)
+	e := http.ListenAndServeTLS(":7979", crtPath, keyPath, nil)
 	if e != nil {
 		log.Fatal("ListenAndServe: ", e)
 	}

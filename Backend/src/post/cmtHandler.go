@@ -17,7 +17,6 @@ type AddCmtInput struct {
 	PostID    uint64 `json:"pid"`
 	Msg       string `json:"cmt"`
 	Chan      uint32 `json:"chan"`
-	Group     string `json:"group"`
 	LastCMT   uint64 `json:"last"`
 }
 
