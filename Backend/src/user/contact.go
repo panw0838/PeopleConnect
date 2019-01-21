@@ -11,7 +11,7 @@ const FlagField = "flag"
 const NameField = "name"
 const MessField = "mess"
 
-const NAME_SIZE uint32 = 20
+const NAME_SIZE int = 18
 
 type ContactInfo struct {
 	User uint64 `json:"user"`

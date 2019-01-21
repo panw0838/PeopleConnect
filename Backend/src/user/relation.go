@@ -181,7 +181,7 @@ func dbDisableBits(user1 uint64, user2 uint64, bits uint64, c redis.Conn) error 
 	return nil
 }
 
-func dbSetName(user1 uint64, user2 uint64, name []byte) error {
+func dbSetName(user1 uint64, user2 uint64, name string) error {
 	c, err := redis.Dial("tcp", share.ContactDB)
 	if err != nil {
 		return err

@@ -2,6 +2,7 @@ package user
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -304,6 +305,52 @@ func SearchUsersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	share.WriteError(w, 0)
+	share.WriteErrorCode(w, nil)
 	w.Write(data)
+}
+
+type NoteContactInput struct {
+	UID  uint64 `json:"uid"`
+	CID  uint64 `json:"cid"`
+	Name string `json:"name"`
+}
+
+func NoteContactHandler(w http.ResponseWriter, r *http.Request) {
+	var input NoteContactInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	nameSize := len(input.Name)
+	if nameSize == 0 || nameSize > NAME_SIZE {
+		share.WriteErrorCode(w, fmt.Errorf("NoteContactHandler, invalid note name %s", input.Name))
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	defer c.Close()
+
+	isFriend, err := IsFriend(input.UID, input.CID, c)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	if !isFriend {
+		share.WriteErrorCode(w, fmt.Errorf("NoteContactHandler, not friend %d %d", input.UID, input.CID))
+		return
+	}
+
+	err = dbSetName(input.UID, input.CID, input.Name)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	share.WriteErrorCode(w, nil)
 }

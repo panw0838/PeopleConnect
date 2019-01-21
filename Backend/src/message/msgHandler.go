@@ -188,7 +188,7 @@ func RequestContactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	nameLen := len(input.Name)
-	if nameLen == 0 || nameLen > int(user.NAME_SIZE) {
+	if nameLen == 0 || nameLen > user.NAME_SIZE {
 		share.WriteErrorCode(w, err)
 		return
 	}

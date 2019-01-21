@@ -60,6 +60,7 @@ func main() {
 	http.HandleFunc("/getlikemeusers", user.GetLikeMeUsersHandler)
 	http.HandleFunc("/addgroup", user.AddGroupHandler)
 	http.HandleFunc("/searchgroup", user.SearchGroupHandler)
+	http.HandleFunc("/noteuser", user.NoteContactHandler)
 
 	http.HandleFunc("/addcontact", message.AddContactHandler)
 	http.HandleFunc("/remcontact", message.RemContactHandler)
