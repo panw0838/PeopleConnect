@@ -169,3 +169,23 @@ func httpLikeUser(cID:UInt64, like:Bool, btn:UIButton?) {
     )
 }
 
+func httpNoteUser(cID:UInt64, name:String) {
+    let params: Dictionary = [
+        "uid":NSNumber(unsignedLongLong: userInfo.userID),
+        "cid":NSNumber(unsignedLongLong: cID),
+        "name":name]
+    http.postRequest("noteuser", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            if getErrorCode(response as! NSData) == 0 {
+                var contact = contactsData.getUser(cID)
+                contact!.name = name
+                contactsData.m_users[cID] = contact
+                contactsData.updateDelegates()
+            }
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+            print("请求失败")
+        }
+    )
+}
+

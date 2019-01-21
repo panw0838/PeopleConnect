@@ -62,6 +62,10 @@ class UserCell: UICollectionViewCell {
             self.m_father?.performSegueWithIdentifier("StartConversation", sender: nil)
         })
         
+        let noteAction = UIAlertAction(title: "设置备注", style: .Default, handler: { action in
+            self.m_father?.SetNoteName(self.m_id)
+        })
+        
         let delAction = UIAlertAction(title: "删除好友", style: .Default, handler: { action in
             self.m_father?.RemoveContact(self.m_id)
         })
@@ -78,6 +82,7 @@ class UserCell: UICollectionViewCell {
             // friends
             alert.addAction(msgAction)
             alert.addAction(detailAction)
+            alert.addAction(noteAction)
             alert.addAction(delAction)
         }
         else if m_tag?.m_tagID == StrangerTag.LikeUsersTag.rawValue {

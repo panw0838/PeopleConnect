@@ -130,6 +130,24 @@ class UsersView:
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
+    func SetNoteName(uID:UInt64) {
+        let alert = UIAlertController(title: "修改好友备注名", message: getName(uID), preferredStyle: .Alert)
+        let noAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
+            handler: { action in
+                httpNoteUser(uID, name: self.m_noteName)
+        })
+        alert.addTextFieldWithConfigurationHandler {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "18个字以内"
+            textField.addTarget(self, action: Selector("requestNameChanged:"), forControlEvents: .EditingChanged)
+        }
+        okAction.enabled = false
+        alert.addAction(noAction)
+        alert.addAction(okAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
     func DislikeContact(uID:UInt64) {
         let alert = UIAlertController(title: "取消互赞", message: getName(uID), preferredStyle: .Alert)
         let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
