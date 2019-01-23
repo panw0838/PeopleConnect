@@ -24,7 +24,7 @@ type RegistryInfo struct {
 	CountryCode int    `json:"code"`
 	CellNumber  string `json:"cell"`
 	UserName    string `json:"name"`
-	Password    string `json:"pass,omitempty"`
+	Password    string `json:"pass"`
 	Device      string `json:"device"`
 	IPAddress   string
 }
@@ -43,6 +43,8 @@ func getFormInput(form *multipart.Form, param *RegistryInfo) error {
 			param.Password = v[0]
 		} else if strings.Compare(k, "device") == 0 {
 			param.Device = v[0]
+		} else if strings.Compare(k, "name") == 0 {
+			param.UserName = v[0]
 		}
 	}
 
