@@ -39,6 +39,7 @@ func main() {
 
 	http.HandleFunc("/sync", syncHandler)
 
+	http.HandleFunc("/verify", user.GetVerifyCodeHandler)
 	http.HandleFunc("/login", user.LoginHandler)
 	http.HandleFunc("/registry", user.RegisterHandler)
 

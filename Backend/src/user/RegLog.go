@@ -409,9 +409,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if strings.Compare(pass, input.Password) == 0 {
-			DbSetUserInfoField(accountKey, DeviceField, input.Device, c)
-		} else {
+		if strings.Compare(pass, input.Password) != 0 {
 			share.WriteErrorCode(w, fmt.Errorf("Log, pass failed %d %s", uID, pass))
 			return
 		}
@@ -426,6 +424,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	DbSetUserInfoField(accountKey, DeviceField, input.Device, c)
 
 	name, err := DbGetUserInfoField(accountKey, NameField, c)
 	if err != nil {
