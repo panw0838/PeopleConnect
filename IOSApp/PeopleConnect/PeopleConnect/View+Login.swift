@@ -66,7 +66,7 @@ class BaseLogRegView: UITableViewController {
     var m_countryCode:Int = 86
     var m_cellNumber:String = ""
     var m_password:String = ""
-    var m_code:String = ""
+    var m_verifyCode:String = ""
 
     func countryCodeChanged(sender:UITextField) {
         let alert = self.presentedViewController as! UIAlertController
@@ -119,10 +119,13 @@ class BaseLogRegView: UITableViewController {
         case 86:
             if inputSize == 11 {
                 okAction.enabled = checkCNCellNumber(input)
+                m_getCodeBtn.enabled = true
             }
             break
         case 1:
-            okAction.enabled = (inputSize == 10)
+            let cellGood = (inputSize == 10)
+            okAction.enabled = cellGood
+            m_getCodeBtn.enabled = cellGood
             break
         default:
             break
@@ -180,14 +183,15 @@ class BaseLogRegView: UITableViewController {
     }
     
     @IBAction func getVerifyCode(sender: AnyObject) {
+        httpVerifyCode(m_countryCode, cell: m_cellNumber)
         m_getCodeBtn.startCount()
     }
 
     func codeChanged(sender:UITextField) {
         let alert = self.presentedViewController as! UIAlertController
         let okAction:UIAlertAction = alert.actions.last!
-        m_code = sender.text!
-        okAction.enabled = (m_code.characters.count == 4)
+        m_verifyCode = sender.text!
+        okAction.enabled = (m_verifyCode.characters.count == 6)
     }
     
     @IBAction func inputCode(sender:AnyObject) {
@@ -195,12 +199,12 @@ class BaseLogRegView: UITableViewController {
         let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Default,
             handler: { action in
-                self.m_baseCodeBtn?.setTitle(self.m_code, forState: .Normal)
+                self.m_baseCodeBtn?.setTitle(self.m_verifyCode, forState: .Normal)
                 self.updateNextButton()
         })
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
-            textField.placeholder = "请输入4位验证码"
+            textField.placeholder = "请输入6位验证码"
             textField.keyboardType = .NumberPad
             textField.addTarget(self, action: Selector("codeChanged:"), forControlEvents: .EditingChanged)
         }
@@ -259,7 +263,7 @@ class LogView: BaseLogRegView {
         if m_usePassword {
             m_basePassBtn = m_passCodeBtn
             m_baseCodeBtn = nil
-            m_code = ""
+            m_verifyCode = ""
             
             m_passCodeBtn.removeTarget(self, action: Selector("inputCode:"), forControlEvents: .TouchDown)
             m_passCodeBtn.addTarget(self, action: Selector("inputPassword:"), forControlEvents: .TouchDown)
@@ -279,6 +283,7 @@ class LogView: BaseLogRegView {
             m_passCodeBtn.setTitle("请输入验证码", forState: .Normal)
             
             m_getCodeBtn.hidden = false
+            m_getCodeBtn.enabled = (m_cellNumber.characters.count > 0)
             m_logSwitchBtn.setTitle("返回密码登陆", forState: .Normal)
             m_passLabel.text = "验证码"
         }
@@ -301,12 +306,12 @@ class LogView: BaseLogRegView {
     }
 
     @IBAction func log() {
-        httpLogon(m_countryCode, cell: m_cellNumber, pass: m_password, passed: logSuccess, failed: logFail)
+        httpLogon(m_countryCode, cell: m_cellNumber, pass: m_password, vcode: m_verifyCode, passed: logSuccess, failed: logFail)
         gLoadingView.startLoading()
     }
     
     override func updateNextButton() {
-        let passCode = (m_usePassword ? m_password.characters.count > 0 : m_code.characters.count > 0)
+        let passCode = (m_usePassword ? m_password.characters.count > 0 : m_verifyCode.characters.count > 0)
         m_logBtn.enabled = m_cellNumber.characters.count != 0 && passCode
         m_logBtn.backgroundColor = m_logBtn.enabled ? m_enableColor : UIColor.grayColor()
     }
@@ -325,7 +330,7 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
     var m_enableColor:UIColor? = nil
     
     @IBAction func reg(sender: AnyObject) {
-        httpRegistry(m_nickName, code: m_countryCode, cell: m_cellNumber, pass: m_password, photo: m_photo!,
+        httpRegistry(m_nickName, code: m_countryCode, cell: m_cellNumber, vcode: m_verifyCode, pass: m_password, photo: m_photo!,
             passed: { ()->Void in
                 gLoadingView.stopLoading()
                 self.m_father!.performSegueWithIdentifier("ShowMainMenu", sender: nil)
@@ -388,7 +393,8 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
         m_picker.m_cliperDelegate = self
         m_enableColor = m_regBtn.backgroundColor
         m_regBtn.backgroundColor = UIColor.grayColor()
-        
+        m_getCodeBtn.enabled = false
+
         m_baseCodeBtn = m_codeBtn
         m_basePassBtn = m_passBtn
     }
@@ -404,7 +410,7 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
         m_regBtn.enabled =
             m_cellNumber.characters.count > 0 &&
             m_password.characters.count > 0 &&
-            m_code.characters.count > 0 &&
+            m_verifyCode.characters.count > 0 &&
             m_nickName.characters.count > 0 &&
             m_photo != nil
         m_regBtn.backgroundColor = m_regBtn.enabled ? m_enableColor : UIColor.grayColor()
@@ -460,14 +466,14 @@ class LoginView: UIViewController {
     
     @IBAction func login1(sender: AnyObject) {
         gLoadingView.startLoading()
-        httpLogon(86, cell: "13700000000", pass: "qqqqqqqq", passed: logSuccess, failed: nil)
+        httpLogon(86, cell: "13700000000", pass: "qqqqqqqq", vcode: "", passed: logSuccess, failed: nil)
     }
     
     @IBAction func login2(sender: AnyObject) {
-        httpLogon(86, cell: "13700000002", pass: "qqqqqqqq", passed: logSuccess, failed: nil)
+        httpLogon(86, cell: "13700000002", pass: "qqqqqqqq", vcode: "", passed: logSuccess, failed: nil)
     }
     
     @IBAction func login3(sender: AnyObject) {
-        httpLogon(86, cell: "13700000003", pass: "qqqqqqqq", passed: logSuccess, failed: nil)
+        httpLogon(86, cell: "13700000003", pass: "qqqqqqqq", vcode: "", passed: logSuccess, failed: nil)
     }
 }

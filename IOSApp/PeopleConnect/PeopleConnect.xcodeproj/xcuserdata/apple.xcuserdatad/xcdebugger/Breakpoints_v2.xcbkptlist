@@ -1751,11 +1751,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "569595584.637419"
+            timestampString = "570380797.635765"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "368"
-            endingLineNumber = "368"
+            startingLineNumber = "373"
+            endingLineNumber = "373"
             landmarkName = "inputNickName(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1959,11 +1959,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "569595584.637419"
+            timestampString = "570380797.635765"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "373"
-            endingLineNumber = "373"
+            startingLineNumber = "378"
+            endingLineNumber = "378"
             landmarkName = "inputNickName(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1975,11 +1975,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "569595584.637419"
+            timestampString = "570380797.635765"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "310"
-            endingLineNumber = "310"
+            startingLineNumber = "315"
+            endingLineNumber = "315"
             landmarkName = "updateNextButton()"
             landmarkType = "5">
          </BreakpointContent>
@@ -2023,11 +2023,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "569595584.637419"
+            timestampString = "570380797.635765"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "424"
-            endingLineNumber = "424"
+            startingLineNumber = "430"
+            endingLineNumber = "430"
             landmarkName = "switchLogReg(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -2039,11 +2039,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "569595584.637419"
+            timestampString = "570380797.635765"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "428"
-            endingLineNumber = "428"
+            startingLineNumber = "434"
+            endingLineNumber = "434"
             landmarkName = "switchLogReg(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -2055,11 +2055,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "569595584.637419"
+            timestampString = "570380797.635765"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "290"
-            endingLineNumber = "290"
+            startingLineNumber = "295"
+            endingLineNumber = "295"
             landmarkName = "logFail(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -3741,6 +3741,22 @@
             startingLineNumber = "84"
             endingLineNumber = "84"
             landmarkName = "httpGetLikeUsers()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PeopleConnect/Req+LogReg.swift"
+            timestampString = "570381807.443975"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
+            landmarkName = "httpRegistry(_:code:cell:vcode:pass:photo:passed:failed:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

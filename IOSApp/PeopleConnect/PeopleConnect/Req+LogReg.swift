@@ -10,12 +10,26 @@ import Foundation
 import AFNetworking
 import UIKit
 
-func httpRegistry(name:String, code:Int, cell:String, pass:String, photo:NSData, passed:(()->Void)?, failed:((String?)->Void)?) {
+func httpVerifyCode(code:Int, cell:String) {
+    let params: Dictionary = [
+        "cell":cell,
+        "code":NSNumber(integer: code)]
+    
+    http.postRequest("verify", params: params,
+        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+        },
+        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
+        }
+    )
+}
+
+func httpRegistry(name:String, code:Int, cell:String, vcode:String, pass:String, photo:NSData, passed:(()->Void)?, failed:((String?)->Void)?) {
     let deviceID:String = (UIDevice.currentDevice().identifierForVendor?.UUIDString)!
     let params: Dictionary = [
         "name":name,
         "cell":cell,
         "code":NSNumber(integer: code),
+        "vcode":vcode,
         "pass":pass,
         "device":deviceID]
 
@@ -45,12 +59,13 @@ func httpRegistry(name:String, code:Int, cell:String, pass:String, photo:NSData,
     )
 }
 
-func httpLogon(code:Int, cell:String, pass:String, passed:(()->Void)?, failed:((String?)->Void)?) {
+func httpLogon(code:Int, cell:String, pass:String, vcode:String, passed:(()->Void)?, failed:((String?)->Void)?) {
     let deviceID:String = (UIDevice.currentDevice().identifierForVendor?.UUIDString)!
     let params: Dictionary = [
         "cell":cell,
         "code":NSNumber(integer: code),
         "pass":pass,
+        "vcode":vcode,
         "device":deviceID]
 
     http.postRequest("login", params: params,
