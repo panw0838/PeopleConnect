@@ -70,6 +70,17 @@ func GetTimeID(t time.Time) uint64 {
 	return uint64(duration / 1000 / 1000 / 1000)
 }
 
+func GetTimeFrom1970() uint64 {
+	var startTime = time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)
+	now := time.Now()
+	duration := now.Sub(startTime)
+	return uint64(duration / 1000 / 1000 / 1000)
+}
+
+func GetCheckSum(time uint64) uint64 {
+	return time
+}
+
 func expandU32ToU64(value uint64) uint64 {
 	var result uint64 = 0
 

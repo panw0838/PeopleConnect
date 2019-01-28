@@ -3,6 +3,7 @@ package user
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"share"
 	"strings"
 	"time"
@@ -114,4 +115,81 @@ func dbAddGroup(uID uint64, newGroup string, year int, c redis.Conn) (uint32, er
 	}
 
 	return channel, nil
+}
+
+type AddGroupInput struct {
+	UID  uint64 `json:"uid"`
+	Name string `json:"name"`
+	Year int    `json:"year"`
+}
+
+type AddGroupReturn struct {
+	GID uint32 `json:"id"`
+}
+
+func AddGroupHandler(w http.ResponseWriter, r *http.Request) {
+	var input AddGroupInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	defer c.Close()
+
+	var response AddGroupReturn
+	response.GID, err = dbAddGroup(input.UID, input.Name, input.Year, c)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	data, err := json.Marshal(&response)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	share.WriteErrorCode(w, nil)
+	w.Write(data)
+}
+
+type SearchGroupInput struct {
+	UID  uint64 `json:"uid"`
+	Name string `json:"name"`
+}
+
+type SearchGroupReturn struct {
+	Names []string `json:"names"`
+}
+
+func SearchGroupHandler(w http.ResponseWriter, r *http.Request) {
+	var input SearchGroupInput
+	err := share.ReadInput(r, &input)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+
+	c, err := redis.Dial("tcp", share.ContactDB)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	defer c.Close()
+
+	var response SearchGroupReturn
+	response.Names = share.Search(input.Name)
+	data, err := json.Marshal(&response)
+	if err != nil {
+		share.WriteErrorCode(w, err)
+		return
+	}
+	share.WriteErrorCode(w, nil)
+	w.Write(data)
 }

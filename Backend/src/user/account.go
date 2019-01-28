@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"share"
 	"strconv"
-	"strings"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -108,30 +107,6 @@ func dbRegistry(info RegistryInfo, c redis.Conn) (uint64, error) {
 	}
 
 	return newID, nil
-}
-
-func dbLogon(info LoginInfo, c redis.Conn) (uint64, error) {
-	uID, err := dbGetUser(info.CountryCode, info.CellNumber, c)
-	if err != nil {
-		return 0, err
-	}
-	if uID == 0 {
-		return 0, fmt.Errorf("Account not exists")
-	}
-
-	accountKey := GetAccountKey(uID)
-
-	password, err := DbGetUserInfoField(accountKey, PassField, c)
-	if err != nil {
-		return 0, err
-	}
-
-	if strings.Compare(password, info.Password) == 0 {
-		_ = DbSetUserInfoField(accountKey, DeviceField, info.Device, c)
-		return uID, nil
-	} else {
-		return 0, fmt.Errorf("password not correct")
-	}
 }
 
 func DbGetUserInfoField(accountKey string, filed string, c redis.Conn) (string, error) {
