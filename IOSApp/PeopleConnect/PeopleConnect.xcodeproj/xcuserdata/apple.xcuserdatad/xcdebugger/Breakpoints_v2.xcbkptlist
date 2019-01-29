@@ -1751,11 +1751,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "570380797.635765"
+            timestampString = "570474312.833678"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "373"
-            endingLineNumber = "373"
+            startingLineNumber = "376"
+            endingLineNumber = "376"
             landmarkName = "inputNickName(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1959,11 +1959,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "570380797.635765"
+            timestampString = "570474312.833678"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "378"
-            endingLineNumber = "378"
+            startingLineNumber = "381"
+            endingLineNumber = "381"
             landmarkName = "inputNickName(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1975,11 +1975,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "570380797.635765"
+            timestampString = "570474312.833678"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "315"
-            endingLineNumber = "315"
+            startingLineNumber = "318"
+            endingLineNumber = "318"
             landmarkName = "updateNextButton()"
             landmarkType = "5">
          </BreakpointContent>
@@ -2023,11 +2023,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "570380797.635765"
+            timestampString = "570474312.833678"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "430"
-            endingLineNumber = "430"
+            startingLineNumber = "433"
+            endingLineNumber = "433"
             landmarkName = "switchLogReg(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -2039,11 +2039,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "570380797.635765"
+            timestampString = "570474312.833678"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "434"
-            endingLineNumber = "434"
+            startingLineNumber = "437"
+            endingLineNumber = "437"
             landmarkName = "switchLogReg(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -2055,11 +2055,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeopleConnect/View+Login.swift"
-            timestampString = "570380797.635765"
+            timestampString = "570474312.833678"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "295"
-            endingLineNumber = "295"
+            startingLineNumber = "298"
+            endingLineNumber = "298"
             landmarkName = "logFail(_:)"
             landmarkType = "5">
          </BreakpointContent>

@@ -10,6 +10,8 @@ import Foundation
 import CoreTelephony
 import Contacts
 
+var countryDict = Dictionary<Int, CountryInfo>()
+
 struct CountryInfo {
     var enName = ""
     var cnName = ""
@@ -27,8 +29,10 @@ struct CountryInfo {
     }
 }
 
-func loadCountryInfo()->Dictionary<Int, CountryInfo> {
-    var countryDict = Dictionary<Int, CountryInfo>()
+func loadCountryInfo() {
+    if countryDict.count == 0 {
+        return
+    }
     let mainBundle = NSBundle.mainBundle()
     let filePath = mainBundle.pathForResource("CountryCode", ofType: "")
     let fileData = try? NSString(contentsOfFile: filePath!, encoding: NSUTF8StringEncoding)
@@ -44,14 +48,13 @@ func loadCountryInfo()->Dictionary<Int, CountryInfo> {
             countryDict[newCountry.code] = newCountry
         }
     }
-    return countryDict
 }
 
-func getCountryCode(dict:Dictionary<Int, CountryInfo>)->Int {
+func getCountryCode()->Int {
     let networkInfo = CTTelephonyNetworkInfo()
     if let carrier = networkInfo.subscriberCellularProvider {
         if carrier.isoCountryCode != nil {
-            for info in dict.values.enumerate() {
+            for info in countryDict.values.enumerate() {
                 if info.element.cnName == carrier.isoCountryCode {
                     return info.index
                 }
@@ -119,24 +122,23 @@ func getContactsBook()->(names:Array<String>, cells:Array<String>) {
                 
                 let numbers = contact.phoneNumbers
                 for number in numbers {
-                    if number.label == CNLabelPhoneNumberMobile || (cell.characters.count == 0 && number.label == CNLabelPhoneNumberMain) {
-                        let numString:String = (number.value as! CNPhoneNumber).stringValue
-                        var finalString:String = ""
-                        for c in numString.characters {
-                            if c != " " && c != "(" && c != ")" && c != "-" {
-                                finalString.append(c)
-                            }
+                    let numString:String = (number.value as! CNPhoneNumber).stringValue
+                    var finalString:String = ""
+                    for c in numString.characters {
+                        if c != " " && c != "(" && c != ")" && c != "-" {
+                            finalString.append(c)
                         }
-                        cell = finalString
+                    }
+                    cell = finalString
+                    
+                    if name.characters.count != 0 && cell.characters.count != 0 {
+                        names.append(name)
+                        cells.append(cell)
+                        print(name, cell)
                     }
                 }
-                
-                if name.characters.count != 0 && cell.characters.count != 0 {
-                    names.append(name)
-                    cells.append(cell)
-                    print(name, cell)
-                }
-        })
+            }
+        )
     }
     catch {
     }

@@ -9,8 +9,6 @@
 import UIKit
 import PhotosUI
 
-var countryDict:Dictionary<Int, CountryInfo>? = nil
-
 class CountButton:UIButton {
     var m_counts = 60
     
@@ -63,7 +61,7 @@ class BaseLogRegView: UITableViewController {
     var m_baseCodeBtn: UIButton?
     var m_father:LoginView? = nil
 
-    var m_countryCode:Int = 86
+    var m_countryCode:Int = getCountryCode()
     var m_cellNumber:String = ""
     var m_password:String = ""
     var m_verifyCode:String = ""
@@ -77,8 +75,8 @@ class BaseLogRegView: UITableViewController {
         okAction.enabled = false
         if nameSize > 0 && nameSize < 5 {
             let code = Int(input)
-            if countryDict![code!] != nil {
-                alert.message = "+" + input + " " + countryDict![code!]!.cnName
+            if let info = countryDict[code!] {
+                alert.message = "+" + input + " " + info.cnName
                 okAction.enabled = true
             }
             else {
@@ -88,7 +86,6 @@ class BaseLogRegView: UITableViewController {
     }
     
     @IBAction func changeCountryCode(sender: AnyObject) {
-        countryDict = loadCountryInfo()
         let alert = UIAlertController(title: "请输入国家码", message: " ", preferredStyle: .Alert)
         let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Default,
@@ -230,6 +227,8 @@ class LogView: BaseLogRegView {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadCountryInfo()
+        
         m_cellBtn.layer.cornerRadius = 10
         m_countryBtn.layer.cornerRadius = 10
         m_passCodeBtn.layer.cornerRadius = 10
