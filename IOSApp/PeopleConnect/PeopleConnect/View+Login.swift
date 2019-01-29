@@ -235,7 +235,6 @@ class LogView: BaseLogRegView {
         m_passCodeBtn.layer.cornerRadius = 10
         m_photo.layer.cornerRadius = 10
         m_photo.layer.masksToBounds = true
-        m_countryBtn.setTitle(getCountryCodeString(), forState: .Normal)
         m_getCodeBtn.hidden = true
         m_logBtn.enabled = false
         m_enableColor = m_logBtn.backgroundColor
@@ -255,6 +254,10 @@ class LogView: BaseLogRegView {
             m_countryBtn.setTitle("+"+String(m_countryCode), forState: .Normal)
             m_cellNumber = userInfo.cellNumber
             m_cellBtn.setTitle(m_cellNumber, forState: .Normal)
+        }
+        else {
+            m_countryCode = 86
+            m_countryBtn.setTitle("+86", forState: .Normal)
         }
     }
     
@@ -388,7 +391,7 @@ class RegView: BaseLogRegView, PhotoClipperDelegate, UINavigationControllerDeleg
         m_codeBtn.layer.cornerRadius = 10
         m_photoBtn.layer.cornerRadius = 10
         m_photoBtn.layer.masksToBounds = true
-        m_countryBtn.setTitle(getCountryCodeString(), forState: .Normal)
+        m_countryBtn.setTitle("+86", forState: .Normal)
         m_regBtn.enabled = false
         m_picker.m_cliperDelegate = self
         m_enableColor = m_regBtn.backgroundColor
