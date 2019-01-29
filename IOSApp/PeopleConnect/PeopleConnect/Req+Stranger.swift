@@ -111,7 +111,7 @@ func httpGetCellContacts(names:Array<String>, cells:Array<String>, passed: (()->
     contactsData.m_cellUsers.clearContacts()
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
-        "code":NSNumber(integer: getCountryCode()),
+        "code":NSNumber(integer: userInfo.countryCode),
         "names":http.getStringArrayParam(names),
         "cells":http.getStringArrayParam(cells)]
     http.postRequest("searchusers", params: params,

@@ -47,17 +47,18 @@ func loadCountryInfo()->Dictionary<Int, CountryInfo> {
     return countryDict
 }
 
-func getCountryCode()->Int {
+func getCountryCode(dict:Dictionary<Int, CountryInfo>)->Int {
     let networkInfo = CTTelephonyNetworkInfo()
-    let carrier = networkInfo.subscriberCellularProvider
-    if carrier != nil && carrier!.mobileCountryCode != nil {
-        return Int(carrier!.mobileCountryCode!)!
+    if let carrier = networkInfo.subscriberCellularProvider {
+        if carrier.isoCountryCode != nil {
+            for info in dict.values.enumerate() {
+                if info.element.cnName == carrier.isoCountryCode {
+                    return info.index
+                }
+            }
+        }
     }
     return 86
-}
-
-func getCountryCodeString()->String {
-    return "+" + String(getCountryCode())
 }
 
 func checkCNCellNumber(cell:String)->Bool {
