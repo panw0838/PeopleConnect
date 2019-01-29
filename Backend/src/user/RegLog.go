@@ -147,6 +147,7 @@ func VerifyCode(phone string, code string) (bool, error) {
 	if ret.Code == 200 {
 		return true, nil
 	} else {
+		println(phone, code, ret.Code)
 		return false, nil
 	}
 }
@@ -217,6 +218,8 @@ func getFormInput(form *multipart.Form, param *RegistryInfo) error {
 			param.Device = v[0]
 		} else if strings.Compare(k, "name") == 0 {
 			param.UserName = v[0]
+		} else if strings.Compare(k, "vcode") == 0 {
+			param.VerifyCode = v[0]
 		}
 	}
 
