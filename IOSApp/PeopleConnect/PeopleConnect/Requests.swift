@@ -133,6 +133,14 @@ class HttpService {
         afManager.POST(url, parameters: params, headers: nil, constructingBodyWithBlock: block, progress: nil, success: success, failure: fail)
     }
     
+    func getIntArrayParam(array:Array<Int>)->NSMutableArray {
+        let param:NSMutableArray = NSMutableArray()
+        for member in array {
+            param.addObject(NSNumber(integer: member))
+        }
+        return param
+    }
+    
     func getUInt32ArrayParam(array:Array<UInt32>)->NSMutableArray {
         let param:NSMutableArray = NSMutableArray()
         for member in array {

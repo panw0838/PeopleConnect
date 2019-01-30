@@ -107,11 +107,11 @@ func httpDidFaceUsers() {
     )
 }
 
-func httpGetCellContacts(names:Array<String>, cells:Array<String>, passed: (()->Void)?, failed: ((err:String?)->Void)?) {
+func httpGetCellContacts(names:Array<String>, codes:Array<Int>, cells:Array<String>, passed: (()->Void)?, failed: ((err:String?)->Void)?) {
     contactsData.m_cellUsers.clearContacts()
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),
-        "code":NSNumber(integer: userInfo.countryCode),
+        "codes":http.getIntArrayParam(codes),
         "names":http.getStringArrayParam(names),
         "cells":http.getStringArrayParam(cells)]
     http.postRequest("searchusers", params: params,

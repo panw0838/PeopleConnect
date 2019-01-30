@@ -30,14 +30,14 @@ struct CountryInfo {
 }
 
 func loadCountryInfo() {
-    if countryDict.count == 0 {
+    if countryDict.count != 0 {
         return
     }
     let mainBundle = NSBundle.mainBundle()
     let filePath = mainBundle.pathForResource("CountryCode", ofType: "")
-    let fileData = try? NSString(contentsOfFile: filePath!, encoding: NSUTF8StringEncoding)
-    if fileData != nil {
-        let lines = fileData!.componentsSeparatedByString("\n")
+    
+    if let fileData = try? NSString(contentsOfFile: filePath!, encoding: NSUTF8StringEncoding) {
+        let lines = fileData.componentsSeparatedByString("\n")
         var firstLine = true
         for line in lines {
             if firstLine {
@@ -108,33 +108,77 @@ func checkContactsBookPrivacy()->String {
     return errString
 }
 
-func getContactsBook()->(names:Array<String>, cells:Array<String>) {
+func getContactsBook()->(names:Array<String>, codes:Array<Int>, cells:Array<String>) {
     let store = CNContactStore()
     let request = CNContactFetchRequest(keysToFetch: [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey])
     var names = Array<String>()
+    var codes = Array<Int>()
     var cells = Array<String>()
     do {
         try store.enumerateContactsWithFetchRequest(request,
             usingBlock: {(contact:CNContact, pStop:UnsafeMutablePointer<ObjCBool>)->Void in
                 let familyName = (contact.familyName.characters.count > 0 ? " " : "") + contact.familyName
                 let name = contact.givenName + familyName
-                var cell = ""
                 
                 let numbers = contact.phoneNumbers
                 for number in numbers {
-                    let numString:String = (number.value as! CNPhoneNumber).stringValue
-                    var finalString:String = ""
-                    for c in numString.characters {
-                        if c != " " && c != "(" && c != ")" && c != "-" {
-                            finalString.append(c)
+                    let rawCell:String = (number.value as! CNPhoneNumber).stringValue
+                    var cell = ""
+                    var code = userInfo.countryCode
+                    var processCode = false
+                    var formatCell = false
+                    
+                    for (i, c) in rawCell.characters.enumerate() {
+                        if c < "0" || c > "9" {
+                            formatCell = true
+                        }
+                        // +86 process
+                        if i == 0 && c == "+" {
+                            code = 0
+                            processCode = true
+                            continue
+                        }
+                        if processCode && c >= "0" && c <= "9" {
+                            code *= 10
+                            code += Int(String(c))!
+                            continue
+                        }
+                        if processCode && (c < "0" || c > "9") {
+                            processCode = false
+                            continue
+                        }
+                        // 1 (407) process
+                        if c == "(" && cell.characters.count > 0 {
+                            code = Int(cell)!
+                            cell = ""
+                            continue
+                        }
+                        if c >= "0" && c <= "9" {
+                            cell.append(c)
                         }
                     }
-                    cell = finalString
+                    
+                    // 86137xxxxxxx process
+                    if !formatCell {
+                        var index = cell.startIndex.successor()
+                        for var i=0; i<3; i++ {
+                            let tryCodeStr = cell.substringToIndex(index)
+                            if let tryCode = Int(tryCodeStr) {
+                                if let info = countryDict[tryCode] {
+                                    code = info.code
+                                    cell = cell.substringFromIndex(index)
+                                    break
+                                }
+                            }
+                            index = index.successor()
+                        }
+                    }
                     
                     if name.characters.count != 0 && cell.characters.count != 0 {
                         names.append(name)
+                        codes.append(code)
                         cells.append(cell)
-                        print(name, cell)
+                        print(name, rawCell, code, cell)
                     }
                 }
             }
@@ -143,6 +187,6 @@ func getContactsBook()->(names:Array<String>, cells:Array<String>) {
     catch {
     }
     
-    return (names, cells)
+    return (names, codes, cells)
 }
 

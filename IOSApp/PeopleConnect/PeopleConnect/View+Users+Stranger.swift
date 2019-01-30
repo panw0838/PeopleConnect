@@ -21,8 +21,8 @@ extension UsersView {
         let err = checkContactsBookPrivacy()
         if err.characters.count == 0 {
             gLoadingView.startLoading()
-            let (names, cells) = getContactsBook()
-            httpGetCellContacts(names, cells: cells,
+            let (names, codes, cells) = getContactsBook()
+            httpGetCellContacts(names, codes: codes, cells: cells,
                 passed: {()->Void in
                     gLoadingView.stopLoading()
                 },
