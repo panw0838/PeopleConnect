@@ -10,10 +10,29 @@ import UIKit
 import Photos
 
 class ImgCell:UICollectionViewCell {
-    @IBOutlet weak var m_img: UIImageView!
-    @IBOutlet weak var m_mark: UILabel!
+    var m_image = UIImageView(frame: CGRectZero)
+    var m_mark = UILabel(frame: CGRectZero)
     var m_asset:PHAsset? = nil
     var m_order:Int = 0
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        initSubViews()
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        initSubViews()
+    }
+    
+    func initSubViews() {
+        m_mark.textAlignment = .Center
+        m_mark.textColor = UIColor.whiteColor()
+        m_mark.backgroundColor = UIColor.blueColor()
+        m_mark.font = UIFont.systemFontOfSize(13)
+        addSubview(m_image)
+        addSubview(m_mark)
+    }
 }
 
 protocol ImgPickerDelegate {
@@ -27,6 +46,8 @@ class ImgPicker:
     UICollectionViewDelegate,
     UICollectionViewDelegateFlowLayout {
     
+    var m_cellSize:CGFloat = 0
+    let m_markSize:CGFloat = 15
     var m_maxCount = 9
     var m_imgMgr = PHCachingImageManager()
     var m_imgs:Array<PHAsset>? = nil
@@ -48,8 +69,7 @@ class ImgPicker:
     }
 
     override func viewDidLoad() {
-        let cellNib = UINib(nibName: "ImgCell", bundle: NSBundle(forClass: ImgCell.classForCoder()))
-        m_imgTable.registerNib(cellNib, forCellWithReuseIdentifier: "ImgCell")
+        m_imgTable.registerClass(ImgCell.classForCoder(), forCellWithReuseIdentifier: "ImgCell")
         m_imgTable.allowsMultipleSelection = true
 
         fetchAssets()
@@ -147,7 +167,7 @@ class ImgPicker:
         
         m_imgs = items.copy() as? Array<PHAsset>
     }
-
+    
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         return 1
     }
@@ -158,8 +178,11 @@ class ImgPicker:
         
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ImgCell", forIndexPath: indexPath) as! ImgCell
+
         cell.m_asset = m_imgs![indexPath.row]
-        
+        cell.m_image.frame.size = CGSizeMake(m_cellSize, m_cellSize)
+        cell.m_mark.frame.size = CGSizeMake(m_markSize, m_markSize)
+
         if m_selected.contains(indexPath.row) {
             let idx = m_selected.indexOf(indexPath.row)
             cell.m_mark.text = String(idx!+1)
@@ -169,9 +192,13 @@ class ImgPicker:
             cell.m_mark.hidden = true
         }
 
-        m_imgMgr.requestImageForAsset(cell.m_asset!, targetSize: CGSizeMake(40, 40), contentMode: .AspectFill, options: nil, resultHandler: {
-            (result:UIImage?, info:[NSObject:AnyObject]?)->Void in
-                cell.m_img.image = result
+        m_imgMgr.requestImageForAsset(
+            cell.m_asset!,
+            targetSize: CGSizeMake(m_cellSize, m_cellSize),
+            contentMode: .AspectFill,
+            options: nil,
+            resultHandler: { (result:UIImage?, info:[NSObject:AnyObject]?)->Void in
+                cell.m_image.image = result
             })
         return cell
     }
@@ -219,14 +246,17 @@ class ImgPicker:
     }
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        var width = m_imgTable.contentSize.width
-        for var num = 1; width > 100; num++ {
-            width = (m_imgTable.contentSize.width - 5*CGFloat(num)*2) / CGFloat(num)
+        if m_cellSize == 0 {
+            // Fetch shorter length
+            let numRowItems = 3
+            let arrangementLength = min(CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame));
+            let minimumInteritemSpacing = 5
+            let totalInteritemSpacing = CGFloat(max((numRowItems - 1), 0) * minimumInteritemSpacing)
+            let totalHorizontalSpacing = totalInteritemSpacing + 5 + 5
+            
+            // Caculate size for portrait mode
+            m_cellSize = floor((arrangementLength - totalHorizontalSpacing) / CGFloat(numRowItems))
         }
-        return CGSizeMake(width, width)
-    }
-    
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+        return CGSizeMake(m_cellSize, m_cellSize)
     }
 }

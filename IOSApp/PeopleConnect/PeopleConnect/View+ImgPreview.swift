@@ -98,15 +98,15 @@ class ImgPreview: UIView {
         }
         else {
             initPreviewPattern(numImgs)
-            
+
             for preImg in m_preImgs {
                 preImg.hidden = true
             }
-            
+
             let fullSize = self.frame.height
             let blkSize = (self.frame.height - PostPreViewGap) / 2
             let step = blkSize + PostPreViewGap
-            
+
             for var i=0; i<numImgs; i++ {
                 let layout = m_pattern[i]
                 let size = (layout.scale == 1 ? blkSize : fullSize)
