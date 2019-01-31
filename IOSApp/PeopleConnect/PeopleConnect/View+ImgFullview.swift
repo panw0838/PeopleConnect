@@ -29,6 +29,8 @@ class ImgPageView:UIView {
         let scale = (xScale > yScale ? yScale : xScale)
         let newImgSize = CGSizeMake(image.size.width*scale, image.size.height*scale)
         
+        print(rect.size, image.size)
+        
         self.frame = rect
         m_imgView?.image = image
         m_imgView?.frame.origin = CGPointMake((rect.width-newImgSize.width)*0.5, (rect.height-newImgSize.height)*0.5)

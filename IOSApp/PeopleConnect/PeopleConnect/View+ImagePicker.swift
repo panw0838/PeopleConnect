@@ -30,6 +30,8 @@ class ImgCell:UICollectionViewCell {
         m_mark.textColor = UIColor.whiteColor()
         m_mark.backgroundColor = UIColor.blueColor()
         m_mark.font = UIFont.systemFontOfSize(13)
+        m_image.contentMode = .ScaleAspectFill
+        m_image.layer.masksToBounds = true
         addSubview(m_image)
         addSubview(m_mark)
     }
@@ -191,10 +193,10 @@ class ImgPicker:
         else {
             cell.m_mark.hidden = true
         }
-
+    
         m_imgMgr.requestImageForAsset(
             cell.m_asset!,
-            targetSize: CGSizeMake(m_cellSize, m_cellSize),
+            targetSize: CGSizeMake(m_cellSize*2, m_cellSize*2),
             contentMode: .AspectFill,
             options: nil,
             resultHandler: { (result:UIImage?, info:[NSObject:AnyObject]?)->Void in

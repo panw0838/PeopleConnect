@@ -249,7 +249,7 @@ class ImgEditPreview:ImgPreview, ImgPickerDelegate {
         m_picks.removeAll()
         
         for asset in imgs {
-            let tarSize = CGSizeMake(1024*4, 1024*4)
+            let tarSize = CGSizeMake(CGFloat(asset.pixelWidth), CGFloat(asset.pixelHeight))
             imgMgr.requestImageForAsset(asset, targetSize: tarSize, contentMode: .AspectFill, options: options, resultHandler: {(img:UIImage?, info:[NSObject:AnyObject]?)->Void in
                 self.m_picks.append(img!)
             })
