@@ -89,26 +89,6 @@ func httpGetPhotos(cIDs:Array<UInt64>, passed: (()->Void)?, failed: ((err:String
     )
 }
 
-func httpAddContact(contact:UInt64, name:String) {
-    let params: Dictionary = [
-        "user":NSNumber(unsignedLongLong: userInfo.userID),
-        "contact":NSNumber(unsignedLongLong: contact),
-        "name":name]
-    http.postRequest("addcontact", params: params,
-        success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            if getErrorCode(response as! NSData) == 0 {
-                contactsData.addContact(ContactInfo(id: contact, f: UndefineBit, n: name))
-                contactsData.updateDelegates()
-
-                reqNotify!.remRequest(contact)
-                reqNotify!.UpdateDelegate()
-            }
-        },
-        fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
-            print("请求失败")
-    })
-}
-
 func httpRemContact(contact:UInt64) {
     let params: Dictionary = [
         "user":NSNumber(unsignedLongLong: userInfo.userID),

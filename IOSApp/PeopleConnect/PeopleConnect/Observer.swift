@@ -32,7 +32,7 @@ class TCPClient:NSObject, GCDAsyncSocketDelegate {
     
     func start() {
         do {
-            try m_socket.connectToHost("47.105.219.18", onPort: 8888)
+            try m_socket.connectToHost("47.105.219.18", onPort: 7878)
             logon()
         }
         catch {
