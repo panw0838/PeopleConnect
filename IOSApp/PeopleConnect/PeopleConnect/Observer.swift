@@ -30,9 +30,10 @@ class TCPClient:NSObject, GCDAsyncSocketDelegate {
 
     }
     
-    func start(ip:String, port:UInt16) {
+    func start() {
         do {
-            try m_socket.connectToHost(ip, onPort: port)
+            try m_socket.connectToHost("47.105.219.18", onPort: 8888)
+            logon()
         }
         catch {
             print(error)
@@ -78,6 +79,7 @@ class TCPClient:NSObject, GCDAsyncSocketDelegate {
     
     func socketDidDisconnect(sock: GCDAsyncSocket, withError err: NSError?) {
         // reconnect
+        start()
     }
     
     func socket(sock: GCDAsyncSocket, didWriteDataWithTag tag: Int) {

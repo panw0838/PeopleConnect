@@ -60,6 +60,7 @@ class UsersView:
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        m_curTag = m_tabsBar.selectedSegmentIndex
         m_contacts.registerClass(UserCell.classForCoder(), forCellWithReuseIdentifier: "UserCell")
         m_contacts.registerClass(ActionCell.classForCoder(), forCellWithReuseIdentifier: "ActionCell")
         contactsData.setDelegate(self)
@@ -74,16 +75,13 @@ class UsersView:
     
     var m_noteName:String = ""
     var m_messege:String = ""
-    var m_nameGood:Bool = false
-    var m_messegeGood:Bool = false
     
     func requestNameChanged(sender:UITextField) {
         let alert:UIAlertController = self.presentedViewController as! UIAlertController
         let okAction:UIAlertAction = alert.actions.last!
         m_noteName = (alert.textFields?.first?.text)!
         let nameSize = m_noteName.characters.count
-        m_nameGood = (nameSize > 0 && nameSize < 18)
-        okAction.enabled = (m_nameGood && m_messegeGood)
+        okAction.enabled = (nameSize > 0 && nameSize < 18)
     }
     
     func requestMessegeChanged(sender:UITextField) {
@@ -91,8 +89,7 @@ class UsersView:
         let okAction:UIAlertAction = alert.actions.last!
         m_messege = (alert.textFields?.last?.text)!
         let nameSize = m_messege.characters.count
-        m_messegeGood = (nameSize > 0 && nameSize < 18)
-        okAction.enabled = (m_nameGood && m_messegeGood)
+        okAction.enabled = (nameSize > 0 && nameSize < 18)
     }
     
     func RemoveContact(uID:UInt64) {
@@ -112,13 +109,8 @@ class UsersView:
         let noAction = UIAlertAction(title: "取消", style: UIAlertActionStyle.Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: UIAlertActionStyle.Default,
             handler: { action in
-                httpRequestContact(uID, name: self.m_noteName, messege: self.m_messege)
+                httpRequestContact(uID, messege: self.m_messege)
         })
-        alert.addTextFieldWithConfigurationHandler {
-            (textField: UITextField!) -> Void in
-            textField.placeholder = "设置好友备注名，18个字以内"
-            textField.addTarget(self, action: Selector("requestNameChanged:"), forControlEvents: .EditingChanged)
-        }
         alert.addTextFieldWithConfigurationHandler {
             (textField: UITextField!) -> Void in
             textField.placeholder = "好友请求信息，18个字以内"

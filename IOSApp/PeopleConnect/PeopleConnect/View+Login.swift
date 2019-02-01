@@ -299,8 +299,7 @@ class LogView: BaseLogRegView {
     }
     
     func logSuccess() {
-        tcp.start("192.168.0.104", port: 8888)
-        tcp.logon()
+        tcp.start()
         gLoadingView.stopLoading()
         MsgData.shared.loadMsgFromDB()
         MsgData.shared.Update()
@@ -458,8 +457,7 @@ class LoginView: UIViewController {
     }
 
     func logSuccess() {
-        tcp.start("192.168.0.104", port: 8888)
-        tcp.logon()
+        tcp.start()
         gLoadingView.stopLoading()
         MsgData.shared.loadMsgFromDB()
         MsgData.shared.Update()

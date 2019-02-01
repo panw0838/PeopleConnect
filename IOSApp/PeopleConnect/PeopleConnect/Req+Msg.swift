@@ -8,16 +8,15 @@
 
 import Foundation
 
-func httpRequestContact(contact:UInt64, name:String, messege:String) {
+func httpRequestContact(contact:UInt64, messege:String) {
     let params: Dictionary = [
         "from":NSNumber(unsignedLongLong: userInfo.userID),
         "to":NSNumber(unsignedLongLong: contact),
-        "name":name,
         "mess":messege]
     http.postRequest("requestcontact", params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            if getErrorCode(response as! NSData) != 0 {
-                print("请求失败")
+            if getErrorCode(response as! NSData) == 0 {
+                tcp.notifyMessege(contact)
             }
         },
         fail: { (task: NSURLSessionDataTask?, error : NSError) -> Void in
