@@ -46,26 +46,13 @@ class UNotifyCell:UITableViewCell {
         m_rejectBtn.hidden = !show
     }
     
-    func nameChanged(sender:UITextField) {
-        let alert:UIAlertController = self.m_father!.presentedViewController as! UIAlertController
-        let input:String = (alert.textFields?.first?.text)!
-        let okAction:UIAlertAction = alert.actions.last!
-        let nameSize = input.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
-        okAction.enabled = (nameSize > 0 && nameSize < 18)
-    }
-    
     @IBAction func accept(sender:AnyObject) {
         let alert = UIAlertController(title: "通过好友申请", message: "", preferredStyle: .Alert)
         let noAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .Destructive,
             handler: { action in
-                httpAddContact(self.m_uid, name: (alert.textFields?.first?.text)!)
+                httpAcceptRequest(self.m_uid)
         })
-        alert.addTextFieldWithConfigurationHandler {
-            (textField: UITextField!) -> Void in
-            textField.placeholder = "好友备注"
-            textField.addTarget(self, action: Selector("nameChanged:"), forControlEvents: .EditingChanged)
-        }
         okAction.enabled = false
         alert.addAction(noAction)
         alert.addAction(okAction)
