@@ -47,7 +47,7 @@ func httpSendMessege(to:UInt64, messege:String, passed:((UInt64)->Void)?, failed
         "to":NSNumber(unsignedLongLong: to),
         "msg":messege,
         "type":NSNumber(integer: MessegeType.Msg_Str.rawValue)]
-    let handler = contactsData.getUser(to)!.flag == 0 ? "sendsmsg" : "sendfmsg"
+    let handler = (contactsData.getUser(to)!.flag == 0 ? "sendsmsg" : "sendfmsg")
     http.postRequest(handler, params: params,
         success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             if let retData = processErrorCode(response as! NSData, failed: nil) {
