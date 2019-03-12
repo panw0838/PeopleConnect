@@ -1,9 +1,0 @@
-branches:
-  only:
-    - master
-language: objective-c
-osx_image: xcode9
-install:
-- gem install xcpretty -N --no-ri --no-rdoc
-script:
-- set -o pipefail && xcodebuild -project YangMingShanDemo.xcodeproj -scheme YangMingShanDemo -sdk iphonesimulator11.0 -destination 'platform=iOS Simulator,name=iPhone 6,OS=11.0' build test | xcpretty -c
